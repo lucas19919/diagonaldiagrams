@@ -1,0 +1,45 @@
+{
+ "title": "An AI agent platform",
+ "sub": "Requests come in at the top; the agent calls a model and its tools; results land in storage.",
+ "budget": false,
+ "groups": [
+  {"id": "clients", "name": "Clients", "members": ["web", "mobile", "mail"]},
+  {"id": "runtime", "name": "Agent runtime", "members": ["memory", "agent"]},
+  {"id": "tools", "name": "Tools", "members": ["search", "sandbox", "draw"]},
+  {"id": "data", "name": "Storage", "members": ["blob", "pg"]}
+ ],
+ "nodes": [
+  {"id": "web", "name": "Web chat", "sub": "Next.js", "icon": "web", "layer": 0},
+  {"id": "mobile", "name": "Mobile app", "sub": "Swift", "icon": "mobile", "layer": 0},
+  {"id": "mail", "name": "Email intake", "sub": "SES", "icon": "mail", "layer": 0},
+  {"id": "gw", "name": "API gateway", "sub": "Envoy:443", "icon": "shield", "layer": 1},
+  {"id": "auth", "name": "Auth", "sub": "OIDC", "icon": "key", "layer": 1},
+  {"id": "memory", "name": "Memory", "sub": "pgvector", "icon": "database", "layer": 2},
+  {"id": "agent", "name": "Agent", "sub": "Python:8000", "icon": "bot", "layer": 2, "focal": true},
+  {"id": "llm", "name": "Model API", "sub": "external", "icon": "cloud", "layer": 2, "focal": true},
+  {"id": "search", "name": "Web search", "sub": "tool", "icon": "globe", "layer": 3},
+  {"id": "sandbox", "name": "Code sandbox", "sub": "Firecracker", "icon": "server", "layer": 3},
+  {"id": "draw", "name": "diagonaldiagrams", "sub": "MCP", "icon": "chart", "layer": 3},
+  {"id": "bus", "name": "Event bus", "sub": "Kafka", "icon": "queue", "layer": 3},
+  {"id": "blob", "name": "Object store", "sub": "files, figures", "icon": "file", "layer": 4},
+  {"id": "pg", "name": "Postgres", "sub": "runs, users", "icon": "database", "layer": 4},
+  {"id": "obs", "name": "Traces", "sub": "OpenTelemetry", "icon": "chart", "layer": 4}
+ ],
+ "edges": [
+  {"from": "web", "to": "gw", "label": "chat", "proto": "https"},
+  {"from": "mobile", "to": "gw", "label": "chat", "proto": "https"},
+  {"from": "mail", "to": "gw", "label": "forward", "proto": "https"},
+  {"from": "gw", "to": "auth", "label": "verify"},
+  {"from": "gw", "to": "agent", "label": "run", "proto": "https"},
+  {"from": "agent", "to": "llm", "label": "prompt", "focal": true},
+  {"from": "agent", "to": "memory", "label": "recall"},
+  {"from": "agent", "to": "search", "label": "search"},
+  {"from": "agent", "to": "sandbox", "label": "execute"},
+  {"from": "agent", "to": "draw", "label": "draw"},
+  {"from": "agent", "to": "bus", "label": "events", "async": true},
+  {"from": "sandbox", "to": "blob", "label": "files"},
+  {"from": "draw", "to": "blob", "label": "svg"},
+  {"from": "bus", "to": "pg", "label": "persist", "async": true},
+  {"from": "bus", "to": "obs", "label": "ingest", "async": true}
+ ]
+}

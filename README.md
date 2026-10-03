@@ -1,8 +1,8 @@
 # diagonaldiagrams
 
-Diagrams and charts your agent can draw, and check before it shows you. One command takes a short spec, Mermaid, or a CSV, lays it out, draws an SVG, and audits the drawing for labels on labels, arrows through boxes, and text that spills. The program is `graph.py`: one file, Python 3 standard library only.
+Diagrams and charts your agent can draw, and check before it shows you. One command takes a short spec, Mermaid, or a CSV, lays it out, draws an SVG, and audits the drawing for labels on labels, arrows through boxes, and text that spills.
 
-**[Try it in the browser](https://lucas19919.github.io/diagonaldiagrams/)**: the real engine, running locally in your browser, nothing to install.
+**[Try it in the browser](https://lucas19919.github.io/diagonaldiagrams/)**: the real engine, running in your browser.
 
 ![A fourteen-service checkout platform, drawn and audited by diagonaldiagrams](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/checkout.svg)
 

@@ -759,6 +759,21 @@ def agent_loop():
     rc, out = run("mermaid", broken, "-o", os.path.join(WORK, "broken.svg"))
     check("broken mermaid names the line and the fix", rc == 1 and "line 2" in out and '"fix"' in out, out[:200])
 
+    # Inline spec & zero-shot tests
+    rc, out = run("mermaid", "-s", "flowchart TD; A[Client]-->B[Server]", "-o", os.path.join(WORK, "inline_test.svg"), "--print-svg")
+    rep = json.loads(out) if rc == 0 else {}
+    check("mermaid -s inline renders and passes audit", rc == 0 and rep.get("ok") and os.path.exists(os.path.join(WORK, "inline_test.svg")), out[:200])
+    check("--print-svg includes svg_data in json verdict", rc == 0 and rep.get("svg_data", "").startswith("<svg"), out[:200])
+
+    rc, out = run("flow", "-s", '{"nodes":[{"id":"a","name":"A"},{"id":"b","name":"B"}],"edges":[{"from":"a","to":"b"}]}', "-o", os.path.join(WORK, "inline_flow.svg"))
+    rep = json.loads(out) if rc == 0 else {}
+    check("flow -s inline json spec renders", rc == 0 and rep.get("ok"), out[:200])
+
+    p = subprocess.Popen([sys.executable, os.path.join(HERE, "graph.py"), "mermaid", "-", "-o", os.path.join(WORK, "pipe_test.svg")],
+                         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    pipe_out, _ = p.communicate("flowchart TD; X[Start]-->Y[Finish]")
+    check("piped stdin to mermaid renders cleanly", p.returncode == 0 and '"ok": true' in pipe_out, pipe_out[:200])
+
     with open(os.path.join(HERE, ".claude-plugin", "plugin.json"), encoding="utf-8") as f:
         plugin_v = json.load(f)["version"]
     rc, out = run("--version")

@@ -237,6 +237,38 @@ def _hit(highlights, *vals):
 _MM_KINDS = {"flowchart": "flow", "graph": "flow", "sequencediagram": "seq", "erdiagram": "schema"}
 
 
+def _split_mermaid_semicolons(line):
+    chunks, cur = [], []
+    in_q, bracket_depth = None, 0
+    for ch in line:
+        if ch in ('"', "'") and not in_q:
+            in_q = ch
+            cur.append(ch)
+        elif ch == in_q:
+            in_q = None
+            cur.append(ch)
+        elif not in_q:
+            if ch in ('[', '(', '{'):
+                bracket_depth += 1
+                cur.append(ch)
+            elif ch in (']', ')', '}'):
+                bracket_depth = max(0, bracket_depth - 1)
+                cur.append(ch)
+            elif ch == ';' and bracket_depth == 0:
+                chunk = "".join(cur).strip()
+                if chunk:
+                    chunks.append(chunk)
+                cur = []
+            else:
+                cur.append(ch)
+        else:
+            cur.append(ch)
+    chunk = "".join(cur).strip()
+    if chunk:
+        chunks.append(chunk)
+    return chunks
+
+
 def _mermaid_lines(text):
     """(title, [(line number, stripped line)]): front matter title pulled out, comments dropped."""
     raw = str(text).replace("\r\n", "\n").split("\n")
@@ -250,10 +282,16 @@ def _mermaid_lines(text):
                 start = j + 1
                 break
     out = []
+    line_no = 0
     for k in range(start, len(raw)):
+        line_no += 1
         s = raw[k].strip()
-        if s and not s.startswith("%%"):
-            out.append((k + 1, s))
+        if not s or s.startswith("%%"):
+            continue
+        chunks = _split_mermaid_semicolons(s) if ";" in s else [s]
+        for c in chunks:
+            if c and not c.startswith("%%"):
+                out.append((line_no, c))
     return title, out
 
 
@@ -580,17 +618,23 @@ def _mermaid_spec(text):
 
 
 def load_spec(path):
-    with open(path, encoding="utf-8") as f:
-        txt = f.read()
-    if path.lower().endswith((".mmd", ".mermaid")) or _mermaid_kind(txt):
-        return _mermaid_spec(txt)
-    if path.endswith(".json"):
-        return json.loads(txt)
-    if HAS_YAML and path.endswith((".yaml", ".yml")):
+    if path == "-":
+        txt = sys.stdin.read()
+    elif isinstance(path, str) and not os.path.isfile(path) and ("\n" in path or path.strip().startswith(("{", "[")) or _mermaid_kind(path.strip())):
+        txt = path
+    else:
+        with open(path, encoding="utf-8") as f:
+            txt = f.read()
+    txt_stripped = txt.strip()
+    if (isinstance(path, str) and path.lower().endswith((".mmd", ".mermaid"))) or _mermaid_kind(txt_stripped):
+        return _mermaid_spec(txt_stripped)
+    if txt_stripped.startswith(("{", "[")) or (isinstance(path, str) and path.endswith(".json")):
+        return json.loads(txt_stripped)
+    if HAS_YAML and isinstance(path, str) and path.endswith((".yaml", ".yml")):
         return yaml.safe_load(txt)
     # minimal fallback: JSON in .yaml also works
     try:
-        return json.loads(txt)
+        return json.loads(txt_stripped)
     except Exception:
         sys.exit(f"{path}: need PyYAML for YAML (pip install pyyaml) or use JSON")
 
@@ -877,12 +921,12 @@ def corner_rx(corners):
 
 
 def _groups_of(spec, ids):
-    """Groups from spec["groups"] ({id, name, nodes}) and from each node's "group" field."""
+    """Groups from spec["groups"] ({id, name, nodes}, or members for nodes) and from each node's "group" field."""
     out, seen = [], {}
     for g in spec.get("groups") or []:
         if isinstance(g, dict) and g.get("id") is not None:
             seen[g["id"]] = {"id": g["id"], "name": g.get("name", g["id"]), "tag": g.get("tag", ""),
-                             "members": [m for m in g.get("nodes") or [] if m in ids]}
+                             "members": [m for m in g.get("nodes") or g.get("members") or [] if m in ids]}
             out.append(seen[g["id"]])
     for n in spec.get("nodes") or []:
         gid = n.get("group") if isinstance(n, dict) else None
@@ -971,23 +1015,47 @@ def _seg_boxes(pts):
             for p, q in zip(pts or [], (pts or [])[1:])]
 
 
+def _below_heading(pos, groups, head_h):
+    """Moves every node down when a frame's top band would cross the title or subtitle."""
+    tops = [pos[m][1] - pos[m][2]["_h"] / 2 for g in groups for m in g["members"] if m in pos]
+    dy = (head_h + 6) - (min(tops) - GROUP_HEAD) if tops else 0
+    return {k: (x, y + dy, n) for k, (x, y, n) in pos.items()} if dy > 0 else pos
+
+
+def _frame_box(g, pos):
+    """The frame around a group's members, as (x0, y0, x1, y1), or None if none is placed."""
+    boxes = []
+    for m in g["members"]:
+        if m in pos:
+            cx, cy, n = pos[m]
+            sh, hw, hh = _node_box(n)
+            boxes.append((cx - hw, cy - hh, cx + hw, cy + hh))
+    if not boxes:
+        return None
+    return (min(b[0] for b in boxes) - GROUP_PAD, min(b[1] for b in boxes) - GROUP_HEAD,
+            max(b[2] for b in boxes) + GROUP_PAD, max(b[3] for b in boxes) + GROUP_PAD - 4)
+
+
+def _frame_edges(groups, pos):
+    """Thin strips along each frame's border, so arrow labels sit inside or outside a frame, not on it."""
+    out = []
+    for g in groups:
+        f = _frame_box(g, pos)
+        if f:
+            x0, y0, x1, y1 = f
+            out += [(x0, y0 - 1, x1, y0 + 1), (x0, y1 - 1, x1, y1 + 1), (x0 - 1, y0, x0 + 1, y1), (x1 - 1, y0, x1 + 1, y1)]
+    return out
+
+
 def group_frames(t, groups, pos, avoid=()):
     """A frame behind each group's members. Its name goes in the top corner (left, else right)
     that no arrow crosses; avoid holds the arrows' segment boxes."""
     parts = []
     for g in groups:
-        boxes = []
-        for m in g["members"]:
-            if m in pos:
-                cx, cy, n = pos[m]
-                sh, hw, hh = _node_box(n)
-                boxes.append((cx - hw, cy - hh, cx + hw, cy + hh))
-        if not boxes:
+        f = _frame_box(g, pos)
+        if not f:
             continue
-        x0 = min(b[0] for b in boxes) - GROUP_PAD
-        y0 = min(b[1] for b in boxes) - GROUP_HEAD
-        x1 = max(b[2] for b in boxes) + GROUP_PAD
-        y1 = max(b[3] for b in boxes) + GROUP_PAD - 4
+        x0, y0, x1, y1 = f
         members = ",".join(esc(m) for m in g["members"])
         parts.append(f'<rect x="{x0:.1f}" y="{y0:.1f}" width="{x1 - x0:.1f}" height="{y1 - y0:.1f}" rx="10" '
                      f'fill="{t["rule"]}" fill-opacity=".35" stroke="{t["muted"]}" stroke-opacity=".55" '
@@ -1152,11 +1220,12 @@ def _place_label(mx, my, vertical, text, pts, avoid, soft=()):
     default, then each segment's middle, on both sides and both orientations. If none is
     clear: never on a hard obstacle (a box or a label), then the fewest soft ones (other arrows)."""
     cands = [(mx, my, vertical, False), (mx, my, vertical, True)]
-    for (px, py), (qx, qy) in zip(pts or [], (pts or [])[1:]):
-        seg_v = abs(qy - py) > abs(qx - px)
-        for v in (seg_v, not seg_v):
-            for flip in (False, True):
-                cands.append(((px + qx) / 2.0, (py + qy) / 2.0, v, flip))
+    for at in (0.5, 0.3, 0.7):  # each segment's middle first, then either side of it
+        for (px, py), (qx, qy) in zip(pts or [], (pts or [])[1:]):
+            seg_v = abs(qy - py) > abs(qx - px)
+            for v in (seg_v, not seg_v):
+                for flip in (False, True):
+                    cands.append((px + (qx - px) * at, py + (qy - py) * at, v, flip))
 
     def hits(b, boxes):
         return sum(1 for a in boxes if b[0] < a[2] + 2 and a[0] - 2 < b[2] and b[1] < a[3] + 2 and a[1] - 2 < b[3])
@@ -1334,6 +1403,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         if shift:
             pos = {k: (cx + shift, cy, n) for k, (cx, cy, n) in pos.items()}
         W = max(W, int(max(cx for cx, _, _ in pos.values()) + 110 + (200 if _notes else 0)))
+    pos = _below_heading(pos, _groups_of(spec, set(pos)), head_h)
     low = max((cy + n["_h"] / 2 - BOX_H / 2 for _, cy, n in pos.values()), default=top)
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
@@ -1344,6 +1414,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
     parts.extend(head_bits)
     frame_at, seg_boxes = len(parts), []
     node_boxes = [(cx - 80, cy - n["_h"] / 2, cx + 80, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
+    frame_edges = _frame_edges(_groups_of(spec, set(pos)), pos)
     label_boxes = []
     for nid, (cx, cy, n) in pos.items():
         sh = n.get("shape", "rect")
@@ -1393,7 +1464,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         if e.get("label"):
             text = e["label"].upper()
             lx, ly, vertical, flip = _place_label(lx, ly + label_dy, vertical, text, route_edge.last_pts,
-                                                  node_boxes + label_boxes)
+                                                  node_boxes + label_boxes + frame_edges)
             parts.append(arrow_label(t, lx, ly, text, vertical=vertical, flip=flip))
             label_boxes.append(_label_box(lx, ly, text, vertical, flip))
     parts[frame_at:frame_at] = group_frames(t, _groups_of(spec, set(pos)), pos, seg_boxes)
@@ -1587,6 +1658,14 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         pitch = max(pitch, 210)
         cols = _group_columns(layers, groups, gof, edges)
         span = max(cols.values()) + 1 if cols else 1
+        # a labelled arrow along a row that leaves a frame needs room for its label past the border
+        lay = {n["id"]: n.get("layer", 0) for n in nodes}
+        for e in edges:
+            a, b = e.get("from"), e.get("to")
+            if (e.get("label") and a in cols and b in cols and lay.get(a) == lay.get(b)
+                    and abs(cols[a] - cols[b]) == 1 and gof.get(a) != gof.get(b)):
+                borders = (a in gof) + (b in gof)
+                pitch = max(pitch, int(BOX_W + borders * GROUP_PAD + _pill_w(e["label"].upper()) + 16))
         W = max(760, int(span * pitch + 2 * 50)) + (200 if _notes else 0)
     pos = {}
     top, gap_y = max(100, head_h + 24), 156
@@ -1601,6 +1680,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
             x = (50 + (cols[n["id"]] + 0.5) * pitch) if cols else (W / (len(row)+1)) * (j+1)
             y = top + li * gap_y + acc
             pos[n["id"]] = (x, y, n)
+    pos = _below_heading(pos, groups, head_h)
     low = max((y + n["_h"] / 2 - BOX_H / 2 for _, y, n in pos.values()), default=top)
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
@@ -1613,6 +1693,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
     for nid,(x,y,n) in pos.items():
         parts.append(node_box(t, x-80, y-n["_h"]/2, 160, n["_h"], n["name"], n.get("sub",""), n.get("tag",""), n.get("focal",False), corners, nid, n.get("icon")))
     node_boxes = [(x - 80, y - n["_h"] / 2, x + 80, y + n["_h"] / 2) for x, y, n in pos.values()]
+    frame_edges = _frame_edges(groups, pos)
     label_boxes = []
     ports = assign_ports(pos, edges, layered=True)
     tracks = _gap_tracks(ports)
@@ -1641,7 +1722,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         if e.get("label"):
             text = e["label"].upper()
             others = [b for j, r in enumerate(routes) if j != k for b in r[5]]
-            lx, ly, vertical, flip = _place_label(lx, ly, vertical, text, pts, node_boxes + label_boxes, others)
+            lx, ly, vertical, flip = _place_label(lx, ly, vertical, text, pts, node_boxes + label_boxes + frame_edges, others)
             parts.append(arrow_label(t, lx, ly, text, vertical=vertical, flip=flip))
             label_boxes.append(_label_box(lx, ly, text, vertical, flip))
     if _notes:
@@ -7923,12 +8004,13 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
     if vtype in ("terrain", "print"):
         _validate_chart(vtype, target, args, errors, warnings)
         return errors, warnings
-    if not os.path.isfile(target):
+    is_inline = target == "-" or (isinstance(target, str) and not os.path.isfile(target) and ("\n" in target or target.strip().startswith(("{", "[")) or _mermaid_kind(target.strip())))
+    if not is_inline and not os.path.isfile(target):
         return [{"msg": f"no file {target}", "fix": "check the path; write the spec or CSV first"}], []
     if vtype in _CHART_BLURB:
         _validate_chart(vtype, args.target, args, errors, warnings)
         return errors, warnings
-    if args.target.endswith(".csv"):
+    if isinstance(args.target, str) and os.path.isfile(args.target) and args.target.endswith(".csv"):
         import csv as _csv
         try:
             with open(args.target, newline="", encoding="utf-8") as f:
@@ -8056,6 +8138,24 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
                 if e.get(k) not in ids:
                     _vissue(errors, warnings, "E", f"edge {e} refs unknown id '{e.get(k)}'",
                             f"add node or fix to one of {ids}")
+        homes = {}
+        for g in spec.get("groups") or []:
+            if not isinstance(g, dict) or g.get("id") is None:
+                _vissue(errors, warnings, "E", f"group {g} has no id", 'write {"id": "core", "name": "Core", "nodes": ["a", "b"]}')
+                continue
+            members = g.get("nodes") or g.get("members") or []
+            unknown = [m for m in members if m not in ids]
+            members = members or [n.get("id") for n in nodes if n.get("group") == g["id"]]
+            if unknown:
+                _vissue(errors, warnings, "E", f"group '{g['id']}' names unknown nodes {unknown}", f"use ids from {ids}")
+            if not members:
+                _vissue(errors, warnings, "E", f"group '{g['id']}' lists no nodes, so no frame is drawn",
+                        'list its node ids: "nodes": ["a", "b"]')
+            for m in members:
+                if m in homes and homes[m] != g["id"]:
+                    _vissue(errors, warnings, "E", f"node '{m}' is in groups '{homes[m]}' and '{g['id']}'",
+                            "a node sits in one frame; keep it in one group")
+                homes.setdefault(m, g["id"])
         if spec.get("budget", True) is not False:
             if len(nodes) > 9:
                 _vissue(errors, warnings, "E", f"{len(nodes)} nodes > budget 9", "split into overview + detail views, or set budget false")
@@ -8563,6 +8663,15 @@ def _svg_geometry(root, W, H, stats=None):
             if nid not in members and fb[0] < cx < fb[2] and fb[1] < cy < fb[3]:
                 issues.append({"code": "intrude", "msg": f"node '{nid}' sits inside group '{gid}' but is not in it",
                                "fix": "move it to another row or lane, or add it to the group", "at": [round(cx), round(cy)]})
+        # a frame's border runs across a line of text (a subtitle above it, a label at its edge)
+        for t in texts:
+            b = t["box"]
+            across_h = b[0] < fb[2] and fb[0] < b[2] and any(b[1] + 1 < y < b[3] - 1 for y in (fb[1], fb[3]))
+            across_v = b[1] < fb[3] and fb[1] < b[3] and any(b[0] + 1 < x < b[2] - 1 for x in (fb[0], fb[2]))
+            if across_h or across_v:
+                mx, my = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+                issues.append({"code": "collide", "msg": f"the frame of group '{gid}' runs through '{t['s'][:24]}'",
+                               "fix": "move the text or the group's members so the frame clears it", "at": [round(mx), round(my)]})
     rects = [s["box"] for s in shapes if s["tag"] == "rect"]
     hosts = {}
     for i, j in near(tb, rects):
@@ -9203,9 +9312,10 @@ def do_mcp(args):
          "inputSchema": {"type": "object", "properties": {"type": {"type": "string"}}}},
         {"name": "render", "description": "Validate, draw, and audit one figure. Writes OUT.svg, OUT.html, and a receipt. "
                                           "ok false: read errors, change the spec or options, call again.",
-         "inputSchema": {"type": "object", "required": ["type", "out"],
+         "inputSchema": {"type": "object", "required": ["type"],
                          "properties": dict(type={"type": "string", "description": "mermaid (data = Mermaid text), flow, arch, seq, schema, bar, line, scatter, geo, or any describe type"},
-                                            out={"type": "string", "description": "output path ending .html"},
+                                            out={"type": "string", "description": "output path ending .html (defaults to out/diagonaldiagrams.html)"},
+                                            include_svg={"type": "boolean", "description": "if true (default), returns the raw SVG xml directly in the response"},
                                             options=opts, **src)}},
         {"name": "validate", "description": "Check a spec or CSV without drawing.",
          "inputSchema": {"type": "object", "required": ["type"],
@@ -9309,7 +9419,17 @@ def do_mcp(args):
         except subprocess.TimeoutExpired:
             return {"isError": True, "content": [{"type": "text", "text": f"{name} took over 180 s"}]}
         text = ((p.stdout or "") + (p.stderr or "")).strip()
-        return {"content": [{"type": "text", "text": text[:12000]}], **({"isError": True} if p.returncode else {})}
+        items = [{"type": "text", "text": text[:12000]}]
+        if name == "render" and not p.returncode and (a.get("include_svg") is not False):
+            try:
+                rep = json.loads(text)
+                svg_p = rep.get("svg")
+                if svg_p and os.path.isfile(svg_p):
+                    svg_content = open(svg_p, encoding="utf-8").read()
+                    items.append({"type": "text", "text": svg_content[:64000]})
+            except Exception:
+                pass
+        return {"content": items, **({"isError": True} if p.returncode else {})}
 
     known = ("2025-06-18", "2025-03-26", "2024-11-05")
     for line in sys.stdin:
@@ -9429,6 +9549,11 @@ def _finish(a, html, svg, count, unit, pre):
     layout = _outline(svg)
     if layout:
         out["layout"] = layout
+    if getattr(a, "print_svg", False) and os.path.isfile(svg):
+        try:
+            out["svg_data"] = open(svg, encoding="utf-8").read()
+        except OSError:
+            pass
     if rep["errors"]:
         out["errors"] = rep["errors"]
         out["next"] = ("the files are written so you can look; change the spec or flags and render again "
@@ -9447,6 +9572,7 @@ def _chart_flags(p):
     p.add_argument("--highlight", action="append", default=[],
                    help="category, x value, group, or place drawn in accent (repeatable)")
     p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
+    p.add_argument("--print-svg", "--svg", action="store_true", help="include raw SVG xml in output JSON")
     p.set_defaults(grid=True, markers=True)
 
 
@@ -9456,11 +9582,15 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     _render_parsers = {}
     for name in ("flow", "arch", "seq", "schema", "mermaid"):
-        p = sub.add_parser(name); p.add_argument("spec"); p.add_argument("-o", required=True)
+        p = sub.add_parser(name)
+        p.add_argument("spec", nargs="?", default=None, help="spec file path, inline text, or '-' for stdin")
+        p.add_argument("-s", "--string", "--spec-text", dest="spec_text", default=None, help="inline spec or Mermaid string")
+        p.add_argument("-o", required=True)
         p.add_argument("--corners", default="editorial", choices=["sharp", "rounded", "editorial"])
         p.add_argument("--theme", default="editorial", choices=sorted(THEMES))
         p.add_argument("--theme-file", default=None, help="JSON with theme key overrides")
         p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
+        p.add_argument("--print-svg", "--svg", action="store_true", help="include raw SVG xml in output JSON")
         _render_parsers[name] = p
     _render_parsers["flow"].add_argument("--auto", action="store_true",
                                          help="force longest-path layering (default when no ranks given)")
@@ -9615,15 +9745,30 @@ def main():
     if a.cmd == "extract":
         do_extract(a)
         return
+    if a.cmd in ("flow", "arch", "seq", "schema", "mermaid"):
+        spec_val = getattr(a, "spec", None) or getattr(a, "spec_text", None)
+        if spec_val is None:
+            if not sys.stdin.isatty():
+                spec_val = "-"
+            else:
+                ap.error(f"{a.cmd} requires a spec file, inline string (-s), or stdin (-)")
+        a.spec = spec_val
+
     if a.cmd == "mermaid":
-        # the text says which diagram it is: flowchart/graph -> flow, sequenceDiagram -> seq, erDiagram -> schema
-        try:
-            kind = _mermaid_kind(open(a.spec, encoding="utf-8").read())
-        except OSError:
-            kind = "flow"
+        if a.spec == "-":
+            text = sys.stdin.read()
+            a.spec = text
+        elif isinstance(a.spec, str) and not os.path.isfile(a.spec):
+            text = a.spec
+        else:
+            try:
+                text = open(a.spec, encoding="utf-8").read()
+            except OSError:
+                text = a.spec
+        kind = _mermaid_kind(text)
         if kind not in ("flow", "seq", "schema"):
             _report({"ok": False, "stage": "validate", "errors": [{
-                "msg": f"Mermaid '{kind}' is not read yet" if kind else "this file does not start with a Mermaid diagram type",
+                "msg": f"Mermaid '{kind}' is not read yet" if kind else "this input does not start with a Mermaid diagram type",
                 "fix": "start with flowchart TD, graph TD, sequenceDiagram, or erDiagram"}]}, 1)
         a.cmd = kind
     pre = _prevalidate(a)
@@ -9642,11 +9787,15 @@ def main():
         elif a.cmd == "schema":
             svg, _, _ = render_schema(spec, a.corners, theme)
             item_cnt = len(spec.get("tables", []))
-        o, s = write_out(svg, a.cmd, spec.get("title", a.cmd), spec.get("sub", ""),
-                         f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
-                         caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",
+        spec_title = spec.get("title", a.cmd)
+        spec_sub = spec.get("sub", "")
+        spec_name = os.path.basename(a.spec) if (isinstance(a.spec, str) and os.path.isfile(a.spec)) else "inline"
+        o, s = write_out(svg, a.cmd, spec_title, spec_sub,
+                         f"{a.cmd} · {spec_name}", a.o,
+                         caption=spec_sub, cap_title=spec_title + ".",
                          source="Self-contained HTML + SVG.", corners=a.corners, theme=theme)
-        save_receipt(o, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
+        save_receipt(o, {"cmd": a.cmd, "spec": a.spec if (isinstance(a.spec, str) and os.path.isfile(a.spec)) else "inline",
+                          "corners": a.corners, "theme": theme.get("_name"),
                           "auto": bool(getattr(a, "auto", False))})
         _finish(a, o, s, item_cnt, "items", pre)
     elif a.cmd == "bar":

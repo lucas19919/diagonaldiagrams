@@ -9,16 +9,24 @@ description: Draw charts, flowcharts, sequence diagrams, architecture maps, data
 `py -3 <path>/graph.py` on Windows, `python3 <path>/graph.py` elsewhere. If `diagonaldiagrams`
 is on PATH, `diagonaldiagrams` is the same program. Not installed: run the `diagonaldiagrams-install` skill.
 
-## One command
+## One command (Zero-Shot / Single Turn)
 
-```
+```bash
+# Inline Mermaid string (no temp file needed!):
+diagonaldiagrams mermaid -s "flowchart TD; A[Client] --> B[Server]" -o out/flow.svg [--print-svg]
+
+# Or from a file:
 diagonaldiagrams <type> INPUT -o DIR/NAME.svg [flags]
+
+# Or piped from stdin:
+echo "flowchart TD; A-->B" | diagonaldiagrams mermaid - -o out/flow.svg
 ```
 
 It checks the input, draws, audits the result, and prints one JSON line:
 
-- `"ok": true` with `svg`, `html`, `receipt` paths. Done. Show the SVG. For diagrams, `layout` lists
-  each row's boxes left to right and each frame's members: read it to check the structure.
+- `"ok": true` with `svg`, `html`, `receipt` paths. Done. Show the SVG.
+- `--print-svg` includes `"svg_data": "<svg ...>"` directly in the JSON verdict, avoiding an extra file read step.
+- For diagrams, `layout` lists each row's boxes left to right and each frame's members: read it to check the structure without vision tools.
 - `"ok": false`, `"stage": "validate"`: nothing drawn. Each error has a `fix`. Change the spec and rerun.
 - `"ok": false` with audit errors: files are written, but labels collide, a label spills its box,
   or an arrow crosses a box. Change rank, lane, or the wording and rerun. Never edit the SVG.
@@ -26,7 +34,7 @@ It checks the input, draws, audits the result, and prints one JSON line:
 `"ok": true` already means no label overlaps another label, no label is wider than its box or off
 the canvas, no two boxes overlap, and no arrow crosses a box or a label. Do not screenshot the
 figure or parse the SVG to check those again: every extra look costs a full round trip. Write the
-spec and render it in one shell call when you can. Look at a PNG only to judge the content itself.
+spec and render it in one shell call. Look at a PNG only to judge the content itself.
 
 `describe <type>` prints the full contract for any type. You only need it for types not below.
 

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
   "name": "io.github.lucas19919/diagonaldiagrams",
   "title": "diagonaldiagrams",
-  "description": "Diagrams and charts for agents: Mermaid or a spec in, an audited SVG out. No dependencies.",
+  "description": "Diagrams and charts for agents: Mermaid or a spec in, an audited SVG out.",
   "repository": {
     "url": "https://github.com/lucas19919/diagonaldiagrams",
     "source": "github"
