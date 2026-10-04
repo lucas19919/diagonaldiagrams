@@ -20,38 +20,55 @@ OUT = os.path.join(DOCS, "gallery")
 
 # (file name, command line after graph.py, caption)
 FIGURES = [
-    ("how-it-works", ["mermaid", "examples/how_it_works.mmd"], "How a figure is made: written in Mermaid, loops drawn back up the outside."),
-    ("checkout", ["arch", "examples/checkout_platform.json"], "Fourteen services, sync and async: every arrow on its own path."),
-    ("checkout-grouped", ["arch", "examples/checkout_groups.json"], "The same system with frames: each holds only its members."),
-    ("deploy", ["flow", "examples/flow_decision.json"], "A decision flow: yes goes right, retry loops round the outside."),
-    ("sequence", ["mermaid", "examples/checkout_sequence.mmd"], "A request over time, from a Mermaid sequenceDiagram."),
-    ("data-model", ["mermaid", "examples/shop_er.mmd"], "A data model from a Mermaid erDiagram."),
-    ("icons", ["mermaid", "examples/icons.mmd"], "Built-in icons, from Mermaid's fa: names."),
+    ("agent-platform", ["arch", "examples/agent_platform.json"], "An AI agent platform, with groups and icons."),
+    ("how-it-works", ["mermaid", "examples/how_it_works.mmd"], "How a diagram gets made. Loops are drawn up the outside."),
+    ("checkout", ["arch", "examples/checkout_platform.json"], "Fourteen services, and every arrow gets its own path."),
+    ("checkout-grouped", ["arch", "examples/checkout_groups.json"], "The same system, grouped."),
+    ("deploy", ["flow", "examples/flow_decision.json"], "A decision with a retry loop."),
+    ("sequence", ["mermaid", "examples/checkout_sequence.mmd"], "A checkout request, step by step."),
+    ("data-model", ["mermaid", "examples/shop_er.mmd"], "A shop's data model."),
+    ("icons", ["mermaid", "examples/icons.mmd"], "Built-in icons for users, databases, queues and more."),
     ("signups", ["line", "examples/signups.csv", "--x", "month", "--y", "signups", "--group", "product",
                  "--title", "Atlas more than doubled while Beacon declined",
                  "--subtitle", "Monthly signups per product, January to June 2026",
-                 "--xlabel", "Month", "--ylabel", "Signups per month"], "A line chart labels each series at its end."),
+                 "--xlabel", "Month", "--ylabel", "Signups per month"], "Each line is named at its end, so there is no legend to look up."),
 ]
+
+# The benchmark charts on the page, drawn from docs/data/ by the same engine. Not in the gallery.
+SOURCE = "Claude Sonnet agents, two runs per point. Counts the tokens spent on the task, not the agent's fixed instructions."
+MEASURED = [
+    ("bench-tools", ["line", "docs/data/bench_tools.csv", "--x", "steps", "--y", "tokens", "--group", "tool",
+                     "--highlight", "diagonaldiagrams", "--title", "Tokens per flowchart",
+                     "--subtitle", "diagonaldiagrams stays under 2.1k as the diagram grows; with other tools the agent keeps checking its work",
+                     "--xlabel", "Steps in the flowchart", "--ylabel", "Tokens used (average of 2 runs)", "--source", SOURCE]),
+]
+
+
+def render(name, args):
+    """Draw one figure into docs/gallery; stop the build if it fails its audit."""
+    target = os.path.join(OUT, name + ".svg")
+    p = subprocess.run([sys.executable, GRAPH] + args + ["-o", target], capture_output=True, text=True, cwd=HERE)
+    try:
+        rep = json.loads(p.stdout)
+    except ValueError:
+        rep = {"ok": False, "errors": [{"msg": (p.stdout + p.stderr)[-300:]}]}
+    if not rep.get("ok"):
+        sys.exit(f"{name}: {rep.get('errors')}")
+    for extra in (".html", ".graph.json"):
+        path = os.path.join(OUT, name + extra)
+        if os.path.exists(path):
+            os.remove(path)
+    print("ok", name)
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
     shown = []
     for name, args, caption in FIGURES:
-        target = os.path.join(OUT, name + ".svg")
-        p = subprocess.run([sys.executable, GRAPH] + args + ["-o", target], capture_output=True, text=True, cwd=HERE)
-        try:
-            rep = json.loads(p.stdout)
-        except ValueError:
-            rep = {"ok": False, "errors": [{"msg": (p.stdout + p.stderr)[-300:]}]}
-        if not rep.get("ok"):
-            sys.exit(f"{name}: {rep.get('errors')}")
-        for extra in (".html", ".graph.json"):
-            path = os.path.join(OUT, name + extra)
-            if os.path.exists(path):
-                os.remove(path)
+        render(name, args)
         shown.append({"file": "gallery/" + name + ".svg", "caption": caption, "source": args[1]})
-        print("ok", name)
+    for name, args in MEASURED:
+        render(name, args)
     with open(os.path.join(DOCS, "gallery.json"), "w", encoding="utf-8") as f:
         json.dump(shown, f, indent=1)
     shutil.copy(GRAPH, os.path.join(DOCS, "graph.py"))

@@ -4,7 +4,7 @@ Diagrams and charts your agent can draw, and check before it shows you. One comm
 
 **[Try it in the browser](https://lucas19919.github.io/diagonaldiagrams/)**: the real engine, running in your browser.
 
-![A fourteen-service checkout platform, drawn and audited by diagonaldiagrams](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/checkout.svg)
+![An AI agent platform with framed groups and icons, drawn and audited by diagonaldiagrams](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/agent-platform.svg)
 
 ## Install
 
@@ -34,7 +34,7 @@ Or clone it and run `py -3 graph.py describe` (Windows) or `python3 graph.py des
 ```text
 diagonaldiagrams mermaid flow.mmd -o out/flow.svg
 {"ok": true, "svg": "out/flow.svg", "html": "out/flow.html", "receipt": "out/flow.graph.json", "items": 9,
- "layout": ["row 1: Agent writes a spec", "row 2: Check the spec", "row 3: Valid? (decision)", ...]}
+ "layout": ["row 1: Your agent describes the diagram", "row 2: Check the description", "row 3: Makes sense? (decision)", ...]}
 ```
 
 It checks the input, draws, audits the drawing, and prints one line of JSON. `ok: false` comes with errors, each with a `fix`; change the input and run it again. `layout` describes the drawn structure, so an agent can confirm it without looking at a picture.
@@ -68,15 +68,41 @@ The audit reads the finished SVG: labels on labels, labels too wide for their bo
 
 ## Measured
 
-The same three tasks, done by fresh agents with diagonaldiagrams and by writing the SVG directly. Total tokens processed across the agent's calls:
+Five ways for an agent to draw the same flowchart, at 5, 11, 20 and 40 steps, two runs each, each run a fresh Claude Sonnet agent.
 
-| Task | Hand-written SVG | diagonaldiagrams | Calls |
-| --- | --- | --- | --- |
-| Flowchart, 11 steps | 902k | **433k** | 13 → 7 |
-| Line chart, 3 series | 622k | **295k** | 10 → 5 |
-| Sequence, 6 actors | 757k | **427k** | 11 → 7 |
+![Tokens per flowchart for five approaches: diagonaldiagrams stays between 1.3k and 2.1k, the others climb to 8k to 28k at 40 steps](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/bench-tools.svg)
 
-Most of an agent's tokens are its own instructions, re-read on every call. The saving comes from fewer calls: the agent writes a short spec and trusts the verdict instead of screenshotting to check.
+Tokens per flowchart, mean of two runs:
+
+| Steps | diagonaldiagrams | Hand-written SVG | Graphviz | Mermaid CLI | D2 |
+| --- | --- | --- | --- | --- | --- |
+| 5 | **1.3k** | 0.9k | 2.5k | 2.7k | 2.5k |
+| 11 | **1.5k** | 2.0k | 5.7k | 5.6k | 5.3k |
+| 20 | **1.5k** | 5.7k | 4.4k | 3.2k | 9.5k |
+| 40 | **2.1k** | 8.1k | 12.5k | 20.5k | 28.0k |
+
+All eight runs per approach:
+
+| | Tokens | Calls | Screenshots | Time |
+| --- | --- | --- | --- | --- |
+| diagonaldiagrams | **12.7k** | **29** | **0** | **6 min** |
+| Hand-written SVG | 33.4k | 51 | 2 | 26 min |
+| Graphviz | 50.1k | 91 | 4 | 28 min |
+| Mermaid CLI | 63.9k | 115 | 42 | 31 min |
+| D2 | 90.5k | 170 | 23 | 38 min |
+
+What the runs show:
+
+- Every approach produced a figure without overlapping text; the difference is what it cost to get there. With another tool the agent renders a PNG and looks, or writes its own geometry checks, and that cost grows with the figure. With diagonaldiagrams it reads the verdict and the outline, and took no screenshots in any run.
+- Hand-written SVG is cheapest at 5 steps, because those agents mostly never looked at their output (see below).
+- Where others do better: at 20 and 40 steps diagonaldiagrams draws one tall column. The Mermaid agents spent much of their extra tokens rearranging 40 steps into side-by-side stages, which reads better.
+
+How it was run:
+
+- Every run got the same task: a process described in prose, the number of steps, "clean, readable, no overlapping text", save `figure.svg`, and reply with the path and any failed commands. Only the first lines differ: which tool, and the command to run it.
+- Tools: mermaid-cli 12 using the system Edge; Graphviz 16.1 as the official WebAssembly build; D2 0.7 from its official npm package (dagre layout); diagonaldiagrams with its skill; and no tool at all.
+- Counted: the run's own tokens, meaning what the agent wrote, what came back to it, and screenshots at Claude's image rate. Left out: the harness (system prompt, tool definitions, reminders), which is the same whatever the task; the final report; and thinking, which transcripts hide. `scripts/bench_tokens.py` recounts any run from its transcript.
+- Caveats. Two runs per point, and single runs differ by up to 2×. The no-tool prompt said not to use any renderer, and most agents took that to mean they should not look either. Graphviz and D2, as installed, wrote SVG only and there was no image viewer, so several agents spent calls looking for one. Twenty agents ran at once and shared one browser pane. All agents were Claude Sonnet.
 
 ## Gallery
 

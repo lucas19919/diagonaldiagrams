@@ -12,7 +12,7 @@
 <rect x="60" y="90" width="240" height="128" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2"/>
 <path d="M60,126 L60,96 Q60,90 66,90 L294,90 Q300,90 300,96 L300,126 Z" fill="rgba(45,49,66,0.06)"/>
 <line x1="60" y1="126" x2="300" y2="126" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
-<text x="72" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">LINE_ITEM</text>
+<text x="72" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table">LINE_ITEM</text>
 <rect x="70" y="138" width="20" height="12" rx="2" fill="#2e5aa8" fill-opacity=".15"/>
 <text x="80" y="147" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle">FK</text>
 <text x="95" y="149" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">order_id</text>
@@ -28,7 +28,7 @@
 <rect x="437" y="90" width="240" height="128" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2"/>
 <path d="M437,126 L437,96 Q437,90 443,90 L671,90 Q677,90 677,96 L677,126 Z" fill="rgba(45,49,66,0.06)"/>
 <line x1="437" y1="126" x2="677" y2="126" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
-<text x="449" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">ORDER</text>
+<text x="449" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table">ORDER</text>
 <rect x="447" y="138" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15"/>
 <text x="457" y="147" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle">PK</text>
 <text x="472" y="149" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">id</text>
@@ -44,7 +44,7 @@
 <rect x="814" y="90" width="240" height="104" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2"/>
 <path d="M814,126 L814,96 Q814,90 820,90 L1048,90 Q1054,90 1054,96 L1054,126 Z" fill="rgba(45,49,66,0.06)"/>
 <line x1="814" y1="126" x2="1054" y2="126" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
-<text x="826" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">CUSTOMER</text>
+<text x="826" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table">CUSTOMER</text>
 <rect x="824" y="138" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15"/>
 <text x="834" y="147" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle">PK</text>
 <text x="849" y="149" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">id</text>
@@ -55,7 +55,7 @@
 <rect x="60" y="410" width="240" height="104" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2"/>
 <path d="M60,446 L60,416 Q60,410 66,410 L294,410 Q300,410 300,416 L300,446 Z" fill="rgba(45,49,66,0.06)"/>
 <line x1="60" y1="446" x2="300" y2="446" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
-<text x="72" y="433" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">PRODUCT</text>
+<text x="72" y="433" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table">PRODUCT</text>
 <rect x="70" y="458" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15"/>
 <text x="80" y="467" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle">PK</text>
 <text x="95" y="469" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">id</text>
@@ -64,5 +64,5 @@
 <text x="70" y="493" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">sku</text>
 <text x="288" y="493" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end">string</text>
 <line x1="30" y1="548" x2="1084" y2="548" stroke="rgba(45,49,66,0.12)" stroke-width=".8"/>
-<text x="30" y="562" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">pk = primary key, fk = foreign key, blue = relation, coral = focal</text>
+<text x="30" y="562" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">PK = primary key, FK = foreign key, blue = relation, coral = highlighted</text>
 </svg>

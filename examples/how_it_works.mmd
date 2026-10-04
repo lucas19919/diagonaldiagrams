@@ -1,14 +1,14 @@
 ---
-title: How diagonaldiagrams draws a figure
+title: How a diagram gets made
 ---
 flowchart TD
-    A([Agent writes a spec]) --> B[Check the spec]
-    B --> C{Valid?}
-    C -->|no| X[Errors with a fix]
+    A([Your agent describes the diagram]) --> B[Check the description]
+    B --> C{Makes sense?}
+    C -->|no| X[Tell the agent what to fix]
     C -->|yes| D[Lay out and draw]
-    D --> E[Audit the drawing]
-    E --> F{Clean?}
-    F -- no --> G[Repair the layout]
+    D --> E[Check the drawing]
+    E --> F{Anything overlapping?}
+    F -- yes --> G[Rearrange]
     G -.-> E
-    F ==>|yes| H([SVG, HTML, receipt])
+    F ==>|no| H([Finished diagram])
     X -.-> A

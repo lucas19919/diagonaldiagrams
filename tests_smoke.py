@@ -263,15 +263,17 @@ def main():
     edges = [{"from": f"n{i}", "to": f"n{i+1}"} for i in range(9)]
     with open(big, "w", encoding="utf-8") as f:
         json.dump({"title": "Big", "nodes": nodes, "edges": edges}, f)
-    rc, _ = run("validate", big)
-    check("ten nodes still refused", rc == 1)
+    rc, out = run("validate", big)
+    check("ten nodes pass with a warning", rc == 0 and "past 9" in out, out[:160])
+    rc, out = run("arch", big, "-o", os.path.join(WORK, "big.svg"))
+    check("ten nodes draw without budget false", rc == 0 and '"ok": true' in out, out[-200:])
     with open(big, encoding="utf-8") as f:
         spec = json.load(f)
     spec["budget"] = False
     with open(big, "w", encoding="utf-8") as f:
         json.dump(spec, f)
     rc, out = run("validate", big)
-    check("budget false allows ten nodes", rc == 0, out[:160])
+    check("budget false hides the size warning", rc == 0 and "past 9" not in out, out[:160])
 
     print("== mcp ==")
     try:
@@ -759,20 +761,69 @@ def agent_loop():
     rc, out = run("mermaid", broken, "-o", os.path.join(WORK, "broken.svg"))
     check("broken mermaid names the line and the fix", rc == 1 and "line 2" in out and '"fix"' in out, out[:200])
 
-    # Inline spec & zero-shot tests
-    rc, out = run("mermaid", "-s", "flowchart TD; A[Client]-->B[Server]", "-o", os.path.join(WORK, "inline_test.svg"), "--print-svg")
+    # input given inline (-s) or on stdin (-) is saved beside the output, so export can redraw it
+    inl = os.path.join(WORK, "inline_test")
+    rc, out = run("mermaid", "-s", "flowchart TD; A[Client]-->B[Server]", "-o", inl + ".svg")
     rep = json.loads(out) if rc == 0 else {}
-    check("mermaid -s inline renders and passes audit", rc == 0 and rep.get("ok") and os.path.exists(os.path.join(WORK, "inline_test.svg")), out[:200])
-    check("--print-svg includes svg_data in json verdict", rc == 0 and rep.get("svg_data", "").startswith("<svg"), out[:200])
+    check("mermaid -s inline renders and passes audit", rc == 0 and rep.get("ok") and os.path.exists(inl + ".svg"), out[:200])
+    check("the verdict carries no SVG text", "<svg" not in out, out[:200])
+    check("inline text is saved as NAME.spec.mmd", os.path.isfile(inl + ".spec.mmd"))
+    rc, out = run("export", inl, "--to", "drawio")
+    check("export redraws an inline render", rc == 0 and os.path.isfile(inl + ".drawio"), out[-200:])
+    rc, out = run("mermaid", "-o", os.path.join(WORK, "nospec.svg"))
+    check("no spec is a JSON error, not a wait on stdin", rc == 1 and '"no spec given"' in out, out[:200])
+    fm = os.path.join(WORK, "frontmatter.mmd")
+    with open(fm, "w", encoding="utf-8") as f:
+        f.write("\n".join(["---", "title: T", "---", "flowchart TD", "  A[open --> B", ""]))
+    rc, out = run("mermaid", fm, "-o", os.path.join(WORK, "frontmatter.svg"))
+    check("a Mermaid error names its line in the file, front matter counted", rc == 1 and "line 5" in out, out[:200])
+    rc, out = run("mermaid", os.path.join(HERE, "examples", "checkout_sequence.mmd"), "-o", os.path.join(WORK, "outline_seq.svg"))
+    lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
+    check("a sequence's verdict lists its actors and each message",
+          lay[:1] and lay[0].startswith("actors: User") and any(l.startswith("1. User -> API Gateway") for l in lay), out[-300:])
+    rc, out = run("schema", os.path.join(HERE, "examples", "schema_ecommerce.json"), "-o", os.path.join(WORK, "outline_schema.svg"))
+    lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
+    check("a schema's verdict lists its tables", any(l.startswith("tables: users") for l in lay), out[-300:])
+    # the audit reads SVG written by other tools: stylesheet rules, nested <svg>, lines placed in em
+    other = os.path.join(WORK, "other_css.svg")
+    with open(other, "w", encoding="utf-8") as f:
+        f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200"><title>t</title>'
+                '<style>text { font-size: 15px; text-anchor: middle }</style>'
+                '<rect x="100" y="40" width="200" height="56"/><text x="200" y="72">Pull request opened</text></svg>')
+    rc, out = run("audit", other)
+    check("audit applies <style> rules: centred text fits its box", rc == 0 and '"spill"' not in out, out[:300])
+    nested = os.path.join(WORK, "other_nested.svg")
+    with open(nested, "w", encoding="utf-8") as f:
+        f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100"><svg viewBox="0 0 300 100">'
+                '<text x="10" y="50" font-size="12">inner</text></svg></svg>')
+    rc, out = run("audit", nested)
+    check("audit reads a nested <svg>, and no <title> is only a warning", rc == 0 and "malformed" not in out, out[:300])
+    em = os.path.join(WORK, "other_em.svg")
+    with open(em, "w", encoding="utf-8") as f:
+        f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120"><title>t</title>'
+                '<text x="150" y="40" font-size="16" text-anchor="middle">'
+                '<tspan x="150" y="-0.1em" dy="1.1em">Submit mortgage</tspan>'
+                '<tspan x="150" y="1em" dy="1.1em">application</tspan></text></svg>')
+    rc, out = run("audit", em)
+    check("audit places tspan lines given in em (Mermaid) on separate lines", rc == 0 and '"collide"' not in out, out[:300])
+    rc, out = run("validate", os.path.join(HERE, "examples", "flow_decision.json"), "--type", "flow")
+    check("validate --type takes diagram kinds", rc == 0 and '"ok": true' in out, out[:200])
+    rc, out = run("line", os.path.join(HERE, "examples", "signups.csv"), "--x", "month", "--y", "signups",
+                  "--group", "product", "-o", os.path.join(WORK, "outline_line.svg"))
+    lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
+    check("a line chart's verdict lists its axes and series",
+          any(l.startswith("x axis:") for l in lay) and any(l.startswith("series:") and "Atlas" in l for l in lay), out[-300:])
 
     rc, out = run("flow", "-s", '{"nodes":[{"id":"a","name":"A"},{"id":"b","name":"B"}],"edges":[{"from":"a","to":"b"}]}', "-o", os.path.join(WORK, "inline_flow.svg"))
     rep = json.loads(out) if rc == 0 else {}
     check("flow -s inline json spec renders", rc == 0 and rep.get("ok"), out[:200])
 
     p = subprocess.Popen([sys.executable, os.path.join(HERE, "graph.py"), "mermaid", "-", "-o", os.path.join(WORK, "pipe_test.svg")],
-                         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    pipe_out, _ = p.communicate("flowchart TD; X[Start]-->Y[Finish]")
+                         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8")
+    pipe_out, _ = p.communicate("flowchart TD; X[Start]-->Y[Café → Finish]")
     check("piped stdin to mermaid renders cleanly", p.returncode == 0 and '"ok": true' in pipe_out, pipe_out[:200])
+    with open(os.path.join(WORK, "pipe_test.svg"), encoding="utf-8") as f:
+        check("piped stdin keeps text past ASCII", "Café → Finish" in f.read())
 
     with open(os.path.join(HERE, ".claude-plugin", "plugin.json"), encoding="utf-8") as f:
         plugin_v = json.load(f)["version"]

@@ -4,24 +4,22 @@ Graphing library for agents. `graph.py` is Python 3, standard library only.
 Install with the `diagonaldiagrams-install` skill, then draw with the commands below.
 Same spec, same SVG.
 
-## Zero-Shot / Single Turn Execution
+## The loop
 
-Draw, audit, and return the SVG in a single command without writing temp files:
-
-```bash
-# Inline Mermaid (flowchart, sequence, or ER diagram):
-py graph.py mermaid -s "flowchart TD; A[Client] --> B[Server]" -o out/flow.svg --print-svg
-
-# Piped from stdin:
-echo "flowchart TD; A-->B" | py graph.py mermaid - -o out/flow.svg
-
-# Inline JSON spec:
-py graph.py flow -s '{"nodes":[{"id":"a","name":"A"},{"id":"b","name":"B"}],"edges":[{"from":"a","to":"b"}]}' -o out/f.svg
+```
+py graph.py <type> SPEC.json|DATA.csv [flags] -o out/x.svg
+py graph.py mermaid - -o out/x.svg <<'EOF'      # or -s TEXT; the text is saved as out/x.spec.mmd
+flowchart TD
+  A[Client] --> B[Server]
+EOF
 ```
 
-Render validates first, draws, audits the SVG, and prints one JSON line.
-Exit 0 and `"ok": true`: done. `--print-svg` includes `"svg_data"` in the JSON reply.
-Exit 1: read `errors` (each has a `fix`), change spec or flags, render again. Never hand-edit the SVG.
+Render validates first, draws, then audits the SVG, and prints one JSON line.
+Exit 0 and `"ok": true`: done; `layout` lists what was drawn. Exit 1: read `errors`
+(each has a `fix`), change the spec or flags, render again. Never hand-edit the SVG.
+`--no-audit` accepts a figure the audit flags. `describe <type>` is the contract, `infer DATA.csv`
+proposes a scatter spec, and `export out/x --to png --layout wide` redraws from
+the receipt. `validate` and `audit` also run alone; `audit` reads any SVG.
 
 ## Recipes
 

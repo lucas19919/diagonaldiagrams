@@ -48,10 +48,10 @@
 <circle cx="437.6" cy="292.0" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Cinder · 2026-04: 110</title></circle>
 <circle cx="556.8" cy="296.0" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Cinder · 2026-05: 105</title></circle>
 <circle cx="676.0" cy="276.0" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Cinder · 2026-06: 130</title></circle>
-<text x="686.0" y="136.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#0072B2">Atlas 310</text>
-<text x="686.0" y="184.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#E69F00">Beacon 250</text>
-<text x="686.0" y="280.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#009E73">Cinder 130</text>
-<text x="378.0" y="420" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Month</text>
-<text x="24" y="220.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 24,220.0)">Signups per month</text>
-<text x="36" y="466" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399">n = 18</text>
+<text x="686.0" y="136.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#0072B2" data-role="series">Atlas 310</text>
+<text x="686.0" y="184.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#E69F00" data-role="series">Beacon 250</text>
+<text x="686.0" y="280.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#009E73" data-role="series">Cinder 130</text>
+<text x="378.0" y="420" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Month</text>
+<text x="24" y="220.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 24,220.0)" data-role="yaxis">Signups per month</text>
+<text x="36" y="466" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399">18 points</text>
 </svg>

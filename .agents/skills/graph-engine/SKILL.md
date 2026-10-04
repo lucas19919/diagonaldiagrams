@@ -5,124 +5,66 @@ description: Draw charts, flowcharts, sequence diagrams, architecture maps, data
 
 # Draw with diagonaldiagrams
 
-`graph.py` is one Python 3 file with no dependencies. Call it by absolute path:
-`py -3 <path>/graph.py` on Windows, `python3 <path>/graph.py` elsewhere. If `diagonaldiagrams`
-is on PATH, `diagonaldiagrams` is the same program. Not installed: run the `diagonaldiagrams-install` skill.
+Run `diagonaldiagrams`, or `py -3 <path>/graph.py` (Windows) / `python3 <path>/graph.py`. Not installed:
+run the `diagonaldiagrams-install` skill.
 
-## One command (Zero-Shot / Single Turn)
+## One call
+
+Write the input and render it in the same shell call. Flowcharts, sequence diagrams, and ER diagrams
+are plain Mermaid, piped in with `-`:
 
 ```bash
-# Inline Mermaid string (no temp file needed!):
-diagonaldiagrams mermaid -s "flowchart TD; A[Client] --> B[Server]" -o out/flow.svg [--print-svg]
-
-# Or from a file:
-diagonaldiagrams <type> INPUT -o DIR/NAME.svg [flags]
-
-# Or piped from stdin:
-echo "flowchart TD; A-->B" | diagonaldiagrams mermaid - -o out/flow.svg
-```
-
-It checks the input, draws, audits the result, and prints one JSON line:
-
-- `"ok": true` with `svg`, `html`, `receipt` paths. Done. Show the SVG.
-- `--print-svg` includes `"svg_data": "<svg ...>"` directly in the JSON verdict, avoiding an extra file read step.
-- For diagrams, `layout` lists each row's boxes left to right and each frame's members: read it to check the structure without vision tools.
-- `"ok": false`, `"stage": "validate"`: nothing drawn. Each error has a `fix`. Change the spec and rerun.
-- `"ok": false` with audit errors: files are written, but labels collide, a label spills its box,
-  or an arrow crosses a box. Change rank, lane, or the wording and rerun. Never edit the SVG.
-
-`"ok": true` already means no label overlaps another label, no label is wider than its box or off
-the canvas, no two boxes overlap, and no arrow crosses a box or a label. Do not screenshot the
-figure or parse the SVG to check those again: every extra look costs a full round trip. Write the
-spec and render it in one shell call. Look at a PNG only to judge the content itself.
-
-`describe <type>` prints the full contract for any type. You only need it for types not below.
-
-## Diagrams: write Mermaid
-
-Flowcharts, sequence diagrams, and ER diagrams can be plain Mermaid. Save it as `NAME.mmd` and run
-`diagonaldiagrams mermaid NAME.mmd -o DIR/NAME.svg`; the same check, layout, and audit apply.
-
-```
+diagonaldiagrams mermaid - -o flow.svg <<'EOF'
 flowchart TD
-  A([Push]) --> B{Risky?}
-  B -->|yes| C[Review]
-  B -->|no| D([Ship])
-  C --> D
-  subgraph ops [Operations]
-    C
-  end
+  A([Ticket arrives]) --> B{Sev1?}
+  B -->|yes| C[Page on-call]
+  B -->|no| D[Queue it]
+EOF
 ```
-`([x])` start or end, `[x]` step, `{x}` decision, `[(x)]` store. `-.->` dashed, `==>` and `:::focal`
-coral. `subgraph` draws a frame. `sequenceDiagram` (`A->>B: call`, `B-->>A: reply`, `A-)B: event`) and
+
+It prints one JSON line:
+
+- `"ok": true`: done. The figure is at `svg`. `layout` lists what was drawn: each row's boxes left to
+  right and each frame's members, or a chart's axes and series. Check the content against it.
+- `"ok": false`: each error has a `fix`. Change the input and run again. Never edit the SVG.
+- `warnings`: the figure is drawn; act on one only if it matters.
+
+`"ok": true` means no text overlaps, nothing spills its box or the canvas, no boxes overlap, and no
+arrow crosses a box or a label. Do not screenshot, open, or grep the SVG to check: answer from the
+verdict. Each extra look costs a full round trip.
+
+## Mermaid
+
+`([x])` start or end, `[x]` step, `{x}` decision, `[(x)]` store. `-->|label|`, `-.->` dashed,
+`==>` or `:::focal` coral. `subgraph id [Name] ... end` draws a frame. `fa:fa-database` adds an icon.
+An arrow back to an earlier step draws up the outside. Flows draw top-down; arrow labels draw in capitals.
+`sequenceDiagram` (`participant G as Gateway`, `A->>B: call`, `B-->>A: reply`, `A-)B: event`) and
 `erDiagram` (`A ||--o{ B : has`) work too. Not drawn: style and classDef colors, notes, loop or alt
-blocks. Flows always draw top-down. A parse error names the line and the fix.
+blocks. A parse error names the line.
 
-## Diagrams: JSON spec
+## JSON specs and data
 
-Arrow and message labels draw in capitals in every diagram.
+`flow`, `arch`, `seq`, and `schema` also take a JSON spec: `diagonaldiagrams arch spec.json -o arch.svg`.
+`describe <type>` prints the shape. Use `arch` for services in rows (`layer`), with blue HTTP arrows.
 
-**flow** (decision logic) - `{title, sub, nodes, edges}`
-```json
-{"title": "Deploy", "nodes": [
-  {"id": "push", "name": "Push", "shape": "oval"},
-  {"id": "risky", "name": "Risky?", "shape": "diamond"},
-  {"id": "review", "name": "Review", "sub": "owner", "lane": 1},
-  {"id": "ship", "name": "Ship", "shape": "oval"}],
- "edges": [{"from": "push", "to": "risky"}, {"from": "risky", "to": "review", "label": "yes"},
-           {"from": "risky", "to": "ship", "label": "no"}, {"from": "review", "to": "ship"}]}
-```
-shape: oval start/end, rect step (default), diamond decision with at most 3 labeled exits.
-Layout is automatic: loops draw back up the outside, and free nodes move off arrows' paths.
-`rank` (row, 0 at top) and `lane` (-1 left, 0 center, 1 right; -2 and 2 sit further out) pin a node.
-Names wrap to three lines and boxes grow to fit; put detail in `sub`.
-Frames: `"groups": [{"id": "ops", "name": "Operations", "nodes": ["review"]}]` (flow and arch).
-Icons: `"icon": "database"` on a flow or arch node; `describe icons` lists them (Mermaid: `fa:fa-database`).
-
-**seq** (messages over time) - `{title, sub, actors: [{id, name, sub, tag}], messages: [{from, to, label, reply, async, proto}]}`.
-tag is USER, UI, GATEWAY, SVC, or STORE. `reply` and `async` draw dashed. `"proto": "https"` draws blue
-and prefixes the label with [HTTPS].
-
-**arch** (services) - `{title, nodes: [{id, name, sub, tag, layer}], edges: [{from, to, label, proto, async}]}`. `layer` is the row.
-
-**schema** (tables) - `{title, tables: [{id, name, columns: [{name, type, pk, fk}]}], relations: [{from, from_col, to, to_col, label}]}`.
-
-Budgets: flow and arch 9 nodes and 12 edges, seq 6 actors and 16 messages, schema 6 tables.
-A bigger diagram reads worse: split it. If it must be one figure, add `"budget": false`.
-At most 2 items get `"focal": true` (drawn in coral).
-
-## Data: CSV with a header row
+CSV with a header row:
 
 | type | flags |
 | --- | --- |
-| `bar` | `--cat COL --val COL [--group COL --sort desc --orientation h --unit ms]` |
-| `line` | `--x COL --y COL [--group COL]` (x may be dates or labels like 2026-01) |
-| `scatter` | `--x COL --y COL [--group COL --yerr COL --facet COL]` |
-| `geo` | `--lat COL --lon COL [--label COL --val COL]` (or a GeoJSON file) |
+| `bar` | `--cat COL --val COL [--group COL --sort desc --unit ms]` |
+| `line` | `--x COL --y COL [--group COL]` |
+| `scatter` | `--x COL --y COL [--group COL]` |
+| `geo` | `--lat COL --lon COL [--label COL]` |
 
-All take `--title`, `--subtitle` (state the finding), `--xlabel`, `--ylabel`, `--source`.
-`--highlight VALUE` draws one category or series in coral; highlight at most one.
+All take `--title`, `--subtitle` (state the finding), `--xlabel`, `--ylabel`, and `--highlight VALUE`
+(one series or bar in coral). Line charts name each series at its end; that is the legend.
+`chart <type> INPUT` draws about 60 more (sankey, gantt, heatmap, treemap, pie, radar, math, ...);
+`describe` lists them.
 
-## Everything else
+## Files
 
-`diagonaldiagrams chart <type> INPUT -o out/x.html`: sankey, gantt, heatmap, treemap, box, histogram,
-pie, radar, state, org, timeline, math (`y = sin(x)`), and about 50 more. `describe` lists them;
-`describe <type>` gives the columns or JSON shape. `terrain` is not drawn.
+`-o PATH/NAME.svg` is the file you get (folders are created), with `NAME.html` and
+`NAME.graph.json` beside it. Input given with `-` or `-s TEXT` is saved as `NAME.spec.mmd` or `NAME.spec.json`.
+`export DIR/NAME --to png|pdf|drawio|excalidraw` redraws from the receipt.
 
-## Files and export
-
-A render writes `NAME.svg`, `NAME.html` (the figure plus copy and download buttons), and
-`NAME.graph.json` (the receipt), side by side in DIR, whether `-o` ends in .svg, .html, or nothing.
-`export DIR/NAME --to png|pdf|svg` redraws from the receipt.
-PNG and PDF need Edge, Chrome, or cairosvg; SVG needs nothing.
-
-## Docs and drift
-
-`doc DOC.md` compiles fenced `graph:<type>` blocks to SVGs. `extract schema|routes SRC` builds a
-spec from SQL, Prisma, ORM models, or FastAPI/Flask routes. `monitor` and `sync` flag and fix diagram drift.
-Recipes: `SKILL.md` at the diagonaldiagrams root.
-
-## Taste
-
-Shape carries meaning, not color. Blue is HTTP only. Dashed is async or a reply. Coral marks
-at most two focal items. Titles state the finding. Details: `references/visual_grammar.md`.
+Titles state the finding. Blue is HTTP, dashed is async, coral marks at most two focal items.

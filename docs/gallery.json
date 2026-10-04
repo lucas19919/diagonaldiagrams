@@ -1,42 +1,47 @@
 [
  {
+  "file": "gallery/agent-platform.svg",
+  "caption": "An AI agent platform, with groups and icons.",
+  "source": "examples/agent_platform.json"
+ },
+ {
   "file": "gallery/how-it-works.svg",
-  "caption": "How a figure is made: written in Mermaid, loops drawn back up the outside.",
+  "caption": "How a diagram gets made. Loops are drawn up the outside.",
   "source": "examples/how_it_works.mmd"
  },
  {
   "file": "gallery/checkout.svg",
-  "caption": "Fourteen services, sync and async: every arrow on its own path.",
+  "caption": "Fourteen services, and every arrow gets its own path.",
   "source": "examples/checkout_platform.json"
  },
  {
   "file": "gallery/checkout-grouped.svg",
-  "caption": "The same system with frames: each holds only its members.",
+  "caption": "The same system, grouped.",
   "source": "examples/checkout_groups.json"
  },
  {
   "file": "gallery/deploy.svg",
-  "caption": "A decision flow: yes goes right, retry loops round the outside.",
+  "caption": "A decision with a retry loop.",
   "source": "examples/flow_decision.json"
  },
  {
   "file": "gallery/sequence.svg",
-  "caption": "A request over time, from a Mermaid sequenceDiagram.",
+  "caption": "A checkout request, step by step.",
   "source": "examples/checkout_sequence.mmd"
  },
  {
   "file": "gallery/data-model.svg",
-  "caption": "A data model from a Mermaid erDiagram.",
+  "caption": "A shop's data model.",
   "source": "examples/shop_er.mmd"
  },
  {
   "file": "gallery/icons.svg",
-  "caption": "Built-in icons, from Mermaid's fa: names.",
+  "caption": "Built-in icons for users, databases, queues and more.",
   "source": "examples/icons.mmd"
  },
  {
   "file": "gallery/signups.svg",
-  "caption": "A line chart labels each series at its end.",
+  "caption": "Each line is named at its end, so there is no legend to look up.",
   "source": "examples/signups.csv"
  }
 ]

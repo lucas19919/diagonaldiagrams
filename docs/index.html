@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>diagonaldiagrams</title>
-<meta name="description" content="Charts and diagrams for AI agents. One command checks the spec, draws an SVG, and audits the layout for collisions. Mermaid in, draw.io and Excalidraw out.">
+<meta name="description" content="Diagrams and charts your AI agent gets right the first time. The agent describes what it wants; diagonaldiagrams draws it and checks it for overlapping text and tangled arrows.">
 <style>
   :root {
     --paper: #f5f5f5; --card: #ffffff; --ink: #2d3142; --muted: #4f5d75; --soft: #8a93a6;
@@ -18,9 +18,10 @@
   a { color: var(--link); }
   .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
   header.top { border-bottom: 1px solid var(--rule); background: var(--card); }
-  header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 12px; }
   .brand { font-weight: 700; letter-spacing: -.01em; color: var(--ink); text-decoration: none; }
   .brand span { color: var(--accent); }
+  nav { display: flex; flex-wrap: wrap; justify-content: flex-end; }
   nav a { margin-left: 18px; color: var(--muted); text-decoration: none; font-size: 14px; }
   nav a:hover { color: var(--ink); }
   .hero { padding: 56px 0 28px; }
@@ -40,12 +41,17 @@
   .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 18px 14px; }
   .card h3 { margin: 0 0 6px; font-size: 17px; }
   .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .table-wrap { overflow-x: auto; margin-top: 16px; }
   table { border-collapse: collapse; width: 100%; background: var(--card); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; font-size: 15px; }
-  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
-  th { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); background: #fafafa; }
-  td.num { font-variant-numeric: tabular-nums; }
-  td strong { color: var(--ink); }
-  .note { color: var(--soft); font-size: 13px; margin-top: 8px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th { font-size: 13px; color: var(--muted); background: #fafafa; font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.us td { font-weight: 700; }
+  .note { color: var(--muted); font-size: 15px; margin: 14px 0 0; max-width: 820px; }
+  details { margin-top: 18px; max-width: 820px; color: var(--muted); font-size: 15px; }
+  summary { cursor: pointer; color: var(--ink); font-weight: 600; }
+  details ul { margin: 10px 0 0; padding-left: 20px; }
+  details li { margin: 6px 0; }
   .play { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 16px; }
   @media (max-width: 860px) { .play { grid-template-columns: 1fr; } }
   .panel { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; display: flex; flex-direction: column; min-height: 420px; }
@@ -56,16 +62,19 @@
   textarea { flex: 1; border: 0; resize: vertical; min-height: 340px; padding: 14px; font: 14px/1.5 var(--mono); color: var(--ink); background: transparent; outline: none; }
   .out { flex: 1; padding: 12px; overflow: auto; display: flex; align-items: flex-start; justify-content: center; }
   .out svg { max-width: 100%; height: auto; }
-  .verdict { border-top: 1px solid var(--rule); padding: 10px 14px; font: 13px/1.5 var(--mono); color: var(--muted); max-height: 180px; overflow: auto; white-space: pre-wrap; }
-  .verdict .ok { color: var(--ok); font-weight: 700; }
-  .verdict .bad { color: var(--bad); font-weight: 700; }
+  .check { border-top: 1px solid var(--rule); padding: 12px 14px; font-size: 14px; color: var(--muted); }
+  .check .ok { color: var(--ok); font-weight: 600; }
+  .check .bad { color: var(--bad); font-weight: 600; }
+  .check ul { margin: 6px 0 0; padding-left: 18px; }
+  .check li { margin: 4px 0; }
+  .check .fix { color: var(--soft); }
   .status { font-size: 13px; color: var(--soft); margin-left: auto; }
+  .hint { font-size: 13px; color: var(--soft); padding: 8px 14px; border-top: 1px solid var(--rule); }
   .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
   .gallery figure { margin: 0; background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; }
   .gallery img { width: 100%; height: 240px; object-fit: contain; background: var(--paper); border-radius: 6px; }
   .gallery figcaption { font-size: 14px; color: var(--muted); padding: 10px 4px 2px; }
-  .gallery figcaption code { font-size: 12px; color: var(--soft); }
-  pre { background: #1f2330; color: #e8eaf0; padding: 14px 16px; border-radius: 8px; overflow: auto; font: 13.5px/1.55 var(--mono); margin: 8px 0 0; }
+  pre { background: #1f2330; color: #e8eaf0; padding: 14px 16px; border-radius: 8px; overflow: auto; font: 13.5px/1.55 var(--mono); margin: 10px 0 0; }
   .install { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
   footer { border-top: 1px solid var(--rule); padding: 26px 0 40px; color: var(--soft); font-size: 14px; }
 </style>
@@ -74,122 +83,124 @@
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#">diagonal<span>diagrams</span></a>
-    <nav><a href="#try">Try it</a><a href="#gallery">Gallery</a><a href="#install">Install</a><a href="https://github.com/lucas19919/diagonaldiagrams">GitHub</a></nav>
+    <nav><a href="#results">Results</a><a href="#try">Try it</a><a href="#gallery">Gallery</a><a href="#install">Install</a><a href="https://github.com/lucas19919/diagonaldiagrams">GitHub</a></nav>
   </div>
 </header>
 
 <main class="wrap">
   <div class="hero">
-    <h1>Diagrams and charts your agent can draw, and check before it shows you.</h1>
-    <p class="lede">One command takes a short spec, Mermaid, or a CSV, lays it out, draws an SVG, and audits the drawing for labels on labels, arrows through boxes, and text that spills.</p>
+    <h1>Diagrams your AI agent gets right the first time.</h1>
+    <p class="lede">Ask your agent for a flowchart, an architecture diagram, a sequence diagram or a chart. diagonaldiagrams draws it and checks it for overlapping text and tangled arrows, so the agent knows it's right without looking at it, and uses far fewer tokens.</p>
     <div class="cta">
-      <a class="btn primary" href="#try">Try it in the browser</a>
-      <a class="btn ghost" href="#install">Install for your agent</a>
+      <a class="btn primary" href="#try">Try it here</a>
+      <a class="btn ghost" href="#install">Install</a>
     </div>
-    <div class="figure"><img src="gallery/checkout.svg" alt="An architecture diagram of a checkout platform with fourteen services, drawn and audited by diagonaldiagrams"></div>
+    <div class="figure"><img src="gallery/agent-platform.svg" alt="An architecture diagram of an AI agent platform: apps, an API gateway, the agent with its memory and a model, its tools, and storage, in labelled groups with icons"></div>
   </div>
 
   <section>
-    <h2>Why agents use it</h2>
-    <p class="sub">An agent can't see what it drew. This checks the drawing for it, and answers in one line of JSON.</p>
     <div class="three">
-      <div class="card"><h3>Audited, not hoped for</h3><p>Every render is checked: label collisions, labels wider than their box, boxes on boxes, arrows through boxes or labels, arrows sharing a line. The layout repairs itself when it can. <code>audit</code> also checks any SVG an agent wrote by hand.</p></div>
-      <div class="card"><h3>Half the tokens</h3><p>Measured on real agent runs: fewer round trips than writing SVG by hand, because the agent writes a short spec and trusts the verdict instead of screenshotting to check.</p></div>
-      <div class="card"><h3>Mermaid in, editable out</h3><p>Agents already know Mermaid, so no docs to read first. Export to draw.io or Excalidraw when a person wants to drag things around.</p></div>
+      <div class="card"><h3>Checked before you see it</h3><p>Every drawing is checked for text on text, text spilling out of its box, and arrows running through boxes. Most problems are fixed automatically; the rest go back to your agent with a plain fix.</p></div>
+      <div class="card"><h3>Far fewer tokens</h3><p>Your agent doesn't need screenshots to check its work. In our tests that meant 12.7k tokens for eight flowcharts, against 33k to 90k with other tools. <a href="#results">See the results</a>.</p></div>
+      <div class="card"><h3>Starts from Mermaid</h3><p>Agents already know how to write Mermaid, so there's nothing new to learn. To edit a diagram by hand, open it in draw.io or Excalidraw.</p></div>
     </div>
+    <div class="figure narrow"><img src="gallery/how-it-works.svg" alt="How a diagram gets made: your agent describes the diagram; it is checked, laid out and drawn; the drawing is checked for overlaps and rearranged until clean; then you get the finished diagram"></div>
   </section>
 
-  <section>
-    <h2>Measured</h2>
-    <p class="sub">The same three tasks, done by fresh agents (Claude Sonnet) with diagonaldiagrams and by writing the SVG directly. Total tokens processed across all of the agent's calls.</p>
-    <table>
-      <tr><th>Task</th><th>Hand-written SVG</th><th>diagonaldiagrams</th><th>Calls</th><th>Time</th></tr>
-      <tr><td>Flowchart, 11 steps</td><td class="num">902k</td><td class="num"><strong>433k</strong></td><td class="num">13 → 7</td><td class="num">132s → 66s</td></tr>
-      <tr><td>Line chart, 3 series</td><td class="num">622k</td><td class="num"><strong>295k</strong></td><td class="num">10 → 5</td><td class="num">77s → 29s</td></tr>
-      <tr><td>Sequence, 6 actors</td><td class="num">757k</td><td class="num"><strong>427k</strong></td><td class="num">11 → 7</td><td class="num">153s → 45s</td></tr>
-    </table>
-    <p class="note">Most of an agent's tokens are its own instructions, re-read on every call; fewer calls is the saving. Writing the spec itself is about 2% of a run.</p>
+  <section id="results">
+    <h2>Results</h2>
+    <p class="sub">We gave AI agents (Claude Sonnet) the same flowcharts to draw, from 5 to 40 steps, with five different tools, twice each, and counted the tokens each one spent.</p>
+    <div class="figure"><img src="gallery/bench-tools.svg" alt="Line chart of tokens per flowchart against its number of steps. diagonaldiagrams stays between 1.3k and 2.1k. At 40 steps, hand-written SVG reaches 8.1k, Graphviz 12.5k, Mermaid 20.5k and D2 28k."></div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>All eight flowcharts</th><th class="num">Tokens</th><th class="num">Tool calls</th><th class="num">Screenshots</th><th class="num">Time</th></tr>
+        <tr class="us"><td>diagonaldiagrams</td><td class="num">12.7k</td><td class="num">29</td><td class="num">0</td><td class="num">6 min</td></tr>
+        <tr><td>Agent writes the SVG itself</td><td class="num">33.4k</td><td class="num">51</td><td class="num">2</td><td class="num">26 min</td></tr>
+        <tr><td>Graphviz</td><td class="num">50.1k</td><td class="num">91</td><td class="num">4</td><td class="num">28 min</td></tr>
+        <tr><td>Mermaid</td><td class="num">63.9k</td><td class="num">115</td><td class="num">42</td><td class="num">31 min</td></tr>
+        <tr><td>D2</td><td class="num">90.5k</td><td class="num">170</td><td class="num">23</td><td class="num">38 min</td></tr>
+      </table>
+    </div>
+    <p class="note">Every tool ended with a readable diagram. The difference is what it cost to get there: with the other tools, the agent renders an image and looks at it, again and again as the diagram grows. With diagonaldiagrams it gets a checked result back and moves on.</p>
+    <p class="note">Where others did better: writing the SVG by hand was cheapest for the smallest flowchart, and at 40 steps the Mermaid agents arranged their diagrams into side-by-side stages, which read better than our single long column.</p>
+    <details>
+      <summary>How we tested</summary>
+      <ul>
+        <li>Every run got the same task: a process described in plain words, "make a clean, readable flowchart", and save it as an SVG. Only the tool changed.</li>
+        <li>The tools were Mermaid, Graphviz, D2, diagonaldiagrams with its agent instructions, and no tool at all, where the agent writes the SVG itself.</li>
+        <li>We counted the tokens spent on the task: what the agent wrote, what came back to it, and the images it looked at. The agent's fixed instructions are the same for every task, so they aren't counted.</li>
+        <li>Each size was run twice, and single runs vary by up to 2×. The agents writing SVG by hand were told not to use any drawing tool, so most never looked at their result, which keeps their count low.</li>
+        <li>The raw data and the counting script are <a href="https://github.com/lucas19919/diagonaldiagrams">in the repository</a>.</li>
+      </ul>
+    </details>
   </section>
 
   <section id="try">
     <h2>Try it</h2>
-    <p class="sub">This runs the real engine in your browser (Python via Pyodide, loaded once, about 10 MB). Nothing is sent anywhere.</p>
+    <p class="sub">Pick an example, or type your own. It runs here in your browser and nothing is uploaded. The first load takes a few seconds.</p>
     <div class="play">
       <div class="panel">
         <div class="bar">
-          <select id="kind" aria-label="Input type">
-            <option value="mermaid">Mermaid</option>
-            <option value="flow">flow (JSON)</option>
-            <option value="arch">arch (JSON)</option>
-          </select>
-          <select id="preset" aria-label="Example">
-            <option value="loop">Example: a loop</option>
-            <option value="groups">Example: frames</option>
-            <option value="seq">Example: sequence</option>
-            <option value="er">Example: data model</option>
-            <option value="json">Example: JSON flow</option>
+          <select id="example" aria-label="Example">
+            <option value="flow">Flowchart</option>
+            <option value="system">System with groups</option>
+            <option value="seq">Sequence diagram</option>
+            <option value="er">Data model</option>
+            <option value="arch">Architecture (JSON)</option>
           </select>
           <button class="go" id="go" disabled>Loading…</button>
         </div>
-        <textarea id="src" spellcheck="false" aria-label="Diagram source"></textarea>
+        <textarea id="src" spellcheck="false" aria-label="Diagram text"></textarea>
+        <div class="hint">Write Mermaid (a flowchart, sequence diagram or data model) or diagonaldiagrams JSON. The diagram redraws as you type.</div>
       </div>
       <div class="panel">
-        <div class="bar"><strong style="font-size:14px">Result</strong><span class="status" id="status">starting Python…</span></div>
+        <div class="bar"><strong style="font-size:14px">Result</strong><span class="status" id="status">Loading…</span></div>
         <div class="out" id="out"></div>
-        <div class="verdict" id="verdict">The verdict appears here: ok or the errors, each with a fix, and the layout outline.</div>
+        <div class="check" id="check">Your diagram and its check appear here.</div>
       </div>
     </div>
   </section>
 
   <section id="gallery">
     <h2>Gallery</h2>
-    <p class="sub">Every figure here was drawn by diagonaldiagrams from a file in <code>examples/</code>, and passed its own audit.</p>
+    <p class="sub">Every figure here was drawn by diagonaldiagrams and passed its own check.</p>
     <div class="gallery" id="grid"></div>
   </section>
 
   <section id="install">
     <h2>Install</h2>
-    <p class="sub">Pick the one that fits your agent.</p>
+    <p class="sub">Pick the one that fits your agent. Each needs Python 3.9 or newer.</p>
     <div class="install">
-      <div class="card"><h3>Claude Code plugin</h3><p>Adds the drawing skill.</p>
+      <div class="card"><h3>Claude Code</h3><p>Adds diagonaldiagrams and the instructions Claude uses to draw with it.</p>
 <pre>/plugin marketplace add lucas19919/diagonaldiagrams
 /plugin install diagonaldiagrams@diagonaldiagrams</pre></div>
-      <div class="card"><h3>Any agent, as a command</h3><p>Puts <code>diagonaldiagrams</code> on PATH.</p>
+      <div class="card"><h3>Any other agent</h3><p>Installs the <code>diagonaldiagrams</code> command, which your agent can run like any other.</p>
 <pre>pip install git+https://github.com/lucas19919/diagonaldiagrams</pre></div>
-      <div class="card"><h3>As MCP tools</h3><p>Six tools: render, describe, validate, audit, export, infer. <code>render</code> takes the spec inline.</p>
-<pre>claude mcp add --scope user diagonaldiagrams -- diagonaldiagrams mcp</pre></div>
+      <div class="card"><h3>Claude Desktop, Cursor and other MCP apps</h3><p>After installing the command, add it to your app's MCP servers with this command line:</p>
+<pre>diagonaldiagrams mcp</pre></div>
     </div>
-    <h3 style="margin:28px 0 6px">One command</h3>
-<pre>diagonaldiagrams mermaid flow.mmd -o out/flow.svg
-{"ok": true, "svg": "out/flow.svg", "items": 9,
- "layout": ["row 1: Agent writes a spec", "row 2: Check the spec", "row 3: Valid? (decision)", ...]}</pre>
-  </section>
-
-  <section>
-    <h2>How it works</h2>
-    <div class="figure narrow"><img src="gallery/how-it-works.svg" alt="Flowchart: an agent writes a spec, the engine checks it, lays it out and draws it, audits the drawing, repairs the layout if needed, and returns the SVG, HTML, and receipt"></div>
   </section>
 </main>
 
 <footer><div class="wrap">MIT licensed · <a href="https://github.com/lucas19919/diagonaldiagrams">github.com/lucas19919/diagonaldiagrams</a></div></footer>
 
 <script>
-const PRESETS = {
-  loop: ["mermaid", `---
-title: How a figure is made
+const EXAMPLES = {
+  flow: `---
+title: How a diagram gets made
 ---
 flowchart TD
-  A([Agent writes a spec]) --> B[Check the spec]
-  B --> C{Valid?}
-  C -->|no| X[Errors with a fix]
+  A([Your agent describes the diagram]) --> B[Check the description]
+  B --> C{Makes sense?}
+  C -->|no| X[Tell the agent what to fix]
   C -->|yes| D[Lay out and draw]
-  D --> E[Audit the drawing]
-  E --> F{Clean?}
-  F -- no --> G[Repair the layout]
+  D --> E[Check the drawing]
+  E --> F{Anything overlapping?}
+  F -- yes --> G[Rearrange]
   G -.-> E
-  F ==>|yes| H([SVG, HTML, receipt])
-  X -.-> A`],
-  groups: ["mermaid", `flowchart TD
+  F ==>|no| H([Finished diagram])
+  X -.-> A`,
+  system: `flowchart TD
   subgraph clients [Clients]
     web[fa:fa-desktop Web app] & mobile[fa:fa-mobile Mobile app]
   end
@@ -202,8 +213,8 @@ flowchart TD
   end
   auth --> redis
   orders --> pg
-  orders -.->|OrderPlaced| bus[[Event bus]]`],
-  seq: ["mermaid", `sequenceDiagram
+  orders -.->|OrderPlaced| bus[[Event bus]]`,
+  seq: `sequenceDiagram
   actor U as User
   participant GW as API Gateway
   participant A as Auth
@@ -213,8 +224,8 @@ flowchart TD
   A-->>GW: ok
   GW->>O: create order
   O-->>GW: 201 Created
-  GW-->>U: 201 Created`],
-  er: ["mermaid", `erDiagram
+  GW-->>U: 201 Created`,
+  er: `erDiagram
   CUSTOMER ||--o{ ORDER : places
   ORDER ||--|{ LINE_ITEM : contains
   PRODUCT ||--o{ LINE_ITEM : "ordered in"
@@ -225,24 +236,44 @@ flowchart TD
   ORDER {
     uuid id PK
     uuid customer_id FK
-  }`],
-  json: ["flow", JSON.stringify({
-    title: "Deploy", nodes: [
-      {id: "push", name: "Push", shape: "oval"},
-      {id: "risky", name: "Risky?", shape: "diamond"},
-      {id: "review", name: "Review", sub: "owner", lane: 1},
-      {id: "ship", name: "Ship", shape: "oval"}],
-    edges: [{from: "push", to: "risky"}, {from: "risky", to: "review", label: "yes"},
-            {from: "risky", to: "ship", label: "no"}, {from: "review", to: "ship"}]}, null, 1)],
+  }`,
+  arch: JSON.stringify({
+    title: "Online shop",
+    groups: [{id: "core", name: "Core services", nodes: ["orders", "pay"]}],
+    nodes: [
+      {id: "web", name: "Web app", sub: "React", icon: "web", layer: 0},
+      {id: "api", name: "API gateway", sub: "Envoy", icon: "shield", layer: 1},
+      {id: "orders", name: "Orders", sub: "Go", layer: 2},
+      {id: "pay", name: "Payments", sub: "Kotlin", layer: 2},
+      {id: "db", name: "Postgres", icon: "database", layer: 3}],
+    edges: [
+      {from: "web", to: "api", label: "calls", proto: "https"},
+      {from: "api", to: "orders", label: "checkout", proto: "https"},
+      {from: "orders", to: "pay", label: "charge"},
+      {from: "orders", to: "db", label: "save"}]}, null, 1),
 };
 const $ = (id) => document.getElementById(id);
-function usePreset(key) {
-  const [kind, text] = PRESETS[key];
-  $("kind").value = kind;
-  $("src").value = text;
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
+
+// What kind of diagram the text is, so any example or edit draws with the right command.
+function kindOf(text) {
+  const t = text.trim();
+  if (!t.startsWith("{")) return "mermaid";
+  try {
+    const spec = JSON.parse(t);
+    if (spec.actors || spec.messages) return "seq";
+    if (spec.tables || spec.relations) return "schema";
+    if ((spec.nodes || []).some((n) => n && "layer" in n)) return "arch";
+  } catch (e) { /* the engine reports where the JSON breaks */ }
+  return "flow";
 }
-$("preset").addEventListener("change", (e) => usePreset(e.target.value));
-usePreset("loop");
+
+function useExample(key) {
+  $("src").value = EXAMPLES[key];
+  render();
+}
+$("example").addEventListener("change", (e) => useExample(e.target.value));
+$("src").value = EXAMPLES.flow;
 
 let py = null;
 async function boot() {
@@ -251,61 +282,74 @@ async function boot() {
     s.src = "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js";
     await new Promise((ok, bad) => { s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
     py = await loadPyodide();
-    const src = await (await fetch("graph.py")).text();
-    py.FS.writeFile("/graph.py", src);
+    py.FS.writeFile("/graph.py", await (await fetch("graph.py")).text());
     py.FS.mkdirTree("/out");
     py.runPython("import sys; sys.path.insert(0, '/'); import graph");
-    $("status").textContent = "ready";
+    $("status").textContent = "";
     $("go").disabled = false;
-    $("go").textContent = "Render";
+    $("go").textContent = "Draw";
     render();
   } catch (err) {
-    $("status").textContent = "could not load Python in this browser";
+    $("status").textContent = "This browser couldn't load it.";
     $("go").textContent = "Unavailable";
   }
 }
 
-function esc(s) { return s.replace(/[&<>]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c])); }
-
 function render() {
   if (!py) return;
-  const kind = $("kind").value;
-  const ext = kind === "mermaid" ? ".mmd" : ".json";
-  py.FS.writeFile("/in" + ext, $("src").value);
-  py.globals.set("ARGV", py.toPy(["graph", kind, "/in" + ext, "-o", "/out/fig.svg"]));
+  const text = $("src").value;
+  const kind = kindOf(text);
+  const file = kind === "mermaid" ? "/in.mmd" : "/in.json";
+  py.FS.writeFile(file, text);
+  py.globals.set("ARGV", py.toPy(["graph", kind, file, "-o", "/out/fig.svg"]));
   const raw = py.runPython(`
-import io, sys, json, contextlib, os
+import io, sys, contextlib, os
 buf = io.StringIO()
 sys.argv = list(ARGV)
-for f in ("/out/fig.svg",):
-    if os.path.exists(f):
-        os.remove(f)
+if os.path.exists("/out/fig.svg"):
+    os.remove("/out/fig.svg")
 try:
-    with contextlib.redirect_stdout(buf):
+    with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
         graph.cli()
 except SystemExit:
     pass
 buf.getvalue()
 `);
   let rep;
-  try { rep = JSON.parse(raw.trim().split("\n").pop()); } catch (e) { rep = {ok: false, errors: [{msg: raw.trim() || "no reply"}]}; }
+  try { rep = JSON.parse(raw.trim().split("\n").pop()); }
+  catch (e) { rep = {ok: false, stage: "validate", errors: [{msg: raw.trim() || "Nothing came back."}]}; }
   let svg = "";
   try { svg = py.FS.readFile("/out/fig.svg", {encoding: "utf8"}); } catch (e) {}
   $("out").innerHTML = svg;
-  const lines = [];
-  lines.push(rep.ok ? '<span class="ok">ok</span> · passed the audit' : '<span class="bad">not ok</span>' + (rep.stage ? " · " + rep.stage : " · audit"));
-  for (const e of rep.errors || []) lines.push("✗ " + esc(e.msg) + (e.fix ? "\n  fix: " + esc(e.fix) : ""));
-  for (const w of rep.warnings || []) lines.push("! " + esc(w.msg));
-  for (const l of rep.layout || []) lines.push("  " + esc(l));
-  $("verdict").innerHTML = lines.join("\n");
+  showCheck(rep);
 }
+
+function showCheck(rep) {
+  const errors = rep.errors || [], warnings = rep.warnings || [];
+  const item = (e) => `<li>${esc(e.msg)}${e.fix ? ` <span class="fix">Try: ${esc(e.fix)}</span>` : ""}</li>`;
+  let html;
+  if (rep.ok) {
+    html = '<span class="ok">✓ Checked:</span> no overlapping text, nothing spilling out of a box, no arrows through boxes.';
+  } else if (rep.stage === "validate") {
+    html = '<span class="bad">Can\'t draw this yet:</span><ul>' + errors.map(item).join("") + "</ul>";
+  } else {
+    const n = errors.length;
+    html = `<span class="bad">Drawn, but ${n} thing${n === 1 ? "" : "s"} to fix:</span><ul>` + errors.map(item).join("") + "</ul>";
+  }
+  if (warnings.length) html += "<ul>" + warnings.map((w) => `<li>Note: ${esc(w.msg)}</li>`).join("") + "</ul>";
+  $("check").innerHTML = html;
+}
+
+let timer = null;
+$("src").addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(render, 600); });
+$("src").addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); render(); } });
 $("go").addEventListener("click", render);
 boot();
 
 fetch("gallery.json").then((r) => r.json()).then((items) => {
   $("grid").innerHTML = items.map((g) =>
     `<figure><a href="${g.file}"><img src="${g.file}" alt="${esc(g.caption)}" loading="lazy"></a>` +
-    `<figcaption>${esc(g.caption)}<br><code>${esc(g.source)}</code></figcaption></figure>`).join("");
+    `<figcaption>${esc(g.caption)}</figcaption></figure>`).join("");
 }).catch(() => {});
 </script>
 </body>

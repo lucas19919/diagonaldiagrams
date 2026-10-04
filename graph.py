@@ -55,9 +55,32 @@ def get_theme(name=None, path=None):
     return t
 
 
-def series_palette(t):
-    """Colorblind-safe series colors fitting the theme (dark gets brightened set)."""
-    return OKABE_ITO_DARK if t.get("_name") == "ink" else OKABE_ITO
+def _assign_colors(groups, pal, highlights=None):
+    """Palette colors in order, skipping highlighted groups: they draw in the accent, so they
+    should not use up a color the next series needs."""
+    out, k = {}, 0
+    for g in groups:
+        if highlights and _hit(highlights, g):
+            out[g] = pal[0]
+            continue
+        out[g] = pal[k % len(pal)]
+        k += 1
+    return out
+
+
+def series_palette(t, highlights=None):
+    """Colorblind-safe series colors fitting the theme (dark gets brightened set). With a highlight,
+    colors close to the accent are left out, so only the highlighted series reads as coral."""
+    pal = OKABE_ITO_DARK if t.get("_name") == "ink" else OKABE_ITO
+    if not highlights:
+        return pal
+
+    def rgb(c):
+        c = str(c).lstrip("#")
+        return tuple(int(c[k:k + 2], 16) for k in (0, 2, 4)) if len(c) == 6 else (0, 0, 0)
+    acc = rgb(t.get("accent", "#eb6c36"))
+    far = [c for c in pal if sum((a - b) ** 2 for a, b in zip(rgb(c), acc)) ** 0.5 > 70]
+    return far or pal
 
 
 def _humanize(col):
@@ -282,16 +305,14 @@ def _mermaid_lines(text):
                 start = j + 1
                 break
     out = []
-    line_no = 0
     for k in range(start, len(raw)):
-        line_no += 1
         s = raw[k].strip()
         if not s or s.startswith("%%"):
             continue
-        chunks = _split_mermaid_semicolons(s) if ";" in s else [s]
-        for c in chunks:
-            if c and not c.startswith("%%"):
-                out.append((line_no, c))
+        # a ; ends a statement too, so "flowchart TD; A --> B" works on one line
+        for c in (_split_mermaid_semicolons(s) if ";" in s else [s]):
+            if not c.startswith("%%"):
+                out.append((k + 1, c))  # the line number in the file, front matter included
     return title, out
 
 
@@ -472,10 +493,7 @@ def _mm_flow(lines, title):
             del nodes[gid]
     spec = {"title": title, "nodes": [nodes[n] for n in order], "edges": edges,
             "groups": [g for g in groups.values()]}
-    if len(spec["nodes"]) > 9 or len(edges) > 12:
-        spec["budget"] = False
-        warnings.append({"msg": f"{len(spec['nodes'])} nodes and {len(edges)} arrows: over the 9 and 12 that read at a glance",
-                         "fix": "split it into an overview and a detail view if it reads slowly"})
+    spec["budget"] = False  # drawn as written: the author chose its size
     return spec, errors, warnings
 
 
@@ -524,10 +542,7 @@ def _mm_seq(lines, title):
         warnings.append({"msg": f"{skipped} notes, blocks, or activations are not drawn",
                          "fix": "put what matters in the message labels"})
     spec = {"title": title, "actors": actors, "messages": messages}
-    if len(actors) > 6 or len(messages) > 16:
-        spec["budget"] = False
-        warnings.append({"msg": f"{len(actors)} actors and {len(messages)} messages: over the 6 and 16 that read at a glance",
-                         "fix": "split it into sub-sequences if it reads slowly"})
+    spec["budget"] = False  # drawn as written: the author chose its size
     return spec, errors, warnings
 
 
@@ -578,9 +593,7 @@ def _mm_er(lines, title):
             continue
         errors.append({"msg": f"line {ln}: cannot read '{line[:40]}'", "fix": "write 'A ||--o{ B : label' or 'A { type name PK }'"})
     spec = {"title": title, "tables": [tables[n] for n in order], "relations": rels}
-    if len(order) > 6:
-        spec["budget"] = False
-        warnings.append({"msg": f"{len(order)} tables: over the 6 that read at a glance", "fix": "split by bounded context"})
+    spec["budget"] = False  # drawn as written: the author chose its size
     return spec, errors, warnings
 
 
@@ -618,23 +631,17 @@ def _mermaid_spec(text):
 
 
 def load_spec(path):
-    if path == "-":
-        txt = sys.stdin.read()
-    elif isinstance(path, str) and not os.path.isfile(path) and ("\n" in path or path.strip().startswith(("{", "[")) or _mermaid_kind(path.strip())):
-        txt = path
-    else:
-        with open(path, encoding="utf-8") as f:
-            txt = f.read()
-    txt_stripped = txt.strip()
-    if (isinstance(path, str) and path.lower().endswith((".mmd", ".mermaid"))) or _mermaid_kind(txt_stripped):
-        return _mermaid_spec(txt_stripped)
-    if txt_stripped.startswith(("{", "[")) or (isinstance(path, str) and path.endswith(".json")):
-        return json.loads(txt_stripped)
-    if HAS_YAML and isinstance(path, str) and path.endswith((".yaml", ".yml")):
+    with open(path, encoding="utf-8") as f:
+        txt = f.read()
+    if path.lower().endswith((".mmd", ".mermaid")) or _mermaid_kind(txt):
+        return _mermaid_spec(txt)
+    if path.endswith(".json"):
+        return json.loads(txt)
+    if HAS_YAML and path.endswith((".yaml", ".yml")):
         return yaml.safe_load(txt)
     # minimal fallback: JSON in .yaml also works
     try:
-        return json.loads(txt_stripped)
+        return json.loads(txt)
     except Exception:
         sys.exit(f"{path}: need PyYAML for YAML (pip install pyyaml) or use JSON")
 
@@ -1261,6 +1268,17 @@ def nice_ticks(vmin, vmax, n=5):
     return ticks
 
 
+def fmt_value(v):
+    """One value as a reader says it: 1,816, 20k, 12.5k, 3.4M. Ticks keep fmt_tick, which never rounds."""
+    if abs(v) >= 9999.5:
+        for div, unit in ((1e3, "k"), (1e6, "M"), (1e9, "B")):
+            txt = f"{v / div:.3g}"
+            if "e" not in txt and abs(float(txt)) < 1000:
+                return txt + unit
+        return f"{v / 1e9:,.0f}B"
+    return f"{v:,.0f}" if abs(v) >= 100 or v == int(v) else f"{v:.3g}"
+
+
 def fmt_tick(v):
     if v == int(v) and abs(v) < 10000:
         return str(int(v))
@@ -1478,7 +1496,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
     # legend strip
     ly = H - 40
     parts.append(f'<line x1="30" y1="{ly-8}" x2="{W-30}" y2="{ly-8}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+8}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">rect = step, diamond = decision, oval = start or end</text>')
+    parts.append(f'<text x="30" y="{ly+8}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">box = step, diamond = decision, rounded = start or end</text>')
     parts.append("</svg>")
     _render_flow_once.pos = {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
     return "\n".join(parts), W, H
@@ -1499,7 +1517,8 @@ def render_flow(spec, corners="editorial", auto=False, theme=None):
         return out
     work = json.loads(json.dumps(spec))
     free = {n["id"] for n in work.get("nodes", []) if "lane" not in n}
-    for _ in range(4):
+    # one move fixes one spot or a few, so a big flow with many problems gets more moves
+    for _ in range(min(16, max(4, len(bad)))):
         blockers = []
         for it in bad:
             x, y = it["at"]
@@ -1650,7 +1669,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
     max_n = max((len(row) for row in layers.values()), default=1)
     # A box is 160 wide. A row wider than four overlaps on a 760 canvas.
     # A spec with the count cap off gets a wider pitch so the labels fit.
-    pitch = 220 if spec.get("budget", True) is False else 188
+    pitch = 220 if spec.get("budget", True) is False or len(nodes) > 9 else 188
     W = max(760, pitch * (max_n + 1)) + (200 if _notes else 0)
     cols = None
     if groups:
@@ -1658,13 +1677,14 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         pitch = max(pitch, 210)
         cols = _group_columns(layers, groups, gof, edges)
         span = max(cols.values()) + 1 if cols else 1
-        # a labelled arrow along a row that leaves a frame needs room for its label past the border
+        # a labelled arrow between neighbours in a row needs room for its label between the boxes,
+        # and past a frame border when it leaves a frame
         lay = {n["id"]: n.get("layer", 0) for n in nodes}
         for e in edges:
             a, b = e.get("from"), e.get("to")
             if (e.get("label") and a in cols and b in cols and lay.get(a) == lay.get(b)
-                    and abs(cols[a] - cols[b]) == 1 and gof.get(a) != gof.get(b)):
-                borders = (a in gof) + (b in gof)
+                    and abs(cols[a] - cols[b]) == 1):
+                borders = ((a in gof) + (b in gof)) if gof.get(a) != gof.get(b) else 0
                 pitch = max(pitch, int(BOX_W + borders * GROUP_PAD + _pill_w(e["label"].upper()) + 16))
         W = max(760, int(span * pitch + 2 * 50)) + (200 if _notes else 0)
     pos = {}
@@ -1734,7 +1754,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         parts.append(render_noterail(t, rail, W - 186, top))
     ly = H - 40
     parts.append(f'<line x1="30" y1="{ly-8}" x2="{W-30}" y2="{ly-8}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+8}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">blue = http, dashed = async, coral = focal</text>')
+    parts.append(f'<text x="30" y="{ly+8}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">blue = HTTP call, dashed = sent in the background, coral = highlighted</text>')
     parts.append("</svg>")
     return "\n".join(parts), W, H
 
@@ -1786,6 +1806,9 @@ def render_seq(spec, corners="editorial", theme=None):
         col = t["accent"] if focal else (t["link"] if is_http else t["muted"])
         mid = "aa" if focal else ("al" if is_http else "a")
         dash = ' stroke-dasharray="4,4"' if (m.get("reply") or m.get("async")) else ''
+        # read back by the outline: who sends what to whom, in order
+        dash += (f' data-msg="{esc(m.get("label", ""))}" data-msg-from="{esc(pos[f_id][1].get("name", f_id))}"'
+                 f' data-msg-to="{esc(pos[t_id][1].get("name", t_id))}"')
         if f_id == t_id:
             # Self-call loop
             lw = 32
@@ -1806,7 +1829,7 @@ def render_seq(spec, corners="editorial", theme=None):
     for aid, (cx, a) in pos.items():
         bw, bh = 140, 52
         bx, by = cx - bw / 2, top
-        parts.append(node_box(t, bx, by, bw, bh, a["name"], a.get("sub", ""), a.get("tag", ""), a.get("focal", False), corners))
+        parts.append(node_box(t, bx, by, bw, bh, a["name"], a.get("sub", ""), a.get("tag", ""), a.get("focal", False), corners, aid))
     if _notes:
         rail = []
         for nt in _notes:
@@ -1817,7 +1840,7 @@ def render_seq(spec, corners="editorial", theme=None):
     # Legend
     ly = H - 28
     parts.append(f'<line x1="30" y1="{ly-10}" x2="{W-30}" y2="{ly-10}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+4}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">solid = sync, dashed = reply or async, blue = http, coral = focal</text>')
+    parts.append(f'<text x="30" y="{ly+4}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">solid = call, dashed = reply or event, blue = HTTP, coral = highlighted</text>')
     parts.append("</svg>")
     return "\n".join(parts), W, H
 
@@ -1924,7 +1947,7 @@ def _render_schema_once(spec, corners="editorial", theme=None):
         parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{t["card"]}" stroke="{stroke}" stroke-width="1.2"/>')
         parts.append(f'<path d="M{x},{y+36} L{x},{y+rx} Q{x},{y} {x+rx},{y} L{x+w-rx},{y} Q{x+w},{y} {x+w},{y+rx} L{x+w},{y+36} Z" fill="{fill_head}"/>')
         parts.append(f'<line x1="{x}" y1="{y+36}" x2="{x+w}" y2="{y+36}" stroke="{t["rule"]}" stroke-width="1"/>')
-        parts.append(f'<text x="{x+12}" y="{y+23}" font-size="13" font-weight="600" font-family="{SANS}" fill="{t["ink"]}">{esc(tbl.get("name", tid))}</text>')
+        parts.append(f'<text x="{x+12}" y="{y+23}" font-size="13" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" data-role="table">{esc(tbl.get("name", tid))}</text>')
         tag = tbl.get("tag", "")
         if tag:
             tw = max(32, len(tag) * 7 + 8)
@@ -1953,7 +1976,7 @@ def _render_schema_once(spec, corners="editorial", theme=None):
         parts.append(render_noterail(t, rail, W - 186, 110))
     ly = H - 28
     parts.append(f'<line x1="30" y1="{ly-10}" x2="{W-30}" y2="{ly-10}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+4}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">pk = primary key, fk = foreign key, blue = relation, coral = focal</text>')
+    parts.append(f'<text x="30" y="{ly+4}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">PK = primary key, FK = foreign key, blue = relation, coral = highlighted</text>')
     parts.append("</svg>")
     return "\n".join(parts), W, H
 
@@ -1990,8 +2013,8 @@ def render_scatter(spec_path, xcol, ycol, title, subtitle, figure, xlabel, xunit
     facets = sorted({d.get("f", "") for d in rows})
     multi = len(facets) > 1 or len(facets) == 1 and facetcol is not None
     groups = sorted({d.get("g", "") for d in rows if d.get("g")})
-    _pal = series_palette(t)
-    palette = {g: _pal[i % len(_pal)] for i, g in enumerate(groups)} if groups else {}
+    _pal = series_palette(t, highlights)
+    palette = _assign_colors(groups, _pal, highlights) if groups else {}
     # One scale for every facet, including the error bars, so panel B is comparable to panel A.
     xs = [d["x"] for d in rows]
     ylo = [d["y"] - d.get("ye", 0) for d in rows]
@@ -2115,14 +2138,14 @@ def render_scatter(spec_path, xcol, ycol, title, subtitle, figure, xlabel, xunit
     xlab = _with_unit(xlabel or _humanize(xc), xunit)
     ylab = _with_unit(ylabel or _humanize(yc), yunit)
     foot_top = oy + fig_h
-    s.append(f'<text x="{ox + (fig_w-72)/2}" y="{foot_top+42}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle">{esc(xlab)}</text>')
-    s.append(f'<text x="20" y="{oy + fig_h/2}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" transform="rotate(-90 20,{oy + fig_h/2})">{esc(ylab)}</text>')
+    s.append(f'<text x="{ox + (fig_w-72)/2}" y="{foot_top+42}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" data-role="xaxis">{esc(xlab)}</text>')
+    s.append(f'<text x="20" y="{oy + fig_h/2}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" transform="rotate(-90 20,{oy + fig_h/2})" data-role="yaxis">{esc(ylab)}</text>')
     # legend row below axis title
     if groups:
         lx, ly = ox, foot_top + 66
         for g in groups:
             s.append(f'<circle cx="{lx+6}" cy="{ly-4}" r="5" fill="{palette[g]}" stroke="{t["card"]}"/>')
-            s.append(f'<text x="{lx+16}" y="{ly}" font-size="11" font-family="{SANS}" fill="{t["ink"]}">{esc(g)}</text>')
+            s.append(f'<text x="{lx+16}" y="{ly}" font-size="11" font-family="{SANS}" fill="{t["ink"]}" data-role="series">{esc(g)}</text>')
             lx += 16 + len(g) * 7 + 24
     # stats + source inside figure (no duplicated n)
     n = len(rows)
@@ -2181,9 +2204,9 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
     span = (ticks[-1] - ticks[0]) or 1
     W = width
     head_bits, head_h = figure_heading(t, title, subtitle, x=36) if chrome else ([], 12)
-    _bpal = series_palette(t)
+    _bpal = series_palette(t, highlights)
     _bgroups = sorted({d.get("g", "") for d in rows if d.get("g")})
-    _bmap = {g: _bpal[i % len(_bpal)] for i, g in enumerate(_bgroups)}
+    _bmap = _assign_colors(_bgroups, _bpal, highlights)
     horizontal = orientation == "h"
     cats, buckets = [], {}
     for d in rows:
@@ -2207,7 +2230,7 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
         pw, ph = W - ox - 48, 340
         slot_w = pw / max(1, n)
         wide = any(len(m[0]["cat"]) * 6.4 > slot_w * 0.9 for m in slot_members)
-        H = head_h + ph + (128 if wide else 100) + (22 if _bgroups else 0)
+        H = head_h + ph + (128 if wide else 100) + (46 if _bgroups else 0)  # axis title, then the legend
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H}" width="{W}"><title>{esc(title)}</title>',
              f'<desc>{esc(subtitle or (cc + " vs " + vc))}</desc>',
              f'<rect width="{W}" height="{H}" fill="{t["card"]}"/>']
@@ -2247,10 +2270,10 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
                 shape = bar_path(bx, by - grow / 2, bw, bh + grow, rx, cap)
                 if shape:
                     edge = f' stroke="{t["ink"]}" stroke-width="1.2"' if hit else ""
-                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {fmt_tick(d["val"])}' + (f" {unit}" if unit else "")
+                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {fmt_value(d["val"])}' + (f" {unit}" if unit else "")
                     parts.append(f'{shape} fill="{col}" fill-opacity="{"0.95" if hit else "0.85"}"{edge}><title>{esc(tip)}</title></path>')
                 if markers:
-                    val_str = fmt_tick(d["val"]) + (f" {unit}" if unit else "")
+                    val_str = fmt_value(d["val"]) + (f" {unit}" if unit else "")
                     outside = (bx - 6) if d["val"] < zero else (bx + bw + 6)
                     if d["val"] >= zero and outside > ox + pw - 28:
                         parts.append(f'<text x="{bx+bw-4:.1f}" y="{by+bh/2+3:.1f}" font-size="10" font-family="{MONO}" fill="{t["card"]}" text-anchor="end">{esc(val_str)}</text>')
@@ -2286,10 +2309,10 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
                 shape = bar_path(bx - grow / 2, by, bw + grow, bh, rx, cap)
                 if shape:
                     edge = f' stroke="{t["ink"]}" stroke-width="1.2"' if hit else ""
-                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {fmt_tick(d["val"])}' + (f" {unit}" if unit else "")
+                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {fmt_value(d["val"])}' + (f" {unit}" if unit else "")
                     parts.append(f'{shape} fill="{col}" fill-opacity="{"0.95" if hit else "0.85"}"{edge}><title>{esc(tip)}</title></path>')
                 if markers:
-                    val_str = fmt_tick(d["val"]) + (f" {unit}" if unit else "")
+                    val_str = fmt_value(d["val"]) + (f" {unit}" if unit else "")
                     tip = by if d["val"] >= zero else by + bh
                     if d["val"] >= zero and tip < oy + 18:
                         parts.append(f'<text x="{bx+bw/2:.1f}" y="{tip+13:.1f}" font-size="10" font-family="{MONO}" fill="{t["card"]}" text-anchor="middle">{esc(val_str)}</text>')
@@ -2315,11 +2338,16 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
             idx = next(i for i, m in enumerate(slot_members) if any(d["cat"] == hit["cat"] for d in m))
             cx = ox + (idx + 0.5) * (pw / max(1, n))
             parts.append(render_pincallout(t, cx, _sy(hit["val"]), nt.get("text", ""), top=oy + 4))
+    # under vertical bars the axis title sits right below the categories, and the legend below it
+    title_row = legend_y + 12 if (_bgroups and not horizontal and (xlabel or catcol)) else None
+    if title_row is not None:
+        legend_y += 26
     if _bgroups:
         lx = ox
         for g in _bgroups:
-            parts.append(f'<rect x="{lx}" y="{legend_y}" width="12" height="12" rx="2" fill="{_bmap[g]}"/>')
-            parts.append(f'<text x="{lx+18}" y="{legend_y+10}" font-size="11" font-family="{SANS}" fill="{t["ink"]}">{esc(g)}</text>')
+            swatch = t["accent"] if _hit(highlights, g) else _bmap[g]
+            parts.append(f'<rect x="{lx}" y="{legend_y}" width="12" height="12" rx="2" fill="{swatch}"/>')
+            parts.append(f'<text x="{lx+18}" y="{legend_y+10}" font-size="11" font-family="{SANS}" fill="{t["ink"]}" data-role="series">{esc(g)}</text>')
             lx += 18 + len(g) * 7 + 24
     _fx = (legend_y - (oy + ph) + 28) if horizontal else (legend_y - base_y + 22)
     if xlabel or catcol:
@@ -2327,14 +2355,16 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
         if horizontal and not xlabel:
             xlab = ""
         if xlab:
-            parts.append(f'<text x="{ox+pw/2}" y="{oy+ph+_fx}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle">{esc(xlab)}</text>')
+            xy = title_row if title_row is not None else oy + ph + _fx
+            parts.append(f'<text x="{ox+pw/2}" y="{xy}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" data-role="xaxis">{esc(xlab)}</text>')
     ylbl = _with_unit(ylabel or (_humanize(valcol) if horizontal else _humanize(valcol)), unit)
     if horizontal:
         if ylabel or valcol:
-            parts.append(f'<text x="{ox+pw/2}" y="{H-16}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle">{esc(ylbl)}</text>')
+            # under the tick labels, clear of the source line at the foot
+            parts.append(f'<text x="{ox+pw/2}" y="{oy+ph+40}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" data-role="xaxis">{esc(ylbl)}</text>')
     elif ylabel or valcol:
         parts.append(f'<text x="22" y="{oy+ph/2}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" transform="rotate(-90 22,{oy+ph/2})">{esc(ylbl)}</text>')
-    src_note = f"n = {len(rows)}" + (f" · Source: {source}" if source else "")
+    src_note = f"{len(rows)} bars" + (f" · Source: {source}" if source else "")  # what it counts, not "n ="
     parts.append(f'<text x="36" y="{H-14}" font-size="10.5" font-family="{MONO}" fill="{t["soft"]}">{esc(src_note)}</text>')
     parts.append("</svg>")
     return "\n".join(parts), W, H, len(rows)
@@ -2386,8 +2416,8 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
     if not rows:
         raise SystemExit(f"{spec_path}: no valid data in {xc}/{yc}")
     groups = sorted({d.get("g", "default") for d in rows})
-    _pal = series_palette(t)
-    palette = {g: _pal[i % len(_pal)] for i, g in enumerate(groups)}
+    _pal = series_palette(t, highlights)
+    palette = _assign_colors(groups, _pal, highlights)
     ys = [d["y"] for d in rows]
     ymin, ymax = min(ys), max(ys)
     if min(ys) >= 0:
@@ -2404,7 +2434,7 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
     if multi:
         for g in groups:
             last = [d for d in rows if d.get("g", "default") == g][-1]
-            ends[g] = f"{g} {fmt_tick(last['y'])}"
+            ends[g] = f"{g} {fmt_value(last['y'])}"
     right = max([40] + [int(_text_w(v, 11, True)) + 24 for v in ends.values()])
     if multi:
         H = head_h + 360 + 60  # the end labels name the series; no legend row below the axis
@@ -2497,20 +2527,20 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
         end_marks[k][0] = max(end_marks[k][0], end_marks[k - 1][0] + 14)
     for ly, lx, g, col in end_marks:
         parts.append(f'<text x="{ox + pw + 10:.1f}" y="{ly + 4:.1f}" font-size="11" font-weight="600" font-family="{SANS}" '
-                     f'fill="{col}">{esc(ends[g])}</text>')
+                     f'fill="{col}" data-role="series">{esc(ends[g])}</text>')
     xlab = _with_unit(xlabel or _humanize(xc), xunit)
     ylab = _with_unit(ylabel or _humanize(yc), yunit)
-    parts.append(f'<text x="{ox+pw/2}" y="{oy+ph+40}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle">{esc(xlab)}</text>')
+    parts.append(f'<text x="{ox+pw/2}" y="{oy+ph+40}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" data-role="xaxis">{esc(xlab)}</text>')
     if multi and not end_marks:
         lx, ly = ox, oy + ph + 66
         for g in groups:
             gcol = t["accent"] if _hit(highlights, g) else palette[g]
             parts.append(f'<line x1="{lx}" y1="{ly}" x2="{lx+16}" y2="{ly}" stroke="{gcol}" stroke-width="2.5"/>')
             parts.append(f'<circle cx="{lx+8}" cy="{ly}" r="3.5" fill="{gcol}" stroke="{t["card"]}" stroke-width="1"/>')
-            parts.append(f'<text x="{lx+24}" y="{ly+4}" font-size="11" font-family="{SANS}" fill="{t["ink"]}">{esc(g)}</text>')
+            parts.append(f'<text x="{lx+24}" y="{ly+4}" font-size="11" font-family="{SANS}" fill="{t["ink"]}" data-role="series">{esc(g)}</text>')
             lx += 24 + len(g) * 7 + 24
-    parts.append(f'<text x="24" y="{oy+ph/2}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" transform="rotate(-90 24,{oy+ph/2})">{esc(ylab)}</text>')
-    src_note = f"n = {len(rows)}" + (f" · Source: {source}" if source else "")
+    parts.append(f'<text x="24" y="{oy+ph/2}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" transform="rotate(-90 24,{oy+ph/2})" data-role="yaxis">{esc(ylab)}</text>')
+    src_note = f"{len(rows)} points" + (f" · Source: {source}" if source else "")  # what it counts, not "n ="
     parts.append(f'<text x="36" y="{H-14}" font-size="10.5" font-family="{MONO}" fill="{t["soft"]}">{esc(src_note)}</text>')
     parts.append("</svg>")
     return "\n".join(parts), W, H, len(rows)
@@ -2928,7 +2958,7 @@ def _chart_meta():
     for name, text in _CHART_BLURB.items():
         out[name] = {
             "input": text,
-            "writes": f"py graph.py chart {name} SRC -o OUT.html",
+            "writes": f"py graph.py chart {name} SRC -o OUT.svg",
             "rules": ["title and subtitle are drawn on the figure",
                       "JSON specs may set budget false to lift a count cap"],
             "example": f"py graph.py chart {name} SRC -o out/{name}.html",
@@ -7826,7 +7856,7 @@ def do_export(args):
 DESCRIBE = {
     "scatter": {
         "input": "CSV with header row. Two numeric columns minimum.",
-        "writes": "py graph.py scatter DATA.csv --x X --y Y -o OUT.html  (+ OUT.svg self-contained, OUT.graph.json receipt)",
+        "writes": "py graph.py scatter DATA.csv --x X --y Y -o OUT.svg  (+ OUT.html and the OUT.graph.json receipt beside it)",
         "required": ["--x", "--y"],
         "options": {"--title": "finding, not description", "--subtitle": "one sentence takeaway",
                     "--figure": "Fig. number", "--xlabel/--xunit/--ylabel/--yunit": "axis + unit in parens",
@@ -7861,50 +7891,50 @@ DESCRIBE = {
     "icons": {"use": 'set "icon" on a flow or arch node', "names": sorted(ICONS)},
     "flow": {
         "input": "JSON spec {title, sub, nodes[], edges[], groups[]}",
-        "writes": "py graph.py flow SPEC.json -o OUT.html",
+        "writes": "py graph.py flow SPEC.json -o OUT.svg",
         "node": {"id": "unique", "shape": "oval=start/end | rect=step | diamond=decision | dot=merge",
-                 "name": "2-4 words", "tag": "STEP|START|END", "sub": "mono sublabel", "rank": "row (default: order)",
+                 "name": "2-4 words", "tag": "STEP|START|END", "sub": "mono sublabel", "rank": "row, 0 at the top (default: automatic)",
                  "lane": "-1 left|0 center|1 right (default 0)", "focal": "bool, max 2 per diagram"},
         "edge": {"from": "id", "to": "id", "label": "ALWAYS label decision exits", "focal": "happy-path bool"},
-        "rules": ["top-down; Yes=right, No=down", "diamond ≤3 exits (nest for more)", "orthogonal elbows only",
+        "rules": ["top-down; a decision's branches sit side by side, loops draw back up the outside", "diamond ≤3 exits (nest for more)", "orthogonal elbows only",
                   "labels masked with 6px gap", "shape carries type, never color",
                   "no ranks needed: longest-path auto-layering + barycenter uncrossing (--auto forces it)"],
-        "budgets": {"nodes": 9, "edges": 12, "focal": 2, "over": "split overview+detail"},
+        "budgets": {"nodes": 9, "edges": 12, "focal": 2, "over": "a warning, not an error; split if it reads badly, or budget false hides it"},
         "example": '{"title":"Deploy approval","nodes":[{"id":"a","shape":"oval","name":"Push"},{"id":"d","shape":"diamond","name":"Risky?","rank":1,"focal":true}],"edges":[{"from":"a","to":"d","label":"pass"}]}',
     },
     "arch": {
         "input": "JSON spec {title, sub, nodes[], edges[]}",
-        "writes": "py graph.py arch SPEC.json -o OUT.html",
+        "writes": "py graph.py arch SPEC.json -o OUT.svg",
         "node": {"id": "unique", "layer": "row int (default 0)", "name": "service", "sub": "Lang:port e.g. Go:8080",
                  "tag": "UI|API|SVC|STORE", "focal": "bool, max 2"},
         "edge": {"from": "id", "to": "id", "label": "VERB", "proto": "https=blue arrow", "async": "dashed bool", "focal": "bool"},
         "rules": ["blue=HTTP/API, dashed=async, coral=focal", "tech sublabels in mono, names in sans",
                   "a wide layer spreads the canvas so boxes do not overlap",
                   "set budget false to draw past 9 nodes and 12 edges; focal stays at 2"],
-        "budgets": {"nodes": 9, "edges": 12, "layers": 6, "over": "one view per C4 level, or budget false"},
+        "budgets": {"nodes": 9, "edges": 12, "layers": 6, "over": "a warning, not an error; one view per C4 level, or budget false hides it"},
     },
     "seq": {
         "input": "JSON spec {title, sub, actors[], messages[]}",
-        "writes": "py graph.py seq SPEC.json -o OUT.html",
+        "writes": "py graph.py seq SPEC.json -o OUT.svg",
         "actor": {"id": "unique", "name": "label", "sub": "tech/mono sub", "tag": "USER|UI|GATEWAY|SVC|STORE", "focal": "bool, max 2"},
         "message": {"from": "id", "to": "id", "label": "Call name/payload", "proto": "https/grpc", "reply": "bool dashed", "async": "bool dashed", "focal": "bool"},
         "rules": ["solid=sync, dashed=reply/async, blue=http, coral=focal", "top-down sequence order", "max 6 lifelines"],
-        "budgets": {"actors": 6, "messages": 16, "focal": 2, "over": "split into sub-sequences"},
+        "budgets": {"actors": 6, "messages": 16, "focal": 2, "over": "a warning, not an error; split into sub-sequences, or budget false hides it"},
         "example": '{"title":"Auth handshake","actors":[{"id":"u","name":"User"},{"id":"api","name":"API","focal":true}],"messages":[{"from":"u","to":"api","label":"login"}]}',
     },
     "schema": {
         "input": "JSON spec {title, sub, tables[], relations[]}",
-        "writes": "py graph.py schema SPEC.json -o OUT.html",
+        "writes": "py graph.py schema SPEC.json -o OUT.svg",
         "table": {"id": "unique", "name": "table_name", "tag": "AUTH|CORE|AUDIT", "focal": "bool, max 2",
                   "columns": [{"name": "col", "type": "data_type", "pk": "bool", "fk": "bool", "unique": "bool"}]},
         "relation": {"from": "id", "from_col": "col", "to": "id", "to_col": "col", "label": "1:N|1:1|M:N", "focal": "bool"},
         "rules": ["PK coral badge, FK blue badge, columns in mono, types muted", "orthogonal elbow routing", "max 6 tables per view"],
-        "budgets": {"tables": 6, "relations": 10, "columns_per_table": 12, "over": "split by bounded context"},
+        "budgets": {"tables": 6, "relations": 10, "columns_per_table": 12, "over": "a warning, not an error; split by bounded context, or budget false hides it"},
         "example": '{"title":"Users & Teams","tables":[{"id":"u","name":"users","columns":[{"name":"id","type":"uuid","pk":true}]}],"relations":[]}',
     },
     "bar": {
         "input": "CSV with header row. One categorical column and one numeric column.",
-        "writes": "py graph.py bar DATA.csv --cat CAT --val VAL -o OUT.html",
+        "writes": "py graph.py bar DATA.csv --cat CAT --val VAL -o OUT.svg",
         "options": {"--cat": "category column", "--val": "numeric value column", "--group": "subgroup column",
                     "--sort": "none|asc|desc", "--orientation": "v|h", "--unit": "unit string",
                     "--title/--subtitle": "drawn on the figure",
@@ -7917,7 +7947,7 @@ DESCRIBE = {
     },
     "line": {
         "input": "CSV with header row. Continuous/temporal X column and numeric Y column.",
-        "writes": "py graph.py line DATA.csv --x X --y Y -o OUT.html",
+        "writes": "py graph.py line DATA.csv --x X --y Y -o OUT.svg",
         "options": {"--x": "x column (numeric or timestamp)", "--y": "y column (numeric)", "--group": "series column",
                     "--xlabel/--xunit/--ylabel/--yunit": "axis labels",
                     "--title/--subtitle": "drawn on the figure",
@@ -7930,7 +7960,7 @@ DESCRIBE = {
     },
     "geo": {
         "input": "CSV with lat/lon columns, or a GeoJSON FeatureCollection of Points and Polygons.",
-        "writes": "py graph.py geo DATA.csv --lat lat --lon lon --label name --val pop -o OUT.html",
+        "writes": "py graph.py geo DATA.csv --lat lat --lon lon --label name --val pop -o OUT.svg",
         "options": {"--lat/--lon": "column names (guessed from lat/lon/lng when omitted)",
                     "--label": "place name", "--val": "numeric size",
                     "--title/--subtitle": "drawn on the figure", "--source": "footer provenance",
@@ -7989,8 +8019,9 @@ def _vissue(errors, warnings, code, msg, fix=""):
 
 
 def do_validate(args):
-    errors, warnings = _validate_target(args.target, getattr(args, "type", None) or "scatter",
-                                        args.x, args.y, args.group, args.facet)
+    vtype = getattr(args, "type", None) or "scatter"
+    kind = vtype if vtype in ("flow", "arch", "seq", "schema") else None  # a diagram spec of that kind
+    errors, warnings = _validate_target(args.target, vtype, args.x, args.y, args.group, args.facet, kind=kind)
     ok = not errors
     print(json.dumps({"ok": ok, "errors": errors, "warnings": warnings}, indent=2))
     raise SystemExit(0 if ok else 1)
@@ -8004,13 +8035,12 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
     if vtype in ("terrain", "print"):
         _validate_chart(vtype, target, args, errors, warnings)
         return errors, warnings
-    is_inline = target == "-" or (isinstance(target, str) and not os.path.isfile(target) and ("\n" in target or target.strip().startswith(("{", "[")) or _mermaid_kind(target.strip())))
-    if not is_inline and not os.path.isfile(target):
+    if not os.path.isfile(target):
         return [{"msg": f"no file {target}", "fix": "check the path; write the spec or CSV first"}], []
     if vtype in _CHART_BLURB:
         _validate_chart(vtype, args.target, args, errors, warnings)
         return errors, warnings
-    if isinstance(args.target, str) and os.path.isfile(args.target) and args.target.endswith(".csv"):
+    if args.target.endswith(".csv"):
         import csv as _csv
         try:
             with open(args.target, newline="", encoding="utf-8") as f:
@@ -8079,7 +8109,7 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
         try:
             spec = load_spec(args.target)
         except (FileNotFoundError, json.JSONDecodeError, SystemExit, ValueError) as e:
-            return [{"msg": f"unreadable spec: {_json_where(e)}", "fix": "strict JSON: double quotes, no trailing commas, no comments"}], []
+            return [{"msg": f"the JSON can't be read: {_json_where(e)}", "fix": "use double quotes, and no trailing commas or comments"}], []
         if isinstance(spec, dict) and (spec.get("equations") or spec.get("expr")) and "nodes" not in spec and "actors" not in spec:
             _validate_math_spec(spec, errors, warnings)
         else:
@@ -8103,22 +8133,22 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
         if len(set(a_ids)) != len(a_ids):
             _vissue(errors, warnings, "E", "duplicate actor ids", "make actor ids unique")
         if len(actors) > 6 and spec.get("budget", True) is not False:
-            _vissue(errors, warnings, "E", f"{len(actors)} actors > budget 6", "split into sub-sequences, or set budget false")
+            _vissue(errors, warnings, "W", f"{len(actors)} actors: past 6 a sequence gets hard to read", "split it into sub-sequences if it does; budget false hides this")
         if len(messages) > 16 and spec.get("budget", True) is not False:
-            _vissue(errors, warnings, "E", f"{len(messages)} messages > budget 16", "focus on primary handshake")
+            _vissue(errors, warnings, "W", f"{len(messages)} messages: past 16 a sequence gets hard to read", "keep the main exchange if it does; budget false hides this")
         if sum(1 for a in actors if a.get("focal")) > 2:
             _vissue(errors, warnings, "E", "focal on >2 actors erases signal", "max 2 focal actors")
         for m in messages:
             for k in ("from", "to"):
                 if m.get(k) not in a_ids:
-                    _vissue(errors, warnings, "E", f"message refs unknown actor '{m.get(k)}'", f"use one of {a_ids}")
+                    _vissue(errors, warnings, "E", f"a message names '{m.get(k)}', which is not an actor", f"use one of: {', '.join(map(str, a_ids))}")
     elif "tables" in spec or "relations" in spec:
         tables, relations = spec.get("tables", []), spec.get("relations", [])
         t_ids = [t.get("id") for t in tables]
         if len(set(t_ids)) != len(t_ids):
             _vissue(errors, warnings, "E", "duplicate table ids", "make table ids unique")
         if len(tables) > 6 and spec.get("budget", True) is not False:
-            _vissue(errors, warnings, "E", f"{len(tables)} tables > budget 6", "split into bounded context views, or set budget false")
+            _vissue(errors, warnings, "W", f"{len(tables)} tables: past 6 a schema gets hard to read", "split it into views if it does; budget false hides this")
         if sum(1 for t in tables if t.get("focal")) > 2:
             _vissue(errors, warnings, "E", "focal on >2 tables erases signal", "max 2 focal tables")
         for t in tables:
@@ -8127,7 +8157,7 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
                 warnings.append({"msg": f"table '{t.get('id')}' has {len(cols)} columns (>12)", "fix": "hide non-essential columns"})
         for rel in relations:
             if rel.get("from") not in t_ids or rel.get("to") not in t_ids:
-                _vissue(errors, warnings, "E", "relation refs unknown table", f"use one of {t_ids}")
+                _vissue(errors, warnings, "E", f"a relation names '{rel.get('from') if rel.get('from') not in t_ids else rel.get('to')}', which is not a table", f"use one of: {', '.join(map(str, t_ids))}")
     else:
         nodes, edges = spec.get("nodes", []), spec.get("edges", [])
         ids = [n.get("id") for n in nodes]
@@ -8136,8 +8166,8 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
         for e in edges:
             for k in ("from", "to"):
                 if e.get(k) not in ids:
-                    _vissue(errors, warnings, "E", f"edge {e} refs unknown id '{e.get(k)}'",
-                            f"add node or fix to one of {ids}")
+                    _vissue(errors, warnings, "E", f"an arrow {'starts at' if k == 'from' else 'goes to'} '{e.get(k)}', but there is no node with that id",
+                            f"add a node with id '{e.get(k)}', or use one of: {', '.join(map(str, ids))}")
         homes = {}
         for g in spec.get("groups") or []:
             if not isinstance(g, dict) or g.get("id") is None:
@@ -8158,9 +8188,9 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
                 homes.setdefault(m, g["id"])
         if spec.get("budget", True) is not False:
             if len(nodes) > 9:
-                _vissue(errors, warnings, "E", f"{len(nodes)} nodes > budget 9", "split into overview + detail views, or set budget false")
+                _vissue(errors, warnings, "W", f"{len(nodes)} nodes: past 9 a figure gets hard to read", "split it into overview and detail views if it does; budget false hides this")
             if len(edges) > 12:
-                _vissue(errors, warnings, "E", f"{len(edges)} edges > budget 12", "drop obvious-from-layout arrows, or set budget false")
+                _vissue(errors, warnings, "W", f"{len(edges)} edges: past 12 a figure gets hard to read", "drop arrows the layout already shows if it does; budget false hides this")
         if sum(1 for n in nodes if n.get("focal")) > 2:
             _vissue(errors, warnings, "E", "focal on >2 nodes erases signal", "keep 1-2 focal, demote rest")
         from collections import Counter
@@ -8359,6 +8389,40 @@ def _svg_geometry(root, W, H, stats=None):
     diamonds = []  # (cx, cy, half width, half height): arrows are tested against the real shape
     keep = ("font-size", "font-weight", "text-anchor", "dominant-baseline", "opacity", "visibility", "display", "letter-spacing")
     need = {"M": 2, "L": 2, "H": 1, "V": 1, "C": 6, "S": 4, "Q": 4, "T": 2, "A": 7}
+    # CSS rules from <style> blocks (Mermaid, hand-written SVG): each rule's last compound selector
+    # (tag, .class, #id) is matched, in specificity order, for the properties above.
+    css = []
+    for k, st_el in enumerate(e for e in root.iter() if str(e.tag).split("}")[-1] == "style"):
+        body = re.sub(r"/\*.*?\*/", "", "".join(st_el.itertext()), flags=re.S)
+        body = re.sub(r"@[\w-]+[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}", "", body)  # @font-face, @media
+        for sels, decls in re.findall(r"([^{}]+)\{([^{}]*)\}", body):
+            props = {}
+            for d in decls.split(";"):
+                if ":" in d:
+                    name, val = d.split(":", 1)
+                    if name.strip().lower() in keep:
+                        props[name.strip().lower()] = val.replace("!important", "").strip()
+            if not props:
+                continue
+            for sel in sels.split(","):
+                last = re.split(r"[\s>+~]+", sel.strip())[-1] if sel.strip() else ""
+                m_sel = re.fullmatch(r"([\w*-]*)((?:[.#][\w-]+)*)(?::[\w-]+(?:\([^)]*\))?)*", last)
+                if not m_sel:
+                    continue
+                parts = re.findall(r"([.#])([\w-]+)", m_sel.group(2))
+                classes = {v for p, v in parts if p == "."}
+                ids = {v for p, v in parts if p == "#"}
+                tag = "" if m_sel.group(1) in ("", "*") else m_sel.group(1)
+                css.append(((len(ids), len(classes), 1 if tag else 0, len(css)), tag, classes, ids, props))
+    css.sort(key=lambda r: r[0])
+
+    def css_for(el, tag):
+        cls = set((el.get("class") or "").split())
+        out = {}
+        for _, t, classes, ids, props in css:
+            if (not t or t == tag) and classes <= cls and (not ids or el.get("id") in ids):
+                out.update(props)
+        return out
 
     def path_pts(d):
         # Absolute and relative commands. A curve keeps only its end point: corners are small.
@@ -8399,6 +8463,8 @@ def _svg_geometry(root, W, H, stats=None):
         if tag in ("defs", "marker", "clipPath", "mask", "symbol", "pattern", "title", "desc", "style"):
             return
         st = dict(st, **{k: el.get(k) for k in keep if el.get(k) is not None})
+        if css:
+            st.update(css_for(el, tag))  # stylesheet rules beat presentation attributes
         style = el.get("style") or ""
         for k in keep:
             hit = re.search(rf"(?:^|;)\s*{k}\s*:\s*([^;]+)", style)
@@ -8417,17 +8483,20 @@ def _svg_geometry(root, W, H, stats=None):
             bold = str(st.get("font-weight", "")) in ("600", "700", "800", "900", "bold")
             cx, cy = num(el.get("x")), num(el.get("y"))
             lines = [[el.text or "", cx, cy]]
+
+            def length(v):  # "12", "12px", or "1.1em" (a font height, as Mermaid writes line positions)
+                v = str(v)
+                return num(v.replace("em", "").replace("px", "")) * (fs if "em" in v else 1)
             for sp in el:  # each positioned <tspan> is its own line
                 if str(sp.tag).split("}")[-1] != "tspan":
                     continue
                 moved = any(sp.get(k) is not None for k in ("x", "y", "dy"))
                 if sp.get("x") is not None:
-                    cx = num(sp.get("x"))
+                    cx = length(sp.get("x"))
                 if sp.get("y") is not None:
-                    cy = num(sp.get("y"))
+                    cy = length(sp.get("y"))
                 if sp.get("dy") is not None:
-                    dy = str(sp.get("dy"))
-                    cy += num(dy.replace("em", "")) * (fs if "em" in dy else 1)
+                    cy += length(sp.get("dy"))
                 body = "".join(sp.itertext())
                 if moved:
                     lines.append([body, cx, cy])
@@ -8590,8 +8659,20 @@ def _svg_geometry(root, W, H, stats=None):
     for ar in arrows:
         segs = [(ar["pts"][k], ar["pts"][k + 1]) for k in range(len(ar["pts"]) - 1)
                 if ar["pts"][k] is not None and ar["pts"][k + 1] is not None]
+        if not segs:
+            continue
+        # the arrow's bounding box: anything outside it cannot be crossed, so skip it cheaply
+        ax0 = min(min(p[0], q[0]) for p, q in segs)
+        ay0 = min(min(p[1], q[1]) for p, q in segs)
+        ax1 = max(max(p[0], q[0]) for p, q in segs)
+        ay1 = max(max(p[1], q[1]) for p, q in segs)
+
+        def apart(b):
+            return b[2] < ax0 or b[0] > ax1 or b[3] < ay0 or b[1] > ay1
         for i, sh in enumerate(shapes):
             b = sh["box"]
+            if apart(b):
+                continue
             if i in holders or any(b[0] - 6 <= e[0] <= b[2] + 6 and b[1] - 6 <= e[1] <= b[3] + 6 for e in ar["ends"]):
                 continue  # a group frame, or the box this arrow leaves or enters
             core = (b[0] + 3, b[1] + 3, b[2] - 3, b[3] - 3)
@@ -8599,10 +8680,14 @@ def _svg_geometry(root, W, H, stats=None):
                 issues.append({"code": "through", "msg": f"an arrow runs through the box at {at(b)}",
                                "fix": "move one node to another lane or rank so the arrow goes around it", "at": at(b)})
         for cx, cy, hw, hh in diamonds:
+            if apart((cx - hw, cy - hh, cx + hw, cy + hh)):
+                continue
             if any(abs(e[0] - cx) <= hw + 6 and abs(e[1] - cy) <= hh + 6 for e in ar["ends"]):
                 continue  # the decision this arrow leaves or enters
             hit = False
             for p, q in segs:
+                if max(p[0], q[0]) < cx - hw or min(p[0], q[0]) > cx + hw or max(p[1], q[1]) < cy - hh or min(p[1], q[1]) > cy + hh:
+                    continue
                 n = max(1, int(math.hypot(q[0] - p[0], q[1] - p[1]) // 4))
                 if any(abs(p[0] + (q[0] - p[0]) * k / n - cx) / hw + abs(p[1] + (q[1] - p[1]) * k / n - cy) / hh < 0.9
                        for k in range(n + 1)):
@@ -8612,8 +8697,8 @@ def _svg_geometry(root, W, H, stats=None):
                 issues.append({"code": "through", "msg": f"an arrow runs through the decision at {[round(cx), round(cy)]}",
                                "fix": "move one node to another lane or rank so the arrow goes around it", "at": [round(cx), round(cy)]})
         for t in texts:
-            if t["z"] > ar["z"]:
-                continue  # the label is painted over the arrow, on purpose
+            if t["z"] > ar["z"] or apart(t["box"]):
+                continue  # the label is painted over the arrow, on purpose, or is nowhere near it
             b = t["box"]
             h = b[3] - b[1]
             core = (b[0] + 1, b[1] + 0.2 * h, b[2] - 1, b[3] - 0.2 * h)
@@ -8682,7 +8767,9 @@ def _svg_geometry(root, W, H, stats=None):
                 hosts[i] = r
     for i, r in sorted(hosts.items()):
         t, b = texts[i], tb[i]
-        if True:
+        # a background drawn to the text's own size (Mermaid's arrow labels) is not a box to fit in
+        tight = (r[3] - r[1]) <= 1.8 * (b[3] - b[1]) and (r[2] - r[0]) <= (b[2] - b[0]) + 2 * t["fs"]
+        if not tight:
             if b[0] < r[0] + 2 or b[2] > r[2] - 2:  # a label keeps 2px clear of its box edge
                 issues.append({"code": "spill", "msg": f"label '{t['s'][:30]}' fills or overflows its box",
                                "fix": "2-4 words for a name; put detail in sub", "at": at(b)})
@@ -8715,12 +8802,18 @@ def _audit_file(p):
     if not os.path.isfile(p):
         return {"ok": False, "errors": [{"msg": f"no file {p}", "fix": "render first; audit takes the .svg or .html it wrote"}], "warnings": []}
     raw = open(p, encoding="utf-8", errors="replace").read()
+    # the outermost <svg> first (D2 nests one svg in another), then the first whole one (an HTML page)
+    a, b = raw.find("<svg"), raw.rfind("</svg>")
     m = re.search(r"<svg[\s\S]*?</svg>", raw)
-    svg = m.group(0) if m else raw
-    try:
-        root = ET.fromstring(svg)
-    except ET.ParseError as e:
-        return {"ok": False, "errors": [{"msg": f"malformed SVG: {e}"}], "warnings": []}
+    root, err = None, None
+    for svg in ([raw[a:b + 6]] if a >= 0 and b > a else []) + ([m.group(0)] if m else [raw]):
+        try:
+            root = ET.fromstring(svg)
+            break
+        except ET.ParseError as e:
+            err = err or e
+    if root is None:
+        return {"ok": False, "errors": [{"msg": f"malformed SVG: {err}"}], "warnings": []}
     W = H = 0
     vb = root.get("viewBox", "").split()
     if len(vb) == 4:
@@ -8729,7 +8822,7 @@ def _audit_file(p):
         return [el for el in root.iter() if str(el.tag).split("}")[-1] == name]
     texts = _tagged("text")
     if not any(t.get("font-size") == "24" for t in texts) and not _tagged("title"):
-        errors.append({"msg": "no <title>: figure unnamed for AT/docs"})
+        warnings.append({"msg": "no <title>: screen readers and docs see an unnamed figure", "fix": "add <title> as the first child of <svg>"})
     if not _tagged("desc"):
         warnings.append({"msg": "no <desc>: add one-sentence content summary"})
     if re.search(r"font-family='[^\"\]]", svg):
@@ -9314,8 +9407,7 @@ def do_mcp(args):
                                           "ok false: read errors, change the spec or options, call again.",
          "inputSchema": {"type": "object", "required": ["type"],
                          "properties": dict(type={"type": "string", "description": "mermaid (data = Mermaid text), flow, arch, seq, schema, bar, line, scatter, geo, or any describe type"},
-                                            out={"type": "string", "description": "output path ending .html (defaults to out/diagonaldiagrams.html)"},
-                                            include_svg={"type": "boolean", "description": "if true (default), returns the raw SVG xml directly in the response"},
+                                            out={"type": "string", "description": "output path ending .html (default diagonaldiagrams-out.html)"},
                                             options=opts, **src)}},
         {"name": "validate", "description": "Check a spec or CSV without drawing.",
          "inputSchema": {"type": "object", "required": ["type"],
@@ -9419,17 +9511,7 @@ def do_mcp(args):
         except subprocess.TimeoutExpired:
             return {"isError": True, "content": [{"type": "text", "text": f"{name} took over 180 s"}]}
         text = ((p.stdout or "") + (p.stderr or "")).strip()
-        items = [{"type": "text", "text": text[:12000]}]
-        if name == "render" and not p.returncode and (a.get("include_svg") is not False):
-            try:
-                rep = json.loads(text)
-                svg_p = rep.get("svg")
-                if svg_p and os.path.isfile(svg_p):
-                    svg_content = open(svg_p, encoding="utf-8").read()
-                    items.append({"type": "text", "text": svg_content[:64000]})
-            except Exception:
-                pass
-        return {"content": items, **({"isError": True} if p.returncode else {})}
+        return {"content": [{"type": "text", "text": text[:12000]}], **({"isError": True} if p.returncode else {})}
 
     known = ("2025-06-18", "2025-03-26", "2024-11-05")
     for line in sys.stdin:
@@ -9511,6 +9593,17 @@ def _prevalidate(a):
     return warnings
 
 
+def _chart_outline(raw):
+    """A chart's axis titles and series names, as drawn: enough to confirm the chart says what was asked."""
+    import re
+    out = []
+    for role, name in (("xaxis", "x axis"), ("yaxis", "y axis"), ("series", "series"), ("table", "tables")):
+        vals = list(dict.fromkeys(html.unescape(v) for v in re.findall(rf'data-role="{role}">([^<]*)<', raw)))
+        if vals:
+            out.append(f"{name}: " + ", ".join(vals))
+    return out or None
+
+
 def _outline(svg_path):
     """The drawn layout as text: each row's boxes left to right, and each frame's members. Lets an
     agent check the structure for a few dozen tokens instead of looking at a picture."""
@@ -9519,6 +9612,14 @@ def _outline(svg_path):
         raw = open(svg_path, encoding="utf-8").read()
     except OSError:
         return None
+    if 'data-role="' in raw:
+        return _chart_outline(raw)
+    if 'data-msg="' in raw:
+        actors = [html.unescape(v) for v in re.findall(r'data-node="[^"]*" data-label="([^"]*)"', raw)]
+        msgs = re.findall(r'data-msg="([^"]*)" data-msg-from="([^"]*)" data-msg-to="([^"]*)"', raw)
+        return (["actors: " + " | ".join(actors)] +
+                [f"{k}. {html.unescape(a)} -> {html.unescape(b)}" + (f": {html.unescape(lab)}" if lab else "")
+                 for k, (lab, a, b) in enumerate(msgs, 1)])
     boxes, label = [], {}
     for m in re.finditer(r'<rect x="([-\d.]+)" y="([-\d.]+)" width="([\d.]+)" height="([\d.]+)"[^>]*data-node="([^"]*)" data-label="([^"]*)"', raw):
         x, y, w, h = (float(m.group(k)) for k in range(1, 5))
@@ -9549,11 +9650,6 @@ def _finish(a, html, svg, count, unit, pre):
     layout = _outline(svg)
     if layout:
         out["layout"] = layout
-    if getattr(a, "print_svg", False) and os.path.isfile(svg):
-        try:
-            out["svg_data"] = open(svg, encoding="utf-8").read()
-        except OSError:
-            pass
     if rep["errors"]:
         out["errors"] = rep["errors"]
         out["next"] = ("the files are written so you can look; change the spec or flags and render again "
@@ -9572,8 +9668,26 @@ def _chart_flags(p):
     p.add_argument("--highlight", action="append", default=[],
                    help="category, x value, group, or place drawn in accent (repeatable)")
     p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
-    p.add_argument("--print-svg", "--svg", action="store_true", help="include raw SVG xml in output JSON")
     p.set_defaults(grid=True, markers=True)
+
+
+def _spec_to_file(a):
+    """The spec as a file path. Text given with -s, or piped in with -, is saved beside the output
+    as NAME.spec.mmd or NAME.spec.json, so validation, the receipt, and export all read a file."""
+    if a.spec is not None and a.spec_text is not None:
+        _report({"ok": False, "stage": "validate", "errors": [{"msg": "two specs given", "fix": "pass a file, or -s TEXT, not both"}]}, 1)
+    if a.spec is None and a.spec_text is None:
+        _report({"ok": False, "stage": "validate", "errors": [{"msg": "no spec given", "fix": "pass a file, -s TEXT, or - to read stdin"}]}, 1)
+    if a.spec_text is None and a.spec != "-":
+        return
+    # stdin as UTF-8 bytes: a Windows console code page would garble anything past ASCII
+    text = sys.stdin.buffer.read().decode("utf-8-sig", "replace") if a.spec_text is None else a.spec_text
+    ext = ".json" if text.lstrip().startswith(("{", "[")) else ".mmd"
+    path = os.path.splitext(a.o)[0] + ".spec" + ext
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    a.spec = path
 
 
 def main():
@@ -9590,7 +9704,6 @@ def main():
         p.add_argument("--theme", default="editorial", choices=sorted(THEMES))
         p.add_argument("--theme-file", default=None, help="JSON with theme key overrides")
         p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
-        p.add_argument("--print-svg", "--svg", action="store_true", help="include raw SVG xml in output JSON")
         _render_parsers[name] = p
     _render_parsers["flow"].add_argument("--auto", action="store_true",
                                          help="force longest-path layering (default when no ranks given)")
@@ -9671,7 +9784,7 @@ def main():
     p.add_argument("--note-at", action="append", default=[], help="callout anchor: x,y")
     p.add_argument("-o", required=True)
     _chart_flags(p)
-    p = sub.add_parser("chart", help="draw one taxonomy type: py graph.py chart KIND SRC -o OUT.html")
+    p = sub.add_parser("chart", help="draw one taxonomy type: py graph.py chart KIND SRC -o OUT.svg")
     p.add_argument("kind")
     p.add_argument("src")
     p.add_argument("-o", required=True)
@@ -9706,7 +9819,7 @@ def main():
     p = sub.add_parser("validate", help="check spec/csv BEFORE render; JSON report, exit 1 on error")
     p.add_argument("target"); p.add_argument("--x", default=None); p.add_argument("--y", default=None)
     p.add_argument("--group", default=None); p.add_argument("--facet", default=None)
-    _vtypes = sorted(set(["scatter", "bar", "line", "geo"]) | set(_CHART_BLURB))
+    _vtypes = sorted(set(["scatter", "bar", "line", "geo", "flow", "arch", "seq", "schema", "mermaid"]) | set(_CHART_BLURB))
     p.add_argument("--type", default="scatter", choices=_vtypes,
                    help="shape to check. A chart type uses the same name as chart KIND")
     p = sub.add_parser("infer", help="propose a scatter spec from a CSV (agent starting point)")
@@ -9746,30 +9859,18 @@ def main():
         do_extract(a)
         return
     if a.cmd in ("flow", "arch", "seq", "schema", "mermaid"):
-        spec_val = getattr(a, "spec", None) or getattr(a, "spec_text", None)
-        if spec_val is None:
-            if not sys.stdin.isatty():
-                spec_val = "-"
-            else:
-                ap.error(f"{a.cmd} requires a spec file, inline string (-s), or stdin (-)")
-        a.spec = spec_val
-
+        _spec_to_file(a)
     if a.cmd == "mermaid":
-        if a.spec == "-":
-            text = sys.stdin.read()
-            a.spec = text
-        elif isinstance(a.spec, str) and not os.path.isfile(a.spec):
-            text = a.spec
-        else:
-            try:
-                text = open(a.spec, encoding="utf-8").read()
-            except OSError:
-                text = a.spec
+        try:
+            text = open(a.spec, encoding="utf-8").read()
+        except OSError:
+            _report({"ok": False, "stage": "validate", "errors": [{
+                "msg": f"no file {a.spec}", "fix": "check the path, or pass the text with -s or on stdin with -"}]}, 1)
         kind = _mermaid_kind(text)
         if kind not in ("flow", "seq", "schema"):
             _report({"ok": False, "stage": "validate", "errors": [{
-                "msg": f"Mermaid '{kind}' is not read yet" if kind else "this input does not start with a Mermaid diagram type",
-                "fix": "start with flowchart TD, graph TD, sequenceDiagram, or erDiagram"}]}, 1)
+                "msg": f"Mermaid '{kind}' is not read yet" if kind else "this doesn't start with a Mermaid diagram type",
+                "fix": "start with flowchart TD, sequenceDiagram, or erDiagram"}]}, 1)
         a.cmd = kind
     pre = _prevalidate(a)
     if a.cmd in ("flow", "arch", "seq", "schema"):
@@ -9787,15 +9888,11 @@ def main():
         elif a.cmd == "schema":
             svg, _, _ = render_schema(spec, a.corners, theme)
             item_cnt = len(spec.get("tables", []))
-        spec_title = spec.get("title", a.cmd)
-        spec_sub = spec.get("sub", "")
-        spec_name = os.path.basename(a.spec) if (isinstance(a.spec, str) and os.path.isfile(a.spec)) else "inline"
-        o, s = write_out(svg, a.cmd, spec_title, spec_sub,
-                         f"{a.cmd} · {spec_name}", a.o,
-                         caption=spec_sub, cap_title=spec_title + ".",
+        o, s = write_out(svg, a.cmd, spec.get("title", a.cmd), spec.get("sub", ""),
+                         f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
+                         caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",
                          source="Self-contained HTML + SVG.", corners=a.corners, theme=theme)
-        save_receipt(o, {"cmd": a.cmd, "spec": a.spec if (isinstance(a.spec, str) and os.path.isfile(a.spec)) else "inline",
-                          "corners": a.corners, "theme": theme.get("_name"),
+        save_receipt(o, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
                           "auto": bool(getattr(a, "auto", False))})
         _finish(a, o, s, item_cnt, "items", pre)
     elif a.cmd == "bar":

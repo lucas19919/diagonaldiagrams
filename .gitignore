@@ -1,7 +1,68 @@
+# Python runtime & bytecode
 __pycache__/
 *.py[cod]
-out/
+*$py.class
+*.so
+.Python
+
+# Virtual environments
 .venv/
-*.egg-info/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Packaging & distribution
 build/
 dist/
+wheels/
+*.egg-info/
+.eggs/
+*.egg
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Rendered output
+out/
+
+# Git worktrees
+.worktrees/
+
+# IDE & Editor configs
+.vscode/
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# AI agent local runtime state & transients
+.claude/
+.cursor/
+.gemini/
+*.log
+
+# Benchmarks & raw profiling traces (example CSVs stay tracked)
+bench/
+
+# Context System: Transient scratchpads, session notes & logs
+# (Tier 3: Ignored transient state; Tier 2 specs/ADRs in context/ remain tracked)
+context/scratch/*
+!context/scratch/.gitkeep
+context/private/
+context/bench/
+context/logs/
+context/*.local.*
+.context/
+/scratch/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
