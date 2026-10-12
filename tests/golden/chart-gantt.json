@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "gantt",
+  "tests/golden/inputs/charts/gantt.json",
+  "--title",
+  "gantt"
+ ],
+ "exit": 0,
+ "html_sha256": "6336c0bf3f0702ea1b67f458fb4c0ca3406a59fceba18de92e5f26853433ca57",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "gantt",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "gantt.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "gantt",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

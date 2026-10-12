@@ -1,0 +1,19 @@
+{
+ "title": "Nest",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "A"
+  },
+  {
+   "id": "b",
+   "name": "B",
+   "parent": "a"
+  },
+  {
+   "id": "c",
+   "name": "C",
+   "parent": "a"
+  }
+ ]
+}

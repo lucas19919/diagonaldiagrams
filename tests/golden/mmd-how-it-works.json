@@ -1,0 +1,28 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/how_it_works.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "3103cf3803c3c24301377a591bca2a3ab60c2affdc43a4063a1d7cd1c77db28a",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "how_it_works.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 9,
+  "layout": [
+   "row 1: Your agent describes the diagram",
+   "row 2: Check the description",
+   "row 3: Makes sense? (decision)",
+   "row 4: Tell the agent what to fix | Lay out and draw",
+   "row 5: Check the drawing",
+   "row 6: Anything overlapping? (decision)",
+   "row 7: Rearrange | Finished diagram"
+  ],
+  "ok": true
+ }
+}

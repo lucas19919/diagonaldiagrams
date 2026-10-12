@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 428" width="760"><title>donut</title>
+<desc>donut</desc>
+<rect width="760" height="428" fill="#f5f5f5"/>
+<text x="28" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">donut</text>
+<path d="M 310.0 222.0 L 310.0 92.8 A 129.2 129.2 0 1 1 253.9 338.4 Z" fill="#0072B2"/>
+<text x="453.5" y="254.8" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="start">A 57%</text>
+<path d="M 310.0 222.0 L 253.9 338.4 A 129.2 129.2 0 0 1 209.0 141.4 Z" fill="#E69F00"/>
+<text x="166.5" y="254.8" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">B 29%</text>
+<path d="M 310.0 222.0 L 209.0 141.4 A 129.2 129.2 0 0 1 310.0 92.8 Z" fill="#009E73"/>
+<text x="246.1" y="89.4" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">C 14%</text>
+<circle cx="310.0" cy="222.0" r="74.9" fill="#f5f5f5"/>
+<text x="28" y="412" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">n=3</text>
+</svg>

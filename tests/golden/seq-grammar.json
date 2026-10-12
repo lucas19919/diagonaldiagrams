@@ -1,0 +1,29 @@
+{
+ "argv": [
+  "seq",
+  "examples/grammar_act.json"
+ ],
+ "exit": 0,
+ "html_sha256": "2d73fb07090679f2f1f827679a39c4af09aeae568fa4c35044aa7f90bbfaf2c4",
+ "receipt": {
+  "auto": false,
+  "cmd": "seq",
+  "corners": "editorial",
+  "spec": "grammar_act.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: Caller | Doors | Grammar | Writer | DuckDB",
+   "1. Caller -> Doors: act",
+   "2. Doors -> Grammar: decide",
+   "3. Grammar -> Doors: commit",
+   "4. Doors -> Writer: effect",
+   "5. Writer -> DuckDB: append",
+   "6. Writer -> Doors: written",
+   "7. Doors -> Caller: answered"
+  ],
+  "ok": true
+ }
+}

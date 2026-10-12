@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "bpmn",
+  "tests/golden/inputs/charts/bpmn.json",
+  "--title",
+  "bpmn"
+ ],
+ "exit": 0,
+ "html_sha256": "47d3f1195d548c258859494d1b28dd32ab7ae7652a79bb3af66529f9d1712606",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "bpmn",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "bpmn.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "bpmn",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

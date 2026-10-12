@@ -1,0 +1,53 @@
+{
+ "argv": [
+  "flow",
+  "tests/golden/inputs/flows/flow-40.json"
+ ],
+ "exit": 0,
+ "html_sha256": "2a113ac50d1ba073dfad8ed613012ad9d51d47da9019559b95c417c51dc707c5",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "flow-40.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 40,
+  "layout": [
+   "row 1: Request received",
+   "row 2: Load the customer account (1)",
+   "row 3: Score the fraud risk (2)",
+   "row 4: Check 1 passed? (decision)",
+   "row 5: Charge the card (4)",
+   "row 6: Write the ledger entry (5)",
+   "row 7: Notify the warehouse (6)",
+   "row 8: Check 2 passed? (decision)",
+   "row 9: Validate the request (10) | Send the receipt (8)",
+   "row 10: Check 3 passed? (decision)",
+   "row 11: Update the order status (9) | Score the fraud risk (12)",
+   "row 12: Reserve the stock (13)",
+   "row 13: Charge the card (14)",
+   "row 14: Check 4 passed? (decision)",
+   "row 15: Send the receipt (18) | Notify the warehouse (16)",
+   "row 16: Check 5 passed? (decision)",
+   "row 17: Validate the request (20) | Print the shipping label (17)",
+   "row 18: Load the customer account (21)",
+   "row 19: Score the fraud risk (22)",
+   "row 20: Check 6 passed? (decision)",
+   "row 21: Notify the warehouse (26) | Charge the card (24)",
+   "row 22: Check 7 passed? (decision)",
+   "row 23: Send the receipt (28) | Write the ledger entry (25)",
+   "row 24: Update the order status (29)",
+   "row 25: Validate the request (30)",
+   "row 26: Check 8 passed? (decision)",
+   "row 27: Charge the card (34) | Score the fraud risk (32)",
+   "row 28: Check 9 passed? (decision)",
+   "row 29: Notify the warehouse (36) | Reserve the stock (33)",
+   "row 30: Print the shipping label (37)",
+   "row 31: Send the receipt (38)",
+   "row 32: Done"
+  ],
+  "ok": true
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "argv": [
+  "flow",
+  "tests/golden/inputs/flows/flow-11.json"
+ ],
+ "exit": 0,
+ "html_sha256": "99880d0004e5b5d92e60c5902e87457abc8173fac0c113b657b8d44e4aee47dd",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "flow-11.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 11,
+  "layout": [
+   "row 1: Request received",
+   "row 2: Load the customer account (1)",
+   "row 3: Score the fraud risk (2)",
+   "row 4: Check 1 passed? (decision)",
+   "row 5: Charge the card (4)",
+   "row 6: Write the ledger entry (5)",
+   "row 7: Notify the warehouse (6)",
+   "row 8: Check 2 passed? (decision)",
+   "row 9: Send the receipt (8)",
+   "row 10: Update the order status (9)",
+   "row 11: Done"
+  ],
+  "ok": true
+ }
+}

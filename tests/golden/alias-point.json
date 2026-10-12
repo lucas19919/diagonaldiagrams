@@ -1,0 +1,37 @@
+{
+ "argv": [
+  "chart",
+  "point",
+  "examples/geo_cities.csv"
+ ],
+ "exit": 0,
+ "html_sha256": "2b53ada41b7fc0e08b48af43524c9023c3e11a2590107bb316e72b336b5562f9",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "point",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "geo_cities.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 8,
+  "ok": true
+ }
+}

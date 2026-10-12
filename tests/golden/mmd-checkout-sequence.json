@@ -1,0 +1,29 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/checkout_sequence.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "9919a8dd0eebe86730507baab7074523d3c180e5343ceed2d3490e827c3ed0d2",
+ "receipt": {
+  "auto": false,
+  "cmd": "seq",
+  "corners": "editorial",
+  "spec": "checkout_sequence.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: User | API Gateway | Auth | Orders | Payments",
+   "1. User -> API Gateway: POST /checkout",
+   "2. API Gateway -> Auth: verify token",
+   "3. Auth -> API Gateway: ok",
+   "4. API Gateway -> Orders: create order",
+   "5. Orders -> Payments: OrderCreated",
+   "6. Orders -> API Gateway: 201 Created",
+   "7. API Gateway -> User: 201 Created"
+  ],
+  "ok": true
+ }
+}

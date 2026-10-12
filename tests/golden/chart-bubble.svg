@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 450" width="760"><title>bubble</title>
+<desc>bubble</desc>
+<rect width="760" height="450" fill="#f5f5f5"/>
+<text x="28" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">bubble</text>
+<line x1="78" y1="52" x2="78" y2="372" stroke="#2d3142" stroke-width="1"/>
+<line x1="78" y1="372" x2="716" y2="372" stroke="#2d3142" stroke-width="1"/>
+<line x1="78" y1="372.0" x2="716" y2="372.0" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="70" y="375.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="end">0</text>
+<line x1="78" y1="265.3" x2="716" y2="265.3" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="70" y="268.3" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="end">1</text>
+<line x1="78" y1="158.7" x2="716" y2="158.7" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="70" y="161.7" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="end">2</text>
+<line x1="78" y1="52.0" x2="716" y2="52.0" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="70" y="55.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="end">3</text>
+<line x1="78.0" y1="52" x2="78.0" y2="372" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="78.0" y="388" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">0</text>
+<line x1="290.7" y1="52" x2="290.7" y2="372" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="290.7" y="388" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">1</text>
+<line x1="503.3" y1="52" x2="503.3" y2="372" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="503.3" y="388" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">2</text>
+<line x1="716.0" y1="52" x2="716.0" y2="372" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+<text x="716.0" y="388" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">3</text>
+<circle cx="290.7" cy="158.7" r="14.8" fill="#0072B2" stroke="#ffffff" stroke-width="1"/>
+<circle cx="503.3" cy="52.0" r="21.0" fill="#0072B2" stroke="#ffffff" stroke-width="1"/>
+<circle cx="716.0" cy="265.3" r="13.0" fill="#E69F00" stroke="#ffffff" stroke-width="1"/>
+<rect x="78.0" y="406.0" width="9" height="9" fill="#0072B2"/>
+<text x="91.0" y="414.0" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">a</text>
+<rect x="113.2" y="406.0" width="9" height="9" fill="#E69F00"/>
+<text x="126.2" y="414.0" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">b</text>
+<text x="28" y="434" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">n=3</text>
+</svg>

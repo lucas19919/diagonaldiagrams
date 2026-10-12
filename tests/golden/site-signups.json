@@ -1,0 +1,51 @@
+{
+ "argv": [
+  "line",
+  "examples/signups.csv",
+  "--x",
+  "month",
+  "--y",
+  "signups",
+  "--group",
+  "product",
+  "--title",
+  "Atlas more than doubled while Beacon declined",
+  "--subtitle",
+  "Monthly signups per product, January to June 2026",
+  "--xlabel",
+  "Month",
+  "--ylabel",
+  "Signups per month"
+ ],
+ "exit": 0,
+ "html_sha256": "189bc4b129c55a474d83b67fc60ea902b8d90ca83fe84652c03c8ec7992eb238",
+ "receipt": {
+  "cmd": "line",
+  "corners": "editorial",
+  "csv": "signups.csv",
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": "product",
+  "highlights": [],
+  "markers": true,
+  "source": "",
+  "subtitle": "Monthly signups per product, January to June 2026",
+  "theme": "editorial",
+  "title": "Atlas more than doubled while Beacon declined",
+  "x": "month",
+  "xlabel": "Month",
+  "xunit": "",
+  "y": "signups",
+  "ylabel": "Signups per month",
+  "yunit": ""
+ },
+ "verdict": {
+  "layout": [
+   "x axis: Month",
+   "y axis: Signups per month",
+   "series: Atlas 310, Beacon 250, Cinder 130"
+  ],
+  "ok": true,
+  "points": 18
+ }
+}

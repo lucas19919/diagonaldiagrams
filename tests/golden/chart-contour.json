@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "contour",
+  "tests/golden/inputs/charts/contour.csv",
+  "--title",
+  "contour"
+ ],
+ "exit": 0,
+ "html_sha256": "452ff1d61b93e9058275943f5fe871af07fa4cb4fe8ac31dbc38e00c6cc06dab",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "contour",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "contour.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "contour",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 5,
+  "ok": true
+ }
+}

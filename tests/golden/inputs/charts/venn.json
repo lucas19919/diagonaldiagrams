@@ -1,0 +1,14 @@
+{
+ "title": "Overlap",
+ "sets": [
+  {
+   "name": "A",
+   "size": 20
+  },
+  {
+   "name": "B",
+   "size": 16
+  }
+ ],
+ "overlap": 6
+}

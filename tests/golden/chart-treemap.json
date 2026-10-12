@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "treemap",
+  "tests/golden/inputs/charts/treemap.csv",
+  "--title",
+  "treemap"
+ ],
+ "exit": 0,
+ "html_sha256": "a15348a425c063aa3e126f0d4284e6918e29174a6d7eddad8583c20be5b3b293",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "treemap",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "treemap.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "treemap",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

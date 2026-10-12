@@ -1,0 +1,40 @@
+{
+ "title": "BPMN",
+ "nodes": [
+  {
+   "id": "s",
+   "name": "Start",
+   "shape": "event"
+  },
+  {
+   "id": "t",
+   "name": "Check",
+   "shape": "task"
+  },
+  {
+   "id": "g",
+   "name": "OK",
+   "shape": "gateway"
+  },
+  {
+   "id": "e",
+   "name": "End",
+   "shape": "event"
+  }
+ ],
+ "edges": [
+  {
+   "from": "s",
+   "to": "t"
+  },
+  {
+   "from": "t",
+   "to": "g"
+  },
+  {
+   "from": "g",
+   "to": "e",
+   "label": "yes"
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "sankey",
+  "tests/golden/inputs/charts/sankey.csv",
+  "--title",
+  "sankey"
+ ],
+ "exit": 0,
+ "html_sha256": "f0b54a6cf734804521aafc17990d8d30438bc88a12f7cd0b0479afdb476bf0ee",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "sankey",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "sankey.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "sankey",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

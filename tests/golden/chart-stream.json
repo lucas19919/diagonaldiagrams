@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "stream",
+  "tests/golden/inputs/charts/stream.csv",
+  "--title",
+  "stream"
+ ],
+ "exit": 0,
+ "html_sha256": "1ace2935a472f26438addff6166122d8f56b38970d5eb62dcb70ea1bd0dd206e",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "stream",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "stream.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "stream",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 6,
+  "ok": true
+ }
+}

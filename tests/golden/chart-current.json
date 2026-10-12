@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "current",
+  "tests/golden/inputs/charts/current.json",
+  "--title",
+  "current"
+ ],
+ "exit": 0,
+ "html_sha256": "8fdaa44db7f2452d35941016e62e76a2a4816c2eab67a4c405447c4b32ea3ebf",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "current",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "current.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "current",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

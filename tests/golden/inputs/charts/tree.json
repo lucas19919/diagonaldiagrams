@@ -1,0 +1,24 @@
+{
+ "title": "Tree",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "A"
+  },
+  {
+   "id": "b",
+   "name": "B",
+   "parent": "a"
+  },
+  {
+   "id": "c",
+   "name": "C",
+   "parent": "a"
+  },
+  {
+   "id": "d",
+   "name": "D",
+   "parent": "b"
+  }
+ ]
+}

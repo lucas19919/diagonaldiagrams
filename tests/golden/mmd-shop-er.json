@@ -1,0 +1,22 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/shop_er.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "13fe52d2d5e9b3b52cdd2ae52088476bd2f83d2d023fec907861b1c0cea2c64d",
+ "receipt": {
+  "auto": false,
+  "cmd": "schema",
+  "corners": "editorial",
+  "spec": "shop_er.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 4,
+  "layout": [
+   "tables: LINE_ITEM, ORDER, CUSTOMER, PRODUCT"
+  ],
+  "ok": true
+ }
+}

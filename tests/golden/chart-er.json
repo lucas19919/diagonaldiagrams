@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "er",
+  "tests/golden/inputs/charts/er.json",
+  "--title",
+  "er"
+ ],
+ "exit": 0,
+ "html_sha256": "5c71101d68a8e43170d2b55d8fdb9228387f3ec497b45a7e9e0b63c5635e25ab",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "er",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "er.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "er",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

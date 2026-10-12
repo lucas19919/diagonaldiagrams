@@ -1,0 +1,27 @@
+{
+ "title": "Radial",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "A"
+  },
+  {
+   "id": "b",
+   "name": "B"
+  },
+  {
+   "id": "c",
+   "name": "C"
+  }
+ ],
+ "edges": [
+  {
+   "from": "a",
+   "to": "b"
+  },
+  {
+   "from": "a",
+   "to": "c"
+  }
+ ]
+}

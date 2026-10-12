@@ -1,0 +1,53 @@
+{
+ "argv": [
+  "scatter",
+  "examples/scatter_groups.csv",
+  "--x",
+  "dose",
+  "--y",
+  "expr",
+  "--yerr",
+  "expr_err",
+  "--group",
+  "tissue",
+  "--facet",
+  "cohort",
+  "--title",
+  "Dose response",
+  "--subtitle",
+  "Expression rises with dose in every tissue."
+ ],
+ "exit": 0,
+ "html_sha256": "13322a86aaf07c85016eba41ff882a318d67553cb0bb75a4b8525946798aa699",
+ "receipt": {
+  "cmd": "scatter",
+  "corners": "editorial",
+  "csv": "scatter_groups.csv",
+  "facet": "cohort",
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": "tissue",
+  "highlights": [],
+  "markers": true,
+  "source": "",
+  "subtitle": "Expression rises with dose in every tissue.",
+  "theme": "editorial",
+  "title": "Dose response",
+  "x": "dose",
+  "xlabel": "dose",
+  "xunit": "",
+  "y": "expr",
+  "yerr": "expr_err",
+  "ylabel": "expr",
+  "yunit": ""
+ },
+ "verdict": {
+  "layout": [
+   "x axis: dose",
+   "y axis: expr",
+   "series: kidney, liver"
+  ],
+  "ok": true,
+  "points": 24
+ }
+}

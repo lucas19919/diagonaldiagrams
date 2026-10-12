@@ -1,0 +1,36 @@
+{
+ "argv": [
+  "geo",
+  "examples/show_ports.csv",
+  "--lat",
+  "lat",
+  "--lon",
+  "lon",
+  "--label",
+  "port",
+  "--val",
+  "calls_k"
+ ],
+ "exit": 0,
+ "html_sha256": "0adf902ef640eadf0b602bd4bdc0803e36278fe2ea1e99dbb232c9069a15dfa5",
+ "receipt": {
+  "cmd": "geo",
+  "figure": "Fig. 1",
+  "grid": true,
+  "highlights": [],
+  "label": "port",
+  "lat": "lat",
+  "lon": "lon",
+  "markers": true,
+  "source": "",
+  "src": "show_ports.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Map",
+  "val": "calls_k"
+ },
+ "verdict": {
+  "ok": true,
+  "places": 12
+ }
+}

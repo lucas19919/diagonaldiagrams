@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 502" width="760"><title>radar</title>
+<desc>radar</desc>
+<rect width="760" height="502" fill="#f5f5f5"/>
+<text x="28" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">radar</text>
+<polygon points="380.0,205.9 411.3,260.1 348.7,260.1" fill="none" stroke="rgba(45,49,66,0.12)"/>
+<polygon points="380.0,169.8 442.5,278.1 317.5,278.1" fill="none" stroke="rgba(45,49,66,0.12)"/>
+<polygon points="380.0,133.7 473.8,296.1 286.2,296.2" fill="none" stroke="rgba(45,49,66,0.12)"/>
+<polygon points="380.0,97.6 505.1,314.2 254.9,314.2" fill="none" stroke="rgba(45,49,66,0.12)"/>
+<line x1="380.0" y1="242.0" x2="380.0" y2="97.6" stroke="rgba(45,49,66,0.12)"/>
+<text x="380.0" y="81.6" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">speed</text>
+<line x1="380.0" y1="242.0" x2="505.1" y2="314.2" stroke="rgba(45,49,66,0.12)"/>
+<text x="518.9" y="322.2" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="start">cost</text>
+<line x1="380.0" y1="242.0" x2="254.9" y2="314.2" stroke="rgba(45,49,66,0.12)"/>
+<text x="241.1" y="322.2" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">risk</text>
+<polygon points="380.0,133.7 442.5,278.1 254.9,314.2" fill="#0072B2" fill-opacity="0.16" stroke="#0072B2" stroke-width="1.6"/>
+<circle cx="380.0" cy="133.7" r="3.2" fill="#0072B2" stroke="#ffffff" stroke-width="1"/>
+<circle cx="442.5" cy="278.1" r="3.2" fill="#0072B2" stroke="#ffffff" stroke-width="1"/>
+<circle cx="254.9" cy="314.2" r="3.2" fill="#0072B2" stroke="#ffffff" stroke-width="1"/>
+<polygon points="380.0,169.8 505.1,314.2 348.7,260.1" fill="#E69F00" fill-opacity="0.16" stroke="#E69F00" stroke-width="1.6"/>
+<circle cx="380.0" cy="169.8" r="3.2" fill="#E69F00" stroke="#ffffff" stroke-width="1"/>
+<circle cx="505.1" cy="314.2" r="3.2" fill="#E69F00" stroke="#ffffff" stroke-width="1"/>
+<circle cx="348.7" cy="260.1" r="3.2" fill="#E69F00" stroke="#ffffff" stroke-width="1"/>
+<rect x="40.0" y="460.0" width="9" height="9" fill="#0072B2"/>
+<text x="53.0" y="468.0" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">one</text>
+<rect x="87.6" y="460.0" width="9" height="9" fill="#E69F00"/>
+<text x="100.6" y="468.0" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">two</text>
+<text x="28" y="486" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">n=6</text>
+</svg>

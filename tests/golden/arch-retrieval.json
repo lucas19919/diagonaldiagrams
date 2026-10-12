@@ -1,0 +1,25 @@
+{
+ "argv": [
+  "arch",
+  "examples/show_retrieval.json"
+ ],
+ "exit": 0,
+ "html_sha256": "784e05cf62bf2e9d8a175cf648cb232f0c711051e8d4266449edde31f8f0aa88",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "spec": "show_retrieval.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 9,
+  "layout": [
+   "row 1: App | Notebook | Nightly",
+   "row 2: Gateway | Worker",
+   "row 3: Embedder | Model",
+   "row 4: Index | Ledger"
+  ],
+  "ok": true
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "title": "Dag",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "A"
+  },
+  {
+   "id": "b",
+   "name": "B"
+  },
+  {
+   "id": "c",
+   "name": "C"
+  }
+ ],
+ "edges": [
+  {
+   "from": "a",
+   "to": "b"
+  },
+  {
+   "from": "b",
+   "to": "c"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "title": "Board",
+ "columns": [
+  {
+   "name": "Todo",
+   "cards": [
+    {
+     "name": "Spec"
+    }
+   ]
+  },
+  {
+   "name": "Doing",
+   "cards": [
+    {
+     "name": "Draw",
+     "blocked": true
+    }
+   ]
+  },
+  {
+   "name": "Done",
+   "cards": [
+    {
+     "name": "Ship"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "title": "Deploy",
+ "zones": [
+  {
+   "id": "z",
+   "name": "Edge",
+   "nodes": [
+    {
+     "id": "a",
+     "name": "Proxy"
+    },
+    {
+     "id": "b",
+     "name": "Web"
+    }
+   ]
+  }
+ ]
+}

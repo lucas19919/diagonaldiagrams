@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "heatmap",
+  "tests/golden/inputs/charts/heatmap.csv",
+  "--title",
+  "heatmap"
+ ],
+ "exit": 0,
+ "html_sha256": "6f6fccb1242c3911984ba33aeb6addd0f5719e74b5d4cf750039ea9e116e3077",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "heatmap",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "heatmap.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "heatmap",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

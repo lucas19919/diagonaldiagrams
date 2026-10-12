@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "waffle",
+  "tests/golden/inputs/charts/waffle.csv",
+  "--title",
+  "waffle"
+ ],
+ "exit": 0,
+ "html_sha256": "90f8d4c79e2bf9e9e5c2b25b28327091115d14561377fd63f745a981be813d2d",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "waffle",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "waffle.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "waffle",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 100,
+  "ok": true
+ }
+}

@@ -1,0 +1,109 @@
+{
+ "title": "A 11-step process",
+ "sub": "Generated for the golden corpus.",
+ "nodes": [
+  {
+   "id": "s0",
+   "name": "Request received",
+   "shape": "oval"
+  },
+  {
+   "id": "s1",
+   "name": "Load the customer account (1)"
+  },
+  {
+   "id": "s2",
+   "name": "Score the fraud risk (2)"
+  },
+  {
+   "id": "s3",
+   "name": "Check 1 passed?",
+   "shape": "diamond"
+  },
+  {
+   "id": "s4",
+   "name": "Charge the card (4)"
+  },
+  {
+   "id": "s5",
+   "name": "Write the ledger entry (5)"
+  },
+  {
+   "id": "s6",
+   "name": "Notify the warehouse (6)"
+  },
+  {
+   "id": "s7",
+   "name": "Check 2 passed?",
+   "shape": "diamond"
+  },
+  {
+   "id": "s8",
+   "name": "Send the receipt (8)"
+  },
+  {
+   "id": "s9",
+   "name": "Update the order status (9)"
+  },
+  {
+   "id": "s10",
+   "name": "Done",
+   "shape": "oval"
+  }
+ ],
+ "edges": [
+  {
+   "from": "s0",
+   "to": "s1"
+  },
+  {
+   "from": "s1",
+   "to": "s2"
+  },
+  {
+   "from": "s2",
+   "to": "s3"
+  },
+  {
+   "from": "s3",
+   "to": "s1",
+   "label": "no"
+  },
+  {
+   "from": "s3",
+   "to": "s4",
+   "label": "yes"
+  },
+  {
+   "from": "s4",
+   "to": "s5"
+  },
+  {
+   "from": "s5",
+   "to": "s6"
+  },
+  {
+   "from": "s6",
+   "to": "s7"
+  },
+  {
+   "from": "s7",
+   "to": "s10",
+   "label": "no"
+  },
+  {
+   "from": "s7",
+   "to": "s8",
+   "label": "yes"
+  },
+  {
+   "from": "s8",
+   "to": "s9"
+  },
+  {
+   "from": "s9",
+   "to": "s10"
+  }
+ ],
+ "budget": false
+}

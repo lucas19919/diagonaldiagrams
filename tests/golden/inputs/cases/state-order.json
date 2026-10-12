@@ -1,0 +1,66 @@
+{
+ "title": "Order lifecycle",
+ "nodes": [
+  {
+   "id": "new",
+   "name": "New"
+  },
+  {
+   "id": "paid",
+   "name": "Payment authorized"
+  },
+  {
+   "id": "pick",
+   "name": "Picking in warehouse"
+  },
+  {
+   "id": "ship",
+   "name": "Shipped"
+  },
+  {
+   "id": "del",
+   "name": "Delivered"
+  },
+  {
+   "id": "ret",
+   "name": "Returned to sender"
+  }
+ ],
+ "edges": [
+  {
+   "from": "new",
+   "to": "paid",
+   "label": "pay"
+  },
+  {
+   "from": "paid",
+   "to": "pick",
+   "label": "reserve stock"
+  },
+  {
+   "from": "pick",
+   "to": "ship",
+   "label": "hand to carrier"
+  },
+  {
+   "from": "ship",
+   "to": "del",
+   "label": "scan"
+  },
+  {
+   "from": "ship",
+   "to": "ret",
+   "label": "refused"
+  },
+  {
+   "from": "ret",
+   "to": "pick",
+   "label": "restock"
+  },
+  {
+   "from": "paid",
+   "to": "new",
+   "label": "declined"
+  }
+ ]
+}

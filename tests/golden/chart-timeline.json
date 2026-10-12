@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "timeline",
+  "tests/golden/inputs/charts/timeline.json",
+  "--title",
+  "timeline"
+ ],
+ "exit": 0,
+ "html_sha256": "fc57f4dfe70196847e2b47628f56bc59026360f449e5c74b226ae29d3001bbb1",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "timeline",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "timeline.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "timeline",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

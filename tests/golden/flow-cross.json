@@ -1,0 +1,23 @@
+{
+ "argv": [
+  "flow",
+  "examples/flow_cross.json"
+ ],
+ "exit": 0,
+ "html_sha256": "b81358d200375a4b285cd1f4ad1f01947e65c9a25de8ece25bd1762c6ddb0003",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "flow_cross.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 4,
+  "layout": [
+   "row 1: Left src | Right src",
+   "row 2: Y | X"
+  ],
+  "ok": true
+ }
+}

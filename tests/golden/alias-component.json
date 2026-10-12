@@ -1,0 +1,42 @@
+{
+ "argv": [
+  "chart",
+  "component",
+  "examples/arch.json"
+ ],
+ "exit": 0,
+ "html_sha256": "a2bfde8916ba1df0680c86994e6ef7533cb9c81ec7fcfa46cd4b5b53d7052024",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "component",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "arch.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "layout": [
+   "row 1: Web App",
+   "row 2: API | Auth",
+   "row 3: Postgres"
+  ],
+  "ok": true
+ }
+}

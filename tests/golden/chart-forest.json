@@ -1,0 +1,45 @@
+{
+ "argv": [
+  "chart",
+  "forest",
+  "tests/golden/inputs/charts/forest.csv",
+  "--title",
+  "forest"
+ ],
+ "exit": 0,
+ "html_sha256": "8aee0b7602fadabbe3bc5495a70513d6c4f2be705c757ec9dc3d795b4b18cbf2",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "forest",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "forest.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "forest",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "verify intended; ratio data floors at 0",
+    "msg": "negative ticks ['-2', '-1']"
+   }
+  ]
+ }
+}

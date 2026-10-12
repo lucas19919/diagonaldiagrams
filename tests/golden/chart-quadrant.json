@@ -1,0 +1,45 @@
+{
+ "argv": [
+  "chart",
+  "quadrant",
+  "tests/golden/inputs/charts/quadrant.csv",
+  "--title",
+  "quadrant"
+ ],
+ "exit": 0,
+ "html_sha256": "fee911480410744510b1ad1407a4a648e609d3d0f5316edf01e5609c32c1921c",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "quadrant",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "quadrant.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "quadrant",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "verify intended; ratio data floors at 0",
+    "msg": "negative ticks ['-2', '-1', '-2', '-1']"
+   }
+  ]
+ }
+}

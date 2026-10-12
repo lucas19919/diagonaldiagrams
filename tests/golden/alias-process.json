@@ -1,0 +1,48 @@
+{
+ "argv": [
+  "chart",
+  "process",
+  "examples/seq_checkout.json"
+ ],
+ "exit": 0,
+ "html_sha256": "3bd6e7c9aebed7ed25c45fa8f13c42217049027ec49bd3d2e814a92033e64cdb",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "process",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "seq_checkout.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: Customer | Web App | API Gateway | Payment Svc | Postgres",
+   "1. Customer -> Web App: Submit Order",
+   "2. Web App -> API Gateway: POST /checkout",
+   "3. API Gateway -> Payment Svc: Authorize Card",
+   "4. Payment Svc -> Postgres: Store Ledger TX",
+   "5. Postgres -> Payment Svc: TX Committed",
+   "6. Payment Svc -> API Gateway: Payment Succeeded",
+   "7. API Gateway -> Web App: 201 Created (Order #491)",
+   "8. Web App -> Customer: Show Confirmation"
+  ],
+  "ok": true
+ }
+}

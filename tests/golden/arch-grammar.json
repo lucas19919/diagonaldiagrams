@@ -1,0 +1,25 @@
+{
+ "argv": [
+  "arch",
+  "examples/grammar_arch.json"
+ ],
+ "exit": 0,
+ "html_sha256": "34c7f900d0a3a4dbf4036926f0c46fb97718f94433e591e58a8d8f2028999653",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "spec": "grammar_arch.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 12,
+  "layout": [
+   "row 1: Axiom | Lemma | strohmann",
+   "row 2: Python wheel | Engine | Grammar",
+   "row 3: Authority | Writer | Packs",
+   "row 4: Intake | DuckDB | Vectors"
+  ],
+  "ok": true
+ }
+}

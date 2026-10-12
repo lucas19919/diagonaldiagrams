@@ -1,0 +1,29 @@
+{
+ "argv": [
+  "arch",
+  "examples/checkout_groups.json"
+ ],
+ "exit": 0,
+ "html_sha256": "ede5e3fdf912123cd72313af1dfa5316833616b1ac87310b7e05a61f0da22434",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "spec": "checkout_groups.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 14,
+  "layout": [
+   "row 1: Web app | Mobile app",
+   "row 2: API gateway",
+   "row 3: Auth | Catalog | Orders | Payments",
+   "row 4: Redis | Postgres | Event bus | Stripe",
+   "row 5: Inventory | Notifications | Analytics",
+   "frame Clients: Web app, Mobile app",
+   "frame Checkout core: Orders, Payments, Postgres",
+   "frame Event consumers: Inventory, Notifications, Analytics"
+  ],
+  "ok": true
+ }
+}

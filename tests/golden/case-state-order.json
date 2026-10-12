@@ -1,0 +1,37 @@
+{
+ "argv": [
+  "chart",
+  "state",
+  "tests/golden/inputs/cases/state-order.json"
+ ],
+ "exit": 0,
+ "html_sha256": "73b55cb60ac2f0a35b8b937f32af140c433998d4e0ff019f09357a578daf30d7",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "state",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "state-order.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 6,
+  "ok": true
+ }
+}

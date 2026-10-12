@@ -1,0 +1,27 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/icons.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "f4f5825a7f4dabf555af47994083978745361c0c8de883d1de15da1d886cf90f",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "icons.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 7,
+  "layout": [
+   "row 1: Customer",
+   "row 2: Web app",
+   "row 3: API gateway",
+   "row 4: Orders service",
+   "row 5: Orders DB | Event queue",
+   "row 6: Email sender"
+  ],
+  "ok": true
+ }
+}

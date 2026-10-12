@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "icicle",
+  "tests/golden/inputs/charts/icicle.csv",
+  "--title",
+  "icicle"
+ ],
+ "exit": 0,
+ "html_sha256": "b4d4cd4107603478ff2b3bcc54cd21386a6dc639d6089b59bccf3e35e568b67b",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "icicle",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "icicle.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "icicle",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

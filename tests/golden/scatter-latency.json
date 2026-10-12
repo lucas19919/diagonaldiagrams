@@ -1,0 +1,47 @@
+{
+ "argv": [
+  "scatter",
+  "examples/show_latency.csv",
+  "--x",
+  "context_k",
+  "--y",
+  "p99_ms",
+  "--yerr",
+  "p99_sd",
+  "--group",
+  "machine"
+ ],
+ "exit": 0,
+ "html_sha256": "0d93224617192fdea48cae640075dd1355ff20daca01cf02cc335ce23bada70d",
+ "receipt": {
+  "cmd": "scatter",
+  "corners": "editorial",
+  "csv": "show_latency.csv",
+  "facet": null,
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": "machine",
+  "highlights": [],
+  "markers": true,
+  "source": "",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Scatter",
+  "x": "context_k",
+  "xlabel": "context_k",
+  "xunit": "",
+  "y": "p99_ms",
+  "yerr": "p99_sd",
+  "ylabel": "p99_ms",
+  "yunit": ""
+ },
+ "verdict": {
+  "layout": [
+   "x axis: context_k",
+   "y axis: p99_ms",
+   "series: gpu, laptop"
+  ],
+  "ok": true,
+  "points": 36
+ }
+}

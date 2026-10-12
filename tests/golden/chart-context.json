@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "context",
+  "tests/golden/inputs/charts/context.json",
+  "--title",
+  "context"
+ ],
+ "exit": 0,
+ "html_sha256": "eae0c063b485ce91b51fb9de963340297fad3e57193f401de5a79e74645ecf50",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "context",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "context.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "context",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

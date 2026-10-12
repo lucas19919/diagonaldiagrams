@@ -1,0 +1,50 @@
+{
+ "argv": [
+  "bar",
+  "examples/bar_latency.csv",
+  "--cat",
+  "service",
+  "--val",
+  "p99_latency_ms",
+  "--no-grid",
+  "--no-markers",
+  "--highlight",
+  "Payment Pipeline",
+  "--title",
+  "Latency",
+  "--subtitle",
+  "p99"
+ ],
+ "exit": 0,
+ "html_sha256": "42990951d285fc9055675ff7d9d32de4e07fabd1a21578966a47cc17a9ab31b4",
+ "receipt": {
+  "cat": "service",
+  "cmd": "bar",
+  "corners": "editorial",
+  "csv": "bar_latency.csv",
+  "figure": "Fig. 1",
+  "grid": false,
+  "group": null,
+  "highlights": [
+   "Payment Pipeline"
+  ],
+  "markers": false,
+  "orientation": "v",
+  "sort": "none",
+  "source": "",
+  "subtitle": "p99",
+  "theme": "editorial",
+  "title": "Latency",
+  "unit": "",
+  "val": "p99_latency_ms",
+  "xlabel": null,
+  "ylabel": null
+ },
+ "verdict": {
+  "bars": 5,
+  "layout": [
+   "x axis: Service"
+  ],
+  "ok": true
+ }
+}

@@ -126,6 +126,17 @@ py -3 tests_smoke.py
 
 Exit 0 means every check passed.
 
+Run these before changing how anything is drawn:
+
+| Command | What it does |
+| --- | --- |
+| `py -3 scripts/golden.py` | Compares 115 figures byte for byte with `tests/golden/`. `--update` accepts a change; `--png` writes images to review. |
+| `py -3 scripts/metrics.py` | Measures speed, layout redraws, audit errors and truncated text. It writes `bench/metrics/latest.md`; `--compare bench/metrics/baseline.json` shows what moved. |
+| `py -3 tests/fuzz/run.py` | Renders seeded random flowcharts and architecture diagrams, and counts how many fail the audit. |
+| `py -3 scripts/counts.py --md` | Counts what the redesign removes: one-off chart renderers, truncating calls, inline font settings. |
+
+The redesign these support is described in [docs/DESIGN.md](docs/DESIGN.md), and its phases are in [docs/PLAN.md](docs/PLAN.md).
+
 ## License
 
 [MIT](LICENSE)

@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "status",
+  "tests/golden/inputs/charts/status.csv",
+  "--title",
+  "status"
+ ],
+ "exit": 0,
+ "html_sha256": "7c5fd0c25c502668d9fc72597afd6d495fdbea34aa95d989ccfd454840c39911",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "status",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "status.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "status",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

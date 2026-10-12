@@ -1,0 +1,28 @@
+{
+ "argv": [
+  "flow",
+  "examples/show_canary.json"
+ ],
+ "exit": 0,
+ "html_sha256": "cd2d9ef77bbff80baab55ebebb519efddf5978657a036f9ab0f0f5bc04845cd6",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "show_canary.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 8,
+  "layout": [
+   "row 1: Merge",
+   "row 2: Bake image",
+   "row 3: Canary 5%",
+   "row 4: Roll back | SLO hold? (decision)",
+   "row 5: Promote",
+   "row 6: Observe",
+   "row 7: Steady"
+  ],
+  "ok": true
+ }
+}

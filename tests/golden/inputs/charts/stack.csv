@@ -1,0 +1,5 @@
+cat,group,val
+Mon,read,2
+Mon,write,1
+Tue,read,3
+Tue,write,2

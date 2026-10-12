@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "story",
+  "tests/golden/inputs/charts/story.json",
+  "--title",
+  "story"
+ ],
+ "exit": 0,
+ "html_sha256": "fde00211d354633390fe04c219bb5ab87a862fd225738f352783a0f591dcebce",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "story",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "story.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "story",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

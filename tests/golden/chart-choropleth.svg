@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 518" width="760"><title>choropleth</title>
+<desc>choropleth</desc>
+<rect width="760" height="518" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">choropleth</text>
+<rect x="48" y="42" width="676" height="420" fill="#d5e3ec" stroke="rgba(45,49,66,0.12)"/>
+<clipPath id="mapframe"><rect x="269.2" y="42.0" width="233.6" height="420.0"/></clipPath>
+<g clip-path="url(#mapframe)">
+<polygon points="269.2,462.0 269.2,42.0 502.8,42.0 502.8,462.0" fill="#f4f0e8" stroke="#8d97a8" stroke-width="0.6"/>
+<polygon points="419.6,433.5 486.7,433.5 486.7,350.9 419.6,350.9 419.6,433.5" fill="#d6dde8" fill-opacity="0.82" stroke="#2d3142" stroke-width="0.6"/>
+<text x="446.4" y="400.5" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">West</text>
+<polygon points="285.3,156.0 352.4,156.0 352.4,71.4 285.3,71.4 285.3,156.0" fill="#eb6c36" fill-opacity="0.82" stroke="#2d3142" stroke-width="0.6"/>
+<text x="312.2" y="122.2" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">North</text>
+</g>
+<rect x="48.0" y="468.0" width="13.5" height="8" fill="#d6dde8"/>
+<rect x="61.0" y="468.0" width="13.5" height="8" fill="#b0bfd9"/>
+<rect x="74.0" y="468.0" width="13.5" height="8" fill="#8ba2cb"/>
+<rect x="87.0" y="468.0" width="13.5" height="8" fill="#6685bd"/>
+<rect x="100.0" y="468.0" width="13.5" height="8" fill="#4068af"/>
+<rect x="113.0" y="468.0" width="13.5" height="8" fill="#435c9b"/>
+<rect x="126.0" y="468.0" width="13.5" height="8" fill="#6c6082"/>
+<rect x="139.0" y="468.0" width="13.5" height="8" fill="#976468"/>
+<rect x="152.0" y="468.0" width="13.5" height="8" fill="#c0684f"/>
+<rect x="165.0" y="468.0" width="13.5" height="8" fill="#eb6c36"/>
+<text x="48.0" y="488.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">2</text>
+<text x="178.0" y="488.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="end">8</text>
+<rect x="277.2" y="426.0" width="62.0" height="26" fill="#d5e3ec" fill-opacity="0.92"/>
+<line x1="281.2" y1="444.0" x2="331.3" y2="444.0" stroke="#2d3142" stroke-width="2"/>
+<text x="281.2" y="436.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">20 km</text>
+<line x1="484.8" y1="80.0" x2="484.8" y2="54.0" stroke="#2d3142" stroke-width="1.2"/>
+<polygon points="484.8,48.0 480.8,58.0 488.8,58.0" fill="#2d3142"/>
+<text x="492.8" y="56.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">N</text>
+<text x="36" y="504" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399">n=2 · Web Mercator</text>
+</svg>

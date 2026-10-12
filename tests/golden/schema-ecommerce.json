@@ -1,0 +1,22 @@
+{
+ "argv": [
+  "schema",
+  "examples/schema_ecommerce.json"
+ ],
+ "exit": 0,
+ "html_sha256": "73c759700411f46b98d0b859d61ee1c2308b3cf038e8d632895efeed93f81a6a",
+ "receipt": {
+  "auto": false,
+  "cmd": "schema",
+  "corners": "editorial",
+  "spec": "schema_ecommerce.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 3,
+  "layout": [
+   "tables: users, orders, order_items"
+  ],
+  "ok": true
+ }
+}

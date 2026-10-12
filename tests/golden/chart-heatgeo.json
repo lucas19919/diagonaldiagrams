@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "heatgeo",
+  "tests/golden/inputs/charts/heatgeo.csv",
+  "--title",
+  "heatgeo"
+ ],
+ "exit": 0,
+ "html_sha256": "5e05eab2a60d130b034e83bb0b4e65228c9f9db3c44a568ccdc770e443110606",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "heatgeo",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "heatgeo.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "heatgeo",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

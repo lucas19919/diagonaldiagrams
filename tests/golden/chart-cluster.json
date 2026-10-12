@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "cluster",
+  "tests/golden/inputs/charts/cluster.csv",
+  "--title",
+  "cluster"
+ ],
+ "exit": 0,
+ "html_sha256": "9278ff8302d30eef7de0811feb2fcb5754f864b907a4e31f94c8a0809824364e",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "cluster",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "cluster.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "cluster",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

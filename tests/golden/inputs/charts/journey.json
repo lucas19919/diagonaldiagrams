@@ -1,0 +1,20 @@
+{
+ "title": "Journey",
+ "stages": [
+  {
+   "name": "See",
+   "score": 3,
+   "note": "ad"
+  },
+  {
+   "name": "Try",
+   "score": 4,
+   "note": "trial"
+  },
+  {
+   "name": "Pay",
+   "score": 2,
+   "note": "price"
+  }
+ ]
+}

@@ -1,0 +1,67 @@
+{
+ "argv": [
+  "chart",
+  "swim",
+  "tests/golden/inputs/cases/swim-review.json"
+ ],
+ "exit": 1,
+ "html_sha256": "3182fba0a3c41e33cf109a5ef1a851383721944c53fbc01fae49011d4b73eb01",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "swim",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "swim-review.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "errors": [
+   {
+    "at": [
+     200,
+     231
+    ],
+    "code": "through",
+    "fix": "move one node to another lane or rank so the arrow goes around it",
+    "msg": "an arrow runs through the box at [200, 231]"
+   },
+   {
+    "at": [
+     200,
+     232
+    ],
+    "code": "strike",
+    "fix": "move the node or the label off the arrow's path",
+    "msg": "an arrow is drawn across the label 'Review the diff caref…'"
+   },
+   {
+    "at": [
+     288,
+     174
+    ],
+    "code": "shared",
+    "fix": "reorder the row or move one node so the arrows take separate paths",
+    "msg": "two arrows run on one line at [288, 174]"
+   }
+  ],
+  "items": 6,
+  "next": "the files are written so you can look; change the spec or flags and render again (--no-audit accepts the figure as it is)",
+  "ok": false
+ }
+}

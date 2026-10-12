@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "tree",
+  "tests/golden/inputs/charts/tree.json",
+  "--title",
+  "tree"
+ ],
+ "exit": 0,
+ "html_sha256": "4ebde0ad73025145e4c9601472e1fb753fc9aec85151a6006013625abaa9becf",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "tree",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "tree.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "tree",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

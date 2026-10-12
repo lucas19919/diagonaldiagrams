@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    # The CLI contract: every command, flag and verdict an agent relies on.
+    name: smoke (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Smoke tests
+        run: python tests_smoke.py
+
+  golden:
+    # Byte-for-byte output on both OSes, and the same output under any hash seed.
+    name: golden (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Golden files
+        run: python scripts/golden.py --check
+      - name: Determinism
+        run: python scripts/golden.py --determinism
+
+  metrics:
+    # A report, not a gate: CI hardware differs from the machine that recorded the baseline.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Measure
+        run: python scripts/metrics.py --quick --compare bench/metrics/baseline.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: metrics
+          path: bench/metrics/latest.*

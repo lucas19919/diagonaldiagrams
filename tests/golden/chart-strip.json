@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "strip",
+  "tests/golden/inputs/charts/strip.csv",
+  "--title",
+  "strip"
+ ],
+ "exit": 0,
+ "html_sha256": "33464991b59beaa1ad65a984de7655782f18465b206d102a26d5d52512126681",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "strip",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "strip.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "strip",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 5,
+  "ok": true
+ }
+}

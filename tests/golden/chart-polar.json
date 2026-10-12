@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "polar",
+  "tests/golden/inputs/charts/polar.csv",
+  "--title",
+  "polar"
+ ],
+ "exit": 0,
+ "html_sha256": "6f5a98c8b2be32df6a505a81d3e1e084b434f1d8e8298c779f016b5ac629dd61",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "polar",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "polar.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "polar",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true
+ }
+}

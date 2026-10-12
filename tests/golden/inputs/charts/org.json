@@ -1,0 +1,22 @@
+{
+ "title": "Org",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "Lead",
+   "sub": "eng"
+  },
+  {
+   "id": "b",
+   "name": "A",
+   "parent": "a",
+   "sub": "api"
+  },
+  {
+   "id": "c",
+   "name": "B",
+   "parent": "a",
+   "sub": "web"
+  }
+ ]
+}

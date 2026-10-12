@@ -1,0 +1,1490 @@
+[
+ {
+  "name": "flow-decision",
+  "argv": [
+   "flow",
+   "examples/flow_decision.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "flow-cross",
+  "argv": [
+   "flow",
+   "examples/flow_cross.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "flow-canary",
+  "argv": [
+   "flow",
+   "examples/show_canary.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "arch",
+  "argv": [
+   "arch",
+   "examples/arch.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "arch-agent-platform",
+  "argv": [
+   "arch",
+   "examples/agent_platform.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "arch-checkout",
+  "argv": [
+   "arch",
+   "examples/checkout_platform.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "arch-checkout-groups",
+  "argv": [
+   "arch",
+   "examples/checkout_groups.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "arch-grammar",
+  "argv": [
+   "arch",
+   "examples/grammar_arch.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "arch-palantir-stack",
+  "argv": [
+   "arch",
+   "examples/palantir_stack.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "arch-retrieval",
+  "argv": [
+   "arch",
+   "examples/show_retrieval.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "seq-checkout",
+  "argv": [
+   "seq",
+   "examples/seq_checkout.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "seq-grammar",
+  "argv": [
+   "seq",
+   "examples/grammar_act.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "seq-toolloop",
+  "argv": [
+   "seq",
+   "examples/show_toolloop.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "schema-ecommerce",
+  "argv": [
+   "schema",
+   "examples/schema_ecommerce.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "schema-store",
+  "argv": [
+   "schema",
+   "examples/show_store.json"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "mmd-how-it-works",
+  "argv": [
+   "mermaid",
+   "examples/how_it_works.mmd"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "mmd-checkout-sequence",
+  "argv": [
+   "mermaid",
+   "examples/checkout_sequence.mmd"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "mmd-shop-er",
+  "argv": [
+   "mermaid",
+   "examples/shop_er.mmd"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "mmd-icons",
+  "argv": [
+   "mermaid",
+   "examples/icons.mmd"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "flow-decision-auto",
+  "argv": [
+   "flow",
+   "examples/flow_decision.json",
+   "--auto"
+  ],
+  "tags": [
+   "example",
+   "flag"
+  ]
+ },
+ {
+  "name": "flow-decision-ink",
+  "argv": [
+   "flow",
+   "examples/flow_decision.json",
+   "--theme",
+   "ink"
+  ],
+  "tags": [
+   "example",
+   "theme"
+  ]
+ },
+ {
+  "name": "flow-decision-sharp",
+  "argv": [
+   "flow",
+   "examples/flow_decision.json",
+   "--corners",
+   "sharp"
+  ],
+  "tags": [
+   "example",
+   "flag"
+  ]
+ },
+ {
+  "name": "arch-print",
+  "argv": [
+   "arch",
+   "examples/arch.json",
+   "--theme",
+   "print"
+  ],
+  "tags": [
+   "example",
+   "theme"
+  ]
+ },
+ {
+  "name": "bar-latency",
+  "argv": [
+   "bar",
+   "examples/bar_latency.csv",
+   "--cat",
+   "service",
+   "--val",
+   "p99_latency_ms"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "bar-latency-styled",
+  "argv": [
+   "bar",
+   "examples/bar_latency.csv",
+   "--cat",
+   "service",
+   "--val",
+   "p99_latency_ms",
+   "--no-grid",
+   "--no-markers",
+   "--highlight",
+   "Payment Pipeline",
+   "--title",
+   "Latency",
+   "--subtitle",
+   "p99"
+  ],
+  "tags": [
+   "example",
+   "flag"
+  ]
+ },
+ {
+  "name": "bar-latency-h",
+  "argv": [
+   "bar",
+   "examples/bar_latency.csv",
+   "--cat",
+   "service",
+   "--val",
+   "p99_latency_ms",
+   "--orientation",
+   "h",
+   "--sort",
+   "desc",
+   "--unit",
+   "ms"
+  ],
+  "tags": [
+   "example",
+   "flag"
+  ]
+ },
+ {
+  "name": "line-throughput",
+  "argv": [
+   "line",
+   "examples/line_throughput.csv",
+   "--x",
+   "timestamp",
+   "--y",
+   "rps",
+   "--group",
+   "service"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "scatter",
+  "argv": [
+   "scatter",
+   "examples/scatter.csv",
+   "--x",
+   "dose",
+   "--y",
+   "expr"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "scatter-groups",
+  "argv": [
+   "scatter",
+   "examples/scatter_groups.csv",
+   "--x",
+   "dose",
+   "--y",
+   "expr",
+   "--yerr",
+   "expr_err",
+   "--group",
+   "tissue",
+   "--facet",
+   "cohort",
+   "--title",
+   "Dose response",
+   "--subtitle",
+   "Expression rises with dose in every tissue."
+  ],
+  "tags": [
+   "example",
+   "flag"
+  ]
+ },
+ {
+  "name": "scatter-latency",
+  "argv": [
+   "scatter",
+   "examples/show_latency.csv",
+   "--x",
+   "context_k",
+   "--y",
+   "p99_ms",
+   "--yerr",
+   "p99_sd",
+   "--group",
+   "machine"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "geo-cities",
+  "argv": [
+   "geo",
+   "examples/geo_cities.csv",
+   "--lat",
+   "lat",
+   "--lon",
+   "lon",
+   "--label",
+   "city",
+   "--val",
+   "people_m",
+   "--title",
+   "Cities"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "geo-ports",
+  "argv": [
+   "geo",
+   "examples/show_ports.csv",
+   "--lat",
+   "lat",
+   "--lon",
+   "lon",
+   "--label",
+   "port",
+   "--val",
+   "calls_k"
+  ],
+  "tags": [
+   "example"
+  ]
+ },
+ {
+  "name": "chart-math-example",
+  "argv": [
+   "chart",
+   "math",
+   "examples/math.json"
+  ],
+  "tags": [
+   "example",
+   "chart"
+  ]
+ },
+ {
+  "name": "site-signups",
+  "argv": [
+   "line",
+   "examples/signups.csv",
+   "--x",
+   "month",
+   "--y",
+   "signups",
+   "--group",
+   "product",
+   "--title",
+   "Atlas more than doubled while Beacon declined",
+   "--subtitle",
+   "Monthly signups per product, January to June 2026",
+   "--xlabel",
+   "Month",
+   "--ylabel",
+   "Signups per month"
+  ],
+  "tags": [
+   "site"
+  ]
+ },
+ {
+  "name": "site-bench-tools",
+  "argv": [
+   "line",
+   "docs/data/bench_tools.csv",
+   "--x",
+   "steps",
+   "--y",
+   "tokens",
+   "--group",
+   "tool",
+   "--highlight",
+   "diagonaldiagrams",
+   "--title",
+   "Tokens per flowchart",
+   "--xlabel",
+   "Steps in the flowchart",
+   "--ylabel",
+   "Tokens used (average of 2 runs)"
+  ],
+  "tags": [
+   "site"
+  ]
+ },
+ {
+  "name": "chart-bubble",
+  "argv": [
+   "chart",
+   "bubble",
+   "tests/golden/inputs/charts/bubble.csv",
+   "--title",
+   "bubble"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-beeswarm",
+  "argv": [
+   "chart",
+   "beeswarm",
+   "tests/golden/inputs/charts/beeswarm.csv",
+   "--title",
+   "beeswarm"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-step",
+  "argv": [
+   "chart",
+   "step",
+   "tests/golden/inputs/charts/step.csv",
+   "--title",
+   "step"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-slope",
+  "argv": [
+   "chart",
+   "slope",
+   "tests/golden/inputs/charts/slope.csv",
+   "--title",
+   "slope"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-bump",
+  "argv": [
+   "chart",
+   "bump",
+   "tests/golden/inputs/charts/bump.csv",
+   "--title",
+   "bump"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-ridgeline",
+  "argv": [
+   "chart",
+   "ridgeline",
+   "tests/golden/inputs/charts/ridgeline.csv",
+   "--title",
+   "ridgeline"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-stack",
+  "argv": [
+   "chart",
+   "stack",
+   "tests/golden/inputs/charts/stack.csv",
+   "--title",
+   "stack"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-dumbbell",
+  "argv": [
+   "chart",
+   "dumbbell",
+   "tests/golden/inputs/charts/dumbbell.csv",
+   "--title",
+   "dumbbell"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-waterfall",
+  "argv": [
+   "chart",
+   "waterfall",
+   "tests/golden/inputs/charts/waterfall.csv",
+   "--title",
+   "waterfall"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-histogram",
+  "argv": [
+   "chart",
+   "histogram",
+   "tests/golden/inputs/charts/histogram.csv",
+   "--title",
+   "histogram"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-box",
+  "argv": [
+   "chart",
+   "box",
+   "tests/golden/inputs/charts/box.csv",
+   "--title",
+   "box"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-violin",
+  "argv": [
+   "chart",
+   "violin",
+   "tests/golden/inputs/charts/violin.csv",
+   "--title",
+   "violin"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-strip",
+  "argv": [
+   "chart",
+   "strip",
+   "tests/golden/inputs/charts/strip.csv",
+   "--title",
+   "strip"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-pie",
+  "argv": [
+   "chart",
+   "pie",
+   "tests/golden/inputs/charts/pie.csv",
+   "--title",
+   "pie"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-donut",
+  "argv": [
+   "chart",
+   "donut",
+   "tests/golden/inputs/charts/donut.csv",
+   "--title",
+   "donut"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-waffle",
+  "argv": [
+   "chart",
+   "waffle",
+   "tests/golden/inputs/charts/waffle.csv",
+   "--title",
+   "waffle"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-treemap",
+  "argv": [
+   "chart",
+   "treemap",
+   "tests/golden/inputs/charts/treemap.csv",
+   "--title",
+   "treemap"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-icicle",
+  "argv": [
+   "chart",
+   "icicle",
+   "tests/golden/inputs/charts/icicle.csv",
+   "--title",
+   "icicle"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-sunburst",
+  "argv": [
+   "chart",
+   "sunburst",
+   "tests/golden/inputs/charts/sunburst.csv",
+   "--title",
+   "sunburst"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-heatmap",
+  "argv": [
+   "chart",
+   "heatmap",
+   "tests/golden/inputs/charts/heatmap.csv",
+   "--title",
+   "heatmap"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-calendar",
+  "argv": [
+   "chart",
+   "calendar",
+   "tests/golden/inputs/charts/calendar.csv",
+   "--title",
+   "calendar"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-radar",
+  "argv": [
+   "chart",
+   "radar",
+   "tests/golden/inputs/charts/radar.csv",
+   "--title",
+   "radar"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-polar",
+  "argv": [
+   "chart",
+   "polar",
+   "tests/golden/inputs/charts/polar.csv",
+   "--title",
+   "polar"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-candle",
+  "argv": [
+   "chart",
+   "candle",
+   "tests/golden/inputs/charts/candle.csv",
+   "--title",
+   "candle"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-status",
+  "argv": [
+   "chart",
+   "status",
+   "tests/golden/inputs/charts/status.csv",
+   "--title",
+   "status"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-forest",
+  "argv": [
+   "chart",
+   "forest",
+   "tests/golden/inputs/charts/forest.csv",
+   "--title",
+   "forest"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-qq",
+  "argv": [
+   "chart",
+   "qq",
+   "tests/golden/inputs/charts/qq.csv",
+   "--title",
+   "qq"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-volcano",
+  "argv": [
+   "chart",
+   "volcano",
+   "tests/golden/inputs/charts/volcano.csv",
+   "--title",
+   "volcano"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-sankey",
+  "argv": [
+   "chart",
+   "sankey",
+   "tests/golden/inputs/charts/sankey.csv",
+   "--title",
+   "sankey"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-stream",
+  "argv": [
+   "chart",
+   "stream",
+   "tests/golden/inputs/charts/stream.csv",
+   "--title",
+   "stream"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-funnel",
+  "argv": [
+   "chart",
+   "funnel",
+   "tests/golden/inputs/charts/funnel.csv",
+   "--title",
+   "funnel"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-combo",
+  "argv": [
+   "chart",
+   "combo",
+   "tests/golden/inputs/charts/combo.csv",
+   "--title",
+   "combo"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-quadrant",
+  "argv": [
+   "chart",
+   "quadrant",
+   "tests/golden/inputs/charts/quadrant.csv",
+   "--title",
+   "quadrant"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-contour",
+  "argv": [
+   "chart",
+   "contour",
+   "tests/golden/inputs/charts/contour.csv",
+   "--title",
+   "contour"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-heatgeo",
+  "argv": [
+   "chart",
+   "heatgeo",
+   "tests/golden/inputs/charts/heatgeo.csv",
+   "--title",
+   "heatgeo"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-od",
+  "argv": [
+   "chart",
+   "od",
+   "tests/golden/inputs/charts/od.csv",
+   "--title",
+   "od"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-cluster",
+  "argv": [
+   "chart",
+   "cluster",
+   "tests/golden/inputs/charts/cluster.csv",
+   "--title",
+   "cluster"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-dag",
+  "argv": [
+   "chart",
+   "dag",
+   "tests/golden/inputs/charts/dag.json",
+   "--title",
+   "dag"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-force",
+  "argv": [
+   "chart",
+   "force",
+   "tests/golden/inputs/charts/force.json",
+   "--title",
+   "force"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-radial",
+  "argv": [
+   "chart",
+   "radial",
+   "tests/golden/inputs/charts/radial.json",
+   "--title",
+   "radial"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-tree",
+  "argv": [
+   "chart",
+   "tree",
+   "tests/golden/inputs/charts/tree.json",
+   "--title",
+   "tree"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-dtree",
+  "argv": [
+   "chart",
+   "dtree",
+   "tests/golden/inputs/charts/dtree.json",
+   "--title",
+   "dtree"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-nested",
+  "argv": [
+   "chart",
+   "nested",
+   "tests/golden/inputs/charts/nested.json",
+   "--title",
+   "nested"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-kg",
+  "argv": [
+   "chart",
+   "kg",
+   "tests/golden/inputs/charts/kg.json",
+   "--title",
+   "kg"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-context",
+  "argv": [
+   "chart",
+   "context",
+   "tests/golden/inputs/charts/context.json",
+   "--title",
+   "context"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-uml",
+  "argv": [
+   "chart",
+   "uml",
+   "tests/golden/inputs/charts/uml.json",
+   "--title",
+   "uml"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-deploy",
+  "argv": [
+   "chart",
+   "deploy",
+   "tests/golden/inputs/charts/deploy.json",
+   "--title",
+   "deploy"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-layers",
+  "argv": [
+   "chart",
+   "layers",
+   "tests/golden/inputs/charts/layers.json",
+   "--title",
+   "layers"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-integration",
+  "argv": [
+   "chart",
+   "integration",
+   "tests/golden/inputs/charts/integration.json",
+   "--title",
+   "integration"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-current",
+  "argv": [
+   "chart",
+   "current",
+   "tests/golden/inputs/charts/current.json",
+   "--title",
+   "current"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-er",
+  "argv": [
+   "chart",
+   "er",
+   "tests/golden/inputs/charts/er.json",
+   "--title",
+   "er"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-wardley",
+  "argv": [
+   "chart",
+   "wardley",
+   "tests/golden/inputs/charts/wardley.json",
+   "--title",
+   "wardley"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-swim",
+  "argv": [
+   "chart",
+   "swim",
+   "tests/golden/inputs/charts/swim.json",
+   "--title",
+   "swim"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-state",
+  "argv": [
+   "chart",
+   "state",
+   "tests/golden/inputs/charts/state.json",
+   "--title",
+   "state"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-bpmn",
+  "argv": [
+   "chart",
+   "bpmn",
+   "tests/golden/inputs/charts/bpmn.json",
+   "--title",
+   "bpmn"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-fishbone",
+  "argv": [
+   "chart",
+   "fishbone",
+   "tests/golden/inputs/charts/fishbone.json",
+   "--title",
+   "fishbone"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-flywheel",
+  "argv": [
+   "chart",
+   "flywheel",
+   "tests/golden/inputs/charts/flywheel.json",
+   "--title",
+   "flywheel"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-kanban",
+  "argv": [
+   "chart",
+   "kanban",
+   "tests/golden/inputs/charts/kanban.json",
+   "--title",
+   "kanban"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-gantt",
+  "argv": [
+   "chart",
+   "gantt",
+   "tests/golden/inputs/charts/gantt.json",
+   "--title",
+   "gantt"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-timeline",
+  "argv": [
+   "chart",
+   "timeline",
+   "tests/golden/inputs/charts/timeline.json",
+   "--title",
+   "timeline"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-journey",
+  "argv": [
+   "chart",
+   "journey",
+   "tests/golden/inputs/charts/journey.json",
+   "--title",
+   "journey"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-story",
+  "argv": [
+   "chart",
+   "story",
+   "tests/golden/inputs/charts/story.json",
+   "--title",
+   "story"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-org",
+  "argv": [
+   "chart",
+   "org",
+   "tests/golden/inputs/charts/org.json",
+   "--title",
+   "org"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-math",
+  "argv": [
+   "chart",
+   "math",
+   "tests/golden/inputs/charts/math.json",
+   "--title",
+   "math"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-venn",
+  "argv": [
+   "chart",
+   "venn",
+   "tests/golden/inputs/charts/venn.json",
+   "--title",
+   "venn"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "chart-choropleth",
+  "argv": [
+   "chart",
+   "choropleth",
+   "tests/golden/inputs/charts/choropleth.json",
+   "--title",
+   "choropleth"
+  ],
+  "tags": [
+   "chart"
+  ]
+ },
+ {
+  "name": "alias-container",
+  "argv": [
+   "chart",
+   "container",
+   "examples/arch.json"
+  ],
+  "tags": [
+   "chart",
+   "alias"
+  ]
+ },
+ {
+  "name": "alias-component",
+  "argv": [
+   "chart",
+   "component",
+   "examples/arch.json"
+  ],
+  "tags": [
+   "chart",
+   "alias"
+  ]
+ },
+ {
+  "name": "alias-process",
+  "argv": [
+   "chart",
+   "process",
+   "examples/seq_checkout.json"
+  ],
+  "tags": [
+   "chart",
+   "alias"
+  ]
+ },
+ {
+  "name": "alias-flowsheet",
+  "argv": [
+   "chart",
+   "flowsheet",
+   "examples/flow_decision.json"
+  ],
+  "tags": [
+   "chart",
+   "alias"
+  ]
+ },
+ {
+  "name": "alias-decision",
+  "argv": [
+   "chart",
+   "decision",
+   "examples/flow_decision.json"
+  ],
+  "tags": [
+   "chart",
+   "alias"
+  ]
+ },
+ {
+  "name": "alias-point",
+  "argv": [
+   "chart",
+   "point",
+   "examples/geo_cities.csv"
+  ],
+  "tags": [
+   "chart",
+   "alias"
+  ]
+ },
+ {
+  "name": "gen-flow-05",
+  "argv": [
+   "flow",
+   "tests/golden/inputs/flows/flow-05.json"
+  ],
+  "tags": [
+   "generated",
+   "flow"
+  ]
+ },
+ {
+  "name": "gen-flow-11",
+  "argv": [
+   "flow",
+   "tests/golden/inputs/flows/flow-11.json"
+  ],
+  "tags": [
+   "generated",
+   "flow"
+  ]
+ },
+ {
+  "name": "gen-flow-20",
+  "argv": [
+   "flow",
+   "tests/golden/inputs/flows/flow-20.json"
+  ],
+  "tags": [
+   "generated",
+   "flow"
+  ]
+ },
+ {
+  "name": "gen-flow-40",
+  "argv": [
+   "flow",
+   "tests/golden/inputs/flows/flow-40.json"
+  ],
+  "tags": [
+   "generated",
+   "flow"
+  ]
+ },
+ {
+  "name": "case-swim-review",
+  "argv": [
+   "chart",
+   "swim",
+   "tests/golden/inputs/cases/swim-review.json"
+  ],
+  "tags": [
+   "case"
+  ]
+ },
+ {
+  "name": "case-state-order",
+  "argv": [
+   "chart",
+   "state",
+   "tests/golden/inputs/cases/state-order.json"
+  ],
+  "tags": [
+   "case"
+  ]
+ },
+ {
+  "name": "case-bad-flow",
+  "argv": [
+   "flow",
+   "examples/bad.json"
+  ],
+  "tags": [
+   "case",
+   "invalid"
+  ]
+ },
+ {
+  "name": "case-bad-seq",
+  "argv": [
+   "seq",
+   "examples/bad_seq.json"
+  ],
+  "tags": [
+   "case",
+   "invalid"
+  ]
+ }
+]

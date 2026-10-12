@@ -1,0 +1,74 @@
+{
+ "type": "FeatureCollection",
+ "title": "Regions",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "West",
+    "value": 2
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -1.6,
+       52.3
+      ],
+      [
+       -1.2,
+       52.3
+      ],
+      [
+       -1.2,
+       52.6
+      ],
+      [
+       -1.6,
+       52.6
+      ],
+      [
+       -1.6,
+       52.3
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "North",
+    "value": 8
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -2.4,
+       53.3
+      ],
+      [
+       -2.0,
+       53.3
+      ],
+      [
+       -2.0,
+       53.6
+      ],
+      [
+       -2.4,
+       53.6
+      ],
+      [
+       -2.4,
+       53.3
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

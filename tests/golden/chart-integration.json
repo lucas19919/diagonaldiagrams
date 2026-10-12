@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "integration",
+  "tests/golden/inputs/charts/integration.json",
+  "--title",
+  "integration"
+ ],
+ "exit": 0,
+ "html_sha256": "b8c3c740eaf8cf40d77c9d8e1fbe74a9159bc6808046b30f5dc3e5697cd5acd3",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "integration",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "integration.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "integration",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

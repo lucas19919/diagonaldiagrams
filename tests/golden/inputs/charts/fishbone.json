@@ -1,0 +1,19 @@
+{
+ "title": "Cause",
+ "problem": "Latency",
+ "ribs": [
+  {
+   "name": "Code",
+   "causes": [
+    "N+1",
+    "lock"
+   ]
+  },
+  {
+   "name": "Data",
+   "causes": [
+    "index"
+   ]
+  }
+ ]
+}

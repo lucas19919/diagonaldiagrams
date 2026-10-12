@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 518" width="760"><title>heatgeo</title>
+<desc>heatgeo</desc>
+<rect width="760" height="518" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">heatgeo</text>
+<rect x="48" y="42" width="676" height="420" fill="#d5e3ec" stroke="rgba(45,49,66,0.12)"/>
+<clipPath id="mapframe"><rect x="282.5" y="42.0" width="207.0" height="420.0"/></clipPath>
+<g clip-path="url(#mapframe)">
+<polygon points="282.5,462.0 282.5,42.0 489.5,42.0 489.5,462.0" fill="#f4f0e8" stroke="#8d97a8" stroke-width="0.6"/>
+<rect x="445.2" y="432.4" width="14.8" height="29.6" fill="#d6dde8" fill-opacity="0.55"/>
+<rect x="474.7" y="373.0" width="14.8" height="29.7" fill="#2e5aa8" fill-opacity="0.55"/>
+<rect x="312.1" y="102.8" width="14.8" height="30.3" fill="#eb6c36" fill-opacity="0.55"/>
+<rect x="282.5" y="42.0" width="14.8" height="30.4" fill="#9eb1d2" fill-opacity="0.55"/>
+</g>
+<rect x="48.0" y="468.0" width="13.5" height="8" fill="#d6dde8"/>
+<rect x="61.0" y="468.0" width="13.5" height="8" fill="#b0bfd9"/>
+<rect x="74.0" y="468.0" width="13.5" height="8" fill="#8ba2cb"/>
+<rect x="87.0" y="468.0" width="13.5" height="8" fill="#6685bd"/>
+<rect x="100.0" y="468.0" width="13.5" height="8" fill="#4068af"/>
+<rect x="113.0" y="468.0" width="13.5" height="8" fill="#435c9b"/>
+<rect x="126.0" y="468.0" width="13.5" height="8" fill="#6c6082"/>
+<rect x="139.0" y="468.0" width="13.5" height="8" fill="#976468"/>
+<rect x="152.0" y="468.0" width="13.5" height="8" fill="#c0684f"/>
+<rect x="165.0" y="468.0" width="13.5" height="8" fill="#eb6c36"/>
+<text x="48.0" y="488.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">2</text>
+<text x="178.0" y="488.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="end">8</text>
+<rect x="290.5" y="426.0" width="41.6" height="26" fill="#d5e3ec" fill-opacity="0.92"/>
+<line x1="294.5" y1="444.0" x2="324.1" y2="444.0" stroke="#2d3142" stroke-width="2"/>
+<text x="294.5" y="436.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">10 km</text>
+<line x1="471.5" y1="80.0" x2="471.5" y2="54.0" stroke="#2d3142" stroke-width="1.2"/>
+<polygon points="471.5,48.0 467.5,58.0 475.5,58.0" fill="#2d3142"/>
+<text x="479.5" y="56.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">N</text>
+<text x="36" y="504" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399">n=4 · Web Mercator</text>
+</svg>

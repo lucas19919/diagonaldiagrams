@@ -1,0 +1,21 @@
+{
+ "title": "KG",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "A",
+   "kind": "type"
+  },
+  {
+   "id": "b",
+   "name": "B",
+   "kind": "value"
+  }
+ ],
+ "edges": [
+  {
+   "from": "a",
+   "to": "b"
+  }
+ ]
+}

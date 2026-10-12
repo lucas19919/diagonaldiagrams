@@ -1,0 +1,54 @@
+{
+ "title": "A 5-step process",
+ "sub": "Generated for the golden corpus.",
+ "nodes": [
+  {
+   "id": "s0",
+   "name": "Request received",
+   "shape": "oval"
+  },
+  {
+   "id": "s1",
+   "name": "Load the customer account (1)"
+  },
+  {
+   "id": "s2",
+   "name": "Score the fraud risk (2)"
+  },
+  {
+   "id": "s3",
+   "name": "Check 1 passed?",
+   "shape": "diamond"
+  },
+  {
+   "id": "s4",
+   "name": "Done",
+   "shape": "oval"
+  }
+ ],
+ "edges": [
+  {
+   "from": "s0",
+   "to": "s1"
+  },
+  {
+   "from": "s1",
+   "to": "s2"
+  },
+  {
+   "from": "s2",
+   "to": "s3"
+  },
+  {
+   "from": "s3",
+   "to": "s1",
+   "label": "no"
+  },
+  {
+   "from": "s3",
+   "to": "s4",
+   "label": "yes"
+  }
+ ],
+ "budget": false
+}

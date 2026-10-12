@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "journey",
+  "tests/golden/inputs/charts/journey.json",
+  "--title",
+  "journey"
+ ],
+ "exit": 0,
+ "html_sha256": "cd1efdb30ae635c521d03b515802019a22af1cbc8f6b46e73fbc5f6b9ff169de",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "journey",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "journey.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "journey",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "argv": [
+  "arch",
+  "examples/arch.json",
+  "--theme",
+  "print"
+ ],
+ "exit": 0,
+ "html_sha256": "a424da85b471447b1be9cd9f5a035ae8afa7ba4a9bed55f6e738f59ea7f96f3f",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "spec": "arch.json",
+  "theme": "print"
+ },
+ "verdict": {
+  "items": 4,
+  "layout": [
+   "row 1: Web App",
+   "row 2: API | Auth",
+   "row 3: Postgres"
+  ],
+  "ok": true
+ }
+}

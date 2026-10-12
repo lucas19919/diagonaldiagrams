@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "beeswarm",
+  "tests/golden/inputs/charts/beeswarm.csv",
+  "--title",
+  "beeswarm"
+ ],
+ "exit": 0,
+ "html_sha256": "2d50e91a7463d073c81192c7f4c8cb1e5cf3e4b70f9459cbaa7f8b437822028b",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "beeswarm",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "beeswarm.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "beeswarm",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 5,
+  "ok": true
+ }
+}

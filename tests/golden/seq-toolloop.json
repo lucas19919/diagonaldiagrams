@@ -1,0 +1,34 @@
+{
+ "argv": [
+  "seq",
+  "examples/show_toolloop.json"
+ ],
+ "exit": 0,
+ "html_sha256": "6cf156bbbf83fba8f740dcb919602b429f358b43271b3d0d6e87d98f8155d7cb",
+ "receipt": {
+  "auto": false,
+  "cmd": "seq",
+  "corners": "editorial",
+  "spec": "show_toolloop.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: User | Agent | Model | Tools | Ledger",
+   "1. User -> Agent: Ask",
+   "2. Agent -> Model: Plan",
+   "3. Model -> Agent: Call tool",
+   "4. Agent -> Tools: Search",
+   "5. Tools -> Agent: Passages",
+   "6. Agent -> Model: Ground",
+   "7. Model -> Agent: Draft",
+   "8. Agent -> Ledger: Record",
+   "9. Ledger -> Agent: Stored",
+   "10. Agent -> User: Answer",
+   "11. User -> Agent: Follow up",
+   "12. Agent -> Model: Revise"
+  ],
+  "ok": true
+ }
+}

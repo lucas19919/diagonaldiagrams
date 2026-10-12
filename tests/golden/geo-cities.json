@@ -1,0 +1,38 @@
+{
+ "argv": [
+  "geo",
+  "examples/geo_cities.csv",
+  "--lat",
+  "lat",
+  "--lon",
+  "lon",
+  "--label",
+  "city",
+  "--val",
+  "people_m",
+  "--title",
+  "Cities"
+ ],
+ "exit": 0,
+ "html_sha256": "30b4b4b35628ed1e0006e850ed519f561a27b141951318fa71f7de16e05c095b",
+ "receipt": {
+  "cmd": "geo",
+  "figure": "Fig. 1",
+  "grid": true,
+  "highlights": [],
+  "label": "city",
+  "lat": "lat",
+  "lon": "lon",
+  "markers": true,
+  "source": "",
+  "src": "geo_cities.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Cities",
+  "val": "people_m"
+ },
+ "verdict": {
+  "ok": true,
+  "places": 8
+ }
+}

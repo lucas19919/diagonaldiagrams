@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "swim",
+  "tests/golden/inputs/charts/swim.json",
+  "--title",
+  "swim"
+ ],
+ "exit": 0,
+ "html_sha256": "20abb92b9596b904dd062cee7bada9e3dde2ced67793b7db02569db0f5dc603a",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "swim",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "swim.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "swim",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

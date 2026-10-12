@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "deploy",
+  "tests/golden/inputs/charts/deploy.json",
+  "--title",
+  "deploy"
+ ],
+ "exit": 0,
+ "html_sha256": "0ba8906d849f874055057dc53aaf8bc85bbea5385b53cd30f399caadca2b6374",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "deploy",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "deploy.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "deploy",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 1,
+  "ok": true
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "argv": [
+  "arch",
+  "examples/palantir_stack.json"
+ ],
+ "exit": 0,
+ "html_sha256": "ad4d300819970eff6655b280e876bb70cb7a9931783d05f455e724aecebbc12a",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "spec": "palantir_stack.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 12,
+  "layout": [
+   "row 1: Models | AIP Logic | AIP Evals",
+   "row 2: Workshop | Ontology | Automate",
+   "row 3: Functions | Object Funnel | Pipeline Builder",
+   "row 4: Sources | Data Connection | Datasets"
+  ],
+  "ok": true
+ }
+}

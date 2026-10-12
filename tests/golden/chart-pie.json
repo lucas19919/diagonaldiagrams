@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "pie",
+  "tests/golden/inputs/charts/pie.csv",
+  "--title",
+  "pie"
+ ],
+ "exit": 0,
+ "html_sha256": "3575ceb8d4f0fc1ebf39686f1f2a0dc462c6f0362aca22619c5cb2f3d6cf82d6",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "pie",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "pie.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "pie",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

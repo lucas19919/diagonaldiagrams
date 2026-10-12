@@ -1,0 +1,26 @@
+{
+ "argv": [
+  "flow",
+  "tests/golden/inputs/flows/flow-05.json"
+ ],
+ "exit": 0,
+ "html_sha256": "a416917876709a4efcd29e3896189e985f895cdb281673621b49114a2e99c999",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "flow-05.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "row 1: Request received",
+   "row 2: Load the customer account (1)",
+   "row 3: Score the fraud risk (2)",
+   "row 4: Check 1 passed? (decision)",
+   "row 5: Done"
+  ],
+  "ok": true
+ }
+}

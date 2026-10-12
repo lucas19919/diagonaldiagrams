@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "flywheel",
+  "tests/golden/inputs/charts/flywheel.json",
+  "--title",
+  "flywheel"
+ ],
+ "exit": 0,
+ "html_sha256": "1e8bab77d63d849abedd10d8042c9a2683d728e8cb72e1d58f2cd4574d18407e",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "flywheel",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "flywheel.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "flywheel",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

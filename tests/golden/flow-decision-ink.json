@@ -1,0 +1,28 @@
+{
+ "argv": [
+  "flow",
+  "examples/flow_decision.json",
+  "--theme",
+  "ink"
+ ],
+ "exit": 0,
+ "html_sha256": "7258406ab6c3c80ef7b27c625cb35e5b143e20ce30b3a1870109090536bbe686",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "spec": "flow_decision.json",
+  "theme": "ink"
+ },
+ "verdict": {
+  "items": 6,
+  "layout": [
+   "row 1: Push",
+   "row 2: CI tests",
+   "row 3: Risky? (decision)",
+   "row 4: Fix | Review",
+   "row 5: Ship"
+  ],
+  "ok": true
+ }
+}

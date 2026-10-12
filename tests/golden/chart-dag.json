@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "dag",
+  "tests/golden/inputs/charts/dag.json",
+  "--title",
+  "dag"
+ ],
+ "exit": 0,
+ "html_sha256": "455c5c0364388454680dcc2e617a4c28d48be0001ed4f30528885c67d0d63e11",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "dag",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "dag.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "dag",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

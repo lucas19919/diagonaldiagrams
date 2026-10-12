@@ -48,8 +48,11 @@ out/
 .gemini/
 *.log
 
-# Benchmarks & raw profiling traces (example CSVs stay tracked)
-bench/
+# Benchmarks & raw profiling traces (example CSVs stay tracked).
+# Saved scoreboard metrics (bench/metrics/NAME.json/.md) are tracked; latest.* is a scratch run.
+bench/*
+!bench/metrics/
+bench/metrics/latest.*
 
 # Context System: Transient scratchpads, session notes & logs
 # (Tier 3: Ignored transient state; Tier 2 specs/ADRs in context/ remain tracked)

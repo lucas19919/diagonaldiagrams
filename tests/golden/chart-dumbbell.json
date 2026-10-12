@@ -1,0 +1,39 @@
+{
+ "argv": [
+  "chart",
+  "dumbbell",
+  "tests/golden/inputs/charts/dumbbell.csv",
+  "--title",
+  "dumbbell"
+ ],
+ "exit": 0,
+ "html_sha256": "a90e67b607feb01b7af198912cb901d4283d4e63daaa095b8f4d7301588e24b4",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "dumbbell",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "size": null,
+  "source": "",
+  "src": "dumbbell.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "dumbbell",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

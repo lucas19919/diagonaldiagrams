@@ -1,0 +1,30 @@
+{
+ "argv": [
+  "arch",
+  "examples/agent_platform.json"
+ ],
+ "exit": 0,
+ "html_sha256": "732510bd3c7065d847735bc45e21f8f0a1b14f91f29fc33c1b058c1b18f34c75",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "spec": "agent_platform.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 15,
+  "layout": [
+   "row 1: Web chat | Mobile app | Email intake",
+   "row 2: API gateway | Auth",
+   "row 3: Memory | Agent | Model API",
+   "row 4: Web search | Code sandbox | diagonaldiagrams | Event bus",
+   "row 5: Object store | Postgres | Traces",
+   "frame Clients: Web chat, Mobile app, Email intake",
+   "frame Agent runtime: Memory, Agent",
+   "frame Tools: Web search, Code sandbox, diagonaldiagrams",
+   "frame Storage: Object store, Postgres"
+  ],
+  "ok": true
+ }
+}
