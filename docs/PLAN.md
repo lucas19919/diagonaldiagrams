@@ -33,7 +33,7 @@ P0 baseline ─► P1 package ─► P1b fixes ─► P2 core seams ─┬─►
 
 | Version | Contains | Headline |
 | --- | --- | --- |
-| 0.6.0 | P0, P1, P1b | A package; calls go from seconds to milliseconds; known bugs fixed |
+| 0.6.0 | P0, P1, P1b | A package; each call about 3× faster (0.5 s → under 0.2 s); known bugs fixed |
 | 0.7.0 | P2, P3 | Scenes, the display list, stylesheets, real fonts, per-side borders |
 | 0.8.0 | P4 | New layered layout and router; large graphs wrap; no repair loops |
 | 0.9.0 | P5, P6 | Toolkits, `defs`, charts grammar, Vega-Lite input |
@@ -49,18 +49,21 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 
 | Metric | Baseline | Target | Expected to move in |
 | --- | --- | --- | --- |
-| CLI call, end to end | 1.3–4 s (recompiles 10k lines each call; import from `.pyc` is 65 ms) | ≤ 150 ms | P1, P2 |
-| 40-step flow render | 3.2 s, 57 full redraws | ≤ 100 ms, 0 redraws | P2, P4 |
-| 20-step flow render | 0.7 s, 25 redraws | ≤ 50 ms | P4 |
-| 40-step flow canvas | 720 × 5076 (one column) | within 25% of the target aspect | P4 |
-| MCP tool call | a subprocess that recompiles the script (seconds) | ≤ 100 ms in-process | P2 |
-| Largest module | 10,011 lines | ≤ 800 lines | P1, P8 |
+| CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | ≤ 150 ms | P1, P2 |
+| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws | ≤ 100 ms, 0 redraws | P2, P4 |
+| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws | ≤ 50 ms | P4 |
+| 40-step flow canvas | 1180 × 3952, aspect 0.30 (a tall strip) | within 25% of the target aspect | P4 |
+| MCP tool call | a subprocess per call that recompiles the script (about 0.4–0.5 s) | ≤ 100 ms in-process | P2 |
+| Largest module | 10,012 lines | ≤ 800 lines | P1, P8 |
 | `_c_*` renderers | 66 | 0 | P6, P8 |
-| Truncation call sites (`_short`, `_wrap` "…") | 68 | 0 | P3, P6, P8 |
-| Inline font settings in drawing code | ~170 | 0 | P3, P6, P8 |
+| Truncation call sites (`_short`, `_wrap`) | 69 | 0 | P3, P6, P8 |
+| Inline font settings in drawing code (`font-size=`/`font-family=` occurrences) | 342 | 0 | P3, P6, P8 |
+| `SystemExit` / `sys.exit` inside engine code | 85 | 0 outside the CLI | P2 |
 | Hidden side channels (function attributes) | 4 | 0 | P1 |
 | Styling surface | 9 colors + 3 corner styles | the property set in DESIGN 5.4 | P3 |
-| Fuzz scenes failing the audit | not yet measured | 0 of 1,000 | P0 measures, P4 fixes |
+| Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. | 0 of 1,000 | P4 |
+| Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) | 0, once the swim preset lands | P8 |
+| Truncated texts in the golden corpus | 4 in 2 figures | 0 | P3 |
 | Known bugs (table below) | 24 | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — | ≥ 80% | P8 |
 | Layout stability: mean node movement after a one-node edit | not measured | ≤ 10% of the canvas diagonal | P4 |
@@ -90,9 +93,14 @@ From DESIGN section 19. The recommended answer is the default if nobody decides.
 
 **Goal:** before any code moves, record what today's engine produces and how fast, so every later change is checked against it.
 
+**Status (2026-10-12):**
+- Built: the golden corpus, metrics, fuzz harness, counts and the CI workflow.
+- Baseline recorded in `bench/metrics/baseline.md`.
+- The CI workflow has not run yet; it needs a push. Until then, CI is verified only locally: `tests_smoke.py` passes (208/208), golden files match, and output is identical across hash seeds.
+
 | Task | Size | Work |
 | --- | --- | --- |
-| P0.1 Golden corpus | M | `scripts/golden.py --check \| --update \| --png`. It renders:<ul><li>every file in `examples/`;</li><li>every gallery entry;</li><li>one canonical spec per chart kind (taken from the `tests_smoke.py` fixtures);</li><li>generated flows at 5, 11, 20 and 40 steps.</li></ul>For each it writes `tests/golden/<name>.svg`, `.outline.json` and `.verdict.json`. `--check` compares bytes. `--png` rasterizes to `bench/golden-png/` for review (not committed). |
+| P0.1 Golden corpus | M | `scripts/golden.py --check \| --update \| --png \| --determinism`. The corpus (`tests/golden/corpus.json`, written once by `tests/golden/make_inputs.py`) holds 115 figures:<ul><li>every renderable file in `examples/`, with the flags the tests use;</li><li>the site's gallery and benchmark figures;</li><li>one figure per chart kind, from the `tests_smoke.py` fixtures;</li><li>generated flows at 5, 11, 20 and 40 steps;</li><li>known-bad cases (invalid specs, figures the audit rejects).</li></ul>For each, `tests/golden/<name>.svg` and `<name>.json`: argv, exit code, verdict with its `layout` outline, HTML hash, and receipt. `--check` compares bytes. `--png` rasterizes to `bench/golden-png/` (not committed). `--determinism` renders under two hash seeds and compares. |
 | P0.2 Metrics | M | `scripts/metrics.py` records, per golden figure:<ul><li>cold CLI time, both compiled and not;</li><li>in-process render and audit time;</li><li>canvas size and aspect;</li><li>audit issues by code;</li><li>truncations (texts ending in "…" or "...");</li><li>`crossings`, `wire`, and redraw count.</li></ul>Writes `bench/metrics/<date>.json` and a Markdown summary. Commits `bench/metrics/baseline.json`. |
 | P0.3 Fuzz harness | M | `tests/fuzz/gen.py` makes seeded random v1 flow and arch specs: 5–60 nodes, groups, lanes, back edges, long names, every shape. It records the audit failure rate per size. The baseline goes in the metrics file. |
 | P0.4 CI | S | GitHub Actions (none exists today): `tests_smoke.py` on ubuntu and windows × Python 3.11, 3.12 and 3.13; the golden check on ubuntu 3.12; metrics uploaded as an artifact. |
@@ -107,7 +115,7 @@ From DESIGN section 19. The recommended answer is the default if nobody decides.
 
 ## P1. Package split, no behavior change → 0.6.0
 
-**Goal:** the same engine as a package. Output stays byte-identical, calls get 10–50× faster, and the hidden contracts are made explicit.
+**Goal:** the same engine as a package. Output stays byte-identical, each call gets about 3× faster (0.52 s → under 0.2 s for a typical render), and the hidden contracts are made explicit.
 
 ### P1.1 Mechanical split (L)
 
@@ -147,10 +155,10 @@ Import layers, lowest first: `_theme`, `_text` → `_draw` → `audit` → `diag
 | P1.3 Self-invocation | S | MCP, monitor and sync stop running `[sys.executable, __file__]` and run `[sys.executable, "-m", "diagonaldiagrams", ...]`. Still a subprocess in this phase; P2.11 moves MCP in-process. |
 | P1.4 Sync contract | S | Monitor adds a structured `remediation: {"cmd": [...]}` next to `remediation_cmd`. Sync reads the structured form first and still accepts both `py graph.py extract` and `diagonaldiagrams extract` strings. |
 | P1.5 Lazy imports | M | `cli.main` imports only the module for the requested command. Chart kinds, math, geo (with its coastline), extract, export and MCP load on first use. |
-| P1.6 Lazy argparse | S | Build only the subparser for `argv[1]`; `--help` and unknown commands build them all. Today `add_argument` alone costs about 60 ms per call. |
+| P1.6 Lazy argparse | S | Build only the subparser for `argv[1]`; `--help` and unknown commands build them all. Under the profiler, building all of them took about 60 ms. |
 | P1.7 Side channels | S | `route_edge` returns its points; `_render_flow_once` returns positions; `_raster_svg` returns `(ok, why)`; `_land_rings` uses `functools.cache`. |
 | P1.8 Packaging | S | <ul><li>`pyproject.toml`: `packages` instead of `py-modules = ["graph"]`, package data for `data/`, entry point `diagonaldiagrams.cli:cli`, version from `diagonaldiagrams.__version__`, `requires-python >= 3.11`.</li><li>The wheel no longer installs a top-level module named `graph`.</li><li>Update PUBLISHING.md.</li></ul> |
-| P1.9 Site | M | <ul><li>`build_site.py` builds the wheel into `docs/wheels/` and writes `docs/wheels/latest.json`.</li><li>`docs/index.html` loads `micropip`, installs that wheel and calls `diagonaldiagrams.cli.cli()`.</li><li>Delete `docs/graph.py` and the copy step.</li></ul> |
+| P1.9 Site | M | <ul><li>`build_site.py` builds the wheel into `docs/wheels/` and writes `docs/wheels/latest.json`. `.gitignore` ignores every `wheels/` folder, so add `!docs/wheels/`.</li><li>`docs/index.html` loads `micropip`, installs that wheel and calls `diagonaldiagrams.cli.cli()`.</li><li>Delete `docs/graph.py` and the copy step.</li></ul> |
 | P1.10 Scripts and agent docs | S | <ul><li>Update `scripts/check_drift.py`, `.agents/skills/graph-engine/scripts/*.py` and the install skill.</li><li>Update root `SKILL.md`, the graph-engine skill and its `references/schemas.md` (regenerated from `describe`), and README.</li><li>Prefer `diagonaldiagrams …` and `python -m diagonaldiagrams …`. `py graph.py` keeps working.</li><li>Messages that say `py graph.py` say `diagonaldiagrams`.</li></ul> |
 | P1.11 Tests | S | `tests_smoke.py` runs twice in CI: against the shim and against `python -m diagonaldiagrams`. Add a Pyodide smoke test that installs the wheel in headless Node and renders one figure. |
 | P1.12 Compile note | S | README and the install skill note that `PYTHONDONTWRITEBYTECODE=1` disables the bytecode cache for checkouts, and give `python -m compileall diagonaldiagrams` as the fix. Installed wheels are precompiled by pip. |
@@ -159,7 +167,8 @@ Import layers, lowest first: `_theme`, `_text` → `_draw` → `audit` → `diag
 - Golden SVGs are byte-identical.
 - `tests_smoke.py` passes against both entry points.
 - Pyodide smoke passes.
-- A cold CLI render takes ≤ 250 ms from bytecode on the CI runner.
+- On the baseline machine, `py graph.py flow examples/flow_decision.json` (now the shim) renders in ≤ 200 ms with bytecode cached (today 0.52 s), measured by `scripts/metrics.py`.
+- With `PYTHONDONTWRITEBYTECODE=1` and no bytecode, it is no slower than today's 0.52 s. Importing an uncached module compiles more slowly than running a script, so this needs small modules and lazy imports (DESIGN 16).
 - No module is over 3,000 lines. `charts/kinds.py`, at about 2,800, is the largest until P6 empties it.
 - Side channels: 0.
 

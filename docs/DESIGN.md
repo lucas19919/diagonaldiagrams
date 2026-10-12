@@ -22,7 +22,7 @@ Measured against today:
 | --- | --- | --- |
 | A. Informative | 68 places truncate text; diagram budgets warn past 9 nodes and chart caps refuse to draw; legends are fixed sentences; the `_c_*` charts get no outline | No truncation; size handled by layout; legends built from what is drawn; annotations and outlines on every type |
 | B. Looks good | Only flow, arch, seq and schema use the house style; 66 `_c_*` renderers draw with hard-coded positions | Every type shares the same parts, tokens and router |
-| C. Fast | 1.3–4 s per CLI call, mostly compiling a 10k-line script; 40-step flow takes 3.2 s through 57 redraws | ≤150 ms per call; ≤100 ms layout for 40 nodes; checks run in memory |
+| C. Fast | 0.37–0.52 s per CLI call, mostly recompiling a 10k-line script (0.16 s when imported from bytecode); a 40-step flow takes 3.5 s through 225 layout redraws; 61 s for the slowest 60-node fuzz scene | ≤150 ms per call; ≤100 ms layout for 40 nodes; checks run in memory |
 | D. Modular | One 10k-line file; styling is 9 colors and 3 corner choices; ~170 inline font settings | A package with one scene format, a style system, and toolkits that plug into fixed extension points |
 
 ### Non-goals
@@ -737,7 +737,7 @@ Each v1 format compiles to a scene through an adapter in `inputs/v1.py`, using t
 
 - Same transport, protocol versions, tool names and input schemas.
 - `render` also accepts a `scene` object. `export` gains `drawio` and `excalidraw`.
-- Tool calls run in-process through the Python API instead of re-executing the script, which cuts latency from seconds to milliseconds.
+- Tool calls run in-process through the Python API instead of re-executing the script, which removes the 0.4–0.5 s of startup and compiling from every call.
 - A hard ceiling on scene size keeps a call bounded. `mcp --isolate` keeps the old subprocess behavior.
 
 ### 14.4 SVG attributes
@@ -882,7 +882,9 @@ Measured by `scripts/metrics.py`, from compiled bytecode, on the CI runner:
 
 CI fails on a 2× regression against the stored baseline and reports smaller changes.
 
-`PYTHONDONTWRITEBYTECODE=1` (set on the maintainer's machine) stops Python caching compiled modules. `pip install` precompiles them, so installed copies are unaffected. For a checkout, lazy imports keep the compile set small, and `python -m compileall diagonaldiagrams` removes the cost.
+`PYTHONDONTWRITEBYTECODE=1` (set on the maintainer's machine) stops Python caching compiled modules. `pip install` precompiles them, so installed copies are unaffected.
+
+A checkout needs care. Importing an uncached module compiles it more slowly than running the same file as a script: about 2 s versus about 0.4 s for today's `graph.py`. Compile time also grows faster than file size: the first half of `graph.py` compiles in 0.38 s, the whole file in 1.5 s. So the split must keep modules small and imports lazy, and `python -m compileall diagonaldiagrams` removes the cost entirely (PLAN P1 exit).
 
 ## 17. Testing
 
