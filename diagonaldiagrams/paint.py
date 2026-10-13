@@ -196,8 +196,8 @@ class Drawing:
 # several elements (a 3D solid paints one per face). Flow looks a node's "shape" up here.
 SHAPES = Registry("shape")
 
-def paper(t, W, H):
-    return el("rect", role="figure.paper", width=W, height=H, fill=t["paper"])
+def paper(t, W, H, fill=None):
+    return el("rect", role="figure.paper", width=W, height=H, fill=fill or t["paper"])
 
 
 def marker_defs(t):
@@ -209,17 +209,18 @@ def marker_defs(t):
                                                     one("al", t["link"]), one("ar", t["soft"])])
 
 
-def heading(t, title, subtitle, x=28):
-    """Title and subtitle drawn on the figure. Returns (elements, block height)."""
+def heading(t, title, subtitle, x=28, st=None):
+    """Title and subtitle drawn on the figure. Returns (elements, block height). st is the figure's
+    computed style (Styler.figure); a bigger title takes more room."""
+    ts = (st or {}).get("title") or {"font-size": 18, "font-weight": 600, "font-family": FONT, "color": t["ink"]}
+    ss = (st or {}).get("sub") or {"font-size": 13, "font-family": FONT, "color": t["muted"]}
     out, y = [], 8
     if title:
-        y += 18
-        out.append(el("text", title, role="figure.title", x=x, y=y, font_size=18, font_weight=600,
-                      font_family=FONT, fill=t["ink"]))
+        y += round(ts["font-size"])
+        out.append(text_el(transformed(title, ts), ts, "", "figure.title", x, y, anchor=None))
     if subtitle:
-        y += 18
-        out.append(el("text", subtitle, role="figure.subtitle", x=x, y=y, font_size=13, font_family=FONT,
-                      fill=t["muted"]))
+        y += max(18, round(ss["font-size"] * 1.4))
+        out.append(text_el(transformed(subtitle, ss), ss, "", "figure.subtitle", x, y, anchor=None))
     return out, ((y + 16) if out else 8)
 
 
@@ -478,22 +479,29 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
     return out
 
 
-def group_frames(t, groups, pos, avoid=()):
+def group_frames(t, groups, pos, avoid=(), style_of=None):
     """A frame behind each group's members. Its name goes in the top corner (left, else right)
-    that no arrow crosses; avoid holds the arrows' segment boxes."""
+    that no arrow crosses; avoid holds the arrows' segment boxes. style_of(gid) gives a group's
+    computed style (Styler.group)."""
     out = []
     for g in groups:
+        gs = style_of(g["id"]) if style_of else {
+            "fill": t["rule"], "stroke": t["muted"], "dasharray": [4, 3], "radius": 10,
+            "title": {"font-size": 10, "font-weight": 600, "font-family": FONT, "color": t["muted"],
+                      "text-transform": "uppercase"}}
         f = _frame_box(g, pos)
         if not f:
             continue
         x0, y0, x1, y1 = f
         names = ", ".join(str(pos[m][2].get("name", m)) if m in pos else str(m) for m in g["members"])
-        out.append(el("rect", owner=g["id"], role="group.frame", x=x0, y=y0, width=x1 - x0, height=y1 - y0, rx=10,
-                      fill=t["rule"], fill_opacity=".35", stroke=t["muted"], stroke_opacity=".55", stroke_dasharray="4,3",
+        out.append(el("rect", owner=g["id"], role="group.frame", x=x0, y=y0, width=x1 - x0, height=y1 - y0, rx=gs["radius"],
+                      fill=gs["fill"], fill_opacity=".35", stroke=gs["stroke"], stroke_opacity=".55",
+                      stroke_dasharray=",".join(fmt(v) for v in gs["dasharray"]) if gs["dasharray"] else None,
                       data_group=g["id"], data_name=g["name"], data_members=",".join(g["members"]),
                       a11y={"name": f"{g['name']}: {names}", "kind": "group"}))
-        label = ((g["tag"] + "  " if g.get("tag") else "") + str(g["name"])).upper()
-        lw = _text_w(label, 10, True) + 0.4 * len(label)
+        ts = gs["title"]
+        label = transformed((g["tag"] + "  " if g.get("tag") else "") + str(g["name"]), ts)
+        lw = _text_w(label, ts["font-size"], True) + 0.4 * len(label)
 
         def hits(lx):
             b = (lx - 8, y0 + 3, lx + lw + 8, y0 + 19)  # keep clear of arrows, not just off them
@@ -501,22 +509,27 @@ def group_frames(t, groups, pos, avoid=()):
         # left corner if it is clear, else the nearest clear spot along the top band, else the least crossed
         spots = [x0 + 10] + [x0 + 10 + 8 * k for k in range(1, int(max(0, x1 - 20 - lw - x0) // 8) + 1)]
         lx = min(spots, key=lambda v: (hits(v), v - x0))
-        out.append(el("text", label, owner=g["id"], role="group.title", x=lx, y=y0 + 15, font_size=10, font_weight=600,
-                      font_family=FONT, fill=t["muted"], letter_spacing=".04em"))
+        out.append(el("text", label, owner=g["id"], role="group.title", x=lx, y=y0 + 15, font_size=ts["font-size"],
+                      font_weight=ts.get("font-weight"), font_family=ts["font-family"], fill=ts["color"],
+                      letter_spacing=ts.get("letter-spacing") if ts.get("letter-spacing") is not None else ".04em"))
     return out
 
 
-def note_rail(t, notes, rail_x, top, lh=92):
-    """Right-rail notes: an italic note and a thin leader to (ax, ay). notes = [(ax, ay, text)]."""
+def note_rail(t, notes, rail_x, top, lh=92, st=None):
+    """Right-rail notes: an italic note and a thin leader to (ax, ay). notes = [(ax, ay, text)]. st is
+    the annotation style (Styler.figure()["note"])."""
+    st = st or {"font-size": 13, "font-style": "italic", "font-family": SERIF, "color": t["ink"], "stroke": t["soft"],
+                "fill": t["accent"]}
     out = []
     for i, (ax, ay, text) in enumerate(notes):
         ry = top + 14 + i * lh
         tx = rail_x + 14
-        out.append(el("line", role="note.leader", x1=ax, y1=ay, x2=tx, y2=ry, stroke=t["soft"], stroke_width=1))
-        out.append(el("circle", role="note.dot", cx=ax, cy=ay, r=2.5, fill=t["accent"]))
+        out.append(el("line", role="note.leader", x1=ax, y1=ay, x2=tx, y2=ry, stroke=st["stroke"], stroke_width=1))
+        out.append(el("circle", role="note.dot", cx=ax, cy=ay, r=2.5, fill=st["fill"]))
         for j, ln in enumerate(_wrap(text)):
-            out.append(el("text", ln, role="note.text", x=tx, y=ry + 4 + j * 16, font_size=13, font_style="italic",
-                          font_family=SERIF, fill=t["ink"]))
+            out.append(el("text", transformed(ln, st), role="note.text", x=tx, y=ry + 4 + j * 16, font_size=st["font-size"],
+                          font_style=st.get("font-style"), font_weight=st.get("font-weight"), font_family=st["font-family"],
+                          fill=st["color"]))
     return out
 
 
@@ -611,7 +624,8 @@ def legend_height(t, entries, max_w):
     return legend_rows(t, entries, 0, 0, max_w)[1]
 
 
-def legend_line(t, W, rule_y, text_y, text):
-    """The rule and one-line key at the bottom of a diagram."""
-    return [el("line", role="legend.rule", x1=30, y1=rule_y, x2=W - 30, y2=rule_y, stroke=t["rule"], stroke_width=".8"),
-            el("text", text, role="legend.text", x=30, y=text_y, font_size=11, font_family=FONT, fill=t["muted"])]
+def legend_line(t, W, rule_y, text_y, text, st=None):
+    """The rule and one-line key at the bottom of a diagram. st is the legend style."""
+    st = st or {"font-size": 11, "font-family": FONT, "color": t["muted"], "stroke": t["rule"]}
+    return [el("line", role="legend.rule", x1=30, y1=rule_y, x2=W - 30, y2=rule_y, stroke=st["stroke"], stroke_width=".8"),
+            text_el(transformed(text, st), st, "", "legend.text", 30, text_y, anchor=None)]

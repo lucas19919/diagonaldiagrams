@@ -1,16 +1,53 @@
 {
   "name": "seq",
+  "extends": [
+    "diagram"
+  ],
   "rules": {
-    "node": {"fill": "card", "stroke": "ink"},
-    "node:focal": {"fill": "accent-tint", "stroke": "accent"},
-    "node::label": {"font-family": "font", "font-size": 12, "font-weight": 600, "color": "ink"},
-    "node::sub": {"font-family": "font-mono", "font-size": 9, "color": "muted"},
-    "node::tag": {"font-family": "font", "font-size": 8},
-    "edge": {"stroke": "muted", "stroke-width": 1.6},
-    "edge[proto^=http]": {"stroke": "link"},
-    "edge:focal": {"stroke": "accent"},
-    "edge[reply]": {"stroke-dasharray": "4 4"},
-    "edge[async]": {"stroke-dasharray": "4 4"},
-    "edge::label": {"font-family": "font-mono", "font-size": 10, "color": "muted", "text-transform": "uppercase"}
+    "node": {
+      "fill": "card",
+      "stroke": "ink"
+    },
+    "node:focal": {
+      "fill": "accent-tint",
+      "stroke": "accent"
+    },
+    "node::label": {
+      "font-family": "font",
+      "font-size": 12,
+      "font-weight": 600,
+      "color": "ink"
+    },
+    "node::sub": {
+      "font-family": "font-mono",
+      "font-size": 9,
+      "color": "muted"
+    },
+    "node::tag": {
+      "font-family": "font",
+      "font-size": 8
+    },
+    "edge": {
+      "stroke": "muted",
+      "stroke-width": 1.6
+    },
+    "edge[proto^=http]": {
+      "stroke": "link"
+    },
+    "edge:focal": {
+      "stroke": "accent"
+    },
+    "edge[reply]": {
+      "stroke-dasharray": "4 4"
+    },
+    "edge[async]": {
+      "stroke-dasharray": "4 4"
+    },
+    "edge::label": {
+      "font-family": "font-mono",
+      "font-size": 10,
+      "color": "muted",
+      "text-transform": "uppercase"
+    }
   }
 }

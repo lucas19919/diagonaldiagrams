@@ -217,6 +217,31 @@ class Styler:
         st["header"] = css(self.cascade.computed(v, "header").get("fill"))
         return st
 
+    def figure(self):
+        """The figure's own parts: paper, title and subtitle, the legend, notes (annotations)."""
+        fig = self.views["figure"]
+        c = self.cascade.computed(fig)
+        legend = self._part("legend")
+        note = self._part("annotation")
+        return {"paper": css(c.get("fill")) or self.token("paper"), "title": self._text(fig, "title"),
+                "sub": self._text(fig, "sub"),
+                "legend": dict(self._text(legend, None), stroke=css(self.cascade.computed(legend).get("stroke"))),
+                "note": dict(self._text(note, None), stroke=css(self.cascade.computed(note).get("stroke")),
+                             fill=css(self.cascade.computed(note).get("fill")))}
+
+    def _part(self, kind):
+        if kind not in self._generic:
+            self._generic[kind] = View(kind, parent=self.views["figure"])
+        return self._generic[kind]
+
+    def group(self, gid):
+        """A group's frame (fill, stroke, dash, radius) and its title text."""
+        v = self.view("group", gid)
+        c = self.cascade.computed(v)
+        r = c.get("border-radius")
+        return {"fill": css(c.get("fill")), "stroke": css(c.get("stroke")), "dasharray": c.get("stroke-dasharray"),
+                "radius": r[0] if isinstance(r, tuple) else r, "title": self._text(v, "title"), "computed": c}
+
     def edge(self, eid):
         v = self.view("edge", eid)
         c = self._encoded(v, self.cascade.computed(v))

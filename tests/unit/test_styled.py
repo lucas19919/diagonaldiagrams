@@ -63,5 +63,28 @@ class OneSheetEveryType(unittest.TestCase):
         self.assertIn("did you mean 'accent'", cm.exception.msg)
 
 
+
+class FigureParts(unittest.TestCase):
+    def test_title_legend_groups_notes_and_paper_follow_the_sheet(self):
+        spec = {"title": "Checkout", "sub": "one line", "notes": [{"at": "b", "text": "rate limited"}],
+                "nodes": [{"id": "a", "name": "A", "group": "core"}, {"id": "b", "name": "B", "group": "core"}],
+                "edges": [{"from": "a", "to": "b"}],
+                "style": {"tokens": {"font": "Georgia, serif"},
+                          "rules": {"figure": {"fill": "#fffbeb"}, "figure::title": {"color": "#7c3aed"},
+                                    "legend": {"color": "#0e7490"}, "group": {"stroke": "#e11d48", "border-radius": 2},
+                                    "group::title": {"color": "#e11d48"}, "annotation": {"color": "#b45309"}}}}
+        root = ET.fromstring(render_flow(spec)[0])
+        texts = {e.text: e for e in root.iter(NS + "text")}
+        self.assertEqual(texts["Checkout"].get("fill"), "#7c3aed")
+        self.assertEqual(texts["Checkout"].get("font-family"), "Georgia, serif")  # the font token reaches the title
+        self.assertEqual(texts["CORE"].get("fill"), "#e11d48")
+        self.assertEqual(texts["rate limited"].get("fill"), "#b45309")
+        self.assertEqual(texts["box = step"].get("fill"), "#0e7490")
+        rects = list(root.iter(NS + "rect"))
+        self.assertEqual(rects[0].get("fill"), "#fffbeb")  # the paper
+        frame = [r for r in rects if r.get("data-group") == "core"][0]
+        self.assertEqual((frame.get("stroke"), frame.get("rx")), ("#e11d48", "2"))
+
+
 if __name__ == "__main__":
     unittest.main()

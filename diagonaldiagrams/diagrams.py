@@ -143,7 +143,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
                                          _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=st))
     edges = spec.get("edges", [])  # [{from,to,label?,focal?}]
     _notes = (spec.get("notes", []) or [])[:2]
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
     W, col_w, top, gap_y = (720 + (200 if _notes else 0)), 200, max(90, head_h + 20), 120
     if auto or not any("rank" in n for n in nodes):
         computed = auto_ranks(nodes, edges)
@@ -224,7 +224,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     extra = paint.legend_height(t, sty.legend_entries(), W - 60)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")), kind="flow diagram")
-    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
+    dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     frame_at, seg_boxes = len(dr.items), []
     node_boxes = [(cx - 80, cy - n["_h"] / 2, cx + 80, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
     frame_edges = _frame_edges(_groups_of(spec, set(pos)), pos)
@@ -279,14 +279,14 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
                                       pill=es["paper"]))
             label_boxes.append(_label_box(lx, ly, text, vertical, flip))
     _more_markers(dr, sty)
-    dr.insert(frame_at, paint.group_frames(t, _groups_of(spec, set(pos)), pos, seg_boxes))
+    dr.insert(frame_at, paint.group_frames(t, _groups_of(spec, set(pos)), pos, seg_boxes, style_of=sty.group))
     if _notes:
         rail = []
         for nt in _notes:
             if nt.get("at") in pos:
                 cx, cy, _n = pos[nt["at"]]
                 rail.append((cx + 80, cy, nt["text"]))
-        dr.add(*paint.note_rail(t, rail, W - 186, top))
+        dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
     shapes = {n["shape"] for _, _, n in pos.values()}
     _legend(dr, t, sty, W, H, extra, 48, 32, _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"),
                                                    ("diamond" in shapes, "diamond = decision"),
@@ -399,7 +399,7 @@ def _legend(dr, t, sty, W, H, extra, rule_off, text_off, sentence):
     encodings and rules with a legend text, which the canvas grew `extra` for. The rule sits
     rule_off and the sentence text_off above the bottom, as each preset has always drawn them."""
     if sentence or extra:
-        els = paint.legend_line(t, W, H - rule_off - extra, H - text_off - extra, sentence)
+        els = paint.legend_line(t, W, H - rule_off - extra, H - text_off - extra, sentence, st=sty.figure()["legend"])
         dr.add(*(els if sentence else els[:1]))
     if extra:
         dr.add(*paint.legend_rows(t, sty.legend_entries(), 30, H - text_off - extra + paint.LEGEND_ROW, W - 60)[0])
@@ -484,7 +484,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
         n.setdefault("name", n.get("id", ""))
         n["_h"] = _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=sty.node(n["id"]))
     _notes = (spec.get("notes", []) or [])[:2]
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
     # simple layered: group by 'layer' (0 top..n), spread across width
     from collections import defaultdict
     layers = defaultdict(list)
@@ -541,7 +541,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     extra = paint.legend_height(t, sty.legend_entries(), W - 60)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")), kind="architecture diagram")
-    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
+    dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
     for nid, (x, y, n) in pos.items():
         dr.add(*paint.SHAPES.get("rect")(t, nid, n, x, y, 160, n["_h"], corners, st=sty.node(nid)))
@@ -574,7 +574,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
                 for p, q in zip(pts, pts[1:])]
         routes.append((e, lx, ly, vertical, pts, segs, owner, es))
     _more_markers(dr, sty)
-    dr.insert(frame_at, paint.group_frames(t, groups, pos, [b for r in routes for b in r[5]]))
+    dr.insert(frame_at, paint.group_frames(t, groups, pos, [b for r in routes for b in r[5]], style_of=sty.group))
     # Labels go last, once every arrow is routed: each one keeps clear of the boxes,
     # the labels already placed, and every other arrow.
     for k, (e, lx, ly, vertical, pts, _segs, owner, es) in enumerate(routes):
@@ -591,7 +591,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
             if nt.get("at") in pos:
                 x, y, _n = pos[nt["at"]]
                 rail.append((x + 80, y, nt["text"]))
-        dr.add(*paint.note_rail(t, rail, W - 186, top))
+        dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
     http = _first(range(len(edges)), lambda i: str(edges[i].get("proto", "")).startswith("http"))
     focal_node = _first(nodes, lambda n: n.get("focal"))
     focal_edge = _first(range(len(edges)), lambda i: edges[i].get("focal"))
@@ -611,7 +611,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
     n_act = max(1, len(actors))
     margin_x = 70
     _notes = (spec.get("notes", []) or [])[:2]
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
     longest = 48
     for m in messages:
         if m.get("from") == m.get("to"):
@@ -639,7 +639,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")),
                        kind="sequence diagram")
-    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
+    dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     # Lifelines
     for aid, (cx, a) in pos.items():
         dr.add(paint.el("line", owner=aid, role="actor.lifeline", x1=cx, y1=top + bh, x2=cx, y2=H - 50, stroke=t["rule"],
@@ -701,7 +701,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
             if nt.get("at") in pos:
                 cx, _a = pos[nt["at"]]
                 rail.append((cx + 70, top + 26, nt["text"]))
-        dr.add(*paint.note_rail(t, rail, W - 186, top))
+        dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
     http = _first(range(len(messages)), lambda i: str(messages[i].get("proto", "")).startswith("http"))
     focal_actor = _first(actors, lambda a: a.get("focal"))
     focal_msg = _first(range(len(messages)), lambda i: messages[i].get("focal"))
@@ -743,7 +743,7 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
     sty = styler or Styler(spec, "schema", t, corners)
     tables = spec.get("tables", [])
     relations = spec.get("relations", [])
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
     base_y = max(90, head_h + 16)
     rx = corner_rx(corners)
     tbl_w, row_h = 240, 24
@@ -787,7 +787,7 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "schema"), spec.get("sub", spec.get("title", "schema")),
                        kind="database schema")
-    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
+    dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     # Relations (rendered behind table cards)
     rel_labels = []
     rids = edge_ids(relations)
@@ -839,7 +839,7 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
             if nt.get("at") in table_boxes:
                 b = table_boxes[nt["at"]]
                 rail.append((b["x"] + b["w"], b["y"] + 18, nt["text"]))
-        dr.add(*paint.note_rail(t, rail, W - 186, 110))
+        dr.add(*paint.note_rail(t, rail, W - 186, 110, st=sty.figure()["note"]))
     cols = [c for tb in tables for c in tb.get("columns", [])]
     focal_tbl = _first(tables, lambda tb: tb.get("focal"))
     focal_rel = _first(range(len(relations)), lambda i: relations[i].get("focal"))

@@ -318,7 +318,12 @@ Deviations:
   - The preset sheets state today's look as rules: `node:focal`, `edge[proto^=http]` and `edge[async]`. `--corners` becomes the node radius rule.
   - A stroke color outside the four default arrowheads gets a marker of its own.
   - `validate` checks a spec's stylesheets and element styles.
-  - Goldens are byte-identical. Still constants: group frames, headings, legend, notes, lifelines and table columns (next).
+  - Goldens are byte-identical.
+- **P3.8 (part 2):** the figure's own parts read the cascade too. A shared `presets/diagram.json`, which every type's preset extends, states their look:
+  - `figure` (paper and font), `figure::title` and `figure::sub`;
+  - `legend` and `annotation` (notes);
+  - `group` and `group::title` (frames).
+  A brand sheet or `--font` now reaches titles, legends, notes and frames. Still constants: sequence lifelines and schema column rows.
 - **P3.4:** named sides with per-side borders, per-corner radius, gradients, shadows, glow, patterns and opacity, on rect, oval, diamond and table shapes (DESIGN 5.5). Checked by eye in headless renders and by `tests/unit/test_deco.py`. Inset shadows and `sketch` are left for later.
 - **P3.10 (part 1):**
   - `--style FILE` (repeatable) and `--font FAMILY` on flow, arch, seq and schema. A bad stylesheet stops with validate's JSON.
