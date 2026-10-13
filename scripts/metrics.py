@@ -15,6 +15,7 @@ cached bytecode (PYTHONDONTWRITEBYTECODE=1 makes every call recompile graph.py).
 import argparse
 import collections
 import functools
+import importlib
 import json
 import os
 import platform
@@ -49,16 +50,20 @@ class Hooks:
         self.original = {}
 
     def install(self):
-        golden.engine()
-        mods = [m for n, m in list(sys.modules.items())
-                if m is not None and (n == "graph" or n.startswith("diagonaldiagrams"))]
+        """Wrap each function once, where it is defined, and wherever a module bound it by import.
+        Lazy proxies (diagonaldiagrams._lazy) look the function up on each call, so they reach
+        the wrapper without being wrapped themselves."""
+        g = golden.engine()
         for name in HOOKED:
-            for m in mods:
-                fn = getattr(m, name, None)
-                if fn is None or getattr(fn, "_metrics_hook", False):
-                    continue
-                self.original.setdefault(name, fn)
-                setattr(m, name, self._wrap(name, fn))
+            fn = getattr(g, name)  # graph.<name>: in the package, found and imported on first use
+            while getattr(fn, "lazy_target", None):
+                module, attr = fn.lazy_target
+                fn = getattr(importlib.import_module(module), attr)
+            self.original[name] = fn
+            wrapped = self._wrap(name, fn)
+            for m in list(sys.modules.values()):
+                if m is not None and getattr(m, name, None) is fn:
+                    setattr(m, name, wrapped)
 
     def _wrap(self, name, fn):
         @functools.wraps(fn)
@@ -117,7 +122,19 @@ def figure_metrics(res, hooks):
     return row
 
 
+def preload():
+    """Import every engine module first, so the corpus times rendering, not first-use imports
+    (the package loads modules lazily; startup is measured separately)."""
+    try:
+        names = importlib.import_module("diagonaldiagrams._names").NAMES
+    except ImportError:
+        return
+    for mod in sorted(set(names.values())):
+        importlib.import_module("diagonaldiagrams" + ("" if mod == "__init__" else "." + mod))
+
+
 def measure_corpus(hooks):
+    preload()
     corpus = golden.load_corpus()
     outdir = tempfile.mkdtemp(prefix="metrics-")
     rows = {}
