@@ -49,25 +49,25 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 
 | Metric | Baseline | Latest | Target | Expected to move in |
 | --- | --- | --- | --- | --- |
-| CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | after P1: 148–164 ms via `graph.py` with bytecode cached, 215–222 ms without; the installed command 160–172 ms | ≤ 150 ms | P1, P2 |
-| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws |  | ≤ 100 ms, 0 redraws | P2, P4 |
-| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws |  | ≤ 50 ms | P4 |
+| CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | after P2: 157 ms from bytecode, 234 ms recompiling (P1: 148–164 / 215–222). Dropping `dataclasses` took 25 ms back out of what P2's new modules added | ≤ 150 ms | P1, P2 |
+| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws | after P2: 3.8 s, 225 redraws. Each draft is now audited in memory, but the more thorough audit (B12) costs about 1 ms more per draft; P1b's tree measured side by side is 10–20% faster. P2's 1 s goal moves to P4 | ≤ 100 ms, 0 redraws | P2, P4 |
+| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws | after P2: 0.66 s, 89 redraws | ≤ 50 ms | P4 |
 | 40-step flow canvas | 1180 × 3952, aspect 0.30 (a tall strip) |  | within 25% of the target aspect | P4 |
-| MCP tool call | a subprocess per call that recompiles the script (about 0.4–0.5 s) | after P1: still a subprocess per call, through `python -m diagonaldiagrams`; about 0.16 s with bytecode cached | ≤ 100 ms in-process | P2 |
+| MCP tool call | a subprocess per call that recompiles the script (about 0.4–0.5 s) | after P2: in-process; a warm render call takes 7 ms (bar) to 34 ms (arch with its repair loop), validation and audit included | ≤ 100 ms in-process (met) | P2 |
 | Largest module | 10,012 lines | after P1: 2,800 (`charts/kinds.py`) | ≤ 800 lines | P1, P8 |
 | `_c_*` renderers | 66 |  | 0 | P6, P8 |
 | Truncation call sites (`_short`, `_wrap`) | 69 |  | 0 | P3, P6, P8 |
-| Inline font settings in drawing code (`font-size=`/`font-family=` occurrences) | 342 |  | 0 | P3, P6, P8 |
-| `SystemExit` / `sys.exit` inside engine code | 85 |  | 0 outside the CLI | P2 |
+| Inline font settings in drawing code (`font-size=`/`font-family=` occurrences) | 342 | after P2: 310 | 0 | P3, P6, P8 |
+| `SystemExit` / `sys.exit` inside engine code | 85 | after P2: 0 outside the CLI (met) | 0 outside the CLI | P2 |
 | Hidden side channels (function attributes) | 4 | after P1: 0 | 0 | P1 |
 | Styling surface | 9 colors + 3 corner styles |  | the property set in DESIGN 5.4 | P3 |
 | Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
-| Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) |  | 0, once the swim preset lands | P8 |
+| Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) | after P2: 2. The B12 audit now sees an arrow through a circle in `case-state-order`, which was always there | 0, once the swim and state presets land | P8 |
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
 | Known bugs (table below) | 24 | after P2.10: 11 open | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
 | Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
-| Human edits that survive regeneration | none survive (edits are pixels) |  | 100% or a reported conflict | P10 |
+| Human edits that survive regeneration | none survive (edits are pixels) | after P2: an edit expressed as a patch (`apply`) is written into the spec, or reported as a conflict. The edit UI that produces patches is P10 | 100% or a reported conflict | P10 |
 | Tokens and minutes for an agent to produce a 10-view story from a brief | not possible |  | measured at P9, then reduced | P9, P10 |
 | Legacy import fidelity (PPTX/VSDX shapes, connectors and text kept) | none |  | ≥ 95% of elements on the import corpus | P11 |
 
@@ -236,7 +236,7 @@ The remaining bugs are fixed where their code is replaced:
 
 **Goal:** the internal model from DESIGN 3, 4, 8, 9 and 10 exists. Flow, arch, seq and schema paint through it, and the audit no longer re-parses SVG. Layout algorithms are unchanged in this phase.
 
-**Status (2026-10-13):** in progress on branch `p2-core`.
+**Status (2026-10-13):** done on branch `p2-core`, with one exit criterion moved (the 40-step flow, below). Metrics in `bench/metrics/p2.md`.
 - **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11, P2.3, P2.15, P2.16, P2.10, P2.13, P2.14, P2.7, P2.18, P2.12 and P2.17: every P2 task.
 - **P2.3:** scene JSON reads into `scene/model.py` (DESIGN 4.8). A v2 scene file (`"version": 2`) with preset `flow`, `arch`, `seq` or `schema` draws through today's renderers. This works from the command line, the API (`render(kind, scene=...)`) and MCP (`scene`). The v1 → scene → v1 round trip draws the same bytes for all 29 diagram inputs in the golden corpus and for 60 generated specs.
 - **P2.15:** edges, messages and relations are named by content (`from->to:label`, then `#2`) in the scene, the SVG (`data-id`), `--outline` and the draw.io and Excalidraw cells. `tests/unit/test_identity.py` edits a spec and checks that what it didn't touch keeps its ids. 36 goldens changed by the new attributes only. Layout is not incremental yet; that is P4.
@@ -255,7 +255,14 @@ The remaining bugs are fixed where their code is replaced:
 - **P2.12:** `registry.py` holds three name-to-function tables: `paint.SHAPES` (rect, oval, diamond, dot; flow and arch look shapes up there), `audit.checks.CHECKS` (in run order, with the codes each reports) and `export.OUTPUTS` (svg, drawio, excalidraw, png, pdf). `tests/unit/test_registry.py` registers a hexagon from outside the core, and flow draws it.
 - **P2.17:** the four diagram types are WAI-ARIA graphics documents with named, navigable parts, and edges carry their attachment (DESIGN 22.3). 32 goldens change by the new attributes only.
 
-Deviations so far:
+Exit criteria:
+- **Pixels:** every SVG change in P2 was reviewed. Each was either semantically equal (`golden.py --semantic`) or added attributes only, so nothing moved on screen.
+- **Audit parity:** clean. The split audit matched the old one issue for issue except the B12 fixes. In-memory drafts match parsed ones on 349 drafts.
+- **`tests_smoke.py`:** passes (238 checks), along with 60 unit tests.
+- **40-step flow ≤ 1 s:** not met. It takes 3.8 s; the target moves to P4 (see below).
+- **MCP render ≤ 150 ms:** met, at 7–34 ms warm.
+
+Deviations:
 - `geom.py`, `displaylist.py` and `paint.py` are single modules rather than the `geom/`, `paint/` and `emit/` packages. Geometry works on tuples, not `Point`/`Box`/`Path` classes.
 - Per-corner radii and named-side extraction (P2.2) move to P3, where the style system first needs them.
 - The SVG writer (P2.4) writes one element per line with numbers to 2 decimals, but no `<g>` per element yet. Owners and roles live on the in-memory elements.
