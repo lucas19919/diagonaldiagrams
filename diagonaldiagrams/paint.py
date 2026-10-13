@@ -17,6 +17,7 @@ in 2D. An element may carry 3D corner points (pts3d); with a projection set, tho
 import re
 
 from ._draw import ICONS, _box_lines, _diamond_lines, _frame_box, _label_box, _pill_w, corner_rx
+from .registry import Registry
 from ._text import _text_w, _wrap
 from ._theme import FONT, MONO, SANS, SERIF
 
@@ -138,6 +139,10 @@ class Drawing:
 
 # ---------- painters: the parts flow, arch, seq and schema draw ----------
 
+# A node shape: painter(theme, node id, node, cx, cy, w, h, corners) -> elements. A shape may paint
+# several elements (a 3D solid paints one per face). Flow looks a node's "shape" up here.
+SHAPES = Registry("shape")
+
 def paper(t, W, H):
     return el("rect", role="figure.paper", width=W, height=H, fill=t["paper"])
 
@@ -242,6 +247,27 @@ def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner=""):
             el("text", text, owner=owner, role="edge.label", x=x0 + w / 2, y=y0 + 12, font_size=10, font_family=MONO,
                fill=t["muted"], text_anchor="middle")]
 
+
+
+@SHAPES.add("rect")
+def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None):
+    return node_box(t, cx - w / 2, cy - h / 2, w, h, n["name"], n.get("sub", ""), n.get("tag", ""),
+                    n.get("focal", False), corners, nid, n.get("icon"), rx=rx)
+
+
+@SHAPES.add("oval")
+def _oval(t, nid, n, cx, cy, w, h, corners="editorial"):
+    return _rect(t, nid, n, cx, cy, w, h, corners, rx=20)
+
+
+@SHAPES.add("diamond")
+def _diamond(t, nid, n, cx, cy, w, h, corners="editorial"):
+    return diamond(t, cx, cy, w, h, n["name"], n.get("focal", False), nid)
+
+
+@SHAPES.add("dot")
+def _dot(t, nid, n, cx, cy, w, h, corners="editorial"):
+    return dot(t, cx, cy, nid)
 
 def table_card(t, x, y, w, h, rx, tid, tbl, row_h):
     """A table: card, tinted header with the name and an optional tag, then one row per column

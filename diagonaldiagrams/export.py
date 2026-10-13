@@ -5,6 +5,11 @@ from ._output import LAYOUTS, _RECEIPT_PATHS, _receipt_inputs
 from ._text import _text_w
 from ._theme import get_theme
 from ._lazy import lazy
+from .registry import Registry
+
+# An export format: writer(svg, dest, receipt, args, said) prints what it wrote. said is the
+# "N items" phrase for the message. export --to looks the format up here.
+OUTPUTS = Registry("output")
 
 render_chart = lazy("diagonaldiagrams.charts.render", "render_chart")
 render_arch = lazy("diagonaldiagrams.diagrams", "render_arch")
@@ -279,21 +284,42 @@ def do_export(args):
         unit, dest, note = "items", args.o or f"{base}.{args.to}", " (chart: single layout)"
     else:
         raise SpecError(f"unknown receipt cmd '{cmd}'")
-    if args.to == "svg":
-        with open(dest, "w", encoding="utf-8") as f:
-            f.write(svg)
-        print(f"wrote {dest} ({n} {unit}{note})")
-        return
-    if args.to in ("drawio", "excalidraw"):
+    writer = OUTPUTS.get(args.to)
+    if writer is None:
+        raise SpecError(f"no export format '{args.to}'", f"use one of: {', '.join(OUTPUTS.names())}")
+    writer(svg, dest, r, args, f"{n} {unit}{note}")
+
+
+@OUTPUTS.add("svg")
+def _write_svg(svg, dest, r, args, said):
+    with open(dest, "w", encoding="utf-8") as f:
+        f.write(svg)
+    print(f"wrote {dest} ({said})")
+
+
+def _editable(to):
+    def write(svg, dest, r, args, said):
         model = _svg_model(svg)
         if not model["nodes"]:
-            raise SpecError(f"{args.to} export covers flow and arch diagrams (and Mermaid flowcharts); this figure is a {cmd}")
+            raise SpecError(f"{to} export covers figures of boxes and arrows (flow, arch, schema, Mermaid flowcharts, "
+                            f"and the dag, integration and swim charts); this figure is a {r.get('cmd', 'figure')}")
         with open(dest, "w", encoding="utf-8") as f:
-            f.write(_to_drawio(model, r.get("title") or "") if args.to == "drawio" else _to_excalidraw(model))
+            f.write(_to_drawio(model, r.get("title") or "") if to == "drawio" else _to_excalidraw(model))
         print(f"wrote {dest} ({len(model['nodes'])} boxes, {len(model['edges'])} arrows, {len(model['frames'])} frames)")
-        return
+    return write
+
+
+OUTPUTS.add("drawio")(_editable("drawio"))
+OUTPUTS.add("excalidraw")(_editable("excalidraw"))
+
+
+def _raster(svg, dest, r, args, said):
     how, why = _raster_svg(svg, dest, args.to, args.width)
     if not how:
         raise SpecError(f"{args.to} export failed: {why}. "
-                 "--to svg needs nothing, and the HTML page has an Export PNG button.")
-    print(f"wrote {dest} via {how} ({n} {unit}{note})")
+                        "--to svg needs nothing, and the HTML page has an Export PNG button.")
+    print(f"wrote {dest} via {how} ({said})")
+
+
+OUTPUTS.add("png")(_raster)
+OUTPUTS.add("pdf")(_raster)

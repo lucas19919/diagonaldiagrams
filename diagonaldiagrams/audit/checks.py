@@ -7,15 +7,13 @@ import math
 from types import SimpleNamespace
 
 from ..geom import center, inside, near_pairs, overlap, path_crosses
+from ..registry import Registry
 
-CHECKS = []  # (name, codes, function), in run order
+CHECKS = Registry("check")  # name -> function(view, issues), with the codes it reports; run in order
 
 
 def check(name, *codes):
-    def register(fn):
-        CHECKS.append((name, codes, fn))
-        return fn
-    return register
+    return CHECKS.add(name, codes=codes)
 
 
 def arrow_runs(arrows):
@@ -245,7 +243,7 @@ def run_checks(dl, stats=None):
                         tb=[t.box for t in texts], sb=[s.box for s in shapes], runs=arrow_runs(arrows),
                         near=lambda xs, ys=None: near_pairs(xs, ys, dl.width, dl.height))
     issues = []
-    for _, _, fn in CHECKS:
+    for _, fn, _ in CHECKS.items():
         fn(v, issues)
     if stats is not None:
         hs = [r for r in v.runs if r[1] == "h"]

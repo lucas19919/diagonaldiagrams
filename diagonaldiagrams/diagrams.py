@@ -223,18 +223,8 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
     frame_edges = _frame_edges(_groups_of(spec, set(pos)), pos)
     label_boxes = []
     for nid, (cx, cy, n) in pos.items():
-        sh = n.get("shape", "rect")
-        h = n["_h"]
-        if sh == "diamond":
-            dr.add(*paint.diamond(t, cx, cy, 160, h, n["name"], n.get("focal", False), nid))
-        elif sh == "oval":
-            dr.add(*paint.node_box(t, cx - 80, cy - h / 2, 160, h, n["name"], n.get("sub", ""), n.get("tag", ""),
-                                   n.get("focal", False), corners, nid, n.get("icon"), rx=20))
-        elif sh == "dot":
-            dr.add(*paint.dot(t, cx, cy, nid))
-        else:
-            dr.add(*paint.node_box(t, cx - 80, cy - h / 2, 160, h, n["name"], n.get("sub", ""), n.get("tag", ""),
-                                   n.get("focal", False), corners, nid, n.get("icon")))
+        painter = paint.SHAPES.get(n.get("shape", "rect")) or paint.SHAPES.get("rect")  # unknown: a box, as v1 draws it
+        dr.add(*painter(t, nid, n, cx, cy, 160, n["_h"], corners))
     # edges after nodes. Ports are spread so an input and an output do not share a point.
     # An arrow going back up (a loop) leaves and enters on the outer side and runs up the outside,
     # instead of climbing through the boxes between its ends.
@@ -496,8 +486,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
     for nid, (x, y, n) in pos.items():
-        dr.add(*paint.node_box(t, x - 80, y - n["_h"] / 2, 160, n["_h"], n["name"], n.get("sub", ""), n.get("tag", ""),
-                               n.get("focal", False), corners, nid, n.get("icon")))
+        dr.add(*paint.SHAPES.get("rect")(t, nid, n, x, y, 160, n["_h"], corners))
     node_boxes = [(x - 80, y - n["_h"] / 2, x + 80, y + n["_h"] / 2) for x, y, n in pos.values()]
     frame_edges = _frame_edges(groups, pos)
     label_boxes = []
