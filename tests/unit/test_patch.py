@@ -111,7 +111,7 @@ class V1Files(unittest.TestCase):
                                       {"op": "pin", "id": "b", "x": 1, "y": 2}])
         _, spec, warn = to_v1(patched)
         self.assertEqual(spec["nodes"], [{"id": "a", "name": "A", "style": {"fill": "red"}}, {"id": "b", "name": "B", "pin": {"x": 1, "y": 2}}])
-        self.assertEqual([w["code"] for w in warn], ["not-drawn"])
+        self.assertEqual([w["code"] for w in warn], ["not-drawn"])  # the pin; the style is drawn
         again, _ = normalize(from_v1(spec, "flow"))  # read back: the patch is still there
         self.assertEqual((again.node("a").style, again.node("b").pin), ({"fill": "red"}, {"x": 1, "y": 2}))
 

@@ -347,6 +347,8 @@ def value(prop, raw, tokens=None, font_size=None):
     if kind == "paint":
         return paint(raw, tokens)
     if kind == "length":
+        if isinstance(raw, str) and tokens and raw.strip() in tokens:  # size-s, radius, stroke ...
+            raw = tokens[raw.strip()]
         return length(raw, font_size)
     if kind == "number":
         try:
@@ -380,4 +382,6 @@ def value(prop, raw, tokens=None, font_size=None):
         if text.lower() == "none":
             return None
         return [length(p) for p in re.split(r"[\s,]+", text) if p]
+    if kind == "family" and isinstance(raw, str) and tokens and raw.strip() in tokens:
+        return tokens[raw.strip()]  # font, font-mono
     return raw  # word, family, text: taken as written

@@ -1,0 +1,42 @@
+{
+  "name": "schema",
+  "rules": {
+    "node": {
+      "fill": "card",
+      "stroke": "ink",
+      "stroke-width": 1.2
+    },
+    "node:focal": {
+      "stroke": "accent"
+    },
+    "node::label": {
+      "font-family": "font",
+      "font-size": 13,
+      "font-weight": 600,
+      "color": "ink"
+    },
+    "node::tag": {
+      "font-family": "font-mono",
+      "font-size": 8
+    },
+    "edge": {
+      "stroke": "link",
+      "stroke-width": 1.4
+    },
+    "edge:focal": {
+      "stroke": "accent"
+    },
+    "edge::label": {
+      "font-family": "font-mono",
+      "font-size": 10,
+      "color": "muted",
+      "text-transform": "uppercase"
+    },
+    "node::header": {
+      "fill": "rgba(45,49,66,0.06)"
+    },
+    "node:focal::header": {
+      "fill": "accent-tint"
+    }
+  }
+}

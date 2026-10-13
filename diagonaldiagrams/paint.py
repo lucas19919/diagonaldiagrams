@@ -173,7 +173,7 @@ class Drawing:
 
 # ---------- painters: the parts flow, arch, seq and schema draw ----------
 
-# A node shape: painter(theme, node id, node, cx, cy, w, h, corners) -> elements. A shape may paint
+# A node shape: painter(theme, node id, node, cx, cy, w, h, corners, st=computed style) -> elements. A shape may paint
 # several elements (a 3D solid paints one per face). Flow looks a node's "shape" up here.
 SHAPES = Registry("shape")
 
@@ -204,22 +204,26 @@ def heading(t, title, subtitle, x=28):
     return out, ((y + 16) if out else 8)
 
 
-def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editorial", nid=None, icon=None, rx=None):
-    """A node: paper underlay, the box, an optional tag pill and icon, then the wrapped name and sub."""
-    fill = t["accent_tint"] if focal else t["card"]
-    stroke = t["accent"] if focal else t["ink"]
-    rx = corner_rx(corners) if rx is None else rx
+def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editorial", nid=None, icon=None, rx=None,
+             st=None):
+    """A node: paper underlay, the box, an optional tag pill and icon, then the wrapped name and sub.
+    st is the node's computed style (style.Styler.node); without it, the theme's v1 look."""
+    st = st or legacy_node_style(t, focal, corners)
+    stroke = st["stroke"]
+    rx = st["radius"] if rx is None else rx
     cx = x + w / 2
     own = nid or ""
-    out = [el("rect", owner=own, role="node.underlay", x=x, y=y, width=w, height=h, rx=rx, fill=t["paper"]),
-           el("rect", owner=own, role="node.shape", x=x, y=y, width=w, height=h, rx=rx, fill=fill, stroke=stroke,
-              data_node=nid, data_label=name if nid is not None else None)]
+    out = [el("rect", owner=own, role="node.underlay", x=x, y=y, width=w, height=h, rx=rx, fill=st["paper"]),
+           el("rect", owner=own, role="node.shape", x=x, y=y, width=w, height=h, rx=rx, fill=st["fill"], stroke=stroke,
+              stroke_width=st.get("stroke-width"), data_node=nid, data_label=name if nid is not None else None)]
     if tag:
         tw = max(28, len(tag) * 7)
+        tg = st["tag"]
         out.append(el("rect", owner=own, role="node.tag", x=x + 8, y=y + 6, width=tw, height=12, rx=2, fill="none",
                       stroke=stroke, stroke_opacity=".4", stroke_width=".8"))
-        out.append(el("text", tag, owner=own, role="node.tag", x=x + 8 + tw / 2, y=y + 15, font_size=8, font_family=FONT,
-                      fill=stroke, text_anchor="middle"))
+        out.append(el("text", transformed(tag, tg), owner=own, role="node.tag", x=x + 8 + tw / 2, y=y + 15,
+                      font_size=tg["font-size"], font_family=tg["font-family"], fill=tg.get("color") or stroke,
+                      text_anchor="middle"))
     if icon in ICONS:
         out.append(el("path", owner=own, role="node.icon", d=ICONS[icon], transform=f"translate({x + w - 24},{y + 5})",
                       fill="none", stroke=stroke, stroke_opacity=".75", stroke_width=1.3, stroke_linecap="round",
@@ -229,58 +233,88 @@ def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editoria
     block = 15 * len(nl) + (12 * len(sl) + 2 if sl else 0)
     top = y + (20 if tag or icon in ICONS else 8)
     base = top + max(0.0, (y + h - 8 - top - block) / 2.0) + 11
+    lab, sb = st["label"], st["sub"]
     for i, line in enumerate(nl):
-        out.append(el("text", line, owner=own, role="node.label", x=cx, y=round(base + 15 * i, 1), font_size=12,
-                      font_weight=600, font_family=SANS, fill=t["ink"], text_anchor="middle"))
+        out.append(text_el(transformed(line, lab), lab, own, "node.label", cx, round(base + 15 * i, 1)))
     for i, line in enumerate(sl):
-        out.append(el("text", line, owner=own, role="node.sub", x=cx, y=round(base + 15 * len(nl) + 2 + 12 * i, 1),
-                      font_size=9, font_family=MONO, fill=t["muted"], text_anchor="middle"))
+        out.append(text_el(transformed(line, sb), sb, own, "node.sub", cx, round(base + 15 * len(nl) + 2 + 12 * i, 1)))
     return out
-
-
-def diamond(t, cx, cy, w, h, name, focal=False, nid=None):
+def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None):
     """A decision: paper underlay, the rhombus, and the wrapped question inside."""
-    stroke = t["accent"] if focal else t["ink"]
-    fill = t["accent_tint"] if focal else t["card"]
+    st = st or legacy_node_style(t, focal)
     pts = f"{cx},{cy - h / 2} {cx + w / 2},{cy} {cx},{cy + h / 2} {cx - w / 2},{cy}"
     own = nid or ""
-    out = [el("polygon", owner=own, role="node.underlay", points=pts, fill=t["paper"]),
-           el("polygon", owner=own, role="node.shape", points=pts, fill=fill, stroke=stroke,
-              data_node=nid, data_label=name if nid is not None else None,
+    out = [el("polygon", owner=own, role="node.underlay", points=pts, fill=st["paper"]),
+           el("polygon", owner=own, role="node.shape", points=pts, fill=st["fill"], stroke=st["stroke"],
+              stroke_width=st.get("stroke-width"), data_node=nid, data_label=name if nid is not None else None,
               data_cx=cx if nid is not None else None, data_cy=cy if nid is not None else None)]
     lines = _diamond_lines(name)
     y0 = cy + 4 - 7.5 * (len(lines) - 1)
+    lab = st["label"]
     for i, line in enumerate(lines):
-        out.append(el("text", line, owner=own, role="node.label", x=cx, y=round(y0 + 15 * i, 1), font_size=12,
-                      font_weight=600, font_family=SANS, fill=t["ink"], text_anchor="middle"))
+        out.append(text_el(transformed(line, lab), lab, own, "node.label", cx, round(y0 + 15 * i, 1)))
     return out
-
-
-def dot(t, cx, cy, nid=None):
+def dot(t, cx, cy, nid=None, st=None):
     """A merge point."""
-    return [el("circle", owner=nid or "", role="node.shape", cx=cx, cy=cy, r=4, fill=t["ink"])]
-
-
-def edge_path(d, color, marker, owner="", dashed=False, attrs=None):
-    """An arrow's line; attrs are its data-* attributes (from, to, label)."""
-    return el("path", owner=owner, role="edge.path", d=d, fill="none", stroke=color, stroke_width=1.8,
-              stroke_dasharray="5,4" if dashed else None, marker_end=f"url(#{marker})", **(attrs or {}))
-
-
+    fill = st["fill"] if st else t["ink"]
+    return [el("circle", owner=nid or "", role="node.shape", cx=cx, cy=cy, r=4, fill=fill)]
+def edge_path(d, color, marker, owner="", dashed=False, attrs=None, width=1.8, dash=None):
+    """An arrow's line; attrs are its data-* attributes (from, to, label). dash is a dash list from
+    the style (stroke-dasharray); dashed alone draws v1's 5,4."""
+    pattern = ",".join(fmt(v) for v in dash) if dash else ("5,4" if dashed else None)
+    return el("path", owner=owner, role="edge.path", d=d, fill="none", stroke=color, stroke_width=width,
+              stroke_dasharray=pattern, marker_end=f"url(#{marker})", **(attrs or {}))
 def tail(x, y, side, color, owner=""):
     """The small dot where an arrow leaves its box."""
     vx, vy = {"n": (0, -1), "s": (0, 1), "e": (1, 0), "w": (-1, 0)}[side]
     return el("circle", owner=owner, role="edge.tail", cx=x + vx * 7, cy=y + vy * 7, r=2.7, fill=color)
 
 
-def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner=""):
-    """A label off the shaft, on a paper pill, so it does not cut the arrow."""
+def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner="", st=None, pill=None):
+    """A label off the shaft, on a paper pill, so it does not cut the arrow. st is the edge's
+    ::label style; text arrives already transformed (the placement measured it)."""
+    st = st or {"font-size": 10, "font-family": MONO, "color": t["muted"]}
     x0, y0, _, _ = _label_box(mx, ay, text, vertical, flip)
     w = _pill_w(text)
-    return [el("rect", owner=owner, role="edge.label.pill", x=x0, y=y0, width=w, height=16, rx=2, fill=t["paper"]),
-            el("text", text, owner=owner, role="edge.label", x=x0 + w / 2, y=y0 + 12, font_size=10, font_family=MONO,
-               fill=t["muted"], text_anchor="middle")]
+    return [el("rect", owner=owner, role="edge.label.pill", x=x0, y=y0, width=w, height=16, rx=2, fill=pill or t["paper"]),
+            el("text", text, owner=owner, role="edge.label", x=x0 + w / 2, y=y0 + 12, font_size=st["font-size"],
+               font_family=st["font-family"], font_weight=st.get("font-weight"), fill=st["color"], text_anchor="middle")]
 
+
+
+def legacy_node_style(t, focal=False, corners="editorial"):
+    """A node's style from a v1 theme dict alone: what the painters drew before stylesheets."""
+    return {"fill": t["accent_tint"] if focal else t["card"], "stroke": t["accent"] if focal else t["ink"],
+            "stroke-width": None, "radius": corner_rx(corners), "paper": t["paper"],
+            "label": {"font-family": SANS, "font-size": 12, "font-weight": 600, "color": t["ink"]},
+            "sub": {"font-family": MONO, "font-size": 9, "color": t["muted"]},
+            "tag": {"font-family": FONT, "font-size": 8, "color": None}}
+
+
+def transformed(text, st):
+    """Text with the style's text-transform applied."""
+    mode = (st or {}).get("text-transform")
+    if mode == "uppercase":
+        return str(text).upper()
+    if mode == "lowercase":
+        return str(text).lower()
+    if mode == "capitalize":
+        return " ".join(w[:1].upper() + w[1:] for w in str(text).split(" "))
+    return text
+
+
+def text_el(text, st, owner, role, x, y, anchor="middle"):
+    """A text element in a computed text style: size, weight, family, then style and spacing if set."""
+    return el("text", text, owner=owner, role=role, x=x, y=y, font_size=st["font-size"], font_weight=st.get("font-weight"),
+              font_family=st["font-family"], font_style=st.get("font-style"), letter_spacing=st.get("letter-spacing"),
+              fill=st["color"], text_anchor=anchor)
+
+
+def add_markers(defs, colors):
+    """Arrowheads for stroke colors the default four don't cover: {color: id}, into the defs element."""
+    for color, mid in colors.items():
+        defs.children.append(el("marker", id=mid, markerWidth=12, markerHeight=9, refX=11, refY=4.5, orient="auto",
+                                markerUnits="userSpaceOnUse", children=[el("polygon", points="0 0,12 4.5,0 9", fill=color)]))
 
 
 def named(els, kind, name, role="node.shape"):
@@ -299,49 +333,56 @@ def node_name(n, nid=None):
 
 
 @SHAPES.add("rect")
-def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None, kind="box"):
+def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None, kind="box", st=None):
     return named(node_box(t, cx - w / 2, cy - h / 2, w, h, n["name"], n.get("sub", ""), n.get("tag", ""),
-                          n.get("focal", False), corners, nid, n.get("icon"), rx=rx), kind, node_name(n, nid))
+                          n.get("focal", False), corners, nid, n.get("icon"), rx=rx, st=st), kind, node_name(n, nid))
 
 
 @SHAPES.add("oval")
-def _oval(t, nid, n, cx, cy, w, h, corners="editorial"):
-    return _rect(t, nid, n, cx, cy, w, h, corners, rx=20, kind="start or end")
+def _oval(t, nid, n, cx, cy, w, h, corners="editorial", st=None):
+    return _rect(t, nid, n, cx, cy, w, h, corners, rx=None if st else 20, kind="start or end", st=st)
 
 
 @SHAPES.add("diamond")
-def _diamond(t, nid, n, cx, cy, w, h, corners="editorial"):
-    return named(diamond(t, cx, cy, w, h, n["name"], n.get("focal", False), nid), "decision", node_name(n, nid))
+def _diamond(t, nid, n, cx, cy, w, h, corners="editorial", st=None):
+    return named(diamond(t, cx, cy, w, h, n["name"], n.get("focal", False), nid, st=st), "decision", node_name(n, nid))
 
 
 @SHAPES.add("dot")
-def _dot(t, nid, n, cx, cy, w, h, corners="editorial"):
-    return named(dot(t, cx, cy, nid), "merge point", node_name(n, nid))
+def _dot(t, nid, n, cx, cy, w, h, corners="editorial", st=None):
+    return named(dot(t, cx, cy, nid, st=st), "merge point", node_name(n, nid))
 
-def table_card(t, x, y, w, h, rx, tid, tbl, row_h):
+def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
     """A table: card, tinted header with the name and an optional tag, then one row per column
-    with a PK or FK badge, the column name and its type."""
+    with a PK or FK badge, the column name and its type. st: the table's computed style."""
     focal = tbl.get("focal", False)
-    stroke = t["accent"] if focal else t["ink"]
-    fill_head = t["accent_tint"] if focal else "rgba(45,49,66,0.06)"
+    st = st or {"fill": t["card"], "stroke": t["accent"] if focal else t["ink"], "stroke-width": 1.2, "radius": rx,
+                "header": t["accent_tint"] if focal else "rgba(45,49,66,0.06)",
+                "label": {"font-family": SANS, "font-size": 13, "font-weight": 600, "color": t["ink"]},
+                "tag": {"font-family": MONO, "font-size": 8, "color": None}}
+    stroke = st["stroke"]
+    rx = st["radius"] if st.get("radius") is not None else rx
+    fill_head = st["header"]
     cols = ", ".join(str(c.get("name", "")) + (" (primary key)" if c.get("pk") else " (foreign key)" if c.get("fk") else "")
                      for c in tbl.get("columns", []))
-    out = [el("rect", owner=tid, role="table.card", x=x, y=y, width=w, height=h, rx=rx, fill=t["card"], stroke=stroke,
-              stroke_width=1.2, data_node=tid, data_label=tbl.get("name", tid),
+    out = [el("rect", owner=tid, role="table.card", x=x, y=y, width=w, height=h, rx=rx, fill=st["fill"], stroke=stroke,
+              stroke_width=st["stroke-width"], data_node=tid, data_label=tbl.get("name", tid),
               a11y={"name": f"{tbl.get('name', tid)}" + (f": {cols}" if cols else ""), "kind": "table"}),
            el("path", owner=tid, role="table.header",
               d=f"M{x},{y + 36} L{x},{y + rx} Q{x},{y} {x + rx},{y} L{x + w - rx},{y} Q{x + w},{y} {x + w},{y + rx} L{x + w},{y + 36} Z",
               fill=fill_head),
            el("line", owner=tid, role="table.rule", x1=x, y1=y + 36, x2=x + w, y2=y + 36, stroke=t["rule"], stroke_width=1),
-           el("text", tbl.get("name", tid), owner=tid, role="table.name", x=x + 12, y=y + 23, font_size=13, font_weight=600,
-              font_family=SANS, fill=t["ink"], data_role="table")]
+           el("text", transformed(tbl.get("name", tid), st["label"]), owner=tid, role="table.name", x=x + 12, y=y + 23,
+              font_size=st["label"]["font-size"], font_weight=st["label"].get("font-weight"),
+              font_family=st["label"]["font-family"], fill=st["label"]["color"], data_role="table")]
     tag = tbl.get("tag", "")
     if tag:
         tw = max(32, len(tag) * 7 + 8)
         out.append(el("rect", owner=tid, role="table.tag", x=x + w - tw - 10, y=y + 12, width=tw, height=14, rx=2, fill="none",
                       stroke=stroke, stroke_opacity=".5", stroke_width=".8"))
-        out.append(el("text", tag, owner=tid, role="table.tag", x=x + w - tw / 2 - 10, y=y + 22, font_size=8, font_family=MONO,
-                      fill=stroke, text_anchor="middle"))
+        out.append(el("text", transformed(tag, st["tag"]), owner=tid, role="table.tag", x=x + w - tw / 2 - 10, y=y + 22,
+                      font_size=st["tag"]["font-size"], font_family=st["tag"]["font-family"],
+                      fill=st["tag"].get("color") or stroke, text_anchor="middle"))
     for c_idx, c in enumerate(tbl.get("columns", [])):
         cy = y + 44 + c_idx * row_h
         own = f'{tid}.{c.get("name", c_idx)}'

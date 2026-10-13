@@ -8,6 +8,7 @@ from ._draw import (
 from ._theme import THEME
 from .audit import _svg_geometry
 from .scene.ids import edge_ids
+from .style.styler import Styler
 
 
 def _group_columns(layers, groups, gof, edges=()):
@@ -129,12 +130,14 @@ def auto_ranks(nodes, edges):
     return rank
 
 
-def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
+def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=None):
     t = theme or THEME
+    sty = styler or Styler(spec, "flow", t, corners)
     nodes = [dict(n) for n in spec["nodes"]]  # [{id,shape,name,tag?,sub?,focal?}]
     for n in nodes:
         n.setdefault("name", n.get("id", ""))
-        sh = n.get("shape", "rect")
+        n["shape"] = sty.node(n.get("id"))["computed"].get("shape") or n.get("shape", "rect")  # a rule may set it
+        sh = n["shape"]
         n["_h"] = 8 if sh == "dot" else (_diamond_h(n["name"]) if sh == "diamond" else _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", "")))
     edges = spec.get("edges", [])  # [{from,to,label?,focal?}]
     _notes = (spec.get("notes", []) or [])[:2]
@@ -224,7 +227,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
     label_boxes = []
     for nid, (cx, cy, n) in pos.items():
         painter = paint.SHAPES.get(n.get("shape", "rect")) or paint.SHAPES.get("rect")  # unknown: a box, as v1 draws it
-        dr.add(*painter(t, nid, n, cx, cy, 160, n["_h"], corners))
+        dr.add(*painter(t, nid, n, cx, cy, 160, n["_h"], corners, st=sty.node(nid)))
     # edges after nodes. Ports are spread so an input and an output do not share a point.
     # An arrow going back up (a loop) leaves and enters on the outer side and runs up the outside,
     # instead of climbing through the boxes between its ends.
@@ -245,8 +248,9 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         if i not in ports:
             continue
         x1, y1, s1, x2, y2, s2 = ports[i]
-        col = t["accent"] if e.get("focal") else t["muted"]
-        mid = "aa" if e.get("focal") else "a"
+        es = sty.edge(eids[i])
+        col = es["stroke"]
+        mid = sty.marker(col)
         nudge = label_dy = 0
         if s1 in ("e", "w") and s2 in ("e", "w") and y1 > y2 + 24:
             nudge = -20 if x1 <= x2 else 20
@@ -255,20 +259,22 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         if not d:
             continue
         owner = eids[i]
-        path = paint.edge_path(d, col, mid, owner, e.get("async"),
+        path = paint.edge_path(d, col, mid, owner, False,
                                {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", ""),
-                                "data-id": owner})
+                                "data-id": owner}, width=es["stroke-width"], dash=es["dasharray"])
         path.a11y = {"name": _edge_name(pos, e), "kind": "arrow"}
         path.attach = {"from": {"node": e.get("from"), "port": s1}, "to": {"node": e.get("to"), "port": s2}}
         dr.add(path,
                paint.tail(x1, y1, s1, col, owner))
         seg_boxes += _seg_boxes(pts)
         if e.get("label"):
-            text = e["label"].upper()
+            text = paint.transformed(e["label"], es["label"])
             lx, ly, vertical, flip = _place_label(lx, ly + label_dy, vertical, text, pts,
                                                   node_boxes + label_boxes + frame_edges)
-            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vertical, flip=flip, owner=owner))
+            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vertical, flip=flip, owner=owner, st=es["label"],
+                                      pill=es["paper"]))
             label_boxes.append(_label_box(lx, ly, text, vertical, flip))
+    _more_markers(dr, sty)
     dr.insert(frame_at, paint.group_frames(t, _groups_of(spec, set(pos)), pos, seg_boxes))
     if _notes:
         rail = []
@@ -285,8 +291,10 @@ def render_flow(spec, corners="editorial", auto=False, theme=None):
     """Draw a flow. If an arrow runs through a box, move a node the spec left free to
     another lane and draw again. A node with its own lane is never moved. A move must lower
     the layout cost (problems, crossings, arrow length), not just the problem count."""
+    sty = Styler(spec, "flow", theme or THEME, corners)  # styles don't depend on the lanes the loop moves
+
     def draw(sp):
-        dr, w, h, placed = _render_flow_once(sp, corners, auto, theme)
+        dr, w, h, placed = _render_flow_once(sp, corners, auto, theme, sty)
         out, found, c = _layout_cost((dr, w, h))
         return out, placed, found, c
     out, pos, bad, cost = draw(spec)
@@ -329,7 +337,8 @@ def render_arch(spec, corners="editorial", theme=None):
     arrows on one line, a label collision), try other orders within each row (layers never
     change). Keep the order with the lowest cost: a problem counts as four crossings, and
     arrow length breaks ties, so one fix is never bought with a tangle of new crossings."""
-    out, bad, cost = _layout_cost(_render_arch_once(spec, corners, theme))
+    sty = Styler(spec, "arch", theme or THEME, corners)  # shared by the drafts: they only reorder rows
+    out, bad, cost = _layout_cost(_render_arch_once(spec, corners, theme, sty))
     if not bad or not isinstance(spec.get("nodes"), list):
         return _as_svg(out)
     work = json.loads(json.dumps(spec))
@@ -344,7 +353,7 @@ def render_arch(spec, corners="editorial", theme=None):
                     trial = json.loads(json.dumps(work))
                     ns = trial["nodes"]
                     ns[idx[a]], ns[idx[b]] = ns[idx[b]], ns[idx[a]]
-                    o, found, c = _layout_cost(_render_arch_once(trial, corners, theme))
+                    o, found, c = _layout_cost(_render_arch_once(trial, corners, theme, sty))
                     if c < cost:
                         work, out, bad, cost, improved = trial, o, found, c, True
         if not improved:
@@ -368,6 +377,14 @@ def _edge_name(pos, e, label=None):
         return str(pos[nid][2].get("name", nid)) if nid in pos else str(nid)
     text = e.get("label", "") if label is None else label
     return f"{name(e.get('from'))} to {name(e.get('to'))}" + (f": {text}" if text else "")
+
+
+def _more_markers(dr, sty):
+    """Arrowheads for the stroke colors the styles chose beyond the four default ones."""
+    if sty.extra_markers:
+        defs = next(e for e in dr.items if e.role == "figure.defs")
+        known = {c.attrs.get("id") for c in defs.children}
+        paint.add_markers(defs, {c: m for c, m in sty.extra_markers.items() if m not in known})
 
 
 def _as_svg(out):
@@ -432,8 +449,9 @@ def _gap_tracks(ports, room=None, net_by_source=False):
     return tracks
 
 
-def _render_arch_once(spec, corners="editorial", theme=None):
+def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     t = theme or THEME
+    sty = styler or Styler(spec, "arch", t, corners)
     nodes = [dict(n) for n in spec["nodes"]]; edges = spec.get("edges", [])
     for n in nodes:
         n.setdefault("name", n.get("id", ""))
@@ -497,7 +515,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
     for nid, (x, y, n) in pos.items():
-        dr.add(*paint.SHAPES.get("rect")(t, nid, n, x, y, 160, n["_h"], corners))
+        dr.add(*paint.SHAPES.get("rect")(t, nid, n, x, y, 160, n["_h"], corners, st=sty.node(nid)))
     node_boxes = [(x - 80, y - n["_h"] / 2, x + 80, y + n["_h"] / 2) for x, y, n in pos.values()]
     frame_edges = _frame_edges(groups, pos)
     label_boxes = []
@@ -509,31 +527,34 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         if i not in ports:
             continue
         x1, y1, s1, x2, y2, s2 = ports[i]
-        col = t["link"] if e.get("proto","").startswith("http") else (t["accent"] if e.get("focal") else t["muted"])
-        mid = "al" if e.get("proto", "").startswith("http") else ("aa" if e.get("focal") else "a")
+        es = sty.edge(eids[i])
+        col = es["stroke"]
+        mid = sty.marker(col)
         d, lx, ly, vertical, pts = route_edge(x1, y1, s1, x2, y2, s2, track=tracks.get(i, 0))
         if not d:
             continue
         owner = eids[i]
-        path = paint.edge_path(d, col, mid, owner, e.get("async"),
+        path = paint.edge_path(d, col, mid, owner, False,
                                {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", ""),
-                                "data-id": owner})
+                                "data-id": owner}, width=es["stroke-width"], dash=es["dasharray"])
         path.a11y = {"name": _edge_name(pos, e), "kind": "arrow"}
         path.attach = {"from": {"node": e.get("from"), "port": s1}, "to": {"node": e.get("to"), "port": s2}}
         dr.add(path,
                paint.tail(x1, y1, s1, col, owner))
         segs = [(min(p[0], q[0]) - 1, min(p[1], q[1]) - 1, max(p[0], q[0]) + 1, max(p[1], q[1]) + 1)
                 for p, q in zip(pts, pts[1:])]
-        routes.append((e, lx, ly, vertical, pts, segs))
+        routes.append((e, lx, ly, vertical, pts, segs, owner, es))
+    _more_markers(dr, sty)
     dr.insert(frame_at, paint.group_frames(t, groups, pos, [b for r in routes for b in r[5]]))
     # Labels go last, once every arrow is routed: each one keeps clear of the boxes,
     # the labels already placed, and every other arrow.
-    for k, (e, lx, ly, vertical, pts, _segs) in enumerate(routes):
+    for k, (e, lx, ly, vertical, pts, _segs, owner, es) in enumerate(routes):
         if e.get("label"):
-            text = e["label"].upper()
+            text = paint.transformed(e["label"], es["label"])
             others = [b for j, r in enumerate(routes) if j != k for b in r[5]]
             lx, ly, vertical, flip = _place_label(lx, ly, vertical, text, pts, node_boxes + label_boxes + frame_edges, others)
-            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vertical, flip=flip, owner=f'{e.get("from")}->{e.get("to")}'))
+            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vertical, flip=flip, owner=owner, st=es["label"],
+                                      pill=es["paper"]))
             label_boxes.append(_label_box(lx, ly, text, vertical, flip))
     if _notes:
         rail = []
@@ -548,6 +569,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
 
 def render_seq(spec, corners="editorial", theme=None):
     t = theme or THEME
+    sty = Styler(spec, "seq", t, corners)
     actors = spec.get("actors", [])
     messages = spec.get("messages", [])
     n_act = max(1, len(actors))
@@ -589,13 +611,12 @@ def render_seq(spec, corners="editorial", theme=None):
         x1, _ = pos[f_id]
         x2, _ = pos[t_id]
         my = msg_start + i * msg_gap
-        focal = m.get("focal", False)
-        is_http = m.get("proto", "").startswith("http")
-        col = t["accent"] if focal else (t["link"] if is_http else t["muted"])
-        mid = "aa" if focal else ("al" if is_http else "a")
+        es = sty.edge(mids[i])
+        col = es["stroke"]
+        mid = sty.marker(col)
         owner = mids[i]
         # read back by the outline: who sends what to whom, in order
-        look = {"stroke-dasharray": "4,4" if (m.get("reply") or m.get("async")) else None,
+        look = {"stroke-dasharray": ",".join(paint.fmt(v) for v in es["dasharray"]) if es["dasharray"] else None,
                 "data-msg": m.get("label", ""), "data-msg-from": pos[f_id][1].get("name", f_id),
                 "data-msg-to": pos[t_id][1].get("name", t_id), "marker-end": f"url(#{mid})", "data-id": owner}
         said = {"name": f"{i + 1}. {pos[f_id][1].get('name', f_id)} to {pos[t_id][1].get('name', t_id)}"
@@ -605,26 +626,32 @@ def render_seq(spec, corners="editorial", theme=None):
             lw = 32
             dr.add(paint.el("path", owner=owner, role="message.path", a11y=said,
                             d=f"M{x1},{my} L{x1 + lw},{my} L{x1 + lw},{my + 20} L{x1 + 4},{my + 20}",
-                            fill="none", stroke=col, stroke_width=1.5, **{k.replace("-", "_"): v for k, v in look.items()}))
+                            fill="none", stroke=col, stroke_width=es["stroke-width"] * 1.5 / 1.6,  # a loop draws a touch finer
+                            **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
-                dr.add(*paint.arrow_label(t, x1 + lw + max(20, len(m["label"]) * 3.5), my + 10, m["label"].upper(), owner=owner))
+                dr.add(*paint.arrow_label(t, x1 + lw + max(20, len(m["label"]) * 3.5), my + 10,
+                                          paint.transformed(m["label"], es["label"]), owner=owner, st=es["label"],
+                                          pill=es["paper"]))
         else:
             direction = 1 if x2 >= x1 else -1
             x_from = x1 + direction * 8
             x_to = x2 - direction * 8
             dr.add(paint.el("line", owner=owner, role="message.path", a11y=said, x1=x_from, y1=my, x2=x_to, y2=my, stroke=col,
-                            stroke_width=1.6, **{k.replace("-", "_"): v for k, v in look.items()}))
+                            stroke_width=es["stroke-width"], **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
                 lbl = m["label"]
                 if m.get("proto"):
                     lbl = f"[{m['proto'].upper()}] {lbl}"
-                dr.add(*paint.arrow_label(t, (x1 + x2) / 2, my, lbl.upper(), owner=owner))
+                dr.add(*paint.arrow_label(t, (x1 + x2) / 2, my, paint.transformed(lbl, es["label"]), owner=owner,
+                                          st=es["label"], pill=es["paper"]))
+    _more_markers(dr, sty)
     # Actor boxes at top
     for aid, (cx, a) in pos.items():
         bw, bh = 140, 52
         bx, by = cx - bw / 2, top
         dr.add(*paint.named(paint.node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""),
-                                           a.get("focal", False), corners, aid), "actor", paint.node_name(a, aid)))
+                                           a.get("focal", False), corners, aid, st=sty.node(aid)), "actor",
+                            paint.node_name(a, aid)))
     if _notes:
         rail = []
         for nt in _notes:
@@ -639,7 +666,8 @@ def render_seq(spec, corners="editorial", theme=None):
 def render_schema(spec, corners="editorial", theme=None):
     """Draw tables and relations. If the audit finds a problem, try other table orders and keep
     the one with the lowest layout cost (problems, crossings, length), as render_arch does."""
-    out, bad, cost = _layout_cost(_render_schema_once(spec, corners, theme))
+    sty = Styler(spec, "schema", theme or THEME, corners)  # shared by the drafts: they only reorder tables
+    out, bad, cost = _layout_cost(_render_schema_once(spec, corners, theme, sty))
     tables = spec.get("tables") if isinstance(spec, dict) else None
     if not bad or not isinstance(tables, list) or any("x" in tb for tb in tables if isinstance(tb, dict)):
         return _as_svg(out)
@@ -651,7 +679,7 @@ def render_schema(spec, corners="editorial", theme=None):
             for b in range(a + 1, n):
                 trial = json.loads(json.dumps(work))
                 trial["tables"][a], trial["tables"][b] = trial["tables"][b], trial["tables"][a]
-                o, found, c = _layout_cost(_render_schema_once(trial, corners, theme))
+                o, found, c = _layout_cost(_render_schema_once(trial, corners, theme, sty))
                 if c < cost:
                     work, out, bad, cost, improved = trial, o, found, c, True
         if not improved or not bad:
@@ -659,8 +687,9 @@ def render_schema(spec, corners="editorial", theme=None):
     return _as_svg(out)
 
 
-def _render_schema_once(spec, corners="editorial", theme=None):
+def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
     t = theme or THEME
+    sty = styler or Styler(spec, "schema", t, corners)
     tables = spec.get("tables", [])
     relations = spec.get("relations", [])
     head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
@@ -723,13 +752,15 @@ def _render_schema_once(spec, corners="editorial", theme=None):
             x1, x2 = b1["x"], b2["x"] + b2["w"] + 6
         else:
             x1, x2 = b1["x"] + b1["w"] / 2, b2["x"] + b2["w"] / 2
-        focal = rel.get("focal", False)
-        col = t["accent"] if focal else t["link"]
-        mid = "aa" if focal else "al"
+        es = sty.edge(rids[k])
+        col = es["stroke"]
+        mid = sty.marker(col)
         owner = rids[k]
         names = {tid: {"name": b["tbl"].get("name", tid)} for tid, b in table_boxes.items()}
         dr.add(paint.el("path", owner=owner, role="edge.path", d=elbow(x1, y1, x2, y2), fill="none", stroke=col,
-                        stroke_width=1.4, marker_end=f"url(#{mid})", data_from=from_id, data_to=to_id,
+                        stroke_width=es["stroke-width"],
+                        stroke_dasharray=",".join(paint.fmt(v) for v in es["dasharray"]) if es["dasharray"] else None,
+                        marker_end=f"url(#{mid})", data_from=from_id, data_to=to_id,
                         data_label=rel.get("label", ""), data_id=owner,
                         a11y={"name": _edge_name({k: (0, 0, v) for k, v in names.items()}, rel), "kind": "relation"},
                         attach={"from": {"node": from_id, "port": from_col}, "to": {"node": to_id, "port": to_col}}))
@@ -739,14 +770,16 @@ def _render_schema_once(spec, corners="editorial", theme=None):
             else:
                 ex = x2 if abs(x2 - x1) < 60 else (x1 + x2) / 2
                 pts = [(x1, y1), (ex, y1), (ex, y2), (x2, y2)]
-            text = rel["label"].upper()
+            text = paint.transformed(rel["label"], es["label"])
             boxes = [(b["x"], b["y"], b["x"] + b["w"], b["y"] + b["h"]) for b in table_boxes.values()]
             lx, ly, vert, flip = _place_label((x1 + x2) / 2, (y1 + y2) / 2, False, text, pts, boxes + rel_labels)
-            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vert, flip=flip, owner=owner))
+            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vert, flip=flip, owner=owner, st=es["label"],
+                                      pill=es["paper"]))
             rel_labels.append(_label_box(lx, ly, text, vert, flip))
+    _more_markers(dr, sty)
     # Table cards
     for tid, b in table_boxes.items():
-        dr.add(*paint.table_card(t, b["x"], b["y"], b["w"], b["h"], rx, tid, b["tbl"], row_h))
+        dr.add(*paint.table_card(t, b["x"], b["y"], b["w"], b["h"], rx, tid, b["tbl"], row_h, st=sty.table(tid)))
     if _notes:
         rail = []
         for nt in _notes:

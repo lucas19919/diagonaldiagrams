@@ -143,7 +143,9 @@ def to_v1(scene):
         spec["annotations"] = other
     if scene.budget is False:
         spec["budget"] = False
-    for key in ("source", "caption", "use", "size", "style", "defs", "data", "space"):
+    if scene.style:
+        spec["style"] = scene.style  # drawn: the renderers read their styles through the cascade (P3.8)
+    for key in ("source", "caption", "use", "size", "defs", "data", "space"):
         if getattr(scene, key):
             warn.append(_not_drawn(f"the figure's '{key}'", key))
             spec[key] = getattr(scene, key)
@@ -164,8 +166,8 @@ def to_v1(scene):
         warn.append(_not_drawn(f"{len(others)} constraint(s)", "constraints"))
         spec["constraints"] = others
     for el in [*nodes, *scene.edges, *scene.groups]:
-        if el.style or el.classes or (getattr(el, "pin", None) or getattr(el, "content", None)) and kind != "schema":
-            warn.append(_not_drawn(f"the style, class, pin or content of '{el.id}'", f"{type(el).__name__.lower()}s.{el.id}"))
+        if (getattr(el, "pin", None) or getattr(el, "content", None)) and kind != "schema":
+            warn.append(_not_drawn(f"the pin or content of '{el.id}'", f"{type(el).__name__.lower()}s.{el.id}"))
             break
     if kind in ("flow", "arch"):
         spec["nodes"] = [_v1_node(n, kind) for n in nodes]

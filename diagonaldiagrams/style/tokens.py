@@ -14,6 +14,7 @@ import os
 from ..errors import SpecError
 
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "themes")
+PRESETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "presets")  # each preset's look, as rules
 THEME_NAMES = ("editorial", "ink", "print")
 V1_KEYS = ("paper", "ink", "muted", "soft", "rule", "accent", "accent_tint", "link", "card")
 _SHEETS = {}
@@ -23,6 +24,8 @@ def sheet(name):
     """A bundled stylesheet by name, as written (extends not resolved)."""
     if name not in _SHEETS:
         path = os.path.join(HERE, f"{name}.json")
+        if not os.path.isfile(path):
+            path = os.path.join(PRESETS, f"{name}.json")
         if not os.path.isfile(path):
             raise SpecError(f"no stylesheet named '{name}'", f"use one of: {', '.join(THEME_NAMES)}", "unknown-theme")
         with open(path, encoding="utf-8") as f:

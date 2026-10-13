@@ -28,7 +28,7 @@ class Registries(unittest.TestCase):
 
     def test_a_shape_added_from_outside_is_drawn_by_flow(self):
         @paint.SHAPES.add("hexagon")
-        def hexagon(t, nid, n, cx, cy, w, h, corners="editorial"):
+        def hexagon(t, nid, n, cx, cy, w, h, corners="editorial", st=None):
             pts = [(cx - w / 2, cy), (cx - w / 4, cy - h / 2), (cx + w / 4, cy - h / 2), (cx + w / 2, cy),
                    (cx + w / 4, cy + h / 2), (cx - w / 4, cy + h / 2)]
             return [paint.el("polygon", owner=nid, role="node.shape", points=" ".join(f"{x},{y}" for x, y in pts),

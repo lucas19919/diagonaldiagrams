@@ -333,6 +333,7 @@ def main():
     outline_checks()
     scene_checks()
     apply_checks()
+    style_checks()
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed" + (f": {FAIL}" if FAIL else ""))
     raise SystemExit(1 if FAIL else 0)
@@ -1059,6 +1060,27 @@ def apply_checks():
           p.returncode == 0 and written.get("version") == 2 and written["nodes"][0].get("name") == "User"
           and "id" not in written["edges"][0], p.stdout[-300:] + p.stderr[-200:])
 
+
+def style_checks():
+    """A spec's stylesheet restyles the drawing; a mistake in it is a validate error with a fix (P3.8)."""
+    print("== style ==")
+    spec = os.path.join(WORK, "style-arch.json")
+    with open(os.path.join(HERE, "examples", "checkout_platform.json"), encoding="utf-8") as f:
+        d = json.load(f)
+    d["style"] = {"tokens": {"link": "#0e7490"}, "rules": {"node": {"stroke-width": 2}, "node::label": {"font-family": "Georgia"}}}
+    with open(spec, "w", encoding="utf-8") as f:
+        json.dump(d, f)
+    svg = os.path.join(WORK, "style-arch.svg")
+    rc, out = run("arch", spec, "-o", svg)
+    body = open(svg, encoding="utf-8").read() if rc == 0 else ""
+    check("a spec's style restyles nodes, labels and token-bound arrows",
+          'stroke-width="2" data-node' in body and 'font-family="Georgia"' in body and 'stroke="#0e7490"' in body, out[-200:])
+    d["style"] = {"rules": {"node": {"stroke": "acent"}}}
+    with open(spec, "w", encoding="utf-8") as f:
+        json.dump(d, f)
+    rc, out = run("validate", spec)
+    check("a typo in a style rule is a validate error with a did-you-mean", rc == 1 and "did you mean 'accent'" in out,
+          out[-200:])
 
 if __name__ == "__main__":
     main()

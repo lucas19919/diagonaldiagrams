@@ -312,6 +312,12 @@ Deviations:
   - every selector and declaration is checked when the cascade is built, and an error names its sheet and rule;
   - results are cached per element.
   `scene_views` builds the views from a scene's group tree. The renderers start reading it in P3.8, which is also where `--corners` becomes a rule.
+- **P3.8 (nodes and edges):** flow, arch, seq and schema paint their nodes, tables, edges, messages, relations and edge labels from the cascade.
+  - `style/styler.py` builds it from the theme, the `--theme-file` tokens, the preset's stylesheet (`style/presets/*.json`) and the spec's `style`.
+  - The preset sheets state today's look as rules: `node:focal`, `edge[proto^=http]` and `edge[async]`. `--corners` becomes the node radius rule.
+  - A stroke color outside the four default arrowheads gets a marker of its own.
+  - `validate` checks a spec's stylesheets and element styles.
+  - Goldens are byte-identical. Still constants: group frames, headings, legend, notes, lifelines and table columns (next).
 
 | Task | Size | Work |
 | --- | --- | --- |

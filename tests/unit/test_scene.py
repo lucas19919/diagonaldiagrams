@@ -150,7 +150,7 @@ class RoundTrip(unittest.TestCase):
         self.assertEqual([n["id"] for n in to_v1(s)[1]["nodes"]], ["b", "a", "c"])
 
     def test_what_v1_cannot_draw_is_named(self):
-        s, _ = normalize({"version": 2, "preset": "flow", "nodes": [{"id": "a", "style": {"fill": "red"}}],
+        s, _ = normalize({"version": 2, "preset": "flow", "nodes": [{"id": "a", "pin": {"x": 1, "y": 2}}],
                           "annotations": [{"type": "callout", "target": "#a", "text": "!"}]})
         _, _, warn = to_v1(s)
         self.assertEqual([w["path"] for w in warn], ["annotations", "nodes.a"])
