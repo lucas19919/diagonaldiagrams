@@ -163,7 +163,11 @@ def shared_runs(v, issues):
         sa, ea = v.arrows[ka].ends
         sb, eb = v.arrows[kb].ends
         joint = math.hypot(sa[0] - sb[0], sa[1] - sb[1]) < 3 or math.hypot(ea[0] - eb[0], ea[1] - eb[1]) < 3
-        if ka != kb and not joint and da == db and abs(ca - cb) < 2 and min(ha, hb) - max(la, lb) > -12 and (ka, kb) not in shared:
+        # one arrow ends where the other begins (through a junction dot) and they only meet end to
+        # end: that is one path, drawn on purpose
+        chained = ((math.hypot(ea[0] - sb[0], ea[1] - sb[1]) < 10 or math.hypot(eb[0] - sa[0], eb[1] - sa[1]) < 10)
+                   and min(ha, hb) - max(la, lb) <= 0)
+        if ka != kb and not joint and not chained and da == db and abs(ca - cb) < 2 and min(ha, hb) - max(la, lb) > -12 and (ka, kb) not in shared:
             shared.add((ka, kb))
             mid = (max(la, lb) + min(ha, hb)) / 2
             where = [round(mid), round(ca)] if da == "h" else [round(ca), round(mid)]

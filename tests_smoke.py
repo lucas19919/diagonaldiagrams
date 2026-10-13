@@ -334,6 +334,7 @@ def main():
     scene_checks()
     apply_checks()
     style_checks()
+    layout_checks()
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed" + (f": {FAIL}" if FAIL else ""))
     raise SystemExit(1 if FAIL else 0)
@@ -996,6 +997,30 @@ def outline_checks():
           [n["id"] for n in o.get("nodes", [])] == ["a", "b", "c"] and len(o.get("edges", [])) == 2, out[-300:])
     rc, out = run("export", dag, "--to", "drawio", "-o", os.path.join(WORK, "ol-dag.drawio"))
     check("chart dag exports its boxes and arrows to draw.io (B13)", rc == 0 and "3 boxes, 2 arrows" in out, out[-200:])
+
+
+def layout_checks():
+    """The layered kernel (P4): flows and arch draw once, a long flow wraps, and --layout-engine v1
+    still draws the v1 rows and repair loops."""
+    print("== layout ==")
+    import re as _re
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "l-v2.svg"))
+    v2 = json.loads(out) if rc == 0 else {}
+    rc1, out1 = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "l-v1.svg"), "--layout-engine", "v1")
+    v1 = json.loads(out1) if rc1 == 0 else {}
+    check("flow draws with the layered kernel and passes the audit", v2.get("ok") is True, out[-300:])
+    check("--layout-engine v1 still draws, and its receipt says so",
+          v1.get("ok") is True and '"engine": "v1"' in open(v1.get("receipt", os.devnull), encoding="utf-8").read(), out1[-300:])
+    long_flow = os.path.join(WORK, "l-long.json")
+    with open(long_flow, "w", encoding="utf-8") as f:
+        json.dump({"title": "Long", "nodes": [{"id": f"s{i}", "name": f"Step {i}"} for i in range(30)],
+                   "edges": [{"from": f"s{i}", "to": f"s{i + 1}"} for i in range(29)]}, f)
+    rc, out = run("flow", long_flow, "-o", os.path.join(WORK, "l-long.svg"))
+    svg = open(os.path.join(WORK, "l-long.svg"), encoding="utf-8").read() if rc == 0 else ""
+    m = _re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg)
+    aspect = float(m.group(1)) / float(m.group(2)) if m else 0.0
+    check("a 30-step flow wraps into columns near 4:3 and passes the audit",
+          rc == 0 and json.loads(out).get("ok") and 0.9 < aspect < 2.0, f"aspect {aspect:.2f}")
 
 
 def scene_checks():

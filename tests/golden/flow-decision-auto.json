@@ -5,7 +5,7 @@
   "--auto"
  ],
  "exit": 0,
- "html_sha256": "8484674c284d33f62916fda560c86ad306cf98ae5bf0a28722301e0e42570e30",
+ "html_sha256": "a729b4458d684eff36264656e11374eac8f7c7cc7565444ad5d8744f8dcaf474",
  "receipt": {
   "auto": true,
   "cmd": "flow",
@@ -114,8 +114,8 @@
   "layout": [
    "row 1: Push",
    "row 2: CI tests",
-   "row 3: Risky? (decision)",
-   "row 4: Fix | Review",
+   "row 3: Risky? (decision) | Fix",
+   "row 4: Review",
    "row 5: Ship"
   ],
   "ok": true

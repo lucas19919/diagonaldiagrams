@@ -4,7 +4,7 @@
   "examples/show_canary.json"
  ],
  "exit": 0,
- "html_sha256": "afdb4207cbdf5c20d23e3217b7d816501d31793f8ff27c3d721340daa6dfa45c",
+ "html_sha256": "5006f1b4082396db26afcd5910efbb0cabd05acdc99d75b739af45c21e459df6",
  "receipt": {
   "auto": false,
   "cmd": "flow",
@@ -132,7 +132,7 @@
    "row 1: Merge",
    "row 2: Bake image",
    "row 3: Canary 5%",
-   "row 4: Roll back | SLO hold? (decision)",
+   "row 4: SLO hold? (decision) | Roll back",
    "row 5: Promote",
    "row 6: Observe",
    "row 7: Steady"

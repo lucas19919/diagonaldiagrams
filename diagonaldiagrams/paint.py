@@ -510,17 +510,18 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
     return out
 
 
-def group_frames(t, groups, pos, avoid=(), style_of=None):
+def group_frames(t, groups, pos, avoid=(), style_of=None, boxes=None):
     """A frame behind each group's members. Its name goes in the top corner (left, else right)
     that no arrow crosses; avoid holds the arrows' segment boxes. style_of(gid) gives a group's
-    computed style (Styler.group)."""
+    computed style (Styler.group). boxes: {group id: (x0, y0, x1, y1)} when a layout placed the
+    frames; otherwise each frame is drawn around its members."""
     out = []
     for g in groups:
         gs = style_of(g["id"]) if style_of else {
             "fill": t["rule"], "stroke": t["muted"], "dasharray": [4, 3], "radius": 10,
             "title": {"font-size": 10, "font-weight": 600, "font-family": FONT, "color": t["muted"],
                       "text-transform": "uppercase"}}
-        f = _frame_box(g, pos)
+        f = boxes.get(g["id"]) if boxes is not None else _frame_box(g, pos)
         if not f:
             continue
         x0, y0, x1, y1 = f

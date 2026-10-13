@@ -1,29 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" viewBox="0 0 720 352" width="720">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" viewBox="0 0 720 350" width="720">
 <title>Cross test</title>
 <desc>Cross test</desc>
-<rect width="720" height="352" fill="#f5f5f5" aria-hidden="true"/>
+<rect width="720" height="350" fill="#f5f5f5" aria-hidden="true"/>
 <defs><marker id="a" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#4f5d75"/></marker><marker id="aa" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#eb6c36"/></marker><marker id="al" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#7a8399"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Cross test</text>
-<rect x="180" y="92" width="160" height="56" rx="20" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="180" y="92" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="l" data-label="Left src" role="graphics-symbol" aria-roledescription="start or end" aria-label="Left src"/>
-<text x="260" y="123.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Left src</text>
-<rect x="380" y="92" width="160" height="56" rx="20" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="380" y="92" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="r" data-label="Right src" role="graphics-symbol" aria-roledescription="start or end" aria-label="Right src"/>
-<text x="460" y="123.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Right src</text>
-<rect x="180" y="212" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="180" y="212" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="y" data-label="Y" role="graphics-symbol" aria-roledescription="box" aria-label="Y"/>
-<text x="260" y="243.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Y</text>
-<rect x="380" y="212" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="380" y="212" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="x" data-label="X" role="graphics-symbol" aria-roledescription="box" aria-label="X"/>
-<text x="460" y="243.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">X</text>
-<path d="M260,148 L260,212" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="l" data-to="y" data-label="a" data-id="l-&gt;y:a" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Left src to Y: a"/>
-<circle cx="260" cy="155" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<rect x="268" y="171" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="288" y="183" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">A</text>
-<path d="M460,148 L460,212" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="r" data-to="x" data-label="b" data-id="r-&gt;x:b" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Right src to X: b"/>
-<circle cx="460" cy="155" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<rect x="468" y="171" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="488" y="183" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">B</text>
-<line x1="30" y1="304" x2="690" y2="304" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="320" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">box = step, rounded = start or end</text>
+<rect x="180" y="90" width="160" height="56" rx="20" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="180" y="90" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="l" data-label="Left src" role="graphics-symbol" aria-roledescription="start or end" aria-label="Left src"/>
+<text x="260" y="121.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Left src</text>
+<rect x="380" y="90" width="160" height="56" rx="20" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="380" y="90" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="r" data-label="Right src" role="graphics-symbol" aria-roledescription="start or end" aria-label="Right src"/>
+<text x="460" y="121.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Right src</text>
+<rect x="380" y="210" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="380" y="210" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="x" data-label="X" role="graphics-symbol" aria-roledescription="box" aria-label="X"/>
+<text x="460" y="241.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">X</text>
+<rect x="180" y="210" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="180" y="210" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="y" data-label="Y" role="graphics-symbol" aria-roledescription="box" aria-label="Y"/>
+<text x="260" y="241.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Y</text>
+<path d="M260,146 L260,210" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="l" data-to="y" data-label="a" data-id="l-&gt;y:a" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Left src to Y: a"/>
+<circle cx="260" cy="153" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M460,146 L460,210" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="r" data-to="x" data-label="b" data-id="r-&gt;x:b" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Right src to X: b"/>
+<circle cx="460" cy="153" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="268" y="169" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="288" y="181" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">A</text>
+<rect x="468" y="169" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="488" y="181" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">B</text>
+<line x1="30" y1="302" x2="690" y2="302" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="318" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">box = step, rounded = start or end</text>
 </svg>

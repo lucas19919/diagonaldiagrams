@@ -4,7 +4,7 @@
   "examples/agent_platform.json"
  ],
  "exit": 0,
- "html_sha256": "4e74e50423a86a317b9b4a70c7c6d10aaa895c54bdd2220d20eb75b55785d286",
+ "html_sha256": "4bbfd6251fb4d341375eaec422aace8cf65c8edefc65b8bab89b07bcf34f12bb",
  "receipt": {
   "auto": false,
   "cmd": "arch",

@@ -449,6 +449,14 @@ A `Placement` holds child positions (x, y, and optional z for 3D), container-loc
 
 `size.width` and `size.aspect` are passed to the root layout. `layered` uses them to choose `wrap` and spacing; `grid` uses them to choose columns. A 40-step flow lands in columns near the target aspect instead of one 5000 px strip.
 
+**As built (P4, layered):** `layout/` holds the kernel.
+- **Ranks (`rank.py`):** cycles are broken by v1's depth-first walk, so a loop's start stays on top. Unpinned ranks are the longest path, compacted by the network simplex for parts up to 400 nodes. Pinned ranks (flow `rank`, arch `layer`) are kept, made dense.
+- **Order (`order.py`):** each layer holds nodes, dummies (a long arrow passing a layer), port items (where a back edge turns beside its node) and a left and right border for every group spanning it. Layers sort as a tree, so groups stay whole and sibling groups keep one order in every layer. Barycenter sweeps and transposition keep the best of up to 24 passes. Each port is then tried on the other side of its node.
+- **Coordinates (`bk.py`):** Brandes–Köpf, with group borders forced into one block per side, so frames are rectangles that hold their members and nothing else (B20). A decision's branches stand beyond its side vertices.
+- **Routes (`layered.py`, `channels.py`):** an arrow leaves by a port, runs straight through its dummies, and turns in the gaps between layers. Each turn has a track of its own, assigned per gap (B21). A gap is as tall as its tracks need, so nothing is moved afterwards. Back edges either climb beside their nodes through port items (flow, B19, B23) or run from the top of the lower node to the bottom of the upper one (arch, `back: "ports"`). Two arrows that would trade columns in a gap get a dogleg.
+- **Wrap (`wrap.py`):** a layout of 12 or more layers well under the target aspect (default 4:3, or the spec's `size.aspect`) is cut between layers no frame spans. The chunks sit side by side, joined by corridors under, between and over them.
+- **No repair loop:** flow and arch draw once. The v1 path (`legacy.py`, `--layout-engine v1`) stays until P8.
+
 ## 8. Routing, labels, painting
 
 ### 8.1 Ports

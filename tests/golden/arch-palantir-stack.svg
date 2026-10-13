@@ -1,130 +1,130 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" viewBox="0 0 880 690" width="880">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" viewBox="0 0 760 710" width="760">
 <title>Palantir, from data to AIP</title>
 <desc>Foundry carries data into the ontology. AIP reads and acts. Apollo deploys both on Rubix.</desc>
-<rect width="880" height="690" fill="#f5f5f5" aria-hidden="true"/>
+<rect width="760" height="710" fill="#f5f5f5" aria-hidden="true"/>
 <defs><marker id="a" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#4f5d75"/></marker><marker id="aa" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#eb6c36"/></marker><marker id="al" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#7a8399"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Palantir, from data to AIP</text>
 <text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">Foundry carries data into the ontology. AIP reads and acts. Apollo deploys both on Rubix.</text>
-<rect x="140" y="70.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="140" y="70.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="models" data-label="Models" role="graphics-symbol" aria-roledescription="box" aria-label="Models, registered LLMs"/>
-<rect x="148" y="76.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="162" y="85.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">LLM</text>
-<text x="220" y="102.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Models</text>
-<text x="220" y="119.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">registered LLMs</text>
-<rect x="360" y="70.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="360" y="70.5" width="160" height="59" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="logic" data-label="AIP Logic" role="graphics-symbol" aria-roledescription="box" aria-label="AIP Logic, LLM and tools"/>
-<rect x="368" y="76.5" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="382" y="85.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">AIP</text>
-<text x="440" y="102.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">AIP Logic</text>
-<text x="440" y="119.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LLM and tools</text>
-<rect x="580" y="70.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="580" y="70.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="evals" data-label="AIP Evals" role="graphics-symbol" aria-roledescription="box" aria-label="AIP Evals, tests the agents"/>
-<rect x="588" y="76.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="602" y="85.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">AIP</text>
-<text x="660" y="102.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">AIP Evals</text>
-<text x="660" y="119.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">tests the agents</text>
-<rect x="140" y="229.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="140" y="229.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="workshop" data-label="Workshop" role="graphics-symbol" aria-roledescription="box" aria-label="Workshop, operational apps"/>
-<rect x="148" y="235.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="162" y="244.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">APP</text>
-<text x="220" y="261.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Workshop</text>
-<text x="220" y="278.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">operational apps</text>
-<rect x="360" y="229.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="360" y="229.5" width="160" height="59" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="ontology" data-label="Ontology" role="graphics-symbol" aria-roledescription="box" aria-label="Ontology, data, logic, action"/>
-<rect x="368" y="235.5" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="382" y="244.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">ONT</text>
-<text x="440" y="261.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Ontology</text>
-<text x="440" y="278.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">data, logic, action</text>
-<rect x="580" y="229.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="580" y="229.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="automate" data-label="Automate" role="graphics-symbol" aria-roledescription="box" aria-label="Automate, conditions"/>
-<rect x="588" y="235.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="602" y="244.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">APP</text>
-<text x="660" y="261.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Automate</text>
-<text x="660" y="278.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">conditions</text>
-<rect x="140" y="388.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="140" y="388.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="functions" data-label="Functions" role="graphics-symbol" aria-roledescription="box" aria-label="Functions, logic on objects"/>
-<rect x="148" y="394.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="162" y="403.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">FN</text>
-<text x="220" y="420.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Functions</text>
-<text x="220" y="437.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">logic on objects</text>
-<rect x="360" y="388.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="360" y="388.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="funnel" data-label="Object Funnel" role="graphics-symbol" aria-roledescription="box" aria-label="Object Funnel, into storage v2"/>
-<rect x="368" y="394.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="382" y="403.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">IDX</text>
-<text x="440" y="420.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Object Funnel</text>
-<text x="440" y="437.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">into storage v2</text>
-<rect x="580" y="388.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="580" y="388.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="builder" data-label="Pipeline Builder" role="graphics-symbol" aria-roledescription="box" aria-label="Pipeline Builder, Spark and Flink"/>
-<rect x="588" y="394.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="602" y="403.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">PB</text>
-<text x="660" y="420.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Pipeline Builder</text>
-<text x="660" y="437.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Spark and Flink</text>
-<rect x="140" y="547.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="140" y="547.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="sources" data-label="Sources" role="graphics-symbol" aria-roledescription="box" aria-label="Sources, ERP, files, sensors"/>
-<rect x="148" y="553.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="162" y="562.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">SRC</text>
-<text x="220" y="579.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Sources</text>
-<text x="220" y="596.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ERP, files, sensors</text>
-<rect x="360" y="547.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="360" y="547.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="connect" data-label="Data Connection" role="graphics-symbol" aria-roledescription="box" aria-label="Data Connection, worker or agent"/>
-<rect x="368" y="553.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="382" y="562.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">DC</text>
-<text x="440" y="579.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Data Connection</text>
-<text x="440" y="596.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">worker or agent</text>
-<rect x="580" y="547.5" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="580" y="547.5" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="datasets" data-label="Datasets" role="graphics-symbol" aria-roledescription="box" aria-label="Datasets, tables and streams"/>
-<rect x="588" y="553.5" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="602" y="562.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">DS</text>
-<text x="660" y="579.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Datasets</text>
-<text x="660" y="596.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">tables and streams</text>
-<path d="M300,577 L360,577" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="sources" data-to="connect" data-label="sync" data-id="sources-&gt;connect:sync" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Sources to Data Connection: sync"/>
-<circle cx="307" cy="577" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M520,577 L580,577" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="connect" data-to="datasets" data-label="land" data-id="connect-&gt;datasets:land" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Data Connection to Datasets: land"/>
-<circle cx="527" cy="577" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M660,547.5 L660,447.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="datasets" data-to="builder" data-label="build" data-id="datasets-&gt;builder:build" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Datasets to Pipeline Builder: build"/>
-<circle cx="660" cy="540.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M580,418 L520,418" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="builder" data-to="funnel" data-label="index" data-id="builder-&gt;funnel:index" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Pipeline Builder to Object Funnel: index"/>
-<circle cx="573" cy="418" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M440,388.5 L440,288.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="funnel" data-to="ontology" data-label="store" data-id="funnel-&gt;ontology:store" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Object Funnel to Ontology: store"/>
-<circle cx="440" cy="381.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M220,388.5 L220,288.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="functions" data-to="workshop" data-label="logic" data-id="functions-&gt;workshop:logic" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Functions to Workshop: logic"/>
-<circle cx="220" cy="381.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M360,259 L300,259" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="ontology" data-to="workshop" data-label="run" data-id="ontology-&gt;workshop:run" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Ontology to Workshop: run"/>
-<circle cx="353" cy="259" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M402,229.5 L402,129.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="ontology" data-to="logic" data-label="ground" data-id="ontology-&gt;logic:ground" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Ontology to AIP Logic: ground"/>
-<circle cx="402" cy="222.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M520,259 L580,259" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="ontology" data-to="automate" data-label="watch" data-id="ontology-&gt;automate:watch" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Ontology to Automate: watch"/>
-<circle cx="527" cy="259" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M360,100 L300,100" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="logic" data-to="models" data-label="call" data-id="logic-&gt;models:call" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="AIP Logic to Models: call"/>
-<circle cx="353" cy="100" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M520,100 L580,100" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="logic" data-to="evals" data-label="score" data-id="logic-&gt;evals:score" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="AIP Logic to AIP Evals: score"/>
-<circle cx="527" cy="100" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M478,129.5 L478,229.5" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="logic" data-to="ontology" data-label="act" data-id="logic-&gt;ontology:act" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="AIP Logic to Ontology: act"/>
-<circle cx="478" cy="136.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<rect x="310" y="553" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="330" y="565" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SYNC</text>
-<rect x="530" y="553" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="550" y="565" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LAND</text>
-<rect x="668" y="488.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="690" y="500.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">BUILD</text>
-<rect x="528" y="394" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="550" y="406" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">INDEX</text>
-<rect x="448" y="329.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="470" y="341.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">STORE</text>
-<rect x="228" y="329.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="250" y="341.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LOGIC</text>
-<rect x="310" y="235" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="330" y="247" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">RUN</text>
-<rect x="410" y="170.5" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="435" y="182.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">GROUND</text>
-<rect x="528" y="235" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="550" y="247" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">WATCH</text>
-<rect x="310" y="76" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="330" y="88" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CALL</text>
-<rect x="528" y="76" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="550" y="88" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SCORE</text>
-<rect x="486" y="170.5" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="506" y="182.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ACT</text>
-<line x1="30" y1="642" x2="850" y2="642" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="658" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">dashed = sent in the background, coral = highlighted</text>
+<rect x="74" y="90" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="74" y="90" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="models" data-label="Models" role="graphics-symbol" aria-roledescription="box" aria-label="Models, registered LLMs"/>
+<rect x="82" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="96" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">LLM</text>
+<text x="154" y="122" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Models</text>
+<text x="154" y="139" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">registered LLMs</text>
+<rect x="298" y="90" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="298" y="90" width="160" height="59" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="logic" data-label="AIP Logic" role="graphics-symbol" aria-roledescription="box" aria-label="AIP Logic, LLM and tools"/>
+<rect x="306" y="96" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="320" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">AIP</text>
+<text x="378" y="122" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">AIP Logic</text>
+<text x="378" y="139" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LLM and tools</text>
+<rect x="526" y="90" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="526" y="90" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="evals" data-label="AIP Evals" role="graphics-symbol" aria-roledescription="box" aria-label="AIP Evals, tests the agents"/>
+<rect x="534" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="548" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">AIP</text>
+<text x="606" y="122" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">AIP Evals</text>
+<text x="606" y="139" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">tests the agents</text>
+<rect x="74" y="249" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="74" y="249" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="workshop" data-label="Workshop" role="graphics-symbol" aria-roledescription="box" aria-label="Workshop, operational apps"/>
+<rect x="82" y="255" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="96" y="264" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">APP</text>
+<text x="154" y="281" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Workshop</text>
+<text x="154" y="298" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">operational apps</text>
+<rect x="298" y="249" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="298" y="249" width="160" height="59" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="ontology" data-label="Ontology" role="graphics-symbol" aria-roledescription="box" aria-label="Ontology, data, logic, action"/>
+<rect x="306" y="255" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="320" y="264" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">ONT</text>
+<text x="378" y="281" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Ontology</text>
+<text x="378" y="298" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">data, logic, action</text>
+<rect x="526" y="249" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="526" y="249" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="automate" data-label="Automate" role="graphics-symbol" aria-roledescription="box" aria-label="Automate, conditions"/>
+<rect x="534" y="255" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="548" y="264" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">APP</text>
+<text x="606" y="281" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Automate</text>
+<text x="606" y="298" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">conditions</text>
+<rect x="74" y="408" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="74" y="408" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="functions" data-label="Functions" role="graphics-symbol" aria-roledescription="box" aria-label="Functions, logic on objects"/>
+<rect x="82" y="414" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="96" y="423" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">FN</text>
+<text x="154" y="440" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Functions</text>
+<text x="154" y="457" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">logic on objects</text>
+<rect x="298" y="408" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="298" y="408" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="funnel" data-label="Object Funnel" role="graphics-symbol" aria-roledescription="box" aria-label="Object Funnel, into storage v2"/>
+<rect x="306" y="414" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="320" y="423" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">IDX</text>
+<text x="378" y="440" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Object Funnel</text>
+<text x="378" y="457" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">into storage v2</text>
+<rect x="526" y="408" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="526" y="408" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="builder" data-label="Pipeline Builder" role="graphics-symbol" aria-roledescription="box" aria-label="Pipeline Builder, Spark and Flink"/>
+<rect x="534" y="414" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="548" y="423" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">PB</text>
+<text x="606" y="440" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Pipeline Builder</text>
+<text x="606" y="457" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Spark and Flink</text>
+<rect x="78" y="567" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="78" y="567" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="sources" data-label="Sources" role="graphics-symbol" aria-roledescription="box" aria-label="Sources, ERP, files, sensors"/>
+<rect x="86" y="573" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="100" y="582" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">SRC</text>
+<text x="158" y="599" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Sources</text>
+<text x="158" y="616" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ERP, files, sensors</text>
+<rect x="302" y="567" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="302" y="567" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="connect" data-label="Data Connection" role="graphics-symbol" aria-roledescription="box" aria-label="Data Connection, worker or agent"/>
+<rect x="310" y="573" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="324" y="582" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">DC</text>
+<text x="382" y="599" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Data Connection</text>
+<text x="382" y="616" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">worker or agent</text>
+<rect x="526" y="567" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="526" y="567" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="datasets" data-label="Datasets" role="graphics-symbol" aria-roledescription="box" aria-label="Datasets, tables and streams"/>
+<rect x="534" y="573" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="548" y="582" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">DS</text>
+<text x="606" y="599" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Datasets</text>
+<text x="606" y="616" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">tables and streams</text>
+<path d="M238,596.5 L302,596.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="sources" data-to="connect" data-label="sync" data-id="sources-&gt;connect:sync" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Sources to Data Connection: sync"/>
+<circle cx="245" cy="596.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M462,596.5 L526,596.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="connect" data-to="datasets" data-label="land" data-id="connect-&gt;datasets:land" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Data Connection to Datasets: land"/>
+<circle cx="469" cy="596.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M606,567 L606,467" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="datasets" data-to="builder" data-label="build" data-id="datasets-&gt;builder:build" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Datasets to Pipeline Builder: build"/>
+<circle cx="606" cy="560" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M526,437.5 L458,437.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="builder" data-to="funnel" data-label="index" data-id="builder-&gt;funnel:index" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Pipeline Builder to Object Funnel: index"/>
+<circle cx="519" cy="437.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M378,408 L378,308" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="funnel" data-to="ontology" data-label="store" data-id="funnel-&gt;ontology:store" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Object Funnel to Ontology: store"/>
+<circle cx="378" cy="401" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M154,408 L154,308" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="functions" data-to="workshop" data-label="logic" data-id="functions-&gt;workshop:logic" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Functions to Workshop: logic"/>
+<circle cx="154" cy="401" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M298,278.5 L234,278.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="ontology" data-to="workshop" data-label="run" data-id="ontology-&gt;workshop:run" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Ontology to Workshop: run"/>
+<circle cx="291" cy="278.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M416,249 L416,149" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="ontology" data-to="logic" data-label="ground" data-id="ontology-&gt;logic:ground" data-from-port="n" data-to-port="s" role="graphics-symbol" aria-roledescription="arrow" aria-label="Ontology to AIP Logic: ground"/>
+<circle cx="416" cy="242" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M458,278.5 L526,278.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="ontology" data-to="automate" data-label="watch" data-id="ontology-&gt;automate:watch" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Ontology to Automate: watch"/>
+<circle cx="465" cy="278.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M298,119.5 L234,119.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="logic" data-to="models" data-label="call" data-id="logic-&gt;models:call" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="AIP Logic to Models: call"/>
+<circle cx="291" cy="119.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M458,119.5 L526,119.5" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="logic" data-to="evals" data-label="score" data-id="logic-&gt;evals:score" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="AIP Logic to AIP Evals: score"/>
+<circle cx="465" cy="119.5" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M340,149 L340,249" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="logic" data-to="ontology" data-label="act" data-id="logic-&gt;ontology:act" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="AIP Logic to Ontology: act"/>
+<circle cx="340" cy="156" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="250" y="572.5" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="270" y="584.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SYNC</text>
+<rect x="474" y="572.5" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="494" y="584.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LAND</text>
+<rect x="614" y="508" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="636" y="520" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">BUILD</text>
+<rect x="470" y="413.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="492" y="425.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">INDEX</text>
+<rect x="386" y="349" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="408" y="361" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">STORE</text>
+<rect x="162" y="349" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="184" y="361" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LOGIC</text>
+<rect x="246" y="254.5" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="266" y="266.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">RUN</text>
+<rect x="424" y="190" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="449" y="202" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">GROUND</text>
+<rect x="470" y="254.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="492" y="266.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">WATCH</text>
+<rect x="246" y="95.5" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="266" y="107.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CALL</text>
+<rect x="470" y="95.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="492" y="107.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SCORE</text>
+<rect x="348" y="190" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="368" y="202" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ACT</text>
+<line x1="30" y1="662" x2="730" y2="662" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="678" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">dashed = sent in the background, coral = highlighted</text>
 </svg>

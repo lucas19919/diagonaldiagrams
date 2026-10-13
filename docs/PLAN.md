@@ -416,6 +416,21 @@ Default-style golden PNGs stay within the threshold.
 
 **Goal:** layouts that are right by construction. Large graphs wrap to the target shape, and the repair loops are deleted.
 
+**Status (2026-10-13):** in progress on branch `p4-layout`. DESIGN 7.3 has the as-built notes.
+
+Built:
+- **P4.2:** the layered kernel (`layout/`): ranks, order, coordinates, wrap.
+- **P4.3:** its router for layered layouts: ports, tracks per gap, back edges (B19, B21, B23), doglegs, group frames held by construction (B20).
+- **P4.6 (flow and arch):** both draw with the kernel, once, with no repair loop. Their v1 code moved to `legacy.py` behind `--layout-engine v1`.
+- **P4.8 (`size.aspect`):** wrap targets 4:3 unless the spec sets `size.aspect`.
+
+Measured:
+- **Fuzz:** 0 of 1,000 scenes fail the audit (149 of 200 failed before).
+- **Big flows:** the 20-step flow renders in 35 ms and the 40-step flow in about 115 ms (from 0.6 and 3.8 s). The 40-step flow wraps to aspect 1.52 against 4:3.
+- **Goldens:** the 24 changed figures were reviewed side by side with v1. Each is as good or better, after fixes to five that got worse along the way.
+
+Left: P4.1 (the container protocol), P4.4 (labels as their own module), P4.5 (the other kernels, and schema and seq on kernels), P4.7 (a richer fuzz generator), P4.9 to P4.12, and the close-out (metrics, gallery, version).
+
 | Task | Size | Work |
 | --- | --- | --- |
 | P4.1 Protocol and nesting | M | `layout/base.py`: bottom-up measure and top-down place over the container tree. Groups with their own layouts; node `content`. |

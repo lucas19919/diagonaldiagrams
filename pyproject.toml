@@ -29,7 +29,7 @@ Homepage = "https://github.com/lucas19919/diagonaldiagrams"
 
 [tool.setuptools]
 packages = ["diagonaldiagrams", "diagonaldiagrams.audit", "diagonaldiagrams.charts", "diagonaldiagrams.inputs",
-            "diagonaldiagrams.scene", "diagonaldiagrams.style", "diagonaldiagrams.text"]
+            "diagonaldiagrams.layout", "diagonaldiagrams.scene", "diagonaldiagrams.style", "diagonaldiagrams.text"]
 
 [tool.setuptools.package-data]
 "diagonaldiagrams.style" = ["themes/*.json", "presets/*.json"]
