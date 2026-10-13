@@ -12,6 +12,7 @@ from ..geom import IDENTITY, affine, apply, arc_points, bezier_points, compose, 
 
 SKIP = ("defs", "marker", "clipPath", "mask", "symbol", "pattern", "title", "desc", "style")
 KEEP = ("font-size", "font-weight", "text-anchor", "dominant-baseline", "opacity", "visibility", "display", "letter-spacing",
+        "fill", "fill-opacity",
         "marker", "marker-start", "marker-end")  # marker properties inherit, like the text ones
 NEED = {"M": 2, "L": 2, "H": 1, "V": 1, "C": 6, "S": 4, "Q": 4, "T": 2, "A": 7}
 
@@ -166,7 +167,9 @@ def text_items(el, st, m, z):
         else:
             y0, y1 = y - fs * 0.72, y + fs * 0.2
         z[0] += 1
-        out.append(Item("text", z=z[0], box=xbox(m, x0, y0, x0 + w, y1), text=s, size=fs, newline="\n" in s))
+        out.append(Item("text", z=z[0], box=xbox(m, x0, y0, x0 + w, y1), text=s, size=fs, newline="\n" in s,
+                        color=st.get("fill") or "#000000", bold=bold, color_from=el.get("data-color-from"),
+                        size_from=el.get("data-size-from")))
     return out
 
 
@@ -289,6 +292,7 @@ def svg_import(root, width, height):
                             depth=num(el.get("data-depth"), 0.0)))
         if item is not None:
             item.depth = num(el.get("data-depth"), 0.0)  # set by the projection stage in 3D (paint.project)
+            item.fill = (st.get("fill") or "#000000", num(st.get("fill-opacity", 1), 1.0) * num(st.get("opacity", 1), 1.0))
             _read_a11y(item, el)
             bw, bh = box[2] - box[0], box[3] - box[1]
             filled = (el.get("fill") or "black") != "none" or el.get("stroke")

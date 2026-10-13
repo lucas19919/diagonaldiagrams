@@ -5,7 +5,7 @@ svg_import turns any SVG into a display list; checks.CHECKS run over it in order
 import json, os
 
 from ..geom import affine as _affine, xbox as _xbox  # noqa: F401  (old names, kept for graph.<name>)
-from .checks import CHECKS, run_checks  # noqa: F401
+from .checks import CHECKS, WARNINGS, run_checks  # noqa: F401
 from .svg_import import svg_import
 
 
@@ -76,6 +76,6 @@ def _audit_file(p):
             warnings.append({"msg": f"'{txt[:30]}' repeated {c}x", "fix": "dedupe title/caption/source"})
             break
     for it in _svg_geometry(root, W, H):
-        (warnings if it["code"] == "newline" else errors).append(it)
+        (warnings if it["code"] in WARNINGS else errors).append(it)
     return {"ok": not errors, "errors": errors, "warnings": warnings,
             "stats": {"texts": len(texts), "points": circles, "canvas": [W, H]}}

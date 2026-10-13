@@ -122,6 +122,9 @@ class Styler:
         if background is not None and c.get("color") is not None and \
                 self.cascade.origin(v, pseudo, "color") <= self.preset_layer:
             out["color"] = self._readable(c["color"], background)
+        for prop in ("color", "font-size"):  # a stylesheet's choice is marked, so the audit can name it
+            if self.cascade.origin(v, pseudo, prop) > self.preset_layer:
+                out[f"{prop}-from"] = self.cascade.source(v, pseudo, prop)
         return out
 
     def _readable(self, fg, bg):

@@ -10,6 +10,7 @@ from ..geom import center, inside, near_pairs, overlap, path_crosses
 from ..registry import Registry
 
 CHECKS = Registry("check")  # name -> function(view, issues), with the codes it reports; run in order
+WARNINGS = {"newline", "min-size", "colors"}  # codes that warn; every other code is an error
 
 
 def check(name, *codes):
@@ -206,6 +207,77 @@ def group_frames(v, issues):
                                "fix": "move the text or the group's members so the frame clears it", "at": [round(mx), round(my)]})
 
 
+def _under(v, t):
+    """The paint under a text: the last solid fill painted before it whose shape holds its middle,
+    as (color, opacity), or the figure's own background."""
+    cx, cy = (t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2
+    under = None
+    for it in v.items:
+        if it is t:
+            break
+        if it.kind == "shape" and it.fill and it.box and it.box[0] <= cx <= it.box[2] and it.box[1] <= cy <= it.box[3]:
+            paint = str(it.fill[0]).strip().lower()
+            if paint not in ("none", "transparent") and not paint.startswith("url("):
+                under = it
+    return under.fill if under is not None else ("#ffffff", 1.0)
+
+
+@check("text contrast", "contrast")
+def text_contrast(v, issues):
+    # WCAG AA: 4.5:1, or 3:1 for large text (18.66 px, or 14 px bold). Judged where a stylesheet chose
+    # the color; the default themes' own shortfalls are known bug B25.
+    from ..style.parse import Color, color, contrast
+    for t in v.texts:
+        if not t.color_from:
+            continue
+        try:
+            fg = color(t.color)
+            bg_color, alpha = _under(v, t)
+            bg = color(bg_color)
+        except Exception:
+            continue
+        if alpha < 1:
+            bg = Color(bg.r, bg.g, bg.b, bg.a * alpha)
+        ratio = contrast(fg, bg)
+        need = 3.0 if t.size >= 18.66 or (t.size >= 14 and t.bold) else 4.5
+        if ratio < need:
+            mx, my = (t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2
+            issues.append({"code": "contrast",
+                           "msg": f"'{t.text[:24]}' is {t.color} on {bg_color}: {ratio:.1f}:1, under the {need:g}:1 "
+                                  f"WCAG AA asks for; the color comes from {t.color_from}",
+                           "fix": "darken the text or lighten what is under it, in that rule", "at": [round(mx), round(my)]})
+
+
+@check("text size", "min-size")
+def min_size(v, issues):
+    for t in v.texts:
+        if t.size_from and t.size < 9:
+            issues.append({"code": "min-size", "msg": f"'{t.text[:24]}' is {t.size:g} px, under 9 px; the size comes from "
+                                                       f"{t.size_from}", "fix": "use 9 px or more", "at": [round(t.box[0]), round(t.box[1])]})
+
+
+@check("colors", "colors")
+def too_many_colors(v, issues):
+    # More than 8 distinct node colors stop meaning anything: nobody tells the ninth apart.
+    from ..style.parse import color
+    import colorsys
+    seen = []
+    for it in v.named:
+        paint = str((it.fill or ("none",))[0]).strip().lower()
+        if paint in seen or paint in ("none", "transparent") or paint.startswith("url("):
+            continue
+        try:
+            c = color(paint)
+        except Exception:
+            continue
+        if colorsys.rgb_to_hls(c.r / 255, c.g / 255, c.b / 255)[2] >= 0.2:  # greys and whites carry no meaning
+            seen.append(paint)
+    if len(seen) > 8:
+        issues.append({"code": "colors", "msg": f"{len(seen)} distinct node colors: past 8 a reader can't keep them apart",
+                       "fix": "group values into 8 or fewer, or encode the rest another way (border, shape, label)",
+                       "at": [0, 0]})
+
+
 @check("labels in their boxes", "spill")
 def spill(v, issues):
     rects = [s.box for s in v.shapes if s.tag == "rect"]
@@ -238,7 +310,7 @@ def run_checks(dl, stats=None):
     if len(shapes) > 4000:
         shapes = []
     arrows = dl.arrows
-    v = SimpleNamespace(W=dl.width, H=dl.height, texts=texts, shapes=shapes, arrows=arrows,
+    v = SimpleNamespace(W=dl.width, H=dl.height, texts=texts, shapes=shapes, arrows=arrows, items=dl.items,
                         frames=dl.frames, named=dl.named, diamonds=dl.diamonds, ellipses=dl.ellipses,
                         tb=[t.box for t in texts], sb=[s.box for s in shapes], runs=arrow_runs(arrows),
                         near=lambda xs, ys=None: near_pairs(xs, ys, dl.width, dl.height))

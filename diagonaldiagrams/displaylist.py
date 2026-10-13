@@ -28,6 +28,11 @@ class Item:
         ("depth", 0.0),             # distance from the viewer once projected (DESIGN 13); 0 in 2D
         ("a11y", None),             # a part a reader navigates: {"name", "kind", "order"} (DESIGN 22.3)
         ("attach", None),           # arrow: {"from": {"node", "port"}, "to": {...}} when the SVG says
+        ("color", None),            # text: its fill
+        ("bold", False),            # text: weight 600 or more
+        ("color_from", None),       # text: the stylesheet rule that chose its color, when one did
+        ("size_from", None),        # text: the rule that chose its size
+        ("fill", None),             # shape: (color, opacity), what text over it is read against
     )
     NAMES = frozenset(name for name, _ in FIELDS)
 

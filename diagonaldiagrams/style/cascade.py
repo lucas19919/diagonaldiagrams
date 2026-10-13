@@ -41,10 +41,10 @@ def _em(raw):
 
 
 class _Rule:
-    __slots__ = ("selector", "decls", "rank")
+    __slots__ = ("selector", "decls", "rank", "where")
 
-    def __init__(self, selector, decls, rank):
-        self.selector, self.decls, self.rank = selector, decls, rank
+    def __init__(self, selector, decls, rank, where):
+        self.selector, self.decls, self.rank, self.where = selector, decls, rank, where
 
 
 class Cascade:
@@ -70,10 +70,11 @@ class Cascade:
                     raise SpecError(f"{where}: {e.msg}", e.fix, e.code) from None
                 if not isinstance(decls, dict):
                     raise SpecError(f"{where}: the declarations should be an object", 'write {"stroke": "accent"}', "bad-style")
-                self.rules.append(_Rule(sel, self._read(decls, where), (layer, sel.specificity, order)))
+                self.rules.append(_Rule(sel, self._read(decls, where), (layer, sel.specificity, order), where))
         self.rules.sort(key=lambda r: r.rank)
         self._cache = {}
         self._origins = {}  # (view, pseudo) -> {property: the layer (sheet index) that set it}
+        self._sources = {}  # (view, pseudo) -> {property: "stylesheet 'brand', rule 'node.db'"}
 
     def _add(self, s, seen):
         """A sheet and, before it, the bundled sheets it extends."""
@@ -117,27 +118,37 @@ class Cascade:
         base_from = self._origins.get((id(view), None) if pseudo is not None else
                                       (id(view.parent), None) if view.parent is not None else None, {})
         origin = {p: base_from.get(p, -1) for p in out}
+        src_from = self._sources.get((id(view), None) if pseudo is not None else
+                                     (id(view.parent), None) if view.parent is not None else None, {})
+        source = {p: src_from[p] for p in out if p in src_from}
         decls = []
         for rule in self.rules:
             if rule.selector.pseudo_element == pseudo and rule.selector.matches(view):
-                decls.append((rule.rank, rule.decls))
+                decls.append((rule.rank, rule.decls, rule.where))
         if pseudo is None and view.style:
-            decls.append(((len(self.sheets), (0, 0, 0), 0), self._read(view.style, f"the style of '{view.id}'")))
+            where = f"the style of '{view.id}'"
+            decls.append(((len(self.sheets), (0, 0, 0), 0), self._read(view.style, where), where))
             decls.sort(key=lambda d: d[0])
         # font-size first, so em lengths read against the element's own size
-        for rank, ds in decls:
+        for rank, ds, where in decls:
             for p, raw, val in ds:
                 if p == "font-size":
                     out[p] = val if val is not None else parse.length(raw, out.get("font-size", 16.0))
-                    origin[p] = rank[0]
-        for rank, ds in decls:
+                    origin[p], source[p] = rank[0], where
+        for rank, ds, where in decls:
             for p, raw, val in ds:
                 if p != "font-size":
                     out[p] = val if val is not None else parse.value(p, raw, self.tokens, out.get("font-size"))
-                    origin[p] = rank[0]
+                    origin[p], source[p] = rank[0], where
         self._cache[key] = out
         self._origins[key] = origin
+        self._sources[key] = source
         return out
+
+    def source(self, view, pseudo, prop):
+        """Which stylesheet and rule set a property for this element, for messages, or None."""
+        self.computed(view, pseudo)
+        return self._sources[(id(view), pseudo)].get(prop)
 
     def origin(self, view, pseudo, prop):
         """The layer that set a property for this element: the sheet's index in self.sheets, the

@@ -538,6 +538,12 @@ Checks run on the display list, so they know exactly which items are nodes, labe
 | `patch-conflict` | error | A saved edit no longer applies to the regenerated spec (21.3). |
 | `aspect` | warning | Output is far from the requested aspect ratio. |
 
+As built in P3.9:
+- **`contrast`** compares a text's fill with the last solid fill painted under its middle, composited over the figure.
+- **`min-size`** flags text under 9 px.
+- **`colors`** counts distinct, non-grey node fills.
+- **Attribution:** renderers mark text whose color or size a stylesheet set with `data-color-from` and `data-size-from`, holding the sheet and rule. Issues quote them. Until the default themes pass on their own (B25), only marked text is judged.
+
 ### 9.4 Foreign SVG
 
 `audit` must keep reading any SVG. `audit/svg_import.py` turns a foreign SVG into a display list, using today's parser in `_svg_geometry`: CSS rules, transforms, tspans and path flattening. Roles are inferred: `text`, closed shapes are obstacles, and paths with markers are arrows. The same checks then run, and checks that need a role the import couldn't infer skip themselves.

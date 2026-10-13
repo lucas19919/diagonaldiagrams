@@ -64,7 +64,7 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
 | Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) | after P2: 2. The B12 audit now sees an arrow through a circle in `case-state-order`, which was always there | 0, once the swim and state presets land | P8 |
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
-| Known bugs (table below) | 24 | after P3.1: 9 open | 0 | P1b–P8 |
+| Known bugs (table below) | 24 | after P3.9: 10 open (B25 found) | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
 | Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
 | Human edits that survive regeneration | none survive (edits are pixels) | after P2: an edit expressed as a patch (`apply`) is written into the spec, or reported as a conflict. The edit UI that produces patches is P10 | 100% or a reported conflict | P10 |
@@ -229,6 +229,7 @@ The remaining bugs are fixed where their code is replaced:
 | B22 | Routing ignores group frames | P4.3 |
 | B23 | Flow back edges: the ±20 nudge has no effect on the same-side branch | P4.3 |
 | B24 | `_c_swim` ports float off its 140×48 boxes because `_node_box` assumes 160×56 | P8.1 |
+| B25 | The default themes miss the legibility checks:<ul><li>editorial `soft` text is 3.5:1 and accent text 2.9:1, under WCAG AA's 4.5:1;</li><li>tag and key-badge text is 7–8 px, under 9 px.</li></ul>The checks judge stylesheet-set values only until this is fixed. | P8 (a palette and size decision: it moves every default figure) |
 
 ---
 
@@ -330,6 +331,11 @@ Deviations:
   - Legends come from what is drawn: the preset's sentence keeps only phrases whose parts appear, and it names colors as drawn. The print theme now says "black = highlighted". 7 goldens changed by their legend text.
   - Swatch rows follow for every scale used and every rule with a `legend`, and the canvas grows only when there are any.
   - A preset's default label color stays readable on a data-driven or dark fill: it switches to ink or paper below 4.5:1. A color a stylesheet chose is never changed; the contrast check (P3.9) judges it.
+- **P3.9:** `contrast` (error), `min-size` and `colors` (warnings) run in the audit.
+  - Contrast is measured against the fill actually under the text, at WCAG AA (4.5:1, or 3:1 for large text).
+  - Text whose color or size a stylesheet chose carries that rule's name, so the issue names it: "the color comes from stylesheet 'brand', rule '#fix::label'".
+  - Default colors are not judged yet; the themes themselves fall short (B25).
+  - `font-fallback` comes with fonts (P3.5). `legend` has nothing to catch while every scale draws its own legend.
 
 | Task | Size | Work |
 | --- | --- | --- |
