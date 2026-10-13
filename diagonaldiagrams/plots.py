@@ -111,7 +111,7 @@ def render_scatter(spec_path, xcol, ycol, title, subtitle, figure, xlabel, xunit
             if len(xt) > 1 and len(yt) > 1 and xt[0] <= nx <= xt[-1] and yt[0] <= ny <= yt[-1] \
                     and ni not in drawn_notes:
                 drawn_notes.add(ni)
-                p.append(render_pincallout(t, sx(nx), sy(ny), pn.get("text", ""), top=py + 4))
+                p.append(render_pincallout(t, sx(nx), sy(ny), pn.get("text", ""), top=py + 4, rx=corner_rx(corners) / 2))
         # ticks
         for v in xt:
             p.append(f'<text x="{sx(v):.1f}" y="{py+ph+18}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="middle">{esc(fmt_tick(v))}</text>')
@@ -360,11 +360,11 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
         if horizontal:
             idx = next(i for i, m in enumerate(slot_members) if m[0]["cat"] == hit["cat"])
             cy = oy + (idx + 0.5) * (ph / max(1, n))
-            parts.append(render_pincallout(t, _sx(hit["val"]), cy, nt.get("text", ""), above=False, top=oy + 4))
+            parts.append(render_pincallout(t, _sx(hit["val"]), cy, nt.get("text", ""), above=False, top=oy + 4, rx=corner_rx(corners) / 2))
         else:
             idx = next(i for i, m in enumerate(slot_members) if any(d["cat"] == hit["cat"] for d in m))
             cx = ox + (idx + 0.5) * (pw / max(1, n))
-            parts.append(render_pincallout(t, cx, _sy(hit["val"]), nt.get("text", ""), top=oy + 4))
+            parts.append(render_pincallout(t, cx, _sy(hit["val"]), nt.get("text", ""), top=oy + 4, rx=corner_rx(corners) / 2))
     # under vertical bars the axis title sits right below the categories, and the legend below it
     title_row = legend_y + 12 if (_bgroups and not horizontal and (xlabel or catcol)) else None
     if title_row is not None:
@@ -548,7 +548,7 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
         if best is None:
             continue
         xp = sx(best["x_num"]) if is_numeric_x and best["x_num"] is not None else sx(best["x_str"])
-        parts.append(render_pincallout(t, xp, sy(best["y"]), nt.get("text", ""), top=oy + 4))
+        parts.append(render_pincallout(t, xp, sy(best["y"]), nt.get("text", ""), top=oy + 4, rx=corner_rx(corners) / 2))
     end_marks.sort()
     for k in range(1, len(end_marks)):
         end_marks[k][0] = max(end_marks[k][0], end_marks[k - 1][0] + 14)

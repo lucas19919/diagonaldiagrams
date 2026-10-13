@@ -3,7 +3,7 @@ from ._text import _text_w, _wrap, _wrap_px, esc
 from ._theme import FONT, MONO, SANS, SERIF
 
 
-def render_pincallout(t, px, py, text, above=True, top=None):
+def render_pincallout(t, px, py, text, above=True, top=None, rx=3):
     """In-plot journal callout: masked italic label + leader dot on the point."""
     lines = _wrap(text, 26, 2)
     w = max([len(l) for l in lines] + [4]) * 6.8 + 16
@@ -14,7 +14,7 @@ def render_pincallout(t, px, py, text, above=True, top=None):
     yo = py + (-4 if above else 4)
     s = [f'<line x1="{px:.1f}" y1="{yo:.1f}" x2="{px:.1f}" y2="{(ty + h) if above else ty:.1f}" stroke="{t["soft"]}" stroke-width="1"/>',
          f'<circle cx="{px:.1f}" cy="{py:.1f}" r="3" fill="{t["accent"]}"/>',
-         f'<rect x="{px - w/2:.1f}" y="{ty:.1f}" width="{w:.1f}" height="{h:.1f}" rx="3" fill="{t["card"]}" stroke="{t["rule"]}" stroke-width="1"/>']
+         f'<rect x="{px - w/2:.1f}" y="{ty:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{rx:g}" fill="{t["card"]}" stroke="{t["rule"]}" stroke-width="1"/>']
     for j, ln in enumerate(lines):
         s.append(f'<text x="{px:.1f}" y="{ty + 16 + j*15:.1f}" font-size="11.5" font-style="italic" font-family="{SERIF}" fill="{t["ink"]}" text-anchor="middle">{esc(ln)}</text>')
     return "\n".join(s)

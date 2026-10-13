@@ -1,0 +1,9 @@
+{
+  "name": "editorial",
+  "extends": ["core"],
+  "tokens": {
+    "paper": "#f5f5f5", "ink": "#2d3142", "muted": "#4f5d75", "soft": "#7a8399", "rule": "rgba(45,49,66,0.12)",
+    "accent": "#eb6c36", "accent-tint": "rgba(235,108,54,0.08)", "link": "#2e5aa8", "card": "#ffffff",
+    "shade-light": "rgba(255,255,255,0.35)", "shade-dark": "rgba(45,49,66,0.35)"
+  }
+}

@@ -930,6 +930,20 @@ def known_bugs():
         same = f.read() == g.read()
     check("a diagram exports from its receipt's scene after the spec file is gone", rc == 0 and same, out[-200:])
 
+    # B14, B15: every theme is named, and corners reach line and scatter (their note callouts)
+    p = subprocess.run([sys.executable, "-c", "import diagonaldiagrams._theme as t; print(t.THEME.get('_name'))"],
+                       capture_output=True, text=True, cwd=HERE)
+    check("B14 the default theme is named", p.stdout.strip() == "editorial", p.stdout + p.stderr[-200:])
+    callouts = {}
+    for corners in ("sharp", "rounded"):
+        svg = os.path.join(WORK, f"b15-{corners}.svg")
+        run("line", "examples/line_throughput.csv", "--x", "timestamp", "--y", "rps", "--note", "Peak", "--note-at", "10:05",
+            "--corners", corners, "-o", svg)
+        with open(svg, encoding="utf-8") as f:
+            hit = [part for part in f.read().split("<rect") if 'stroke="rgba(45,49,66,0.12)" stroke-width="1"/>' in part]
+        callouts[corners] = hit[0].split('rx="')[1].split('"')[0] if hit else None
+    check("B15 line honors --corners in its note callout", callouts == {"sharp": "0", "rounded": "5"}, str(callouts))
+
     # B12: the audit's blind spots, each on a small hand-written SVG
     def audit_svg(name, body):
         path = os.path.join(WORK, name)

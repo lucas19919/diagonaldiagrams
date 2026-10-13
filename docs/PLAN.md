@@ -64,7 +64,7 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
 | Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) | after P2: 2. The B12 audit now sees an arrow through a circle in `case-state-order`, which was always there | 0, once the swim and state presets land | P8 |
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
-| Known bugs (table below) | 24 | after P2.10: 11 open | 0 | P1b–P8 |
+| Known bugs (table below) | 24 | after P3.1: 9 open | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
 | Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
 | Human edits that survive regeneration | none survive (edits are pixels) | after P2: an edit expressed as a patch (`apply`) is written into the spec, or reported as a conflict. The edit UI that produces patches is P10 | 100% or a reported conflict | P10 |
@@ -218,8 +218,8 @@ The remaining bugs are fixed where their code is replaced:
 | B11 | Receipts drop `--caption`, `--note`, `--theme-file` overrides and `--no-audit`, so export loses them | P2.10, fixed |
 | B12 | Audit blind spots: circles, ellipses and closed paths aren't obstacles; curves become chords; CSS or parent markers missed; skew ignored; 4-point polygons taken for diamonds; vertical spill unchecked | P2.5, fixed except closed paths (DESIGN 9.6) |
 | B13 | `_c_*` boxes carry no `data-node`, so no outline, `intrude` or export | P2.8, fixed for dag, integration and swim (the charts that draw boxes and links) |
-| B14 | The theme `_name` is "custom" only through the API; the default `THEME` has no name | P3.1 |
-| B15 | `--corners` is accepted but unused by line and scatter | P3.1 (corners become a style rule) |
+| B14 | The theme `_name` is "custom" only through the API; the default `THEME` has no name | P3.1, fixed |
+| B15 | `--corners` is accepted but unused by line and scatter | P3.1, fixed: their note callouts take the corner radius; corners become a cascade rule in P3.3 |
 | B16 | `_paint_boxes` and `_legend` truncate names at 16–26 characters | P3.6, P6.2 |
 | B17 | `--figure` and `--caption` are stored and never drawn | P3.10 (diagrams), P6.6 (charts) |
 | B18 | Arch width includes the note rail, so nodes can sit under it | P4.6 |
@@ -301,6 +301,9 @@ Deviations:
 ## P3. Style system and text → 0.7.0
 
 **Goal:** the agent can set any font, color, border side, corner, shadow or data-driven style through stylesheets and selectors, on every type that paints through the display list.
+
+**Status (2026-10-13):** in progress on branch `p3-style`.
+- **P3.1:** `editorial`, `ink` and `print` are token stylesheets in `style/themes/` that extend `core.json` (type sizes, spacing, strokes, palettes). The flat theme dicts the renderers read are built from them, so the goldens are unchanged. `--theme-file` takes v1 keys (`accent_tint` or `accent-tint`) or a stylesheet's `tokens`. B14 and B15 are fixed.
 
 | Task | Size | Work |
 | --- | --- | --- |
