@@ -21,7 +21,7 @@ from ..errors import SpecError
 
 TYPES = ("figure", "node", "edge", "group", "chart", "mark", "axis", "legend", "annotation", "*")
 PSEUDO_CLASSES = ("focal", "source", "sink", "first-child", "last-child", "nth-child", "not")
-PSEUDO_ELEMENTS = ("label", "sub", "tag", "icon", "title", "header", "marker-end", "marker-start")
+PSEUDO_ELEMENTS = ("label", "sub", "tag", "icon", "title", "header", "marker-end", "marker-start", "caption", "eyebrow")
 _TOKEN = re.compile(r"""
     (?P<ws>\s*>\s*|\s+)                       # a combinator
   | (?P<pe>::[\w-]+)                          # a pseudo-element

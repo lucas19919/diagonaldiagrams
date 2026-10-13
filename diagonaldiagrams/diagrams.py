@@ -143,7 +143,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
                                          _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=st))
     edges = spec.get("edges", [])  # [{from,to,label?,focal?}]
     _notes = (spec.get("notes", []) or [])[:2]
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure(), eyebrow=spec.get("figure"))
     W, col_w, top, gap_y = (720 + (200 if _notes else 0)), 200, max(90, head_h + 20), 120
     if auto or not any("rank" in n for n in nodes):
         computed = auto_ranks(nodes, edges)
@@ -221,7 +221,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
-    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")), kind="flow diagram")
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
@@ -290,7 +290,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     shapes = {n["shape"] for _, _, n in pos.values()}
     _legend(dr, t, sty, W, H, extra, 48, 32, _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"),
                                                    ("diamond" in shapes, "diamond = decision"),
-                                                   ("oval" in shapes, "rounded = start or end")))
+                                                   ("oval" in shapes, "rounded = start or end")), spec)
     return dr, W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
 
 
@@ -394,15 +394,29 @@ def _more_markers(dr, sty):
         paint.add_markers(defs, {c: m for c, m in sty.extra_markers.items() if m not in known})
 
 
-def _legend(dr, t, sty, W, H, extra, rule_off, text_off, sentence):
-    """The legend: the preset's sentence (only what the figure shows), then the swatch rows for
-    encodings and rules with a legend text, which the canvas grew `extra` for. The rule sits
-    rule_off and the sentence text_off above the bottom, as each preset has always drawn them."""
+def _bottom(t, sty, spec, W):
+    """How much the canvas grows at the bottom: legend rows for encodings and rule legends, then the
+    caption (B17), if there is one."""
+    rows = paint.legend_height(t, sty.legend_entries(), W - 60)
+    lines = paint.caption_lines(spec.get("caption") or "", W - 60, sty.figure()["caption"])
+    return rows + ((sty.figure()["caption"]["font-size"] + 4) * len(lines) + 8 if lines else 0)
+
+
+def _legend(dr, t, sty, W, H, extra, rule_off, text_off, sentence, spec=None):
+    """The bottom of the figure: the preset's sentence (only what the figure shows), the swatch rows
+    for encodings and rule legends, then the caption, which together grew the canvas by `extra`.
+    The rule sits rule_off and the sentence text_off above where the bottom was."""
+    cap = sty.figure()["caption"]
+    lines = paint.caption_lines((spec or {}).get("caption") or "", W - 60, cap)
+    cap_h = (cap["font-size"] + 4) * len(lines) + 8 if lines else 0
+    rows = extra - cap_h
     if sentence or extra:
         els = paint.legend_line(t, W, H - rule_off - extra, H - text_off - extra, sentence, st=sty.figure()["legend"])
         dr.add(*(els if sentence else els[:1]))
-    if extra:
+    if rows:
         dr.add(*paint.legend_rows(t, sty.legend_entries(), 30, H - text_off - extra + paint.LEGEND_ROW, W - 60)[0])
+    if lines:
+        dr.add(*paint.caption(t, lines, 30, H - text_off - extra + rows + cap["font-size"] + 10, cap))
 
 
 def _phrases(*pairs):
@@ -484,7 +498,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
         n.setdefault("name", n.get("id", ""))
         n["_h"] = _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=sty.node(n["id"]))
     _notes = (spec.get("notes", []) or [])[:2]
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure(), eyebrow=spec.get("figure"))
     # simple layered: group by 'layer' (0 top..n), spread across width
     from collections import defaultdict
     layers = defaultdict(list)
@@ -538,7 +552,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
-    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")), kind="architecture diagram")
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
@@ -599,7 +613,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     _legend(dr, t, sty, W, H, extra, 48, 32, _phrases(
         (http is not None, f"{paint.color_word(sty.edge(eids[http])['stroke'])} = HTTP call" if http is not None else ""),
         (any(e.get("async") for e in edges), "dashed = sent in the background"),
-        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")))
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
     return dr, W, H
 
 
@@ -611,7 +625,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
     n_act = max(1, len(actors))
     margin_x = 70
     _notes = (spec.get("notes", []) or [])[:2]
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure(), eyebrow=spec.get("figure"))
     longest = 48
     for m in messages:
         if m.get("from") == m.get("to"):
@@ -635,7 +649,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
     msg_gap = 52
     msg_start = top + bh + 34  # the first message's label sits clear of the actor boxes
     H = msg_start + len(messages) * msg_gap + 80
-    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")),
                        kind="sequence diagram")
@@ -710,7 +724,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
         (any(not (m.get("reply") or m.get("async")) for m in messages), "solid = call"),
         (any(m.get("reply") or m.get("async") for m in messages), "dashed = reply or event"),
         (http is not None, f"{paint.color_word(sty.edge(mids[http])['stroke'])} = HTTP" if http is not None else ""),
-        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")))
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
     return dr.svg(), W, H
 
 
@@ -743,7 +757,7 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
     sty = styler or Styler(spec, "schema", t, corners)
     tables = spec.get("tables", [])
     relations = spec.get("relations", [])
-    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure())
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure(), eyebrow=spec.get("figure"))
     base_y = max(90, head_h + 16)
     rx = corner_rx(corners)
     tbl_w, row_h = 240, 24
@@ -783,7 +797,7 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
         max_y = max(max_y, 110 + 14 + max(0, len(_notes) - 1) * 92 + 52)
     W = max(780, int(max_x + 60)) + (200 if _notes else 0)
     H = int(max_y + 72)
-    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "schema"), spec.get("sub", spec.get("title", "schema")),
                        kind="database schema")
@@ -848,5 +862,5 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
         (any(c.get("pk") for c in cols), "PK = primary key"),
         (any(c.get("fk") for c in cols), "FK = foreign key"),
         (bool(relations), f"{paint.color_word(sty.edge(rids[0])['stroke'])} = relation" if relations else ""),
-        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")))
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
     return dr, W, H

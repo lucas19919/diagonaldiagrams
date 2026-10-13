@@ -224,7 +224,7 @@ class Styler:
         legend = self._part("legend")
         note = self._part("annotation")
         return {"paper": css(c.get("fill")) or self.token("paper"), "title": self._text(fig, "title"),
-                "sub": self._text(fig, "sub"),
+                "sub": self._text(fig, "sub"), "eyebrow": self._text(fig, "eyebrow"), "caption": self._text(fig, "caption"),
                 "legend": dict(self._text(legend, None), stroke=css(self.cascade.computed(legend).get("stroke"))),
                 "note": dict(self._text(note, None), stroke=css(self.cascade.computed(note).get("stroke")),
                              fill=css(self.cascade.computed(note).get("fill")))}

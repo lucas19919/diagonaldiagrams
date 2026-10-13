@@ -209,12 +209,20 @@ def marker_defs(t):
                                                     one("al", t["link"]), one("ar", t["soft"])])
 
 
-def heading(t, title, subtitle, x=28, st=None):
-    """Title and subtitle drawn on the figure. Returns (elements, block height). st is the figure's
-    computed style (Styler.figure); a bigger title takes more room."""
+def heading(t, title, subtitle, x=28, st=None, eyebrow=None):
+    """Title and subtitle drawn on the figure, under an optional eyebrow (the figure label, "Fig. 3").
+    Returns (elements, block height). st is the figure's computed style (Styler.figure); a bigger
+    title takes more room."""
     ts = (st or {}).get("title") or {"font-size": 18, "font-weight": 600, "font-family": FONT, "color": t["ink"]}
     ss = (st or {}).get("sub") or {"font-size": 13, "font-family": FONT, "color": t["muted"]}
     out, y = [], 8
+    if eyebrow:
+        es = (st or {}).get("eyebrow") or {"font-size": 10, "font-weight": 600, "font-family": FONT, "color": t["muted"],
+                                           "text-transform": "uppercase"}
+        y += round(es["font-size"]) + 2
+        e = text_el(transformed(eyebrow, es), es, "", "figure.eyebrow", x, y, anchor=None)
+        e.attrs.setdefault("letter-spacing", ".08em")
+        out.append(e)
     if title:
         y += round(ts["font-size"])
         out.append(text_el(transformed(title, ts), ts, "", "figure.title", x, y, anchor=None))
@@ -622,6 +630,19 @@ def legend_rows(t, entries, x, y, max_w):
 
 def legend_height(t, entries, max_w):
     return legend_rows(t, entries, 0, 0, max_w)[1]
+
+
+def caption_lines(text, width, st):
+    """A caption wrapped to the figure's width at its style's size: nothing is cut."""
+    from ._text import _wrap_px
+    return _wrap_px(text, width, st["font-size"], False, 10 ** 6) if text else []
+
+
+def caption(t, lines, x, y, st):
+    """The caption under the figure, one text element per line."""
+    return [el("text", transformed(ln, st), role="figure.caption", x=x, y=round(y + k * (st["font-size"] + 4), 1),
+               font_size=st["font-size"], font_style=st.get("font-style"), font_family=st["font-family"], fill=st["color"])
+            for k, ln in enumerate(lines)]
 
 
 def legend_line(t, W, rule_y, text_y, text, st=None):

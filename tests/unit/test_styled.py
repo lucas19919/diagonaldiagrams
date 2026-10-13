@@ -86,5 +86,22 @@ class FigureParts(unittest.TestCase):
         self.assertEqual((frame.get("stroke"), frame.get("rx")), ("#e11d48", "2"))
 
 
+
+class CaptionAndFigure(unittest.TestCase):
+    def test_every_type_draws_them_and_grows_only_for_them(self):
+        for kind in SPECS:
+            plain = draw(kind)
+            name, fn = SPECS[kind]
+            with open(os.path.join(REPO, "examples", name), encoding="utf-8") as f:
+                spec = json.load(f)
+            spec.update(figure="Fig. 2", caption="What the reader should take away, in one sentence.")
+            svg = fn(spec)[0]
+            root = ET.fromstring(svg)
+            texts = [e.text for e in root.iter(NS + "text")]
+            self.assertIn("FIG. 2", texts, kind)
+            self.assertIn("What the reader should take away, in one sentence.", texts, kind)
+            self.assertGreater(float(root.get("viewBox").split()[3]), float(plain.get("viewBox").split()[3]), kind)
+
+
 if __name__ == "__main__":
     unittest.main()

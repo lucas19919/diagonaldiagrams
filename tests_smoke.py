@@ -1111,6 +1111,14 @@ def style_checks():
     rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "font-missing.svg"), "--font",
                   "Nowhere Grotesk 9000, sans-serif")
     check("a named font that isn't installed is a font-fallback warning", rc == 0 and '"font-fallback"' in out, out[-200:])
+    # B17: diagrams draw --figure above the title and --caption under the figure, and export keeps them
+    cap = os.path.join(WORK, "b17.svg")
+    rc, out = run("seq", "examples/seq_checkout.json", "-o", cap, "--figure", "Fig. 4", "--caption", "Retries are idempotent.")
+    body = open(cap, encoding="utf-8").read() if rc == 0 else ""
+    check("B17 diagrams draw --figure and --caption", ">FIG. 4<" in body and ">Retries are idempotent.<" in body, out[-200:])
+    rc, out = run("export", cap, "--to", "svg", "-o", os.path.join(WORK, "b17-export.svg"))
+    check("B17 export keeps the figure label and caption",
+          rc == 0 and open(os.path.join(WORK, "b17-export.svg"), encoding="utf-8").read() == body, out[-200:])
 
 if __name__ == "__main__":
     main()

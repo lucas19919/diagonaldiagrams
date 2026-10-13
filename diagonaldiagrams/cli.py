@@ -106,6 +106,8 @@ def _receipt(a, theme, payload, notes=None, scene=None, sheets=None):
         out["theme_overrides"] = over
     if getattr(a, "caption", None) is not None:
         out["caption"] = a.caption
+    if getattr(a, "figure", None) is not None and "figure" not in out:
+        out["figure"] = a.figure
     if notes:
         out["notes"] = notes
     if getattr(a, "no_audit", False):
@@ -263,6 +265,8 @@ def main():
         p.add_argument("--outline", action="store_true", help="add the structured outline to the verdict")
         p.add_argument("--style", action="append", default=[], metavar="FILE",
                        help="a stylesheet (JSON: tokens and rules); repeat it, later files win")
+        p.add_argument("--caption", default=None, help="a caption drawn under the figure")
+        p.add_argument("--figure", default=None, help='the figure label drawn above the title, e.g. "Fig. 3"')
         p.add_argument("--font", default=None,
                        help="the font for the figure's text: a family name, or a .ttf/.otf/.ttc/.woff file to measure with")
         _render_parsers[name] = p
@@ -449,6 +453,9 @@ def main():
     if a.cmd in ("flow", "arch", "seq", "schema"):
         sheets = _cli_sheets(a)
         spec = load_spec(a.spec, a.cmd)
+        for key in ("caption", "figure"):  # drawn: the caption under the figure, the label above it (B17)
+            if getattr(a, key, None):
+                spec[key] = getattr(a, key)
         theme = _cli_theme(a)
         if a.cmd == "flow":
             svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets)

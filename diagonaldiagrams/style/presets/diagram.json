@@ -37,6 +37,17 @@
       "font-weight": 600,
       "color": "muted",
       "text-transform": "uppercase"
+    },
+    "figure::eyebrow": {
+      "font-size": 10,
+      "font-weight": 600,
+      "color": "muted",
+      "text-transform": "uppercase"
+    },
+    "figure::caption": {
+      "font-size": 12,
+      "font-style": "italic",
+      "color": "muted"
     }
   }
 }

@@ -221,7 +221,7 @@ The remaining bugs are fixed where their code is replaced:
 | B14 | The theme `_name` is "custom" only through the API; the default `THEME` has no name | P3.1, fixed |
 | B15 | `--corners` is accepted but unused by line and scatter | P3.1, fixed: their note callouts take the corner radius; corners become a cascade rule in P3.3 |
 | B16 | `_paint_boxes` and `_legend` truncate names at 16–26 characters | P3.6 fixed it for the four diagram types' boxes; the chart kinds' `_paint_boxes` and `_legend` remain, for P6.2 |
-| B17 | `--figure` and `--caption` are stored and never drawn | P3.10 (diagrams), P6.6 (charts) |
+| B17 | `--figure` and `--caption` are stored and never drawn | P3.10 fixed it for diagrams: the label is drawn above the title, the caption under the figure; charts in P6.6 |
 | B18 | Arch width includes the note rail, so nodes can sit under it | P4.6 |
 | B19 | Arch edges that go up pass straight through the rows between | P4.3 |
 | B20 | Flow groups don't affect layout, so non-members land inside frames | P4.2 |
@@ -330,7 +330,7 @@ Deviations:
   - MCP and API `options.style` takes a stylesheet object or a list; it is written beside the output and passed as `--style`.
   - Receipts keep the stylesheets' content, and export redraws with them.
   - `describe style` is generated from the property table, selector grammar and tokens.
-  - Still to do: diagrams drawing `--caption` and `--figure` (B17).
+  - Diagrams draw `--figure` as an eyebrow above the title and `--caption` under the figure, styled by `figure::eyebrow` and `figure::caption` (B17). A scene's `caption` is drawn too.
 - **P3.7:** `style/encode.py` provides linear, sequential and categorical scales.
   - Any style value can be `{field, scale}`. The domain comes from the elements' data, and an element without the field gets a neutral value.
   - Legends come from what is drawn: the preset's sentence keeps only phrases whose parts appear, and it names colors as drawn. The print theme now says "black = highlighted". 7 goldens changed by their legend text.

@@ -145,7 +145,9 @@ def to_v1(scene):
         spec["budget"] = False
     if scene.style:
         spec["style"] = scene.style  # drawn: the renderers read their styles through the cascade (P3.8)
-    for key in ("source", "caption", "use", "size", "defs", "data", "space"):
+    if scene.caption:
+        spec["caption"] = scene.caption  # drawn under the figure (B17)
+    for key in ("source", "use", "size", "defs", "data", "space"):
         if getattr(scene, key):
             warn.append(_not_drawn(f"the figure's '{key}'", key))
             spec[key] = getattr(scene, key)

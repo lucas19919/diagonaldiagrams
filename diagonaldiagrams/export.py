@@ -259,6 +259,9 @@ def do_export(args):
             spec = load_spec(r["spec"], cmd)
         fn = {"flow": render_flow, "arch": render_arch, "seq": render_seq, "schema": render_schema}[cmd]
         sheets = r.get("styles") or ()
+        for key in ("caption", "figure"):
+            if r.get(key):
+                spec[key] = r[key]
         if cmd == "flow":
             svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme, sheets)
         else:
