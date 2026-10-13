@@ -9198,6 +9198,11 @@ def _spec_diff(existing, fresh, kind):
     return "; ".join(bits[:12])
 
 
+def _self_cmd():
+    """The argv prefix and environment (None: inherit) that run this same engine in a new process."""
+    return [sys.executable, os.path.abspath(__file__)], None
+
+
 def do_sync(args):
     """Auto-fix bot (plan Mode 3): monitor -> extract -> validate -> doc ->
     audit, optionally commit. Default touches only the working tree; --commit
@@ -9205,11 +9210,11 @@ def do_sync(args):
     import re as _re
     import subprocess as _sp
     path = args.path or "."
-    me = os.path.abspath(__file__)
-    mon = [sys.executable, me, "monitor", "--path", path, "--base", args.base or "HEAD"]
+    me, me_env = _self_cmd()
+    mon = me + ["monitor", "--path", path, "--base", args.base or "HEAD"]
     if args.map:
         mon += ["--map", args.map]
-    r = _sp.run(mon, capture_output=True, text=True)
+    r = _sp.run(mon, capture_output=True, text=True, env=me_env)
     try:
         rep = json.loads(r.stdout)
     except json.JSONDecodeError:
@@ -9223,20 +9228,20 @@ def do_sync(args):
                            "reason": "heuristic-only finding: add a --map mapping for machine remediation"})
             continue
         kind, src, _ = m.groups()
-        p1 = _sp.run([sys.executable, me, "extract", kind, os.path.join(path, src),
-                      "-o", os.path.join(path, spec)], capture_output=True, text=True)
+        p1 = _sp.run(me + ["extract", kind, os.path.join(path, src),
+                           "-o", os.path.join(path, spec)], capture_output=True, text=True, env=me_env)
         if p1.returncode:
             failed.append({"spec": spec, "reason": (p1.stderr.strip() or "extract failed")[-200:]})
             continue
-        p2 = _sp.run([sys.executable, me, "validate", os.path.join(path, spec)],
-                      capture_output=True, text=True)
+        p2 = _sp.run(me + ["validate", os.path.join(path, spec)],
+                     capture_output=True, text=True, env=me_env)
         if p2.returncode:
             failed.append({"spec": spec, "reason": "extracted spec fails validate"})
             continue
         ok_all, audited = True, []
         for d in (args.docs or []):
             dp = d if os.path.isabs(d) else os.path.join(path, d)
-            p3 = _sp.run([sys.executable, me, "doc", dp], capture_output=True, text=True)
+            p3 = _sp.run(me + ["doc", dp], capture_output=True, text=True, env=me_env)
             if p3.returncode:
                 failed.append({"spec": spec, "reason": f"doc failed on {d}"})
                 ok_all = False
@@ -9244,8 +9249,8 @@ def do_sync(args):
             for line in p3.stdout.splitlines():
                 mm = _re.search(r"\[compiled\] \w+ -> (.+)", line)
                 if mm:
-                    pa = _sp.run([sys.executable, me, "audit", mm.group(1).strip()],
-                                  capture_output=True, text=True)
+                    pa = _sp.run(me + ["audit", mm.group(1).strip()],
+                                 capture_output=True, text=True, env=me_env)
                     audited.append(mm.group(1).strip())
                     if pa.returncode:
                         failed.append({"spec": spec, "reason": f"audit failed: {mm.group(1).strip()}"})
@@ -9323,7 +9328,7 @@ def do_monitor(args):
         # mapping-driven semantic check: extract code, diff against the spec.
         # No semantic difference => no drift (kills heuristic false positives).
         import fnmatch
-        me = os.path.abspath(__file__)
+        me, me_env = _self_cmd()
         try:
             with open(args.map, encoding="utf-8") as f:
                 mappings = json.load(f).get("mappings", [])
@@ -9343,8 +9348,8 @@ def do_monitor(args):
                 src = os.path.join(path, h)
                 if not os.path.exists(src):
                     continue
-                r = subprocess.run([sys.executable, me, "extract", kind, src],
-                                   capture_output=True, text=True)
+                r = subprocess.run(me + ["extract", kind, src],
+                                   capture_output=True, text=True, env=me_env)
                 try:
                     specs.append(json.loads(r.stdout))
                 except json.JSONDecodeError:
@@ -9384,7 +9389,7 @@ def do_mcp(args):
     Tools return paths and a verdict, never pixels, so a call costs tens of tokens."""
     import subprocess
     import tempfile
-    me = os.path.abspath(__file__)
+    me, me_env = _self_cmd()
     src = {"spec": {"type": "object", "description": "JSON spec, inline"},
            "data": {"type": "string", "description": "CSV text, inline"},
            "path": {"type": "string", "description": "or a spec/CSV file on disk"}}
@@ -9496,7 +9501,7 @@ def do_mcp(args):
         if any(x is None for x in argv):
             return {"isError": True, "content": [{"type": "text", "text": f"{name}: a required argument is missing"}]}
         try:
-            p = subprocess.run([sys.executable, me] + argv, capture_output=True, text=True,
+            p = subprocess.run(me + argv, capture_output=True, text=True, env=me_env,
                                encoding="utf-8", errors="replace", timeout=180)
         except subprocess.TimeoutExpired:
             return {"isError": True, "content": [{"type": "text", "text": f"{name} took over 180 s"}]}
@@ -9993,7 +9998,7 @@ def cli():
         import traceback
         where = traceback.extract_tb(e.__traceback__)[-1]
         _report({"ok": False, "errors": [{
-            "msg": f"diagonaldiagrams could not draw this input ({type(e).__name__}: {e}, graph.py line {where.lineno})",
+            "msg": f"diagonaldiagrams could not draw this input ({type(e).__name__}: {e}, {os.path.basename(where.filename)} line {where.lineno})",
             "fix": "run validate on the spec first; if it passes, this is a diagonaldiagrams bug worth reporting with the spec"}]}, 2)
 
 
