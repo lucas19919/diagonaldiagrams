@@ -385,17 +385,24 @@ def _mermaid_spec(text):
     return spec
 
 
-def load_spec(path):
+def load_spec(path, kind=None):
+    """The spec in a file: JSON, YAML or Mermaid. A v2 scene ("version": 2) comes back as the v1
+    spec the renderer for `kind`, or for the scene's preset, draws."""
     with open(path, encoding="utf-8") as f:
         txt = f.read()
     if path.lower().endswith((".mmd", ".mermaid")) or _mermaid_kind(txt):
         return _mermaid_spec(txt)
     if path.endswith(".json"):
-        return json.loads(txt)
-    if HAS_YAML and path.endswith((".yaml", ".yml")):
-        return yaml.safe_load(txt)
-    # minimal fallback: JSON in .yaml also works
-    try:
-        return json.loads(txt)
-    except Exception:
-        raise SpecError(f"{path}: need PyYAML for YAML (pip install pyyaml) or use JSON")
+        spec = json.loads(txt)
+    elif HAS_YAML and path.endswith((".yaml", ".yml")):
+        spec = yaml.safe_load(txt)
+    else:
+        # minimal fallback: JSON in .yaml also works
+        try:
+            spec = json.loads(txt)
+        except Exception:
+            raise SpecError(f"{path}: need PyYAML for YAML (pip install pyyaml) or use JSON")
+    if isinstance(spec, dict) and spec.get("version") == 2:
+        from .inputs.v1 import scene_as_v1
+        return scene_as_v1(spec, kind)
+    return spec

@@ -69,7 +69,9 @@ def source(a, out_path=None):
     """The input as a file. Inline input is written beside the output, so export can redraw it."""
     if a.get("path") or a.get("target"):
         return a.get("path") or a.get("target")
-    if a.get("spec") is not None:
+    if a.get("scene") is not None:
+        body, ext = json.dumps({"version": 2, **a["scene"]}, indent=1), ".json"
+    elif a.get("spec") is not None:
         body, ext = json.dumps(a["spec"], indent=1), ".json"
     elif a.get("data") is not None:
         body = str(a["data"])
@@ -78,7 +80,7 @@ def source(a, out_path=None):
         else:
             ext = ".geojson" if body.lstrip().startswith("{") else ".csv"
     else:
-        raise ValueError("pass spec (JSON object), data (CSV text), or path")
+        raise ValueError("pass spec or scene (JSON object), data (CSV text), or path")
     if out_path:
         dest = os.path.splitext(out_path)[0] + ".input" + ext
         os.makedirs(os.path.dirname(os.path.abspath(dest)), exist_ok=True)
@@ -127,14 +129,15 @@ def tool_argv(name, a):
     raise ValueError(f"unknown tool {name}")
 
 
-def render(kind, spec=None, data=None, path=None, out="diagonaldiagrams-out.html", **options):
+def render(kind, spec=None, data=None, path=None, out="diagonaldiagrams-out.html", scene=None, **options):
     """Validate, draw and audit one figure. Returns the verdict the command line prints, as a dict:
     ok, svg, html, receipt, layout, errors, warnings.
 
     kind: flow, arch, seq, schema, mermaid, bar, line, scatter, geo, or any `chart` kind.
-    spec: a JSON-like dict; data: CSV, GeoJSON or Mermaid text; path: a file. Pass one.
+    spec: a JSON-like dict; scene: a v2 scene dict (DESIGN 4) whose preset is kind; data: CSV,
+    GeoJSON or Mermaid text; path: a file. Pass one.
     options: the command's flags without dashes, e.g. x="month", group="product", grid=False."""
-    argv = tool_argv("render", {"type": kind, "spec": spec, "data": data, "path": path, "out": out,
+    argv = tool_argv("render", {"type": kind, "spec": spec, "scene": scene, "data": data, "path": path, "out": out,
                                 "options": options})
     code, stdout, stderr = run(argv)
     for line in reversed(stdout.strip().splitlines()):

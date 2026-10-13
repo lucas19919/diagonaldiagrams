@@ -14,6 +14,8 @@ def do_mcp(args):
     process instead, with a 180 s limit."""
     isolate = getattr(args, "isolate", False)
     src = {"spec": {"type": "object", "description": "JSON spec, inline"},
+           "scene": {"type": "object", "description": 'a v2 scene, inline: {"preset": "flow", "nodes": [...], '
+                                                      '"edges": [...], "groups": [...]}; type names its preset'},
            "data": {"type": "string", "description": "CSV text, inline"},
            "path": {"type": "string", "description": "or a spec/CSV file on disk"}}
     opts = {"type": "object", "description": 'CLI flags without dashes, e.g. {"x": "month", "y": "signups", '

@@ -105,7 +105,7 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
                         warnings.append({"msg": f"'{c}' has {len({r[c] for r in rows})} distinct values", "fix": "keep top-7 + Other"})
     else:
         try:
-            spec = load_spec(args.target)
+            spec = load_spec(args.target, kind)
         except (FileNotFoundError, json.JSONDecodeError, SystemExit, ValueError) as e:
             return [{"msg": f"the JSON can't be read: {_json_where(e)}", "fix": "use double quotes, and no trailing commas or comments"}], []
         if isinstance(spec, dict) and (spec.get("equations") or spec.get("expr")) and "nodes" not in spec and "actors" not in spec:

@@ -363,7 +363,7 @@ def main():
         a.cmd = kind
     pre = _prevalidate(a)
     if a.cmd in ("flow", "arch", "seq", "schema"):
-        spec = load_spec(a.spec)
+        spec = load_spec(a.spec, a.cmd)
         theme = _cli_theme(a)
         if a.cmd == "flow":
             svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme)

@@ -236,6 +236,15 @@ The remaining bugs are fixed where their code is replaced:
 
 **Goal:** the internal model from DESIGN 3, 4, 8, 9 and 10 exists. Flow, arch, seq and schema paint through it, and the audit no longer re-parses SVG. Layout algorithms are unchanged in this phase.
 
+**Status (2026-10-13):** in progress on branch `p2-core`.
+- **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11 and P2.3.
+- **P2.3:** scene JSON reads into `scene/model.py` (DESIGN 4.8). A v2 scene file (`"version": 2`) with preset `flow`, `arch`, `seq` or `schema` draws through today's renderers. This works from the command line, the API (`render(kind, scene=...)`) and MCP (`scene`). The v1 → scene → v1 round trip draws the same bytes for all 29 diagram inputs in the golden corpus and for 60 generated specs.
+
+Deviations so far:
+- `geom.py`, `displaylist.py` and `paint.py` are single modules rather than the `geom/`, `paint/` and `emit/` packages. Geometry works on tuples, not `Point`/`Box`/`Path` classes.
+- Per-corner radii and named-side extraction (P2.2) move to P3, where the style system first needs them.
+- The SVG writer (P2.4) writes one element per line with numbers to 2 decimals, but no `<g>` per element yet. Owners and roles live on the in-memory elements.
+
 | Task | Size | Work |
 | --- | --- | --- |
 | P2.1 Typed errors | M | <ul><li>`errors.py` with `SpecError(code, msg, fix, at)` and `Issue`.</li><li>Replace every `raise SystemExit(...)` and `sys.exit(...)` in engine code with `SpecError`. Only the CLI exits.</li><li>The verdict JSON shapes and exit codes stay as today (DESIGN 14.1).</li></ul> |

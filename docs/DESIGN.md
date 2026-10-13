@@ -219,6 +219,19 @@ Annotations target elements with selectors (5.2), so they work on every type.
 | `band` | `{"type": "band", "axis": "x", "from": "2026-03", "to": "2026-05", "text": "Outage"}` | A shaded band in a chart. |
 | `rule` | `{"type": "rule", "y": 200, "text": "SLO"}` | A reference line in a chart. |
 
+### 4.8 Normalization
+
+`scene/normalize.py` reads scene JSON into the model in `scene/model.py`. It collects every problem with the JSON path it sits at (`nodes[2].id`), so an agent fixes them in one pass.
+
+- **Aliases.** `label` for `name`, `sub` for `subtitle` (figure), `subtitle` for `sub` (node), `layer` for `rank`, and a group's `nodes` for `members`. When both an alias and its field are given and they differ, the field wins with an `alias-conflict` warning.
+- **Defaults.** A node's `name` defaults to its `id`, and a node with a name but no id takes the name as its id. Numbers are accepted as ids and read as strings.
+- **Groups.** Membership may be listed on the group (`members`) or on the node (`group`); both are merged. A `group` naming an undeclared group creates it, as v1 does. A node in two groups, an unknown member, an unknown or cyclic `parent` are errors; an empty group is a warning.
+- **Edge ids (D15).** An edge without an `id` gets one from what it connects and says: `from->to`, then `:label` when it has one, then `#2`, `#3` for repeats. Adding an edge elsewhere never renames another.
+- **Unknown fields** are kept in the element's `extra` and written back, so a toolkit can read them. A name close to a known field gets an `unknown-field` warning ("did you mean 'focal'?").
+- **Error codes:** `bad-value`, `missing-id`, `duplicate-id`, `missing-end`, `unknown-node`, `unknown-group`, `two-groups`, `group-cycle`, `version`, `preset`. **Warning codes:** `alias-conflict`, `unknown-field`, `id-clash`, `empty-group`, `unknown-port`, `unknown-constraint`, `unknown-annotation`, `unknown-target`, `not-drawn`.
+
+Until the layout kernels read scenes (P4), a scene with preset `flow`, `arch`, `seq` or `schema` is drawn by turning it back into the v1 spec that preset's renderer reads (`inputs/v1.py`, `to_v1`). What that renderer can't draw yet (styles, classes, constraints other than arch row order, annotations other than notes) comes back as `not-drawn` warnings rather than being dropped silently. For every v1 spec in the golden corpus, and for generated ones, v1 → scene → v1 draws the same bytes (`scripts/scene_roundtrip.py`).
+
 ## 5. Style system
 
 ### 5.1 Stylesheets and the cascade

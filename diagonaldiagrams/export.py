@@ -233,7 +233,7 @@ def do_export(args):
                                    highlights=r.get("highlights") or None)
         unit, dest, note = "points", args.o or f"{base}.{args.to}", " (layouts: scatter only)"
     elif cmd in ("flow", "arch", "seq", "schema"):
-        spec = load_spec(r["spec"])
+        spec = load_spec(r["spec"], cmd)
         fn = {"flow": render_flow, "arch": render_arch, "seq": render_seq, "schema": render_schema}[cmd]
         if cmd == "flow":
             svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme)

@@ -331,6 +331,7 @@ def main():
     agent_loop()
     known_bugs()
     outline_checks()
+    scene_checks()
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed" + (f": {FAIL}" if FAIL else ""))
     raise SystemExit(1 if FAIL else 0)
@@ -959,6 +960,38 @@ def outline_checks():
           [n["id"] for n in o.get("nodes", [])] == ["a", "b", "c"] and len(o.get("edges", [])) == 2, out[-300:])
     rc, out = run("export", dag, "--to", "drawio", "-o", os.path.join(WORK, "ol-dag.drawio"))
     check("chart dag exports its boxes and arrows to draw.io (B13)", rc == 0 and "3 boxes, 2 arrows" in out, out[-200:])
+
+
+def scene_checks():
+    """A v2 scene file draws through the v1 renderers (P2.3): aliases, both group forms, ordered messages."""
+    print("== scene ==")
+    flow = os.path.join(WORK, "scene-flow.json")
+    with open(flow, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "preset": "flow", "title": "Gate",
+                   "nodes": [{"id": "a", "label": "Push", "shape": "oval"}, {"id": "b", "label": "Risky?", "shape": "diamond"},
+                             {"id": "c", "label": "Review", "group": "gate"}],
+                   "edges": [{"from": "a", "to": "b"}, {"from": "b", "to": "c", "label": "yes"}],
+                   "groups": [{"id": "gate", "label": "Gate", "members": ["b"]}]}, f)
+    rc, out = run("flow", flow, "-o", os.path.join(WORK, "scene-flow.svg"))
+    v = json.loads(out) if rc == 0 else {}
+    check("a v2 flow scene draws, with labels as names and both group forms merged",
+          v.get("layout", [])[:1] == ["row 1: Push"] and "frame Gate: Risky?, Review" in v.get("layout", []), out[-300:])
+    seq = os.path.join(WORK, "scene-seq.json")
+    with open(seq, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "preset": "seq", "nodes": [{"id": "u", "label": "User"}, {"id": "api"}],
+                   "edges": [{"from": "api", "to": "u", "label": "token", "order": 1}, {"from": "u", "to": "api", "label": "login", "order": 0}]}, f)
+    rc, out = run("seq", seq, "-o", os.path.join(WORK, "scene-seq.svg"))
+    v = json.loads(out) if rc == 0 else {}
+    check("a v2 sequence scene draws its edges in their order", v.get("layout", [])[1:] == ["1. User -> api: login", "2. api -> User: token"], out[-300:])
+    rc, out = run("arch", seq, "-o", os.path.join(WORK, "scene-x.svg"))
+    check("a scene drawn with another preset's command is refused with a fix",
+          rc == 1 and "preset is 'seq'" in out and "draw it with the seq command" in out, out[-300:])
+    bad = os.path.join(WORK, "scene-bad.json")
+    with open(bad, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "nodes": [{"id": "a"}, {"id": "a"}], "edges": [{"from": "a", "to": "ghost"}]}, f)
+    rc, out = run("validate", bad)
+    check("validate lists every scene error with its path",
+          rc == 1 and '"path": "nodes[1].id"' in out and '"path": "edges[0].to"' in out, out[-300:])
 
 
 if __name__ == "__main__":

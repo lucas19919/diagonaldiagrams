@@ -28,7 +28,8 @@ diagonaldiagrams = "diagonaldiagrams.cli:cli"
 Homepage = "https://github.com/lucas19919/diagonaldiagrams"
 
 [tool.setuptools]
-packages = ["diagonaldiagrams", "diagonaldiagrams.audit", "diagonaldiagrams.charts"]
+packages = ["diagonaldiagrams", "diagonaldiagrams.audit", "diagonaldiagrams.charts", "diagonaldiagrams.inputs",
+            "diagonaldiagrams.scene"]
 
 [tool.setuptools.dynamic]
 version = { attr = "diagonaldiagrams.__version__" }
