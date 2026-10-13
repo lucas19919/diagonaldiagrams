@@ -89,63 +89,27 @@ def _prevalidate(a):
     return warnings
 
 
-def _chart_outline(raw):
-    """A chart's axis titles and series names, as drawn: enough to confirm the chart says what was asked."""
-    import re
-    out = []
-    for role, name in (("xaxis", "x axis"), ("yaxis", "y axis"), ("series", "series"), ("table", "tables")):
-        vals = list(dict.fromkeys(html.unescape(v) for v in re.findall(rf'data-role="{role}">([^<]*)<', raw)))
-        if vals:
-            out.append(f"{name}: " + ", ".join(vals))
-    return out or None
-
-
-def _outline(svg_path):
-    """The drawn layout as text: each row's boxes left to right, and each frame's members. Lets an
-    agent check the structure for a few dozen tokens instead of looking at a picture."""
-    import re
+def _outline(svg_path, structured=False):
+    """The drawn layout as text (the verdict's layout rows), and with structured=True the --outline
+    object too. Lets an agent check the structure for a few dozen tokens instead of a picture."""
+    from .outline import layout_rows, outline, read_figure
     try:
         raw = open(svg_path, encoding="utf-8").read()
-    except OSError:
-        return None
-    if 'data-role="' in raw:
-        return _chart_outline(raw)
-    if 'data-msg="' in raw:
-        actors = [html.unescape(v) for v in re.findall(r'data-node="[^"]*" data-label="([^"]*)"', raw)]
-        msgs = re.findall(r'data-msg="([^"]*)" data-msg-from="([^"]*)" data-msg-to="([^"]*)"', raw)
-        return (["actors: " + " | ".join(actors)] +
-                [f"{k}. {html.unescape(a)} -> {html.unescape(b)}" + (f": {html.unescape(lab)}" if lab else "")
-                 for k, (lab, a, b) in enumerate(msgs, 1)])
-    boxes, label = [], {}
-    for m in re.finditer(r'<rect x="([-\d.]+)" y="([-\d.]+)" width="([\d.]+)" height="([\d.]+)"[^>]*data-node="([^"]*)" data-label="([^"]*)"', raw):
-        x, y, w, h = (float(m.group(k)) for k in range(1, 5))
-        label[html.unescape(m.group(5))] = html.unescape(m.group(6))
-        boxes.append((y + h / 2, x + w / 2, html.unescape(m.group(6))))
-    for m in re.finditer(r'data-node="([^"]*)" data-label="([^"]*)" data-cx="([-\d.]+)" data-cy="([-\d.]+)"', raw):
-        label[html.unescape(m.group(1))] = html.unescape(m.group(2))
-        boxes.append((float(m.group(4)), float(m.group(3)), html.unescape(m.group(2)) + " (decision)"))
-    if not boxes:
-        return None
-    rows = []
-    for cy, cx, name in sorted(boxes):
-        if rows and abs(rows[-1][0] - cy) < 30:
-            rows[-1][1].append((cx, name))
-        else:
-            rows.append([cy, [(cx, name)]])
-    out = [f"row {k + 1}: " + " | ".join(n for _, n in sorted(r[1])) for k, r in enumerate(rows)]
-    for m in re.finditer(r'data-group="[^"]*" data-name="([^"]*)" data-members="([^"]*)"', raw):
-        names = [label.get(html.unescape(v), html.unescape(v)) for v in m.group(2).split(",") if v]
-        out.append(f"frame {html.unescape(m.group(1))}: " + ", ".join(names))
-    return out
+        fig = read_figure(raw)
+    except (OSError, SyntaxError):  # ElementTree's ParseError is a SyntaxError
+        return None, None
+    return layout_rows(fig), (outline(fig) if structured else None)
 
 
 def _finish(a, html, svg, count, unit, pre):
     """One JSON line per render: the files, the count, and the audit verdict."""
     rep = {"ok": True, "errors": [], "warnings": []} if getattr(a, "no_audit", False) else _audit_file(svg)
     out = {"ok": rep["ok"], "svg": svg, "html": html, "receipt": os.path.splitext(html)[0] + ".graph.json", unit: count}
-    layout = _outline(svg)
+    layout, structured = _outline(svg, getattr(a, "outline", False))
     if layout:
         out["layout"] = layout
+    if structured:
+        out["outline"] = structured
     if rep["errors"]:
         out["errors"] = rep["errors"]
         out["next"] = ("the files are written so you can look; change the spec or flags and render again "
@@ -164,6 +128,7 @@ def _chart_flags(p):
     p.add_argument("--highlight", action="append", default=[],
                    help="category, x value, group, or place drawn in accent (repeatable)")
     p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
+    p.add_argument("--outline", action="store_true", help="add the structured outline to the verdict")
     p.set_defaults(grid=True, markers=True)
 
 
@@ -224,6 +189,7 @@ def main():
         p.add_argument("--theme", default="editorial", choices=sorted(THEMES))
         p.add_argument("--theme-file", default=None, help="JSON with theme key overrides")
         p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
+        p.add_argument("--outline", action="store_true", help="add the structured outline to the verdict")
         _render_parsers[name] = p
     _render_parsers["flow"].add_argument("--auto", action="store_true",
                                          help="force longest-path layering (default when no ranks given)")

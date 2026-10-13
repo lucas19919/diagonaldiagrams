@@ -100,33 +100,8 @@ def _raster_svg(svg, dest, kind, width_hint):
 def _svg_model(svg):
     """Boxes, decisions, arrows, and frames of a drawn flow or arch, read back from the data-*
     attributes the renderers write. The editable exports are built from this."""
-    import re
-    nodes, edges, frames = {}, [], []
-    for m in re.finditer(r'<rect x="([-\d.]+)" y="([-\d.]+)" width="([\d.]+)" height="([\d.]+)" rx="([\d.]+)"[^>]*?'
-                         r'stroke="([^"]*)"[^>]*data-node="([^"]*)" data-label="([^"]*)"', svg):
-        x, y, w, h, rx = (float(m.group(k)) for k in range(1, 6))
-        nid = html.unescape(m.group(7))
-        nodes[nid] = {"id": nid, "label": html.unescape(m.group(8)), "x": x, "y": y, "w": w, "h": h,
-                      "shape": "oval" if rx >= 20 else "rect", "stroke": m.group(6)}
-    for m in re.finditer(r'<polygon points="([^"]+)"[^>]*stroke="([^"]*)" data-node="([^"]*)" data-label="([^"]*)"', svg):
-        v = [float(p) for p in re.findall(r"-?\d*\.?\d+", m.group(1))]
-        xs, ys = v[0::2], v[1::2]
-        nid = html.unescape(m.group(3))
-        nodes[nid] = {"id": nid, "label": html.unescape(m.group(4)), "x": min(xs), "y": min(ys),
-                      "w": max(xs) - min(xs), "h": max(ys) - min(ys), "shape": "diamond", "stroke": m.group(2)}
-    for m in re.finditer(r'<path d="([^"]+)" fill="none" stroke="([^"]*)"[^>]*data-from="([^"]*)" '
-                         r'data-to="([^"]*)" data-label="([^"]*)"', svg):
-        pts = []
-        for cmd, a, b, c, d in re.findall(r"([MLQ])\s*([-\d.]+),([-\d.]+)(?:\s+([-\d.]+),([-\d.]+))?", m.group(1)):
-            pts.append((float(c), float(d)) if cmd == "Q" and c else (float(a), float(b)))
-        edges.append({"from": html.unescape(m.group(3)), "to": html.unescape(m.group(4)), "label": html.unescape(m.group(5)),
-                      "dashed": "stroke-dasharray" in m.group(0), "stroke": m.group(2), "points": pts})
-    for m in re.finditer(r'<rect x="([-\d.]+)" y="([-\d.]+)" width="([\d.]+)" height="([\d.]+)"[^>]*'
-                         r'data-group="([^"]*)" data-name="([^"]*)"', svg):
-        x, y, w, h = (float(m.group(k)) for k in range(1, 5))
-        frames.append({"id": html.unescape(m.group(5)), "label": html.unescape(m.group(6)), "x": x, "y": y, "w": w, "h": h})
-    return {"nodes": list(nodes.values()), "edges": [e for e in edges if e["from"] in nodes and e["to"] in nodes],
-            "frames": frames}
+    from .outline import read_figure, svg_model
+    return svg_model(read_figure(svg))
 
 
 def _to_drawio(model, title=""):

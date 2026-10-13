@@ -330,6 +330,7 @@ def main():
     charts()
     agent_loop()
     known_bugs()
+    outline_checks()
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed" + (f": {FAIL}" if FAIL else ""))
     raise SystemExit(1 if FAIL else 0)
@@ -933,6 +934,23 @@ def known_bugs():
     rc, out = audit_svg("b12-tall.svg", '<rect x="100" y="100" width="200" height="30" fill="#fff" stroke="#000"/>'
                                         '<text x="110" y="108" font-size="14">Too tall for its box</text>')
     check("B12 text spilling out of the top of its box is caught", rc == 1 and '"spill"' in out, out[:200])
+
+
+def outline_checks():
+    """--outline adds the structured outline; without it the verdict stays as short as before."""
+    print("== outline ==")
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "ol-flow.svg"), "--outline")
+    v = json.loads(out) if rc == 0 else {}
+    o = v.get("outline", {})
+    check("flow --outline lists nodes with rows and edges with labels",
+          any(n.get("id") == "risk?" and n.get("shape") == "diamond" and n.get("row") == 3 for n in o.get("nodes", []))
+          and {"from": "tests", "to": "fix", "label": "fail"} in o.get("edges", []), out[-300:])
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "ol-plain.svg"))
+    check("without --outline the verdict has no outline", rc == 0 and '"outline"' not in out, out[-200:])
+    rc, out = run("seq", "examples/seq_checkout.json", "-o", os.path.join(WORK, "ol-seq.svg"), "--outline")
+    o = (json.loads(out) if rc == 0 else {}).get("outline", {})
+    check("seq --outline lists actors and messages in order",
+          o.get("actors", [None])[0] == "Customer" and o.get("messages", [{}])[0].get("label") == "Submit Order", out[-300:])
 
 
 if __name__ == "__main__":
