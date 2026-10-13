@@ -355,6 +355,10 @@ Deviations:
 - **P3.5b:** `--embed-fonts` and the figure's `font-embed: true` embed each named font the figure measured with, as a whole file in an `@font-face`.
   - A font whose OS/2 fsType forbids embedding is only referenced, with a `font-embed` warning.
   - An embedded font past 200 KB gets `large-font`. Subsetting is P8.4.
+- **P3.11:** `text/shaper.py` is the shaper extension point.
+  - The built-in `basic` shaper measures Latin, Greek, Cyrillic, Hebrew and CJK as they are, and leaves right-to-left text in logical order for the browser's bidi.
+  - It recognizes scripts that need contextual shaping (Arabic, Indic, Thai, Khmer, Myanmar, Tibetan, ...). Text in them is marked, and the audit warns `shaping` once per script.
+  - A registered shaper (the HarfBuzz one, P13) takes over without core edits.
 
 | Task | Size | Work |
 | --- | --- | --- |

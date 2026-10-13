@@ -33,6 +33,7 @@ class Item:
         ("color_from", None),       # text: the stylesheet rule that chose its color, when one did
         ("size_from", None),        # text: the rule that chose its size
         ("font_fallback", None),    # text: a named font that wasn't found, so it was measured by estimate
+        ("shaping", None),          # text: scripts whose widths need a shaper this engine lacks
         ("fill", None),             # shape: (color, opacity), what text over it is read against
     )
     NAMES = frozenset(name for name, _ in FIELDS)

@@ -322,7 +322,8 @@ def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner="", st=None, 
     x0, y0, _, _ = _label_box(mx, ay, text, vertical, flip)
     w = _pill_w(text)
     return [el("rect", owner=owner, role="edge.label.pill", x=x0, y=y0, width=w, height=16, rx=2, fill=pill or t["paper"]),
-            el("text", text, owner=owner, role="edge.label", x=x0 + w / 2, y=y0 + 12, font_size=st["font-size"],
+            el("text", text, owner=owner, role="edge.label", x=x0 + w / 2, y=y0 + 12, data_shaping=_shaping(text),
+               font_size=st["font-size"],
                font_family=st["font-family"], font_weight=st.get("font-weight"), fill=st["color"], text_anchor="middle")]
 
 
@@ -374,9 +375,19 @@ def runs_el(runs, st, owner, role, x, y, anchor="middle"):
     return e
 
 
+def _shaping(text):
+    """The scripts in a text whose widths are estimates without a shaper, for the audit, or None."""
+    if not text or max(map(ord, str(text))) < 0x0600:
+        return None
+    from .text.shaper import shape
+    scripts = shape(text)["scripts"]
+    return ", ".join(scripts) if scripts else None
+
+
 def text_el(text, st, owner, role, x, y, anchor="middle"):
     """A text element in a computed text style: size, weight, family, then style and spacing if set."""
-    return el("text", text, owner=owner, role=role, x=x, y=y, font_size=st["font-size"], font_weight=st.get("font-weight"),
+    return el("text", text, owner=owner, role=role, x=x, y=y, data_shaping=_shaping(text),
+              font_size=st["font-size"], font_weight=st.get("font-weight"),
               font_family=st["font-family"], font_style=st.get("font-style"), letter_spacing=st.get("letter-spacing"),
               fill=st["color"], text_anchor=anchor, data_color_from=st.get("color-from"),
               data_size_from=st.get("font-size-from"), data_font_fallback=st.get("font-fallback"))

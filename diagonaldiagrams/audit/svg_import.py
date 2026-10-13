@@ -169,7 +169,8 @@ def text_items(el, st, m, z):
         z[0] += 1
         out.append(Item("text", z=z[0], box=xbox(m, x0, y0, x0 + w, y1), text=s, size=fs, newline="\n" in s,
                         color=st.get("fill") or "#000000", bold=bold, color_from=el.get("data-color-from"),
-                        size_from=el.get("data-size-from"), font_fallback=el.get("data-font-fallback")))
+                        size_from=el.get("data-size-from"), font_fallback=el.get("data-font-fallback"),
+                        shaping=el.get("data-shaping")))
     return out
 
 

@@ -10,7 +10,7 @@ from ..geom import center, inside, near_pairs, overlap, path_crosses
 from ..registry import Registry
 
 CHECKS = Registry("check")  # name -> function(view, issues), with the codes it reports; run in order
-WARNINGS = {"newline", "min-size", "colors", "truncated", "font-fallback"}  # codes that warn; others are errors
+WARNINGS = {"newline", "min-size", "colors", "truncated", "font-fallback", "shaping"}  # codes that warn; others are errors
 
 
 def check(name, *codes):
@@ -268,6 +268,20 @@ def font_fallback(v, issues):
                                   "estimate and may not fit where it is shown",
                            "fix": "install it, or name its file in the stylesheet's \"fonts\" or with --font PATH",
                            "at": [round(t.box[0]), round(t.box[1])]})
+
+
+@check("shaped scripts", "shaping")
+def shaping(v, issues):
+    # One warning per script whose letters join or reorder: their widths here are estimates.
+    seen = set()
+    for t in v.texts:
+        for script in (t.shaping or "").split(", "):
+            if script and script not in seen:
+                seen.add(script)
+                issues.append({"code": "shaping",
+                               "msg": f"{script} text needs shaping, which this engine doesn't do, so its widths are estimates",
+                               "fix": "check that the labels fit; a HarfBuzz shaper can be added as a toolkit (P13)",
+                               "at": [round(t.box[0]), round(t.box[1])]})
 
 
 @check("cut text", "truncated")
