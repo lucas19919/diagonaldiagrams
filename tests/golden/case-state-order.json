@@ -4,7 +4,7 @@
   "state",
   "tests/golden/inputs/cases/state-order.json"
  ],
- "exit": 0,
+ "exit": 1,
  "html_sha256": "73b55cb60ac2f0a35b8b937f32af140c433998d4e0ff019f09357a578daf30d7",
  "receipt": {
   "a": null,
@@ -31,7 +31,19 @@
   "y": null
  },
  "verdict": {
+  "errors": [
+   {
+    "at": [
+     760,
+     192
+    ],
+    "code": "through",
+    "fix": "move one node so the arrow goes around it",
+    "msg": "an arrow runs through the circle at [760, 192]"
+   }
+  ],
   "items": 6,
-  "ok": true
+  "next": "the files are written so you can look; change the spec or flags and render again (--no-audit accepts the figure as it is)",
+  "ok": false
  }
 }

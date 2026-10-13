@@ -8,10 +8,11 @@ import re
 
 from .._text import _text_w
 from ..displaylist import DisplayList, Item
-from ..geom import IDENTITY, affine, apply, compose, xbox
+from ..geom import IDENTITY, affine, apply, arc_points, bezier_points, compose, xbox
 
 SKIP = ("defs", "marker", "clipPath", "mask", "symbol", "pattern", "title", "desc", "style")
-KEEP = ("font-size", "font-weight", "text-anchor", "dominant-baseline", "opacity", "visibility", "display", "letter-spacing")
+KEEP = ("font-size", "font-weight", "text-anchor", "dominant-baseline", "opacity", "visibility", "display", "letter-spacing",
+        "marker", "marker-start", "marker-end")  # marker properties inherit, like the text ones
 NEED = {"M": 2, "L": 2, "H": 1, "V": 1, "C": 6, "S": 4, "Q": 4, "T": 2, "A": 7}
 
 
@@ -62,10 +63,11 @@ def css_for(css, el, tag):
 
 
 def path_pts(d):
-    """A path's points, absolute; None marks where a subpath starts. A curve keeps only its end
-    point: corners are small."""
+    """A path's points, absolute; None marks where a subpath starts. Curves and arcs are
+    followed in 8 steps each, so a curved arrow is tested where it is drawn."""
     toks = re.findall(r"[MmLlHhVvCcSsQqTtAaZz]|-?\d*\.?\d+(?:[eE][-+]?\d+)?", d or "")
     pts, cur, start, cmd, i = [], (0.0, 0.0), (0.0, 0.0), None, 0
+    last_ctrl, last_u = None, None  # the previous curve's last control point, for S and T
     while i < len(toks):
         tk = toks[i]
         if tk.isalpha():
@@ -82,18 +84,37 @@ def path_pts(d):
             break
         i += n
         rel = cmd.islower()
+
+        def at(px, py):
+            return (cur[0] + px, cur[1] + py) if rel else (px, py)
         if u == "H":
             x, y = (cur[0] + vals[0] if rel else vals[0]), cur[1]
         elif u == "V":
             x, y = cur[0], (cur[1] + vals[0] if rel else vals[0])
         else:
-            x, y = (cur[0] + vals[-2], cur[1] + vals[-1]) if rel else (vals[-2], vals[-1])
-        cur = (x, y)
-        if u == "M":
-            start = cur
-            pts.append(None)
-            cmd = "l" if rel else "L"
-        pts.append(cur)
+            x, y = at(vals[-2], vals[-1])
+        end = (x, y)
+        if u in "CS":
+            c2 = at(vals[-4], vals[-3])
+            c1 = at(vals[0], vals[1]) if u == "C" else (
+                (2 * cur[0] - last_ctrl[0], 2 * cur[1] - last_ctrl[1]) if last_u and last_u in "CS" and last_ctrl else cur)
+            pts += bezier_points(cur, [c1, c2], end)
+            last_ctrl = c2
+        elif u in "QT":
+            q = at(vals[0], vals[1]) if u == "Q" else (
+                (2 * cur[0] - last_ctrl[0], 2 * cur[1] - last_ctrl[1]) if last_u and last_u in "QT" and last_ctrl else cur)
+            pts += bezier_points(cur, [q], end)
+            last_ctrl = q
+        elif u == "A":
+            pts += arc_points(cur, vals[0], vals[1], vals[2], int(vals[3]), int(vals[4]), end)
+        else:
+            if u == "M":
+                start = end
+                pts.append(None)
+                cmd = "l" if rel else "L"
+            pts.append(end)
+        last_u = u
+        cur = end
     return pts
 
 
@@ -145,6 +166,22 @@ def text_items(el, st, m, z):
     return out
 
 
+def rhombus(v):
+    """Four points at the midpoints of their bounding box's sides: a decision diamond."""
+    xs, ys = v[0::2], v[1::2]
+    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    tips = {(round(cx), round(y0)), (round(x1), round(cy)), (round(cx), round(y1)), (round(x0), round(cy))}
+    return all(any(abs(x - tx) <= 1 and abs(y - ty) <= 1 for tx, ty in tips) for x, y in zip(xs, ys))
+
+
+def translucent(el, st):
+    """Drawn to be seen through (radar areas, bubbles, Venn sets): other marks may sit on it."""
+    def op(v):
+        return num(v, 1.0) if v is not None else 1.0
+    return op(el.get("fill-opacity")) < 1 or op(st.get("opacity")) < 1 or op(el.get("opacity")) < 1
+
+
 def svg_import(root, width, height):
     """The display list of a parsed SVG (an ElementTree root) with a width x height canvas."""
     dl = DisplayList(width, height)
@@ -171,7 +208,8 @@ def svg_import(root, width, height):
             for item in text_items(el, st, m, z):
                 dl.add(item)
             return
-        if tag in ("path", "line", "polyline") and (el.get("marker-end") or el.get("marker-start") or "marker" in style):
+        marked = any((st.get(k) or "none").strip() != "none" for k in ("marker", "marker-start", "marker-end"))
+        if tag in ("path", "line", "polyline") and marked:
             if tag == "path":
                 raw = path_pts(el.get("d"))
             elif tag == "line":
@@ -196,7 +234,7 @@ def svg_import(root, width, height):
                 item.node = el.get("data-node")
         elif tag == "polygon":
             v = [float(p) for p in re.findall(r"-?\d*\.?\d+", el.get("points", ""))]
-            if len(v) == 8:  # a diamond: test the rectangle inside it, not its bounding box
+            if len(v) == 8 and rhombus(v):  # a decision: test the rectangle inside it, not its bounding box
                 b = xbox(m, min(v[0::2]), min(v[1::2]), max(v[0::2]), max(v[1::2]))
                 cx, cy, qw, qh = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2, (b[2] - b[0]) / 4, (b[3] - b[1]) / 4
                 box = (cx - qw, cy - qh, cx + qw, cy + qh)
@@ -204,6 +242,22 @@ def svg_import(root, width, height):
                 if (el.get("fill") or "") != "none" and (cx, cy) not in centers:
                     centers.append((cx, cy))
                     item.diamond = (cx, cy, 2 * qw, 2 * qh)
+            elif len(v) == 8 and not translucent(el, st):  # another quadrilateral: a parallelogram node
+                box = xbox(m, min(v[0::2]), min(v[1::2]), max(v[0::2]), max(v[1::2]))
+                item = Item("shape", box=box, tag=tag)
+        elif tag in ("circle", "ellipse") and not translucent(el, st):
+            # arrows go around a circle; circles may overlap each other (bubbles, Venn), so they
+            # stay out of the box-on-box check
+            rx = num(el.get("r")) if tag == "circle" else num(el.get("rx"))
+            ry = num(el.get("r")) if tag == "circle" else num(el.get("ry"))
+            b = xbox(m, num(el.get("cx")) - rx, num(el.get("cy")) - ry, num(el.get("cx")) + rx, num(el.get("cy")) + ry)
+            filled = (el.get("fill") or "black") != "none" or el.get("stroke")
+            key = tuple(round(c, 1) for c in b)
+            big = width and height and (b[2] - b[0]) * (b[3] - b[1]) > 0.5 * width * height
+            if filled and b[2] - b[0] >= 10 and b[3] - b[1] >= 10 and not big and key not in seen:
+                seen.add(key)
+                dl.add(Item("shape", box=b, tag=tag, ellipse=((b[0] + b[2]) / 2, (b[1] + b[3]) / 2,
+                                                             (b[2] - b[0]) / 2, (b[3] - b[1]) / 2)))
         if item is not None:
             bw, bh = box[2] - box[0], box[3] - box[1]
             filled = (el.get("fill") or "black") != "none" or el.get("stroke")

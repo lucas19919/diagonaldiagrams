@@ -23,6 +23,7 @@ class Item:
     members: frozenset = frozenset()
     node: str = None              # a named node's box
     diamond: tuple = None         # (cx, cy, width, height) of a decision's outline
+    ellipse: tuple = None         # (cx, cy, rx, ry): a circle or ellipse arrows must go around
 
 
 @dataclass
@@ -58,3 +59,7 @@ class DisplayList:
     @property
     def diamonds(self):
         return [i.diamond for i in self.items if i.diamond]
+
+    @property
+    def ellipses(self):
+        return [i.ellipse for i in self.items if i.ellipse]

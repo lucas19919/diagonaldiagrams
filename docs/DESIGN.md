@@ -524,15 +524,20 @@ Today's behavior in `_svg_geometry` and `_audit_file`, which the port must repro
 
 **Stats** (the repair loops' cost, today): `crossings` (horizontal × vertical runs of different arrows crossing strictly) and `wire` (total axis-aligned run length, first 300 arrows). `_layout_cost` is `4 × bad + crossings + wire / 400`, and a parse error counts as zero problems; that last case is a bug.
 
-**Blind spots the port fixes on purpose.** These change results, and the parity report lists them as intended differences:
+**Blind spots, and what P2.5 did about them.** These change results on purpose. On 203 figures (golden, gallery, 80 fuzz renders) the fixes add two real issues and remove none.
 
-- circles, ellipses, closed paths and polygons other than 4-point ones are not obstacles;
-- curves and arcs are reduced to chords;
-- markers set by CSS or on a parent `<g>` aren't seen, so those arrows are missed;
-- `skew` transforms are ignored;
-- a 4-point polygon is always taken for a diamond;
-- `spill` ignores vertical overflow;
-- `_c_*` boxes carry no `data-node`, so `intrude` and the outline skip them.
+Fixed:
+- **Circles and ellipses** stop arrows (`through ... circle`). They stay out of the box-on-box check, because bubbles and Venn sets overlap by design.
+- **Curves and arcs** are followed in 8 steps each instead of reduced to chords. A path counts as crossing a box when it runs more than 2 px inside it in total. A curve is many short segments, so the length is summed, not asked of each segment.
+- **Markers** set by CSS or inherited from a parent `<g>` make an arrow; `marker-end="none"` does not.
+- **`skewX` and `skewY`** transforms are applied.
+- **Only a rhombus is a decision.** Another quadrilateral (a Mermaid parallelogram) is an obstacle by its bounding box, unless it is translucent.
+- **`spill`** also checks a label against the top and bottom of its box.
+
+Still open:
+- **Translucent shapes** (`fill-opacity` or `opacity` below 1) are never obstacles: they are drawn to be seen through.
+- **Polygons with other point counts and closed paths** stay out: radar areas, pie and treemap slices, and chart areas would raise false overlaps. P2.6 removes the guess, because the renderers mark obstacles in the display list themselves.
+- **`_c_*` boxes carry no `data-node`,** so `intrude` and the outline skip them (P2.8).
 
 ## 10. Outline and receipts
 

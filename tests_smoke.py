@@ -907,6 +907,33 @@ def known_bugs():
     enum = tools.get("export", {}).get("inputSchema", {}).get("properties", {}).get("to", {}).get("enum", [])
     check("B9 MCP export offers drawio and excalidraw", {"drawio", "excalidraw"} <= set(enum), str(enum))
 
+    # B12: the audit's blind spots, each on a small hand-written SVG
+    def audit_svg(name, body):
+        path = os.path.join(WORK, name)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><title>t</title><desc>d</desc>'
+                    '<defs><marker id="m"><path d="M0,0 L6,3 L0,6 Z"/></marker></defs>' + body + "</svg>")
+        return run("audit", path)
+    rc, out = audit_svg("b12-circle.svg", '<circle cx="200" cy="150" r="30" fill="#fff" stroke="#000"/>'
+                                          '<path d="M60,150 L340,150" stroke="#000" marker-end="url(#m)"/>')
+    check("B12 an arrow through a circle is caught", rc == 1 and "through the circle" in out, out[:200])
+    rc, out = audit_svg("b12-css.svg", '<style>.edge { marker-end: url(#m); }</style>'
+                                       '<rect x="170" y="120" width="60" height="60" fill="#fff" stroke="#000"/>'
+                                       '<path class="edge" d="M60,150 L340,150" stroke="#000" fill="none"/>')
+    check("B12 an arrowhead set by CSS makes an arrow", rc == 1 and '"through"' in out, out[:200])
+    rc, out = audit_svg("b12-curve.svg", '<rect x="170" y="70" width="60" height="40" fill="#fff" stroke="#000"/>'
+                                         '<path d="M60,150 Q200,10 340,150" stroke="#000" fill="none" marker-end="url(#m)"/>')
+    check("B12 a curved arrow is followed along its curve", rc == 1 and '"through"' in out, out[:200])
+    rc, out = audit_svg("b12-lean.svg", '<polygon points="140,120 280,120 260,180 120,180" fill="#fff" stroke="#000"/>'
+                                        '<path d="M270,40 L270,260" stroke="#000" marker-end="url(#m)"/>')
+    check("B12 a parallelogram blocks arrows across its whole width", rc == 1 and '"through"' in out, out[:200])
+    rc, out = audit_svg("b12-rhombus.svg", '<polygon points="200,100 260,150 200,200 140,150" fill="#fff" stroke="#000"/>'
+                                           '<path d="M60,105 L340,105" stroke="#000" marker-end="url(#m)"/>')
+    check("B12 a decision still uses its true outline", rc == 0, out[:200])
+    rc, out = audit_svg("b12-tall.svg", '<rect x="100" y="100" width="200" height="30" fill="#fff" stroke="#000"/>'
+                                        '<text x="110" y="108" font-size="14">Too tall for its box</text>')
+    check("B12 text spilling out of the top of its box is caught", rc == 1 and '"spill"' in out, out[:200])
+
 
 if __name__ == "__main__":
     main()

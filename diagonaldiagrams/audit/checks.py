@@ -6,7 +6,7 @@ and that order is the order issues are reported in. docs/DESIGN.md section 9.6 d
 import math
 from types import SimpleNamespace
 
-from ..geom import center, crosses, inside, near_pairs, overlap
+from ..geom import center, inside, near_pairs, overlap, path_crosses
 
 CHECKS = []  # (name, codes, function), in run order
 
@@ -97,7 +97,7 @@ def arrow_paths(v, issues):
             if i in holders or any(b[0] - 6 <= e[0] <= b[2] + 6 and b[1] - 6 <= e[1] <= b[3] + 6 for e in ar.ends):
                 continue  # a group frame, or the box this arrow leaves or enters
             core = (b[0] + 3, b[1] + 3, b[2] - 3, b[3] - 3)
-            if core[2] > core[0] and core[3] > core[1] and any(crosses(p, q, core) for p, q in segs):
+            if core[2] > core[0] and core[3] > core[1] and path_crosses(segs, core):
                 issues.append({"code": "through", "msg": f"an arrow runs through the box at {center(b)}",
                                "fix": "move one node to another lane or rank so the arrow goes around it", "at": center(b)})
         for cx, cy, hw, hh in v.diamonds:
@@ -117,13 +117,28 @@ def arrow_paths(v, issues):
             if hit:
                 issues.append({"code": "through", "msg": f"an arrow runs through the decision at {[round(cx), round(cy)]}",
                                "fix": "move one node to another lane or rank so the arrow goes around it", "at": [round(cx), round(cy)]})
+        for cx, cy, rx, ry in v.ellipses:
+            if apart((cx - rx, cy - ry, cx + rx, cy + ry)):
+                continue
+            if any(((e[0] - cx) / (rx + 6)) ** 2 + ((e[1] - cy) / (ry + 6)) ** 2 <= 1 for e in ar.ends):
+                continue  # the circle this arrow leaves or enters
+            hit = False
+            for p, q in segs:
+                n = max(1, int(math.hypot(q[0] - p[0], q[1] - p[1]) // 4))
+                if any(((p[0] + (q[0] - p[0]) * k / n - cx) / rx) ** 2 + ((p[1] + (q[1] - p[1]) * k / n - cy) / ry) ** 2 < 0.81
+                       for k in range(n + 1)):
+                    hit = True
+                    break
+            if hit:
+                issues.append({"code": "through", "msg": f"an arrow runs through the circle at {[round(cx), round(cy)]}",
+                               "fix": "move one node so the arrow goes around it", "at": [round(cx), round(cy)]})
         for t in v.texts:
             if t.z > ar.z or apart(t.box):
                 continue  # the label is painted over the arrow, on purpose, or is nowhere near it
             b = t.box
             h = b[3] - b[1]
             core = (b[0] + 1, b[1] + 0.2 * h, b[2] - 1, b[3] - 0.2 * h)
-            if core[2] > core[0] and any(crosses(p, q, core) for p, q in segs):
+            if core[2] > core[0] and path_crosses(segs, core):
                 issues.append({"code": "strike", "msg": f"an arrow is drawn across the label '{t.text[:24]}'",
                                "fix": "move the node or the label off the arrow's path", "at": center(b)})
 
@@ -200,7 +215,7 @@ def spill(v, issues):
         # a background drawn to the text's own size (Mermaid's arrow labels) is not a box to fit in
         tight = (r[3] - r[1]) <= 1.8 * (b[3] - b[1]) and (r[2] - r[0]) <= (b[2] - b[0]) + 2 * t.size
         if not tight:
-            if b[0] < r[0] + 2 or b[2] > r[2] - 2:  # a label keeps 2px clear of its box edge
+            if b[0] < r[0] + 2 or b[2] > r[2] - 2 or b[1] < r[1] or b[3] > r[3]:  # 2px clear at the sides, inside at top and bottom
                 issues.append({"code": "spill", "msg": f"label '{t.text[:30]}' fills or overflows its box",
                                "fix": "2-4 words for a name; put detail in sub", "at": center(b)})
 
@@ -218,7 +233,7 @@ def run_checks(dl, stats=None):
         shapes = []
     arrows = dl.arrows
     v = SimpleNamespace(W=dl.width, H=dl.height, texts=texts, shapes=shapes, arrows=arrows,
-                        frames=dl.frames, named=dl.named, diamonds=dl.diamonds,
+                        frames=dl.frames, named=dl.named, diamonds=dl.diamonds, ellipses=dl.ellipses,
                         tb=[t.box for t in texts], sb=[s.box for s in shapes], runs=arrow_runs(arrows),
                         near=lambda xs, ys=None: near_pairs(xs, ys, dl.width, dl.height))
     issues = []
