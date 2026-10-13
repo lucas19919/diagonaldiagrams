@@ -27,7 +27,7 @@ As MCP tools (`render`, `describe`, `validate`, `audit`, `export`, `infer`):
 claude mcp add --scope user diagonaldiagrams -- diagonaldiagrams mcp
 ```
 
-Or clone it and run `py -3 graph.py describe` (Windows) or `python3 graph.py describe`. Agents can follow [`.agents/skills/diagonaldiagrams-install/SKILL.md`](.agents/skills/diagonaldiagrams-install/SKILL.md) to install, and [`.agents/skills/graph-engine/SKILL.md`](.agents/skills/graph-engine/SKILL.md) to draw.
+Or clone it and run `py -3 graph.py describe` (Windows) or `python3 graph.py describe`; `graph.py` runs the `diagonaldiagrams/` package next to it. If your environment sets `PYTHONDONTWRITEBYTECODE=1`, run `python -m compileall diagonaldiagrams` once so each call starts from compiled code. Agents can follow [`.agents/skills/diagonaldiagrams-install/SKILL.md`](.agents/skills/diagonaldiagrams-install/SKILL.md) to install, and [`.agents/skills/graph-engine/SKILL.md`](.agents/skills/graph-engine/SKILL.md) to draw.
 
 ## One command
 

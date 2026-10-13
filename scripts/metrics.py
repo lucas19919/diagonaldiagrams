@@ -166,6 +166,11 @@ def measure_startup():
     `py graph.py ...` always does; 'cached' imports the engine from bytecode, as an installed
     package does."""
     py = sys.executable
+    pkg = os.path.join(REPO, "diagonaldiagrams")
+    stale = [r for r, d, _ in os.walk(pkg) if "__pycache__" in d] if os.path.isdir(pkg) else []
+    if stale:  # Python would read these, so "recompiling" would not recompile
+        print("warning: diagonaldiagrams/ holds __pycache__ folders; the 'recompiling' timings use them. "
+              "Delete them for a true no-bytecode measurement.", file=sys.stderr)
     base = {k: v for k, v in os.environ.items() if k not in ("PYTHONDONTWRITEBYTECODE", "PYTHONPYCACHEPREFIX")}
     cache = tempfile.mkdtemp(prefix="metrics-pyc-")
     uncached = dict(base, PYTHONDONTWRITEBYTECODE="1")

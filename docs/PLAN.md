@@ -45,38 +45,38 @@ Every release follows PUBLISHING.md. The version lives in `diagonaldiagrams/__in
 
 ## Scoreboard
 
-These numbers are tracked from P0 on and updated at the end of every phase in `bench/metrics/`. The baseline column is what was measured on 2026-10-12.
+These numbers are tracked from P0 on and updated at the end of every phase in `bench/metrics/` (`baseline.md`, then one file per phase). The baseline column is what was measured on 2026-10-12; the latest column says which phase changed it. Empty means unchanged.
 
-| Metric | Baseline | Target | Expected to move in |
-| --- | --- | --- | --- |
-| CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | ≤ 150 ms | P1, P2 |
-| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws | ≤ 100 ms, 0 redraws | P2, P4 |
-| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws | ≤ 50 ms | P4 |
-| 40-step flow canvas | 1180 × 3952, aspect 0.30 (a tall strip) | within 25% of the target aspect | P4 |
-| MCP tool call | a subprocess per call that recompiles the script (about 0.4–0.5 s) | ≤ 100 ms in-process | P2 |
-| Largest module | 10,012 lines | ≤ 800 lines | P1, P8 |
-| `_c_*` renderers | 66 | 0 | P6, P8 |
-| Truncation call sites (`_short`, `_wrap`) | 69 | 0 | P3, P6, P8 |
-| Inline font settings in drawing code (`font-size=`/`font-family=` occurrences) | 342 | 0 | P3, P6, P8 |
-| `SystemExit` / `sys.exit` inside engine code | 85 | 0 outside the CLI | P2 |
-| Hidden side channels (function attributes) | 4 | 0 | P1 |
-| Styling surface | 9 colors + 3 corner styles | the property set in DESIGN 5.4 | P3 |
-| Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. | 0 of 1,000 | P4 |
-| Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) | 0, once the swim preset lands | P8 |
-| Truncated texts in the golden corpus | 4 in 2 figures | 0 | P3 |
-| Known bugs (table below) | 24 | 0 | P1b–P8 |
-| Quality win rate vs baseline (blind pairwise) | — | ≥ 80% | P8 |
-| Layout stability: mean node movement after a one-node edit | not measured | ≤ 10% of the canvas diagonal | P4 |
-| Human edits that survive regeneration | none survive (edits are pixels) | 100% or a reported conflict | P10 |
-| Tokens and minutes for an agent to produce a 10-view story from a brief | not possible | measured at P9, then reduced | P9, P10 |
-| Legacy import fidelity (PPTX/VSDX shapes, connectors and text kept) | none | ≥ 95% of elements on the import corpus | P11 |
+| Metric | Baseline | Latest | Target | Expected to move in |
+| --- | --- | --- | --- | --- |
+| CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | after P1: 148–164 ms via `graph.py` with bytecode cached, 215–222 ms without; the installed command 160–172 ms | ≤ 150 ms | P1, P2 |
+| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws |  | ≤ 100 ms, 0 redraws | P2, P4 |
+| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws |  | ≤ 50 ms | P4 |
+| 40-step flow canvas | 1180 × 3952, aspect 0.30 (a tall strip) |  | within 25% of the target aspect | P4 |
+| MCP tool call | a subprocess per call that recompiles the script (about 0.4–0.5 s) | after P1: still a subprocess per call, through `python -m diagonaldiagrams`; about 0.16 s with bytecode cached | ≤ 100 ms in-process | P2 |
+| Largest module | 10,012 lines | after P1: 2,800 (`charts/kinds.py`) | ≤ 800 lines | P1, P8 |
+| `_c_*` renderers | 66 |  | 0 | P6, P8 |
+| Truncation call sites (`_short`, `_wrap`) | 69 |  | 0 | P3, P6, P8 |
+| Inline font settings in drawing code (`font-size=`/`font-family=` occurrences) | 342 |  | 0 | P3, P6, P8 |
+| `SystemExit` / `sys.exit` inside engine code | 85 |  | 0 outside the CLI | P2 |
+| Hidden side channels (function attributes) | 4 | after P1: 0 | 0 | P1 |
+| Styling surface | 9 colors + 3 corner styles |  | the property set in DESIGN 5.4 | P3 |
+| Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
+| Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) |  | 0, once the swim preset lands | P8 |
+| Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
+| Known bugs (table below) | 24 |  | 0 | P1b–P8 |
+| Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
+| Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
+| Human edits that survive regeneration | none survive (edits are pixels) |  | 100% or a reported conflict | P10 |
+| Tokens and minutes for an agent to produce a 10-view story from a brief | not possible |  | measured at P9, then reduced | P9, P10 |
+| Legacy import fidelity (PPTX/VSDX shapes, connectors and text kept) | none |  | ≥ 95% of elements on the import corpus | P11 |
 
 ## Decisions needed before a phase starts
 
 From DESIGN section 19. The recommended answer is the default if nobody decides.
 
-| Question | Needed before | Default |
-| --- | --- | --- |
+| Question | Needed before |  | Default |
+| --- | --- |  | --- |
 | Python floor 3.11, or 3.10 with a JSON config | P1 (pyproject) | 3.11 |
 | Release path: incremental 0.6 → 1.0, or one 2.0 | the P1 release | Incremental |
 | Default font: measured system stack, or Inter with embedding | P3 | Measured system stack |
@@ -116,6 +116,21 @@ From DESIGN section 19. The recommended answer is the default if nobody decides.
 ## P1. Package split, no behavior change → 0.6.0
 
 **Goal:** the same engine as a package. Output stays byte-identical, each call gets about 3× faster (0.52 s → under 0.2 s for a typical render), and the hidden contracts are made explicit.
+
+**Status (2026-10-13):** done on branch `p1-package`.
+
+Exit criteria:
+- **Golden files:** all 115 byte-identical.
+- **Smoke tests:** pass through the shim (208/208), `python -m diagonaldiagrams`, and an installed wheel.
+- **Playground:** verified in a real browser; three examples render from the wheel and pass their check. The Pyodide CI job is written but hasn't run, since CI needs a push.
+- **Speed:** a flow render takes 148–164 ms with bytecode cached and 215–222 ms without.
+- **Size:** the largest module is 2,800 lines; side channels are at 0.
+
+Deviations from the tasks below:
+- **`LAND_B64` stays in `geo.py`.** Compiling that 17 KB line costs about 1% of the module, so moving it gained nothing.
+- **PyYAML is still imported on every call** (about 19 ms). It could be made lazy later.
+- **Monitor's structured fix is `remediation_argv`,** a CLI argument list, rather than `remediation: {"cmd": ...}`.
+- **The playground uses Pyodide's `unpackArchive`** instead of `micropip`, so it fetches nothing extra.
 
 ### P1.1 Mechanical split (L)
 
