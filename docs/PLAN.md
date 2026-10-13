@@ -305,6 +305,13 @@ Deviations:
 **Status (2026-10-13):** in progress on branch `p3-style`.
 - **P3.1:** `editorial`, `ink` and `print` are token stylesheets in `style/themes/` that extend `core.json` (type sizes, spacing, strokes, palettes). The flat theme dicts the renderers read are built from them, so the goldens are unchanged. `--theme-file` takes v1 keys (`accent_tint` or `accent-tint`) or a stylesheet's `tokens`. B14 and B15 are fixed.
 - **P3.2:** `style/parse.py` reads every value form in DESIGN 5.3 (colors, tokens, `var()`, `mix()`, lengths, `border`/`border-<side>`, `border-radius`, `padding`, `box-shadow`, `font`, `linear-gradient`). It also holds the DESIGN 5.4 property table. Unknown properties and values are `bad-style` errors with a did-you-mean.
+- **P3.3:** `style/select.py` parses DESIGN 5.2's selectors, with CSS specificity, and matches them against element views. Positions count among siblings of the same type, like `:first-of-type`. `style/cascade.py` resolves sheets in DESIGN 5.1's order:
+  - an element's own `style` sits above every sheet except a `policy` sheet;
+  - shorthands expand and text properties inherit;
+  - em lengths read the element's own font size;
+  - every selector and declaration is checked when the cascade is built, and an error names its sheet and rule;
+  - results are cached per element.
+  `scene_views` builds the views from a scene's group tree. The renderers start reading it in P3.8, which is also where `--corners` becomes a rule.
 
 | Task | Size | Work |
 | --- | --- | --- |
