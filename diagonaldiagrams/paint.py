@@ -22,8 +22,9 @@ also carries attach: the node and port at each end, written as data-from-port an
 """
 import re
 
-from ._draw import ICONS, _box_lines, _diamond_lines, _frame_box, _label_box, _pill_w, corner_rx
+from ._draw import ICONS, _box_lines, _diamond_lines, _frame_box, _label_box, _pill_w, box_text, corner_rx, diamond_text
 from . import deco
+from .text.markup import plain
 from .registry import Registry
 from ._text import _text_w, _wrap
 from ._theme import FONT, MONO, SANS, SERIF
@@ -236,13 +237,13 @@ def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editoria
         d = deco.rounded_rect(x, y, w, h, radii)
         out = [el("path", owner=own, role="node.underlay", d=d, fill=st["paper"]),
                el("path", owner=own, role="node.shape", d=d, fill=st["fill"], stroke=stroke,
-                  stroke_width=st.get("stroke-width"), data_node=nid, data_label=name if nid is not None else None)]
+                  stroke_width=st.get("stroke-width"), data_node=nid, data_label=plain(name) if nid is not None else None)]
         rx = radii
     else:
         out = [el("rect", owner=own, role="node.underlay", x=x, y=y, width=w, height=h, rx=rx, fill=st["paper"]),
                el("rect", owner=own, role="node.shape", x=x, y=y, width=w, height=h, rx=rx, fill=st["fill"],
                   stroke=stroke, stroke_width=st.get("stroke-width"), data_node=nid,
-                  data_label=name if nid is not None else None)]
+                  data_label=plain(name) if nid is not None else None)]
     out += deco.decorate(out[1], out[0], st, lambda fill: el(out[1].tag, owner=own, role="node.pattern",
                                                          **{k: v for k, v in out[1].attrs.items()
                                                             if k in ("x", "y", "width", "height", "rx", "d")}, fill=fill))
@@ -260,15 +261,17 @@ def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editoria
                       fill="none", stroke=stroke, stroke_opacity=".75", stroke_width=1.3, stroke_linecap="round",
                       stroke_linejoin="round"))
     # the wrapped name and sub, centered in the space below the tag and icon
-    nl, sl = _box_lines(name, sub, w)
-    block = 15 * len(nl) + (12 * len(sl) + 2 if sl else 0)
+    nl, sl, lab_box, sb_box = box_text(name, sub, w, st)
+    block = lab_box["pitch"] * len(nl) + (sb_box["pitch"] * len(sl) + 2 if sl else 0)
     top = y + (20 if tag or icon in ICONS else 8)
-    base = top + max(0.0, (y + h - 8 - top - block) / 2.0) + 11
-    lab, sb = st["label"], st["sub"]
+    base = top + max(0.0, (y + h - 8 - top - block) / 2.0) + lab_box["font-size"] - 1
+    lab = dict(st["label"], **{"font-size": lab_box["font-size"]})
+    sb = dict(st["sub"], **{"font-size": sb_box["font-size"]})
     for i, line in enumerate(nl):
-        out.append(text_el(transformed(line, lab), lab, own, "node.label", cx, round(base + 15 * i, 1)))
+        out.append(runs_el(line, lab, own, "node.label", cx, round(base + lab_box["pitch"] * i, 1)))
     for i, line in enumerate(sl):
-        out.append(text_el(transformed(line, sb), sb, own, "node.sub", cx, round(base + 15 * len(nl) + 2 + 12 * i, 1)))
+        out.append(runs_el(line, sb, own, "node.sub", cx,
+                           round(base + lab_box["pitch"] * len(nl) + 2 + sb_box["pitch"] * i, 1)))
     return out
 def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None):
     """A decision: paper underlay, the rhombus, and the wrapped question inside."""
@@ -277,15 +280,15 @@ def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None):
     own = nid or ""
     out = [el("polygon", owner=own, role="node.underlay", points=pts, fill=st["paper"]),
            el("polygon", owner=own, role="node.shape", points=pts, fill=st["fill"], stroke=st["stroke"],
-              stroke_width=st.get("stroke-width"), data_node=nid, data_label=name if nid is not None else None,
+              stroke_width=st.get("stroke-width"), data_node=nid, data_label=plain(name) if nid is not None else None,
               data_cx=cx if nid is not None else None, data_cy=cy if nid is not None else None)]
     out += deco.decorate(out[1], out[0], st, lambda fill: el("polygon", owner=own, role="node.pattern", points=pts, fill=fill))
     out += _sides(out[1], deco.diamond_sides(cx, cy, w, h), st, "diamond", own)
-    lines = _diamond_lines(name)
-    y0 = cy + 4 - 7.5 * (len(lines) - 1)
-    lab = st["label"]
+    lines, lab_box = diamond_text(name, st)
+    y0 = cy + lab_box["font-size"] / 3 - lab_box["pitch"] / 2 * (len(lines) - 1)
+    lab = dict(st["label"], **{"font-size": lab_box["font-size"]})
     for i, line in enumerate(lines):
-        out.append(text_el(transformed(line, lab), lab, own, "node.label", cx, round(y0 + 15 * i, 1)))
+        out.append(runs_el(line, lab, own, "node.label", cx, round(y0 + lab_box["pitch"] * i, 1)))
     return out
 def dot(t, cx, cy, nid=None, st=None):
     """A merge point."""
@@ -348,6 +351,20 @@ def transformed(text, st):
     return text
 
 
+CODE_FONT = "ui-monospace, 'Cascadia Code', Consolas, monospace"
+
+
+def runs_el(runs, st, owner, role, x, y, anchor="middle"):
+    """A line of (text, kind) runs: plain text as one text element, markup as tspans in it."""
+    if len(runs) == 1 and runs[0][1] == "":
+        return text_el(transformed(runs[0][0], st), st, owner, role, x, y, anchor)
+    e = text_el(None, st, owner, role, x, y, anchor)
+    e.children = [el("tspan", transformed(t, st), font_weight="700" if k == "b" else None,
+                     font_style="italic" if k == "i" else None, font_family=CODE_FONT if k == "m" else None)
+                  for t, k in runs]
+    return e
+
+
 def text_el(text, st, owner, role, x, y, anchor="middle"):
     """A text element in a computed text style: size, weight, family, then style and spacing if set."""
     return el("text", text, owner=owner, role=role, x=x, y=y, font_size=st["font-size"], font_weight=st.get("font-weight"),
@@ -374,7 +391,7 @@ def named(els, kind, name, role="node.shape"):
 
 def node_name(n, nid=None):
     """A node as a reader hears it: its name, then its sub-label."""
-    name = str(n.get("name", nid if nid is not None else n.get("id", "")))
+    name = plain(n.get("name", nid if nid is not None else n.get("id", "")))
     return name + (f", {n['sub']}" if n.get("sub") else "")
 
 

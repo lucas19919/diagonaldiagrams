@@ -45,6 +45,35 @@
   ],
   "items": 6,
   "next": "the files are written so you can look; change the spec or flags and render again (--no-audit accepts the figure as it is)",
-  "ok": false
+  "ok": false,
+  "warnings": [
+   {
+    "at": [
+     234,
+     229
+    ],
+    "code": "truncated",
+    "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+    "msg": "'Payment authori…' was cut short"
+   },
+   {
+    "at": [
+     395,
+     229
+    ],
+    "code": "truncated",
+    "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+    "msg": "'Picking in ware…' was cut short"
+   },
+   {
+    "at": [
+     876,
+     229
+    ],
+    "code": "truncated",
+    "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+    "msg": "'Returned to sen…' was cut short"
+   }
+  ]
  }
 }

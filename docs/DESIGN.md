@@ -401,6 +401,12 @@ Shaping is an extension point (`shaper`, section 11.1):
 - `max-lines` caps the line count; past it the box grows instead of cutting text, unless the style asks for `ellipsis`.
 - Any truncation is reported by the `truncated` check, so it is always visible.
 
+As built in P3.6:
+- **Boxes:** box text wraps at the node's computed `font-size` and weight, with a line pitch from `line-height` (presets: 1.25 for labels, 4/3 for subs).
+- **Overflow:** `wrap` (the default) keeps every line and grows the box. `shrink` lowers the size in half-pixel steps to 9 px until `max-lines` fits. `ellipsis` cuts at `max-lines`.
+- **Markup:** marked-up text wraps word by word with each run measured in its own style, and is drawn as tspans. An underscore is markup only at a word's edges.
+- **Measuring:** widths still come from the built-in estimate; measured fonts arrive in P3.5.
+
 ### 6.3 Embedding
 
 `font-embed: true` (or `--embed-fonts`) embeds the font file as a data URI `@font-face` in the SVG or HTML, for PNG/PDF export and for exact rendering elsewhere. Subsetting is a later improvement (PLAN P3.5b); until then the whole file is embedded and a `large-font` warning reports its size.

@@ -10,7 +10,7 @@ from ..geom import center, inside, near_pairs, overlap, path_crosses
 from ..registry import Registry
 
 CHECKS = Registry("check")  # name -> function(view, issues), with the codes it reports; run in order
-WARNINGS = {"newline", "min-size", "colors"}  # codes that warn; every other code is an error
+WARNINGS = {"newline", "min-size", "colors", "truncated"}  # codes that warn; every other code is an error
 
 
 def check(name, *codes):
@@ -254,6 +254,16 @@ def min_size(v, issues):
         if t.size_from and t.size < 9:
             issues.append({"code": "min-size", "msg": f"'{t.text[:24]}' is {t.size:g} px, under 9 px; the size comes from "
                                                        f"{t.size_from}", "fix": "use 9 px or more", "at": [round(t.box[0]), round(t.box[1])]})
+
+
+@check("cut text", "truncated")
+def truncated(v, issues):
+    # Text that ends in an ellipsis lost words the reader can't get back: say where, once per text.
+    for t in v.texts:
+        if t.text.endswith(("...", "…")) and len(t.text) > 3:
+            issues.append({"code": "truncated", "msg": f"'{t.text[:32]}' was cut short",
+                           "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+                           "at": [round(t.box[0]), round(t.box[1])]})
 
 
 @check("colors", "colors")

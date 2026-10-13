@@ -275,7 +275,7 @@ def _structure_ok(spec, errors, warnings, kind=None):
             dia = kind == "flow" and n.get("shape") == "diamond"
             need = len(_wrap_px(n.get("name", ""), 100 if dia else 144, 12, True, 99))
             if need > 3:
-                warnings.append({"msg": f"node '{n.get('id')}' name needs {need} lines; it is cut to 3",
+                warnings.append({"msg": f"node '{n.get('id')}' name needs {need} lines, so its box grows taller than the rest",
                                  "fix": "shorten it" + ("; a decision is a short question" if dia else "; put detail in sub")})
         if n.get("icon") and n.get("icon") not in ICONS:
             warnings.append({"msg": f"node '{n.get('id')}' icon '{n.get('icon')}' is not built in; drawn without it",

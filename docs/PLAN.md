@@ -220,7 +220,7 @@ The remaining bugs are fixed where their code is replaced:
 | B13 | `_c_*` boxes carry no `data-node`, so no outline, `intrude` or export | P2.8, fixed for dag, integration and swim (the charts that draw boxes and links) |
 | B14 | The theme `_name` is "custom" only through the API; the default `THEME` has no name | P3.1, fixed |
 | B15 | `--corners` is accepted but unused by line and scatter | P3.1, fixed: their note callouts take the corner radius; corners become a cascade rule in P3.3 |
-| B16 | `_paint_boxes` and `_legend` truncate names at 16–26 characters | P3.6, P6.2 |
+| B16 | `_paint_boxes` and `_legend` truncate names at 16–26 characters | P3.6 fixed it for the four diagram types' boxes; the chart kinds' `_paint_boxes` and `_legend` remain, for P6.2 |
 | B17 | `--figure` and `--caption` are stored and never drawn | P3.10 (diagrams), P6.6 (charts) |
 | B18 | Arch width includes the note rail, so nodes can sit under it | P4.6 |
 | B19 | Arch edges that go up pass straight through the rows between | P4.3 |
@@ -336,6 +336,10 @@ Deviations:
   - Text whose color or size a stylesheet chose carries that rule's name, so the issue names it: "the color comes from stylesheet 'brand', rule '#fix::label'".
   - Default colors are not judged yet; the themes themselves fall short (B25).
   - `font-fallback` comes with fonts (P3.5). `legend` has nothing to catch while every scale draws its own legend.
+- **P3.6:** boxes lay their text out in the computed style (`text/measure.py`, `text/markup.py`): size, weight and line height decide the wrap, and boxes and sequence actors grow to fit.
+  - Nothing is cut by default (B16 for these four types). `overflow: shrink` steps down to 9 px; `ellipsis` cuts at `max-lines`.
+  - `**bold**`, `_italic_` and `` `mono` `` draw as tspans, while names, labels and outlines keep the plain text.
+  - A new `truncated` warning flags any cut text, including two chart figures whose labels the charts still shorten.
 
 | Task | Size | Work |
 | --- | --- | --- |

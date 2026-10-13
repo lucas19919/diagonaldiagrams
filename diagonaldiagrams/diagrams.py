@@ -136,9 +136,11 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     nodes = [dict(n) for n in spec["nodes"]]  # [{id,shape,name,tag?,sub?,focal?}]
     for n in nodes:
         n.setdefault("name", n.get("id", ""))
-        n["shape"] = sty.node(n.get("id"))["computed"].get("shape") or n.get("shape", "rect")  # a rule may set it
+        st = sty.node(n.get("id"))
+        n["shape"] = st["computed"].get("shape") or n.get("shape", "rect")  # a rule may set it
         sh = n["shape"]
-        n["_h"] = 8 if sh == "dot" else (_diamond_h(n["name"]) if sh == "diamond" else _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", "")))
+        n["_h"] = 8 if sh == "dot" else (_diamond_h(n["name"], st) if sh == "diamond" else
+                                         _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=st))
     edges = spec.get("edges", [])  # [{from,to,label?,focal?}]
     _notes = (spec.get("notes", []) or [])[:2]
     head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
@@ -480,7 +482,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     nodes = [dict(n) for n in spec["nodes"]]; edges = spec.get("edges", [])
     for n in nodes:
         n.setdefault("name", n.get("id", ""))
-        n["_h"] = _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""))
+        n["_h"] = _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=sty.node(n["id"]))
     _notes = (spec.get("notes", []) or [])[:2]
     head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
     # simple layered: group by 'layer' (0 top..n), spread across width
@@ -625,8 +627,13 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
         cx = margin_x + 70 + i * pitch
         pos[a["id"]] = (cx, a)
     top = max(90, head_h + 16)
+    bh = 52  # actor boxes share one height, grown when a name, styled or long, needs it
+    for a in actors:
+        nl_, sl_, lab_, sb_ = paint.box_text(a.get("name", a.get("id", "")), a.get("sub", ""), 140, sty.node(a.get("id")))
+        block = lab_["pitch"] * len(nl_) + (sb_["pitch"] * len(sl_) + 2 if sl_ else 0)
+        bh = max(bh, (20 if a.get("tag") else 8) + block + 3)
     msg_gap = 52
-    msg_start = top + 86  # the first message's label sits clear of the actor boxes
+    msg_start = top + bh + 34  # the first message's label sits clear of the actor boxes
     H = msg_start + len(messages) * msg_gap + 80
     extra = paint.legend_height(t, sty.legend_entries(), W - 60)
     H += extra
@@ -635,7 +642,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     # Lifelines
     for aid, (cx, a) in pos.items():
-        dr.add(paint.el("line", owner=aid, role="actor.lifeline", x1=cx, y1=top + 52, x2=cx, y2=H - 50, stroke=t["rule"],
+        dr.add(paint.el("line", owner=aid, role="actor.lifeline", x1=cx, y1=top + bh, x2=cx, y2=H - 50, stroke=t["rule"],
                         stroke_width=1.2, stroke_dasharray="4,4"))
     # Messages
     mids = edge_ids(messages)
@@ -683,7 +690,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
     _more_markers(dr, sty)
     # Actor boxes at top
     for aid, (cx, a) in pos.items():
-        bw, bh = 140, 52
+        bw = 140
         bx, by = cx - bw / 2, top
         dr.add(*paint.named(paint.node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""),
                                            a.get("focal", False), corners, aid, st=sty.node(aid)), "actor",

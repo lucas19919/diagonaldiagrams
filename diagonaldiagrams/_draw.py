@@ -378,14 +378,40 @@ def _frame_edges(groups, pos):
 BOX_W, BOX_H = 160, 56
 
 
-def _box_lines(name, sub="", w=BOX_W):
-    return _wrap_px(name, w - 16, 12, True, 3), (_wrap_px(sub, w - 16, 9, False, 2) if sub else [])
+BOX_LABEL = {"font-size": 12, "font-weight": 600}  # what a box's text is without a style
+BOX_SUB = {"font-size": 9}
 
 
-def _box_h(name, sub="", tag="", w=BOX_W):
+def _bold(st):
+    w = str(st.get("font-weight") or "")
+    return w == "bold" or (w.isdigit() and int(w) >= 600)
+
+
+def box_text(name, sub="", w=BOX_W, st=None):
+    """A box's text laid out in its computed style (P3.6): (name lines, sub lines, label style,
+    sub style), each line a list of (text, kind) runs, the styles carrying the size the text ended
+    up at and its line pitch. Nothing is cut unless the style asks for overflow: ellipsis."""
+    from .text.measure import line_height, wrap
+    lab = dict(BOX_LABEL, **{k: v for k, v in ((st or {}).get("label") or {}).items() if v is not None})
+    sb = dict(BOX_SUB, **{k: v for k, v in ((st or {}).get("sub") or {}).items() if v is not None})
+    nl, lab["font-size"] = wrap(name, w - 16, lab["font-size"], _bold(lab), lab.get("max-lines"), lab.get("overflow") or "wrap")
+    sl = []
+    if sub:
+        sl, sb["font-size"] = wrap(sub, w - 16, sb["font-size"], _bold(sb), sb.get("max-lines"), sb.get("overflow") or "wrap")
+    lab["pitch"] = line_height(lab, 1.25)
+    sb["pitch"] = line_height(sb, 4 / 3)
+    return nl, sl, lab, sb
+
+
+def _box_lines(name, sub="", w=BOX_W, st=None):
+    nl, sl, _, _ = box_text(name, sub, w, st)
+    return ["".join(t for t, _ in line) for line in nl], ["".join(t for t, _ in line) for line in sl]
+
+
+def _box_h(name, sub="", tag="", w=BOX_W, st=None):
     """Height a box needs for its wrapped name and sub. One line each fits the classic 56."""
-    nl, sl = _box_lines(name, sub, w)
-    block = 15 * len(nl) + (12 * len(sl) + 2 if sl else 0)
+    nl, sl, lab, sb = box_text(name, sub, w, st)
+    block = lab["pitch"] * len(nl) + (sb["pitch"] * len(sl) + 2 if sl else 0)
     return max(BOX_H, block + (30 if tag else 18))
 
 
@@ -419,12 +445,24 @@ _FA_ICONS = {"user": "user", "users": "user", "person": "user", "database": "dat
              "shield": "shield", "bolt": "bolt", "list": "queue", "inbox": "queue"}
 
 
-def _diamond_lines(name):
-    return _wrap_px(name, 100, 12, True, 3)
+def diamond_text(name, st=None):
+    """A decision's question laid out in its style: (lines of runs, label style with its pitch)."""
+    from .text.measure import line_height, wrap
+    lab = dict(BOX_LABEL, **{k: v for k, v in ((st or {}).get("label") or {}).items() if v is not None})
+    lines, lab["font-size"] = wrap(name, 100, lab["font-size"], _bold(lab), lab.get("max-lines"),
+                                   lab.get("overflow") or "wrap")
+    lab["pitch"] = line_height(lab, 1.25)
+    return lines, lab
 
 
-def _diamond_h(name):
-    return {1: 64, 2: 84}.get(len(_diamond_lines(name)), 104)
+def _diamond_lines(name, st=None):
+    return ["".join(t for t, _ in line) for line in diamond_text(name, st)[0]]
+
+
+def _diamond_h(name, st=None):
+    """64 for one line, and four thirds of a line's pitch more for each line after (84, 104, ...)."""
+    lines, lab = diamond_text(name, st)
+    return round(64 * lab["font-size"] / 12) + (len(lines) - 1) * lab["pitch"] * 4 / 3
 
 
 def _pill_w(text):

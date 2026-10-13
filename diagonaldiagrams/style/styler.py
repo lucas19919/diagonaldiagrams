@@ -14,7 +14,8 @@ from .select import View
 from .tokens import THEME_NAMES, sheet, token_name, v1_theme
 
 CORNER_RX = {"sharp": 0, "rounded": 10, "editorial": 6}
-TEXT = ("font-family", "font-size", "font-weight", "font-style", "color", "text-transform", "letter-spacing")
+TEXT = ("font-family", "font-size", "font-weight", "font-style", "color", "text-transform", "letter-spacing",
+        "line-height", "max-lines", "overflow")
 MARKERS = (("muted", "a"), ("accent", "aa"), ("link", "al"), ("soft", "ar"))  # marker_defs' ids
 
 

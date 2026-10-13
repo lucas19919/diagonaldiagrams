@@ -68,6 +68,17 @@
    "row 3: Run tests and lint | Merge and deploy"
   ],
   "next": "the files are written so you can look; change the spec or flags and render again (--no-audit accepts the figure as it is)",
-  "ok": false
+  "ok": false,
+  "warnings": [
+   {
+    "at": [
+     137,
+     226
+    ],
+    "code": "truncated",
+    "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+    "msg": "'Review the diff caref…' was cut short"
+   }
+  ]
  }
 }
