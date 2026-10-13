@@ -5,7 +5,7 @@
   "tests/golden/inputs/cases/swim-review.json"
  ],
  "exit": 1,
- "html_sha256": "3182fba0a3c41e33cf109a5ef1a851383721944c53fbc01fae49011d4b73eb01",
+ "html_sha256": "d9732a776b40665b3d076ec5563f27d8a734d01c197508a7450066c06aa6dad7",
  "receipt": {
   "a": null,
   "b": null,
@@ -61,6 +61,11 @@
    }
   ],
   "items": 6,
+  "layout": [
+   "row 1: Open pull request | Address comments",
+   "row 2: Review the diff carefully | Approve",
+   "row 3: Run tests and lint | Merge and deploy"
+  ],
   "next": "the files are written so you can look; change the spec or flags and render again (--no-audit accepts the figure as it is)",
   "ok": false
  }

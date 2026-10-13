@@ -7,7 +7,7 @@
   "integration"
  ],
  "exit": 0,
- "html_sha256": "b8c3c740eaf8cf40d77c9d8e1fbe74a9159bc6808046b30f5dc3e5697cd5acd3",
+ "html_sha256": "cfda102660cfcf6b2049b9601489c59a8e7623297306a92f2b18a662cf5170b6",
  "receipt": {
   "a": null,
   "b": null,
@@ -34,6 +34,9 @@
  },
  "verdict": {
   "items": 3,
+  "layout": [
+   "row 1: CRM | Core | App"
+  ],
   "ok": true
  }
 }

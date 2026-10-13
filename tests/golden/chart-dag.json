@@ -7,7 +7,7 @@
   "dag"
  ],
  "exit": 0,
- "html_sha256": "455c5c0364388454680dcc2e617a4c28d48be0001ed4f30528885c67d0d63e11",
+ "html_sha256": "1ef8e5f824dd80d220a3c309fc3af76f674aa25f12e14c9ba09da2829c95129a",
  "receipt": {
   "a": null,
   "b": null,
@@ -34,6 +34,11 @@
  },
  "verdict": {
   "items": 3,
+  "layout": [
+   "row 1: A",
+   "row 2: B",
+   "row 3: C"
+  ],
   "ok": true
  }
 }

@@ -7,7 +7,7 @@
   "swim"
  ],
  "exit": 0,
- "html_sha256": "20abb92b9596b904dd062cee7bada9e3dde2ced67793b7db02569db0f5dc603a",
+ "html_sha256": "c6a428508b136d58aeb4587098c3df03fc0afc1640cd527ad2b89a51e0ad4a43",
  "receipt": {
   "a": null,
   "b": null,
@@ -34,6 +34,10 @@
  },
  "verdict": {
   "items": 2,
+  "layout": [
+   "row 1: Write",
+   "row 2: Check"
+  ],
   "ok": true
  }
 }

@@ -262,7 +262,8 @@ def _draw_links(parts, t, pos, edges):
         if not d:
             continue
         col = t["link"] if str(e.get("proto", "")).startswith("http") else t["muted"]
-        parts.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="1.6" marker-end="url(#a)"/>')
+        mark = f' data-from="{esc(e["from"])}" data-to="{esc(e["to"])}"' + (f' data-label="{esc(e["label"])}"' if e.get("label") else "")
+        parts.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="1.6" marker-end="url(#a)"{mark}/>')
         parts.append(_tail(x1, y1, s1, col))
         if e.get("label"):
             parts.append(arrow_label(t, lx, ly, str(e["label"]).upper(), vertical=vertical))
@@ -477,7 +478,8 @@ def _paint_boxes(parts, t, pos, focals, w=160, h=56):
         stroke = t["accent"] if focal else t["ink"]
         sw = "1.5" if focal else "1.1"
         parts.append(
-            f'<rect x="{x - w / 2:.1f}" y="{y - h / 2:.1f}" width="{w}" height="{h}" rx="2" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>')
+            f'<rect x="{x - w / 2:.1f}" y="{y - h / 2:.1f}" width="{w}" height="{h}" rx="2" fill="{fill}" stroke="{stroke}" stroke-width="{sw}" '
+            f'data-node="{esc(nid)}" data-label="{esc(n.get("name") or nid)}"/>')
         name = _short(n.get("name") or nid, 22)
         sub = n.get("sub") or ""
         parts.append(

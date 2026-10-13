@@ -951,6 +951,14 @@ def outline_checks():
     o = (json.loads(out) if rc == 0 else {}).get("outline", {})
     check("seq --outline lists actors and messages in order",
           o.get("actors", [None])[0] == "Customer" and o.get("messages", [{}])[0].get("label") == "Submit Order", out[-300:])
+    # B13: the boxes-and-links charts mark their nodes, so they get an outline and an export
+    dag = os.path.join(WORK, "ol-dag.svg")
+    rc, out = run("chart", "dag", "tests/golden/inputs/charts/dag.json", "-o", dag, "--outline")
+    o = (json.loads(out) if rc == 0 else {}).get("outline", {})
+    check("chart dag --outline lists its nodes and edges (B13)",
+          [n["id"] for n in o.get("nodes", [])] == ["a", "b", "c"] and len(o.get("edges", [])) == 2, out[-300:])
+    rc, out = run("export", dag, "--to", "drawio", "-o", os.path.join(WORK, "ol-dag.drawio"))
+    check("chart dag exports its boxes and arrows to draw.io (B13)", rc == 0 and "3 boxes, 2 arrows" in out, out[-200:])
 
 
 if __name__ == "__main__":
