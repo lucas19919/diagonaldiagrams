@@ -8,6 +8,8 @@ Excalidraw exports are built from.
 import re
 import xml.etree.ElementTree as ET
 
+from .scene.ids import EdgeIds
+
 ROLES = (("xaxis", "x axis"), ("yaxis", "y axis"), ("series", "series"), ("table", "tables"))
 CAP = 60  # nodes or edges listed in the structured outline before "more"
 
@@ -42,7 +44,8 @@ def read_figure(svg):
         if role:
             fig["roles"].setdefault(role, []).append((el.text or ""))
         if get("data-msg") is not None:
-            fig["messages"].append({"label": get("data-msg"), "from": get("data-msg-from"), "to": get("data-msg-to")})
+            fig["messages"].append({"id": get("data-id"), "label": get("data-msg"), "from": get("data-msg-from"),
+                                    "to": get("data-msg-to")})
         if get("data-node") is not None and get("data-label") is not None:
             nid, label = get("data-node"), get("data-label")
             fig["actors"].append(label)
@@ -58,13 +61,18 @@ def read_figure(svg):
                                          "h": max(ys) - min(ys), "shape": "diamond", "stroke": get("stroke"),
                                          "cx": _num(get("data-cx"), None), "cy": _num(get("data-cy"), None)}
         if tag == "path" and get("data-from") is not None and get("data-to") is not None:
-            fig["edges"].append({"from": get("data-from"), "to": get("data-to"), "label": get("data-label") or "",
+            fig["edges"].append({"id": get("data-id"), "from": get("data-from"), "to": get("data-to"), "label": get("data-label") or "",
                                  "dashed": get("stroke-dasharray") is not None, "stroke": get("stroke"),
                                  "points": _path_points(get("d"))})
         if tag == "rect" and get("data-group") is not None:
             fig["frames"].append({"id": get("data-group"), "label": get("data-name") or "",
                                   "x": _num(get("x")), "y": _num(get("y")), "w": _num(get("width")), "h": _num(get("height")),
                                   "members": [m for m in (get("data-members") or "").split(",") if m]})
+    # figures drawn before edges carried data-id: the ids the renderer would have written
+    for key in ("edges", "messages"):
+        name = EdgeIds()
+        for e in fig[key]:
+            e["id"] = name(e["from"], e["to"], e["label"], e["id"])
     return fig
 
 
@@ -122,7 +130,7 @@ def outline(fig):
                          "x": round(n["x"] + n["w"] / 2), "y": round(n["y"] + n["h"] / 2),
                          **({"group": group_of[n["id"]]} if n["id"] in group_of else {})} for n in nodes[:CAP]]
     if fig["edges"]:
-        out["edges"] = [{"from": e["from"], "to": e["to"], **({"label": e["label"]} if e["label"] else {}),
+        out["edges"] = [{"id": e["id"], "from": e["from"], "to": e["to"], **({"label": e["label"]} if e["label"] else {}),
                          **({"dashed": True} if e["dashed"] else {})} for e in fig["edges"][:CAP]]
     if fig["frames"]:
         out["groups"] = [{"id": f["id"], "name": f["label"], "members": f["members"]} for f in fig["frames"]]

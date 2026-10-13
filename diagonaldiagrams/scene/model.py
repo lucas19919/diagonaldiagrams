@@ -1,133 +1,110 @@
 """The scene: what a figure shows, before layout and style decide where and how (DESIGN 4).
 
-Plain dataclasses. normalize.py builds them from JSON and to_dict() writes them back, so a scene
+Plain slotted records. normalize.py builds them from JSON and to_dict() writes them back, so a scene
 round-trips through receipts and patches. A scene is data (D8): nothing in it runs. Every element
 has an id, and generated ids come from content, never from position (D15).
 
 Fields a toolkit understands but the core does not are kept in `extra` and written back as given.
 """
-from dataclasses import MISSING, dataclass, field, fields
-
 # attribute -> JSON key, where they differ ("from" and "async" are Python keywords)
 KEYS = {"from_": "from", "async_": "async", "classes": "class", "from_port": "from-port", "to_port": "to-port"}
 ALWAYS = {"id", "from_", "to"}  # written even when empty
+REQUIRED = object()
 
 
-def _list():
-    return field(default_factory=list)
+class Record:
+    """A slotted record. FIELDS lists (name, default); a list or dict default is made fresh for
+    each record. Plain classes rather than dataclasses, which would add 25-40 ms to every import."""
+    __slots__ = ()
+    FIELDS = ()
+
+    def __init__(self, **kw):
+        for name, default in self.FIELDS:
+            if name in kw:
+                value = kw.pop(name)
+            elif default is REQUIRED:
+                raise TypeError(f"{type(self).__name__} needs {name!r}")
+            else:
+                value = default() if default in (list, dict) else default
+            setattr(self, name, value)
+        if kw:
+            raise TypeError(f"{type(self).__name__} has no field {next(iter(kw))!r}")
+
+    def __eq__(self, other):
+        return type(self) is type(other) and all(getattr(self, n) == getattr(other, n) for n, _ in self.FIELDS)
+
+    def __repr__(self):
+        shown = ", ".join(f"{n}={getattr(self, n)!r}" for n, d in self.FIELDS
+                          if n == "id" or getattr(self, n) != (d() if d in (list, dict) else d))
+        return f"{type(self).__name__}({shown})"
+
+    def to_dict(self, skip=()):
+        out = {}
+        for name, default in self.FIELDS:
+            if name == "extra" or name in skip:
+                continue
+            v = getattr(self, name)
+            if v == (default() if default in (list, dict) else default) and name not in ALWAYS:
+                continue
+            out[KEYS.get(name, name)] = " ".join(v) if name == "classes" else v
+        out.update(self.extra)
+        return out
 
 
-def _dict():
-    return field(default_factory=dict)
+def _record(name, fields, doc=""):
+    return type(name, (Record,), {"__slots__": tuple(n for n, _ in fields), "FIELDS": tuple(fields), "__doc__": doc})
 
 
-def _to_dict(obj, skip=()):
-    out = {}
-    for f in fields(obj):
-        if f.name == "extra" or f.name in skip:
-            continue
-        v = getattr(obj, f.name)
-        default = f.default_factory() if f.default_factory is not MISSING else f.default
-        if v == default and f.name not in ALWAYS:
-            continue
-        out[KEYS.get(f.name, f.name)] = " ".join(v) if f.name == "classes" else v
-    out.update(obj.extra)
-    return out
+_NAMED = Record.to_dict
 
 
-@dataclass(slots=True)
-class Node:
-    id: str
-    name: str = ""  # normalize fills in the id when a node has none
-    sub: str = ""
-    tag: str = ""
-    icon: str = ""
-    shape: str = "rect"
-    classes: list = _list()
-    data: dict = _dict()
-    style: dict = _dict()
-    group: str | None = None
-    content: dict | None = None  # a nested container: a chart, a sub-diagram, a table, raw SVG (4.5)
-    ports: list = _list()
-    focal: bool = False
-    rank: int | None = None
-    lane: float | None = None
-    order: int | None = None
-    pin: dict | None = None
-    extra: dict = _dict()
-
-    def to_dict(self):
-        return _to_dict(self, skip=("name",) if self.name == self.id else ())
-
-
-@dataclass(slots=True)
-class Edge:
-    id: str
-    from_: str
-    to: str
-    from_port: str | None = None
-    to_port: str | None = None
-    label: str = ""
-    labels: list = _list()
-    proto: str = ""
-    async_: bool = False
-    reply: bool = False
-    classes: list = _list()
-    data: dict = _dict()
-    style: dict = _dict()
-    router: str | None = None
-    route: list | None = None
-    focal: bool = False
-    order: int | None = None  # a sequence message's place in time
-    extra: dict = _dict()
+class Node(_record("Node", (
+        ("id", REQUIRED), ("name", ""), ("sub", ""), ("tag", ""), ("icon", ""), ("shape", "rect"), ("classes", list),
+        ("data", dict), ("style", dict), ("group", None),
+        ("content", None),  # a nested container: a chart, a sub-diagram, a table, raw SVG (4.5)
+        ("ports", list), ("focal", False), ("rank", None), ("lane", None), ("order", None), ("pin", None),
+        ("extra", dict)))):
+    """A box, decision, table or any registered shape. name defaults to id (normalize fills it in)."""
+    __slots__ = ()
 
     def to_dict(self):
-        return _to_dict(self)
+        return _NAMED(self, skip=("name",) if self.name == self.id else ())
 
 
-@dataclass(slots=True)
-class Group:
-    id: str
-    name: str = ""
-    tag: str = ""
-    members: list = _list()
-    parent: str | None = None
-    layout: object = None
-    classes: list = _list()
-    style: dict = _dict()
-    extra: dict = _dict()
+class Edge(_record("Edge", (
+        ("id", REQUIRED), ("from_", REQUIRED), ("to", REQUIRED), ("from_port", None), ("to_port", None), ("label", ""),
+        ("labels", list), ("proto", ""), ("async_", False), ("reply", False), ("classes", list), ("data", dict),
+        ("style", dict), ("router", None), ("route", None), ("focal", False),
+        ("order", None),  # a sequence message's place in time
+        ("extra", dict)))):
+    """A connection between two nodes. Its id comes from content when it has none (ids.py)."""
+    __slots__ = ()
+
+
+class Group(_record("Group", (
+        ("id", REQUIRED), ("name", ""), ("tag", ""), ("members", list), ("parent", None), ("layout", None),
+        ("classes", list), ("style", dict), ("extra", dict)))):
+    """A container drawn as a frame. Groups nest through parent."""
+    __slots__ = ()
 
     def to_dict(self):
-        return _to_dict(self, skip=("name",) if self.name == self.id else ())
+        return _NAMED(self, skip=("name",) if self.name == self.id else ())
 
 
-@dataclass(slots=True)
-class Scene:
-    version: int = 2
-    title: str | None = None  # None: not given, so a renderer may put its own default in
-    subtitle: str | None = None
-    source: str = ""
-    caption: str = ""
-    preset: str | None = None
-    use: list = _list()
-    size: dict | None = None
-    style: object = None  # a stylesheet path, an inline stylesheet, or a list of both
-    defs: dict = _dict()
-    data: dict = _dict()
-    layout: object = None
-    space: dict | None = None
-    nodes: list = _list()
-    edges: list = _list()
-    groups: list = _list()
-    constraints: list = _list()
-    annotations: list = _list()
-    legend: object = "auto"
-    budget: bool = True
-    extra: dict = _dict()
+class Scene(_record("Scene", (
+        ("version", 2),
+        ("title", None), ("subtitle", None),  # None: not given, so a renderer may put its own default in
+        ("source", ""), ("caption", ""), ("preset", None), ("use", list), ("size", None),
+        ("style", None),  # a stylesheet path, an inline stylesheet, or a list of both
+        ("defs", dict), ("data", dict), ("layout", None), ("space", None), ("nodes", list), ("edges", list),
+        ("groups", list), ("constraints", list), ("annotations", list), ("legend", "auto"), ("budget", True),
+        ("extra", dict)))):
+    """A whole figure: the root container."""
+    __slots__ = ()
 
     def to_dict(self):
         out = {"version": self.version}
-        out.update(_to_dict(self, skip=("version", "nodes", "edges", "groups")))
+        out.update(Record.to_dict(self, skip=("version", "nodes", "edges", "groups")))
         for key in ("nodes", "edges", "groups"):
             if getattr(self, key):
                 out[key] = [x.to_dict() for x in getattr(self, key)]

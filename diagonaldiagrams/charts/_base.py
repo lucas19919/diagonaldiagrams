@@ -4,6 +4,7 @@ from ..errors import SpecError
 from .._draw import _tail, arrow_label, assign_ports, figure_heading, fmt_tick, markers, route_edge
 from .._text import esc
 from .._theme import FONT
+from ..scene.ids import edge_ids
 
 
 def _load_input(path):
@@ -254,6 +255,7 @@ def _place_layers(nodes, rank, W, top, gap_y=120):
 
 def _draw_links(parts, t, pos, edges):
     ports = assign_ports(pos, edges)
+    eids = edge_ids(edges)
     for i, e in enumerate(edges):
         if i not in ports:
             continue
@@ -262,7 +264,8 @@ def _draw_links(parts, t, pos, edges):
         if not d:
             continue
         col = t["link"] if str(e.get("proto", "")).startswith("http") else t["muted"]
-        mark = f' data-from="{esc(e["from"])}" data-to="{esc(e["to"])}"' + (f' data-label="{esc(e["label"])}"' if e.get("label") else "")
+        mark = (f' data-from="{esc(e["from"])}" data-to="{esc(e["to"])}"' + (f' data-label="{esc(e["label"])}"' if e.get("label") else "")
+                + f' data-id="{esc(eids[i])}"')
         parts.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="1.6" marker-end="url(#a)"{mark}/>')
         parts.append(_tail(x1, y1, s1, col))
         if e.get("label"):

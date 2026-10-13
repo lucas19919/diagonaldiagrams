@@ -104,30 +104,37 @@ def _svg_model(svg):
     return svg_model(read_figure(svg))
 
 
+def _cell_ids(model):
+    """Export ids from the figure's own ids (D15): node:ID, edge:FROM->TO:LABEL, group:ID. The same
+    element keeps its cell across exports of an edited spec."""
+    return ({n["id"]: f"node:{n['id']}" for n in model["nodes"]},
+            [f"edge:{e['id']}" for e in model["edges"]],
+            [f"group:{f['id']}" for f in model["frames"]])
+
+
 def _to_drawio(model, title=""):
     """draw.io (diagrams.net) file: boxes and frames keep their place, arrows keep their bends and stay
     attached to their boxes, so dragging a box drags its arrows."""
     def a(v):
         return html.escape(str(v), quote=True)
+    ids, edge_ids, frame_ids = _cell_ids(model)
     cells = ['<mxCell id="0"/>', '<mxCell id="1" parent="0"/>']
     for k, f in enumerate(model["frames"]):
-        cells.append(f'<mxCell id="frame{k}" value="{a(f["label"].upper())}" style="rounded=1;arcSize=6;dashed=1;'
+        cells.append(f'<mxCell id="{a(frame_ids[k])}" value="{a(f["label"].upper())}" style="rounded=1;arcSize=6;dashed=1;'
                      f'fillColor=#eeeeee;strokeColor=#888888;verticalAlign=top;align=left;spacingLeft=10;fontSize=10;'
                      f'fontStyle=1;fontColor=#4f5d75;" vertex="1" parent="1"><mxGeometry x="{f["x"]:.0f}" y="{f["y"]:.0f}" '
                      f'width="{f["w"]:.0f}" height="{f["h"]:.0f}" as="geometry"/></mxCell>')
-    ids = {}
-    for k, n in enumerate(model["nodes"]):
-        ids[n["id"]] = f"n{k}"
+    for n in model["nodes"]:
         shape = {"diamond": "rhombus;", "oval": "rounded=1;arcSize=40;"}.get(n["shape"], "rounded=1;arcSize=8;")
-        cells.append(f'<mxCell id="n{k}" value="{a(n["label"])}" style="{shape}whiteSpace=wrap;html=1;fillColor=#ffffff;'
+        cells.append(f'<mxCell id="{a(ids[n["id"]])}" value="{a(n["label"])}" style="{shape}whiteSpace=wrap;html=1;fillColor=#ffffff;'
                      f'strokeColor={n["stroke"]};fontStyle=1;" vertex="1" parent="1"><mxGeometry x="{n["x"]:.0f}" '
                      f'y="{n["y"]:.0f}" width="{n["w"]:.0f}" height="{n["h"]:.0f}" as="geometry"/></mxCell>')
     for k, e in enumerate(model["edges"]):
         bends = "".join(f'<mxPoint x="{x:.0f}" y="{y:.0f}"/>' for x, y in e["points"][1:-1])
         style = (f"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor={e['stroke']};"
                  + ("dashed=1;" if e["dashed"] else ""))
-        cells.append(f'<mxCell id="e{k}" value="{a(e["label"])}" style="{style}" edge="1" parent="1" '
-                     f'source="{ids[e["from"]]}" target="{ids[e["to"]]}"><mxGeometry relative="1" as="geometry">'
+        cells.append(f'<mxCell id="{a(edge_ids[k])}" value="{a(e["label"])}" style="{style}" edge="1" parent="1" '
+                     f'source="{a(ids[e["from"]])}" target="{a(ids[e["to"]])}"><mxGeometry relative="1" as="geometry">'
                      f'<Array as="points">{bends}</Array></mxGeometry></mxCell>')
     return ('<mxfile host="diagonaldiagrams"><diagram id="d1" name="' + a(title or "Page-1") + '">'
             '<mxGraphModel grid="1" gridSize="10" guides="1" connect="1" arrows="1" page="0"><root>'
@@ -136,15 +143,18 @@ def _to_drawio(model, title=""):
 
 def _to_excalidraw(model):
     """Excalidraw scene: shapes with their text bound inside, arrows bound to the shapes they join."""
-    import random
-    rnd = random.Random(7)
+    import zlib
+    ids, edge_ids, frame_ids = _cell_ids(model)
     els = []
+
+    def seed(eid, salt=""):  # from the id, so an unchanged element exports unchanged
+        return zlib.crc32((eid + salt).encode("utf-8")) % (2 ** 31 - 1) + 1
 
     def base(eid, kind, x, y, w, h, **kw):
         d = {"id": eid, "type": kind, "x": x, "y": y, "width": w, "height": h, "angle": 0,
              "strokeColor": "#2d3142", "backgroundColor": "transparent", "fillStyle": "solid", "strokeWidth": 1,
              "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "frameId": None,
-             "roundness": None, "seed": rnd.randint(1, 2 ** 31), "version": 1, "versionNonce": rnd.randint(1, 2 ** 31),
+             "roundness": None, "seed": seed(eid), "version": 1, "versionNonce": seed(eid, "#nonce"),
              "isDeleted": False, "boundElements": [], "updated": 1, "link": None, "locked": False}
         d.update(kw)
         return d
@@ -155,13 +165,12 @@ def _to_excalidraw(model):
                     fontSize=size, fontFamily=2, textAlign="center", verticalAlign="middle",
                     containerId=container, lineHeight=1.25)
     for k, f in enumerate(model["frames"]):
-        els.append(base(f"frame{k}", "rectangle", f["x"], f["y"], f["w"], f["h"], strokeStyle="dashed",
+        els.append(base(frame_ids[k], "rectangle", f["x"], f["y"], f["w"], f["h"], strokeStyle="dashed",
                         backgroundColor="#eeeeee", strokeColor="#888888", roundness={"type": 3}))
-        els.append(text(f"frame{k}t", f["label"].upper(), f["x"] + 12 + _text_w(f["label"].upper(), 12) / 2, f["y"] + 14, 12))
-    ids = {}
-    for k, n in enumerate(model["nodes"]):
-        sid, tid = f"n{k}", f"n{k}t"
-        ids[n["id"]] = sid
+        els.append(text(frame_ids[k] + ":text", f["label"].upper(), f["x"] + 12 + _text_w(f["label"].upper(), 12) / 2, f["y"] + 14, 12))
+    for n in model["nodes"]:
+        sid = ids[n["id"]]
+        tid = sid + ":text"
         kind = {"diamond": "diamond", "oval": "rectangle"}.get(n["shape"], "rectangle")
         rnd_kw = {"roundness": {"type": 3}} if n["shape"] != "diamond" else {}
         shape = base(sid, kind, n["x"], n["y"], n["w"], n["h"], backgroundColor="#ffffff", strokeColor=n["stroke"],
@@ -170,7 +179,7 @@ def _to_excalidraw(model):
         els.append(text(tid, n["label"], n["x"] + n["w"] / 2, n["y"] + n["h"] / 2, 16, sid))
     shapes = {e["id"]: e for e in els}
     for k, e in enumerate(model["edges"]):
-        aid = f"e{k}"
+        aid = edge_ids[k]
         x0, y0 = e["points"][0]
         pts = [[x - x0, y - y0] for x, y in e["points"]]
         xs, ys = [p[0] for p in pts], [p[1] for p in pts]
@@ -179,12 +188,12 @@ def _to_excalidraw(model):
                         startBinding={"elementId": ids[e["from"]], "focus": 0, "gap": 2},
                         endBinding={"elementId": ids[e["to"]], "focus": 0, "gap": 2},
                         startArrowhead=None, endArrowhead="arrow", roundness={"type": 2}, elbowed=False,
-                        boundElements=[{"type": "text", "id": aid + "t"}] if e["label"] else []))
+                        boundElements=[{"type": "text", "id": aid + ":text"}] if e["label"] else []))
         shapes[ids[e["from"]]]["boundElements"].append({"type": "arrow", "id": aid})
         shapes[ids[e["to"]]]["boundElements"].append({"type": "arrow", "id": aid})
         if e["label"]:
             mx, my = e["points"][len(e["points"]) // 2]
-            els.append(text(aid + "t", e["label"], mx, my, 12, aid))
+            els.append(text(aid + ":text", e["label"], mx, my, 12, aid))
     return json.dumps({"type": "excalidraw", "version": 2, "source": "diagonaldiagrams", "elements": els,
                        "appState": {"viewBackgroundColor": "#ffffff", "gridSize": None}, "files": {}}, indent=1)
 

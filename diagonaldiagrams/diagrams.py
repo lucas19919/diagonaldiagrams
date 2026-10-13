@@ -7,6 +7,7 @@ from ._draw import (
 )
 from ._theme import THEME
 from .audit import _svg_geometry
+from .scene.ids import edge_ids
 
 
 def _group_columns(layers, groups, gof, edges=()):
@@ -249,6 +250,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
             fixed[i] = ("s", "n")  # to the next row: out the bottom, in the top. Longer arrows go round the side.
     ports = assign_ports(pos, edges, fixed=fixed, trunk=True)
     tracks = _gap_tracks(ports, room=30, net_by_source=True)
+    eids = edge_ids(edges)
     for i, e in enumerate(edges):
         if i not in ports:
             continue
@@ -262,9 +264,10 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         d, lx, ly, vertical, pts = route_edge(x1, y1, s1, x2, y2, s2, nudge=nudge, track=tracks.get(i, 0))
         if not d:
             continue
-        owner = f'{e.get("from")}->{e.get("to")}'
+        owner = eids[i]
         dr.add(paint.edge_path(d, col, mid, owner, e.get("async"),
-                               {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", "")}),
+                               {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", ""),
+                                "data-id": owner}),
                paint.tail(x1, y1, s1, col, owner))
         seg_boxes += _seg_boxes(pts)
         if e.get("label"):
@@ -497,6 +500,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
     ports = assign_ports(pos, edges, layered=True)
     tracks = _gap_tracks(ports)
     routes = []
+    eids = edge_ids(edges)
     for i, e in enumerate(edges):
         if i not in ports:
             continue
@@ -506,9 +510,10 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         d, lx, ly, vertical, pts = route_edge(x1, y1, s1, x2, y2, s2, track=tracks.get(i, 0))
         if not d:
             continue
-        owner = f'{e.get("from")}->{e.get("to")}'
+        owner = eids[i]
         dr.add(paint.edge_path(d, col, mid, owner, e.get("async"),
-                               {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", "")}),
+                               {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", ""),
+                                "data-id": owner}),
                paint.tail(x1, y1, s1, col, owner))
         segs = [(min(p[0], q[0]) - 1, min(p[1], q[1]) - 1, max(p[0], q[0]) + 1, max(p[1], q[1]) + 1)
                 for p, q in zip(pts, pts[1:])]
@@ -567,6 +572,7 @@ def render_seq(spec, corners="editorial", theme=None):
         dr.add(paint.el("line", owner=aid, role="actor.lifeline", x1=cx, y1=top + 52, x2=cx, y2=H - 50, stroke=t["rule"],
                         stroke_width=1.2, stroke_dasharray="4,4"))
     # Messages
+    mids = edge_ids(messages)
     for i, m in enumerate(messages):
         f_id = m.get("from")
         t_id = m.get("to")
@@ -579,11 +585,11 @@ def render_seq(spec, corners="editorial", theme=None):
         is_http = m.get("proto", "").startswith("http")
         col = t["accent"] if focal else (t["link"] if is_http else t["muted"])
         mid = "aa" if focal else ("al" if is_http else "a")
-        owner = f"message{i}"
+        owner = mids[i]
         # read back by the outline: who sends what to whom, in order
         look = {"stroke-dasharray": "4,4" if (m.get("reply") or m.get("async")) else None,
                 "data-msg": m.get("label", ""), "data-msg-from": pos[f_id][1].get("name", f_id),
-                "data-msg-to": pos[t_id][1].get("name", t_id), "marker-end": f"url(#{mid})"}
+                "data-msg-to": pos[t_id][1].get("name", t_id), "marker-end": f"url(#{mid})", "data-id": owner}
         if f_id == t_id:
             # Self-call loop
             lw = 32
@@ -691,7 +697,8 @@ def _render_schema_once(spec, corners="editorial", theme=None):
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     # Relations (rendered behind table cards)
     rel_labels = []
-    for rel in relations:
+    rids = edge_ids(relations)
+    for k, rel in enumerate(relations):
         from_id, to_id = rel.get("from"), rel.get("to")
         if from_id not in table_boxes or to_id not in table_boxes:
             continue
@@ -708,9 +715,10 @@ def _render_schema_once(spec, corners="editorial", theme=None):
         focal = rel.get("focal", False)
         col = t["accent"] if focal else t["link"]
         mid = "aa" if focal else "al"
-        owner = f"{from_id}->{to_id}"
+        owner = rids[k]
         dr.add(paint.el("path", owner=owner, role="edge.path", d=elbow(x1, y1, x2, y2), fill="none", stroke=col,
-                        stroke_width=1.4, marker_end=f"url(#{mid})"))
+                        stroke_width=1.4, marker_end=f"url(#{mid})", data_from=from_id, data_to=to_id,
+                        data_label=rel.get("label", ""), data_id=owner))
         if rel.get("label"):
             if x1 == x2 or y1 == y2:
                 pts = [(x1, y1), (x2, y2)]

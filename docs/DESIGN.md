@@ -768,6 +768,8 @@ Kept on every relevant element:
 - `data-msg`, `data-msg-from`, `data-msg-to`;
 - `data-role`.
 
+Added in 0.7 (P2.15): `data-id` on every drawn edge, sequence message and schema relation, carrying the id the scene gives it (4.8). Schema table cards now carry `data-node` and `data-label`, and relations carry `data-from`, `data-to` and `data-label`, as the other diagrams already did. The `--outline` edges and messages, and the draw.io and Excalidraw cells (`node:ID`, `edge:ID`, `group:ID`), use the same ids, so an element keeps its id and its export cell across edits.
+
 `_svg_model` currently parses these with order-dependent regexes. It is replaced by building the draw.io and Excalidraw models from the display list, with a tolerant SVG fallback for v1 files.
 
 ### 14.5 Hidden contracts

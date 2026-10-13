@@ -29,13 +29,13 @@
 <text x="325.5" y="403.5" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#111111" text-anchor="middle">STORE</text>
 <text x="380" y="420.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#111111" text-anchor="middle">Postgres</text>
 <text x="380" y="437.5" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#444444" text-anchor="middle">:5432</text>
-<path d="M368,129.5 L368,171.5 Q368,179.5 360,179.5 L273.3,179.5 Q265.3,179.5 265.3,187.5 L265.3,229.5" fill="none" stroke="#333333" stroke-width="1.8" marker-end="url(#al)" data-from="web" data-to="api" data-label="https"/>
+<path d="M368,129.5 L368,171.5 Q368,179.5 360,179.5 L273.3,179.5 Q265.3,179.5 265.3,187.5 L265.3,229.5" fill="none" stroke="#333333" stroke-width="1.8" marker-end="url(#al)" data-from="web" data-to="api" data-label="https" data-id="web-&gt;api:https"/>
 <circle cx="368" cy="136.5" r="2.7" fill="#333333"/>
-<path d="M333.3,259 L426.7,259" fill="none" stroke="#444444" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="api" data-to="auth" data-label="validate"/>
+<path d="M333.3,259 L426.7,259" fill="none" stroke="#444444" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="api" data-to="auth" data-label="validate" data-id="api-&gt;auth:validate"/>
 <circle cx="340.33" cy="259" r="2.7" fill="#444444"/>
-<path d="M265.3,288.5 L265.3,330.5 Q265.3,338.5 273.3,338.5 L361,338.5 Q369,338.5 369,346.5 L369,388.5" fill="none" stroke="#444444" stroke-width="1.8" marker-end="url(#a)" data-from="api" data-to="db" data-label="insert"/>
+<path d="M265.3,288.5 L265.3,330.5 Q265.3,338.5 273.3,338.5 L361,338.5 Q369,338.5 369,346.5 L369,388.5" fill="none" stroke="#444444" stroke-width="1.8" marker-end="url(#a)" data-from="api" data-to="db" data-label="insert" data-id="api-&gt;db:insert"/>
 <circle cx="265.33" cy="295.5" r="2.7" fill="#444444"/>
-<path d="M494.7,288.5 L494.7,330.5 Q494.7,338.5 486.7,338.5 L399,338.5 Q391,338.5 391,346.5 L391,388.5" fill="none" stroke="#444444" stroke-width="1.8" marker-end="url(#a)" data-from="auth" data-to="db" data-label="query"/>
+<path d="M494.7,288.5 L494.7,330.5 Q494.7,338.5 486.7,338.5 L399,338.5 Q391,338.5 391,346.5 L391,388.5" fill="none" stroke="#444444" stroke-width="1.8" marker-end="url(#a)" data-from="auth" data-to="db" data-label="query" data-id="auth-&gt;db:query"/>
 <circle cx="494.67" cy="295.5" r="2.7" fill="#444444"/>
 <rect x="294.67" y="155.5" width="44" height="16" rx="2" fill="#ffffff"/>
 <text x="316.67" y="167.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#444444" text-anchor="middle">HTTPS</text>

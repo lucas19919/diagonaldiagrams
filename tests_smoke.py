@@ -945,7 +945,7 @@ def outline_checks():
     o = v.get("outline", {})
     check("flow --outline lists nodes with rows and edges with labels",
           any(n.get("id") == "risk?" and n.get("shape") == "diamond" and n.get("row") == 3 for n in o.get("nodes", []))
-          and {"from": "tests", "to": "fix", "label": "fail"} in o.get("edges", []), out[-300:])
+          and {"id": "tests->fix:fail", "from": "tests", "to": "fix", "label": "fail"} in o.get("edges", []), out[-300:])
     rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "ol-plain.svg"))
     check("without --outline the verdict has no outline", rc == 0 and '"outline"' not in out, out[-200:])
     rc, out = run("seq", "examples/seq_checkout.json", "-o", os.path.join(WORK, "ol-seq.svg"), "--outline")

@@ -6,7 +6,7 @@ kernels (P4) read scenes directly. For a v1 spec the round trip draws the same b
 corpus checks it.
 """
 from ..errors import SpecError
-from ..scene.normalize import _edge_id
+from ..scene.ids import EdgeIds
 
 KINDS = ("flow", "arch", "seq", "schema")
 EDGE_FLAGS = ("label", "proto", "async_", "reply", "focal")  # in the order v1 specs write them
@@ -229,12 +229,12 @@ def _v1_group(g):
 
 
 def _v1_edges(edges):
-    out, taken = [], set()
+    out, name = [], EdgeIds()
     for e in edges:
         d = {"from": e.from_, "to": e.to}
-        if e.id != _edge_id(e, taken):
-            d["id"] = e.id
-        taken.add(e.id)
+        if e.id != name.generated(e.from_, e.to, e.label):
+            d["id"] = e.id  # only an id the renderer wouldn't give it itself
+        name(e.from_, e.to, e.label, e.id)
         if e.from_port is not None:
             d["from_port"] = e.from_port
         if e.to_port is not None:

@@ -7,9 +7,8 @@ with the JSON path it sits at, so an agent can fix them all in one pass.
 check(raw) returns (scene or None, errors, warnings). normalize(raw) returns (scene, warnings) and
 raises SpecError when there is an error.
 """
-import difflib
-
 from ..errors import SpecError
+from .ids import EdgeIds
 from .model import KEYS, Edge, Group, Node, Scene
 
 # JSON key -> the key it stands for
@@ -125,6 +124,7 @@ def _fields(kind, raw, path, rep):
                 known[canon] = v
         else:
             extra[key] = value
+            import difflib
             near = difflib.get_close_matches(key, list(types) + list(aliases), n=1, cutoff=0.8)
             if near:
                 rep.warn("unknown-field", f"{path} has a field '{key}', which is kept but not read", f"did you mean '{near[0]}'?",
@@ -149,17 +149,6 @@ def _objects(raw, key, rep):
         else:
             rep.error("bad-value", f"{key}[{i}] is {_show(it)}, not an object", f"write it as an object with an \"id\"", f"{key}[{i}]")
     return out
-
-
-def _edge_id(e, taken):
-    """An edge without an id gets one from what it connects and says: from->to, then :label, then
-    #2, #3 for repeats. Inserting an edge elsewhere never renames this one."""
-    base = f"{e.from_}->{e.to}" + (f":{e.label}" if e.label else "")
-    eid, k = base, 1
-    while eid in taken:
-        k += 1
-        eid = f"{base}#{k}"
-    return eid
 
 
 def check(raw):
@@ -271,7 +260,7 @@ def check(raw):
                      'list its node ids: "members": ["a", "b"]', f"groups[{k}]")
 
     # edges
-    taken = set()
+    name = EdgeIds()
     for path, raw_e in _objects(raw, "edges", rep):
         known, extra = _fields("edge", raw_e, path, rep)
         ok = True
@@ -295,12 +284,9 @@ def check(raw):
             if port is not None and names and port not in names:
                 rep.warn("unknown-port", f"an edge {end} '{node.id}' names port '{port}', which the node doesn't have",
                          f"use one of: {', '.join(map(str, names[:8]))}", f"{path}.{end}-port")
-        if given:
-            if edge.id in taken:
-                rep.error("duplicate-id", f"two edges have the id '{edge.id}'", "make edge ids unique", f"{path}.id")
-        else:
-            edge.id = _edge_id(edge, taken)
-        taken.add(edge.id)
+        if given and edge.id in name.taken:
+            rep.error("duplicate-id", f"two edges have the id '{edge.id}'", "make edge ids unique", f"{path}.id")
+        edge.id = name(edge.from_, edge.to, edge.label, edge.id if given else None)
         scene.edges.append(edge)
 
     # constraints and annotations: shapes checked here, meaning checked by the layout that reads them

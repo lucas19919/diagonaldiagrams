@@ -35,31 +35,31 @@
 <rect x="288" y="578" width="28" height="12" rx="2" fill="none" stroke="#f5f5f5" stroke-opacity=".4" stroke-width=".8"/>
 <text x="302" y="587" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle">END</text>
 <text x="360" y="609.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle">Ship</text>
-<path d="M360,148 L360,210.5" fill="none" stroke="#f08a59" stroke-width="1.8" marker-end="url(#aa)" data-from="start" data-to="tests" data-label="push"/>
+<path d="M360,148 L360,210.5" fill="none" stroke="#f08a59" stroke-width="1.8" marker-end="url(#aa)" data-from="start" data-to="tests" data-label="push" data-id="start-&gt;tests:push"/>
 <circle cx="360" cy="155" r="2.7" fill="#f08a59"/>
 <rect x="368" y="170.25" width="40" height="16" rx="2" fill="#2d3142"/>
 <text x="388" y="182.25" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle">PUSH</text>
-<path d="M360,269.5 L360,328" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="tests" data-to="risk?" data-label="pass"/>
+<path d="M360,269.5 L360,328" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="tests" data-to="risk?" data-label="pass" data-id="tests-&gt;risk?:pass"/>
 <circle cx="360" cy="276.5" r="2.7" fill="#bfc0c0"/>
 <rect x="368" y="289.75" width="40" height="16" rx="2" fill="#2d3142"/>
 <text x="388" y="301.75" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle">PASS</text>
-<path d="M280,252.8 L248,252.8 Q240,252.8 240,260.8 L240,472 Q240,480 232,480 L200,480" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="tests" data-to="fix" data-label="fail"/>
+<path d="M280,252.8 L248,252.8 Q240,252.8 240,260.8 L240,472 Q240,480 232,480 L200,480" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="tests" data-to="fix" data-label="fail" data-id="tests-&gt;fix:fail"/>
 <circle cx="273" cy="252.75" r="2.7" fill="#bfc0c0"/>
 <rect x="192" y="357.38" width="40" height="16" rx="2" fill="#2d3142"/>
 <text x="212" y="369.38" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle">FAIL</text>
-<path d="M440,360 L472,360 Q480,360 480,368 L480,472 Q480,480 488,480 L520,480" fill="none" stroke="#f08a59" stroke-width="1.8" marker-end="url(#aa)" data-from="risk?" data-to="review" data-label="yes"/>
+<path d="M440,360 L472,360 Q480,360 480,368 L480,472 Q480,480 488,480 L520,480" fill="none" stroke="#f08a59" stroke-width="1.8" marker-end="url(#aa)" data-from="risk?" data-to="review" data-label="yes" data-id="risk?-&gt;review:yes"/>
 <circle cx="447" cy="360" r="2.7" fill="#f08a59"/>
 <rect x="488" y="411" width="40" height="16" rx="2" fill="#2d3142"/>
 <text x="508" y="423" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle">YES</text>
-<path d="M360,392 L360,572" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="risk?" data-to="ship" data-label="no"/>
+<path d="M360,392 L360,572" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="risk?" data-to="ship" data-label="no" data-id="risk?-&gt;ship:no"/>
 <circle cx="360" cy="399" r="2.7" fill="#bfc0c0"/>
 <rect x="368" y="473" width="40" height="16" rx="2" fill="#2d3142"/>
 <text x="388" y="485" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle">NO</text>
-<path d="M40,480 L32,480 Q24,480 24,472 L24,235.2 Q24,227.2 32,227.2 L280,227.2" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="fix" data-to="tests" data-label="retry"/>
+<path d="M40,480 L32,480 Q24,480 24,472 L24,235.2 Q24,227.2 32,227.2 L280,227.2" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="fix" data-to="tests" data-label="retry" data-id="fix-&gt;tests:retry"/>
 <circle cx="33" cy="480" r="2.7" fill="#bfc0c0"/>
 <rect x="32" y="310.62" width="44" height="16" rx="2" fill="#2d3142"/>
 <text x="54" y="322.62" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle">RETRY</text>
-<path d="M600,509.5 L600,532.8 Q600,540.8 592,540.8 L368,540.8 Q360,540.8 360,548.8 L360,572" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="review" data-to="ship" data-label="approve"/>
+<path d="M600,509.5 L600,532.8 Q600,540.8 592,540.8 L368,540.8 Q360,540.8 360,548.8 L360,572" fill="none" stroke="#bfc0c0" stroke-width="1.8" marker-end="url(#a)" data-from="review" data-to="ship" data-label="approve" data-id="review-&gt;ship:approve"/>
 <circle cx="600" cy="516.5" r="2.7" fill="#bfc0c0"/>
 <rect x="452" y="516.75" width="56" height="16" rx="2" fill="#2d3142"/>
 <text x="480" y="528.75" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle">APPROVE</text>

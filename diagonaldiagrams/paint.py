@@ -204,7 +204,7 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h):
     stroke = t["accent"] if focal else t["ink"]
     fill_head = t["accent_tint"] if focal else "rgba(45,49,66,0.06)"
     out = [el("rect", owner=tid, role="table.card", x=x, y=y, width=w, height=h, rx=rx, fill=t["card"], stroke=stroke,
-              stroke_width=1.2),
+              stroke_width=1.2, data_node=tid, data_label=tbl.get("name", tid)),
            el("path", owner=tid, role="table.header",
               d=f"M{x},{y + 36} L{x},{y + rx} Q{x},{y} {x + rx},{y} L{x + w - rx},{y} Q{x + w},{y} {x + w},{y + rx} L{x + w},{y + 36} Z",
               fill=fill_head),
