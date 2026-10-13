@@ -361,6 +361,13 @@ Legends come from what was actually used:
 
 A flowchart with no ovals no longer says "rounded = start or end". `"legend": false` turns legends off.
 
+As built in P3.7:
+- **Scales:** a scale's type is inferred when not given: numbers on a color are sequential, words are categorical, numbers on a numeric property are linear. Color ranges come from a scheme (`heat`, `blues`, `greens`, `greys`), a palette token or a list.
+- **Legend:**
+  - The preset's sentence names colors as drawn (`color_word`), so a brand's teal says "teal = HTTP call".
+  - Swatch rows follow: each scale's low, middle and high (or each category), and each rule's `legend` text beside the look it names (a side's border, else the fill).
+- **Readable text:** text whose color still comes from the theme or preset is checked against its node's fill. Below 4.5:1 it switches to ink or paper, whichever reads better. A color set by a later stylesheet or the element is left alone for the contrast check.
+
 ## 6. Text and fonts
 
 ### 6.1 Measuring

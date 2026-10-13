@@ -46,5 +46,5 @@
 <rect x="420.83" y="314.5" width="44" height="16" rx="2" fill="#ffffff" aria-hidden="true"/>
 <text x="442.83" y="326.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#444444" text-anchor="middle" aria-hidden="true">QUERY</text>
 <line x1="30" y1="483" x2="730" y2="483" stroke="rgba(0,0,0,0.18)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="499" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#444444">blue = HTTP call, dashed = sent in the background, coral = highlighted</text>
+<text x="30" y="499" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#444444">dark grey = HTTP call, dashed = sent in the background, black = highlighted</text>
 </svg>

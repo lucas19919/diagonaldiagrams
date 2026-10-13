@@ -502,6 +502,97 @@ def note_rail(t, notes, rail_x, top, lh=92):
     return out
 
 
+# the words today's legends use for the default themes' colors; any other color is named by its hue
+COLOR_WORDS = {"#eb6c36": "coral", "#f08a59": "coral", "#2e5aa8": "blue", "#6a95d8": "blue"}
+
+
+def color_word(css):
+    """A color as a legend names it: "coral", "blue", or, for any other color, its hue."""
+    import colorsys
+    if css in COLOR_WORDS:
+        return COLOR_WORDS[css]
+    try:
+        from .style.parse import color
+        c = color(css)
+    except Exception:
+        return "colored"
+    h, light, sat = colorsys.rgb_to_hls(c.r / 255, c.g / 255, c.b / 255)
+    if sat < 0.15 or light < 0.08 or light > 0.95:
+        return "black" if light < 0.15 else "dark grey" if light < 0.4 else "grey" if light < 0.75 else "light grey"
+    hue = h * 360
+    for top, word in ((15, "red"), (40, "orange"), (65, "yellow"), (170, "green"), (200, "teal"), (255, "blue"),
+                      (290, "purple"), (335, "pink"), (361, "red")):
+        if hue < top:
+            return word
+    return "colored"
+
+
+LEGEND_ROW = 18
+
+
+def _legend_items(entries, t):
+    """(width, painter) per legend item; painter(x, y) gives its elements at that spot."""
+    muted, soft = t["muted"], t["soft"]
+    items = []
+    for e in entries:
+        if e["type"] == "rule":
+            look, text = e["look"], e["text"]
+
+            def swatch(x, y, look=look, text=text):
+                if "border" in look:
+                    bar = {"top": (0, 0, 14, 3), "bottom": (0, 7, 14, 3), "left": (0, 0, 3, 10), "right": (11, 0, 3, 10)}
+                    bx, by, bw, bh = bar.get(look["side"], (0, 0, 14, 3))
+                    marks = [el("rect", role="legend.swatch", x=x, y=y - 9, width=14, height=10, fill="none",
+                                stroke=soft, stroke_width=0.8),
+                             el("rect", role="legend.swatch", x=x + bx, y=y - 9 + by, width=bw, height=bh, fill=look["border"])]
+                else:
+                    marks = [el("rect", role="legend.swatch", x=x, y=y - 9, width=14, height=10, rx=2,
+                                fill=look.get("fill") or "none", stroke=look.get("stroke") or soft, stroke_width=0.8)]
+                return marks + [el("text", text, role="legend.text", x=x + 20, y=y, font_size=11, font_family=FONT,
+                                   fill=muted)]
+            items.append((20 + _text_w(text, 11) + 18, swatch))
+        else:
+            label = f"{e['field']}:"
+            width = _text_w(label, 11) + 8
+            parts = [(0, lambda x, y, label=label: [el("text", label, role="legend.text", x=x, y=y, font_size=11,
+                                                            font_family=FONT, fill=muted)])]
+            for text, value in e["steps"]:
+                offset = width
+
+                def step(x, y, text=text, value=value):
+                    if hasattr(value, "css"):
+                        mark = el("rect", role="legend.swatch", x=x, y=y - 9, width=12, height=10, rx=2, fill=value.css,
+                                  stroke=soft, stroke_width=0.5)
+                    else:
+                        mark = el("line", role="legend.swatch", x1=x, y1=y - 4, x2=x + 12, y2=y - 4, stroke=muted,
+                                  stroke_width=round(float(value), 2))
+                    return [mark, el("text", text, role="legend.text", x=x + 16, y=y, font_size=11, font_family=FONT,
+                                     fill=muted)]
+                parts.append((offset, step))
+                width += 16 + _text_w(text, 11) + 10
+
+            def scale(x, y, parts=parts):
+                return [e2 for off, fn in parts for e2 in fn(x + off, y)]
+            items.append((width + 14, scale))
+    return items
+
+
+def legend_rows(t, entries, x, y, max_w):
+    """The legend beyond the sentence: swatches for rules with a legend text and for encodings.
+    Returns (elements, height); wraps to more rows when one would run past max_w."""
+    out, cx, cy, rows = [], x, y, 1 if entries else 0
+    for width, paint_item in _legend_items(entries, t):
+        if cx > x and cx + width > x + max_w:
+            cx, cy, rows = x, cy + LEGEND_ROW, rows + 1
+        out += paint_item(cx, cy)
+        cx += width
+    return out, rows * LEGEND_ROW
+
+
+def legend_height(t, entries, max_w):
+    return legend_rows(t, entries, 0, 0, max_w)[1]
+
+
 def legend_line(t, W, rule_y, text_y, text):
     """The rule and one-line key at the bottom of a diagram."""
     return [el("line", role="legend.rule", x1=30, y1=rule_y, x2=W - 30, y2=rule_y, stroke=t["rule"], stroke_width=".8"),

@@ -4,7 +4,7 @@
   "examples/shop_er.mmd"
  ],
  "exit": 0,
- "html_sha256": "f490ac429fa52a57c2ef9ee10444349e0ac59d0285dc810352db2cea055f6d01",
+ "html_sha256": "37c7b234c2fa05116d91df5b68d664c1e60ed8a1013285c79f1b5b0f064b7da4",
  "receipt": {
   "auto": false,
   "cmd": "schema",

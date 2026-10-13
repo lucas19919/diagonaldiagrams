@@ -219,6 +219,8 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
+    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    H += extra
     dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")), kind="flow diagram")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     frame_at, seg_boxes = len(dr.items), []
@@ -283,7 +285,10 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
                 cx, cy, _n = pos[nt["at"]]
                 rail.append((cx + 80, cy, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top))
-    dr.add(*paint.legend_line(t, W, H - 48, H - 32, "box = step, diamond = decision, rounded = start or end"))
+    shapes = {n["shape"] for _, _, n in pos.values()}
+    _legend(dr, t, sty, W, H, extra, 48, 32, _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"),
+                                                   ("diamond" in shapes, "diamond = decision"),
+                                                   ("oval" in shapes, "rounded = start or end")))
     return dr, W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
 
 
@@ -385,6 +390,26 @@ def _more_markers(dr, sty):
         defs = next(e for e in dr.items if e.role == "figure.defs")
         known = {c.attrs.get("id") for c in defs.children}
         paint.add_markers(defs, {c: m for c, m in sty.extra_markers.items() if m not in known})
+
+
+def _legend(dr, t, sty, W, H, extra, rule_off, text_off, sentence):
+    """The legend: the preset's sentence (only what the figure shows), then the swatch rows for
+    encodings and rules with a legend text, which the canvas grew `extra` for. The rule sits
+    rule_off and the sentence text_off above the bottom, as each preset has always drawn them."""
+    if sentence or extra:
+        els = paint.legend_line(t, W, H - rule_off - extra, H - text_off - extra, sentence)
+        dr.add(*(els if sentence else els[:1]))
+    if extra:
+        dr.add(*paint.legend_rows(t, sty.legend_entries(), 30, H - text_off - extra + paint.LEGEND_ROW, W - 60)[0])
+
+
+def _phrases(*pairs):
+    """The legend sentence: each (shown, phrase) whose part the figure has."""
+    return ", ".join(p for shown, p in pairs if shown)
+
+
+def _first(items, test):
+    return next((x for x in items if test(x)), None)
 
 
 def _as_svg(out):
@@ -511,6 +536,8 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
+    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    H += extra
     dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")), kind="architecture diagram")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
@@ -563,7 +590,14 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
                 x, y, _n = pos[nt["at"]]
                 rail.append((x + 80, y, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top))
-    dr.add(*paint.legend_line(t, W, H - 48, H - 32, "blue = HTTP call, dashed = sent in the background, coral = highlighted"))
+    http = _first(range(len(edges)), lambda i: str(edges[i].get("proto", "")).startswith("http"))
+    focal_node = _first(nodes, lambda n: n.get("focal"))
+    focal_edge = _first(range(len(edges)), lambda i: edges[i].get("focal"))
+    hi = sty.node(focal_node["id"])["stroke"] if focal_node else (sty.edge(eids[focal_edge])["stroke"] if focal_edge is not None else None)
+    _legend(dr, t, sty, W, H, extra, 48, 32, _phrases(
+        (http is not None, f"{paint.color_word(sty.edge(eids[http])['stroke'])} = HTTP call" if http is not None else ""),
+        (any(e.get("async") for e in edges), "dashed = sent in the background"),
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")))
     return dr, W, H
 
 
@@ -594,6 +628,8 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
     msg_gap = 52
     msg_start = top + 86  # the first message's label sits clear of the actor boxes
     H = msg_start + len(messages) * msg_gap + 80
+    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    H += extra
     dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")),
                        kind="sequence diagram")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
@@ -659,7 +695,15 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
                 cx, _a = pos[nt["at"]]
                 rail.append((cx + 70, top + 26, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top))
-    dr.add(*paint.legend_line(t, W, H - 38, H - 24, "solid = call, dashed = reply or event, blue = HTTP, coral = highlighted"))
+    http = _first(range(len(messages)), lambda i: str(messages[i].get("proto", "")).startswith("http"))
+    focal_actor = _first(actors, lambda a: a.get("focal"))
+    focal_msg = _first(range(len(messages)), lambda i: messages[i].get("focal"))
+    hi = sty.node(focal_actor["id"])["stroke"] if focal_actor else (sty.edge(mids[focal_msg])["stroke"] if focal_msg is not None else None)
+    _legend(dr, t, sty, W, H, extra, 38, 24, _phrases(
+        (any(not (m.get("reply") or m.get("async")) for m in messages), "solid = call"),
+        (any(m.get("reply") or m.get("async") for m in messages), "dashed = reply or event"),
+        (http is not None, f"{paint.color_word(sty.edge(mids[http])['stroke'])} = HTTP" if http is not None else ""),
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")))
     return dr.svg(), W, H
 
 
@@ -732,6 +776,8 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
         max_y = max(max_y, 110 + 14 + max(0, len(_notes) - 1) * 92 + 52)
     W = max(780, int(max_x + 60)) + (200 if _notes else 0)
     H = int(max_y + 72)
+    extra = paint.legend_height(t, sty.legend_entries(), W - 60)
+    H += extra
     dr = paint.Drawing(W, H, spec.get("title", "schema"), spec.get("sub", spec.get("title", "schema")),
                        kind="database schema")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
@@ -787,5 +833,13 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
                 b = table_boxes[nt["at"]]
                 rail.append((b["x"] + b["w"], b["y"] + 18, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, 110))
-    dr.add(*paint.legend_line(t, W, H - 38, H - 24, "PK = primary key, FK = foreign key, blue = relation, coral = highlighted"))
+    cols = [c for tb in tables for c in tb.get("columns", [])]
+    focal_tbl = _first(tables, lambda tb: tb.get("focal"))
+    focal_rel = _first(range(len(relations)), lambda i: relations[i].get("focal"))
+    hi = sty.node(focal_tbl["id"])["stroke"] if focal_tbl else (sty.edge(rids[focal_rel])["stroke"] if focal_rel is not None else None)
+    _legend(dr, t, sty, W, H, extra, 38, 24, _phrases(
+        (any(c.get("pk") for c in cols), "PK = primary key"),
+        (any(c.get("fk") for c in cols), "FK = foreign key"),
+        (bool(relations), f"{paint.color_word(sty.edge(rids[0])['stroke'])} = relation" if relations else ""),
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")))
     return dr, W, H

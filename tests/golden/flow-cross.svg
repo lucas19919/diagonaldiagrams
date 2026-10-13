@@ -25,5 +25,5 @@
 <rect x="468" y="171" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
 <text x="488" y="183" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">B</text>
 <line x1="30" y1="304" x2="690" y2="304" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="320" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">box = step, diamond = decision, rounded = start or end</text>
+<text x="30" y="320" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">box = step, rounded = start or end</text>
 </svg>

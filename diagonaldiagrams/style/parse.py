@@ -120,6 +120,22 @@ class Color:
         return f"Color({self.css!r})"
 
 
+def contrast(fg, bg, paper=None):
+    """The WCAG contrast ratio of two colors (1 to 21). Translucent colors are first laid over the
+    one beneath them: bg over paper (white if not given), fg over bg."""
+    under = paper or Color(255, 255, 255)
+    bg = _over(bg, under)
+    fg = _over(fg, bg)
+    a, b = sorted((fg.luminance(), bg.luminance()), reverse=True)
+    return (a + 0.05) / (b + 0.05)
+
+
+def _over(c, under):
+    if c.a >= 1:
+        return c
+    return Color(c.r * c.a + under.r * (1 - c.a), c.g * c.a + under.g * (1 - c.a), c.b * c.a + under.b * (1 - c.a), 1.0)
+
+
 def _split_args(s):
     return [p for p in re.split(r"[\s,/]+", s.strip()) if p]
 

@@ -48,5 +48,5 @@
 <rect x="790" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="P" data-label="Payments" role="graphics-symbol" aria-roledescription="actor" aria-label="Payments"/>
 <text x="860" y="119.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Payments</text>
 <line x1="30" y1="582" x2="970" y2="582" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="596" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">solid = call, dashed = reply or event, blue = HTTP, coral = highlighted</text>
+<text x="30" y="596" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">solid = call, dashed = reply or event</text>
 </svg>

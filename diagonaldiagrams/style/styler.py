@@ -9,6 +9,7 @@ values; marker() names the arrowhead for a stroke color.
 import copy
 
 from .cascade import Cascade, scene_views
+from .encode import Scale, is_encoding
 from .select import View
 from .tokens import THEME_NAMES, sheet, token_name, v1_theme
 
@@ -65,6 +66,18 @@ def check_styles(spec, kind=None):
     return out
 
 
+def _look(c):
+    """The one visual a legend swatch shows for a rule: a side's border color, else the fill, else
+    the stroke."""
+    for side in ("top", "left", "right", "bottom", "top-left", "top-right", "bottom-right", "bottom-left"):
+        b = c.get(f"border-{side}")
+        if b and b.get("width") and b.get("color") is not None:
+            return {"border": css(b["color"]), "side": side}
+    if c.get("fill") is not None and not isinstance(c.get("fill"), dict):
+        return {"fill": css(c["fill"]), "stroke": css(c.get("stroke"))}
+    return {"stroke": css(c.get("stroke"))}
+
+
 class Styler:
     def __init__(self, spec, kind, theme=None, corners="editorial", sheets=()):
         theme = theme or v1_theme("editorial")
@@ -78,11 +91,15 @@ class Styler:
         scene = self._scene(spec, kind)
         own = spec_sheets(scene.style) if scene is not None else []
         self.cascade = Cascade([base, {"name": "theme-file", "tokens": overrides}, preset, *own, *sheets])
+        self.preset_layer = max(k for k, s in enumerate(self.cascade.sheets) if s is preset or s.get("name") == kind)
         self.views = scene_views(scene) if scene is not None else {"figure": View("figure", "figure"), "nodes": {},
                                                                    "groups": {}, "edges": {}}
         self._generic = {k: View(k, parent=self.views["figure"]) for k in ("node", "edge", "group")}
         self.markers = {self.token(t): mid for t, mid in MARKERS}
         self.extra_markers = {}  # color -> id, for strokes no default marker matches
+        self._scales = {}
+        self.scales = {}  # (type, property, field) -> Scale: the encodings drawn, for the legend
+        self.rule_legends = {}  # legend text -> the look it names, from rules with "legend"
 
     @staticmethod
     def _scene(spec, kind):
@@ -99,18 +116,73 @@ class Styler:
     def view(self, kind, eid):
         return self.views[kind + "s"].get(str(eid)) or self._generic[kind]
 
-    def _text(self, v, pseudo):
-        c = self.cascade.computed(v, pseudo)
-        return {k: css(c.get(k)) for k in TEXT}
+    def _text(self, v, pseudo, background=None):
+        c = self._encoded(v, self.cascade.computed(v, pseudo))
+        out = {k: css(c.get(k)) for k in TEXT}
+        if background is not None and c.get("color") is not None and \
+                self.cascade.origin(v, pseudo, "color") <= self.preset_layer:
+            out["color"] = self._readable(c["color"], background)
+        return out
+
+    def _readable(self, fg, bg):
+        """A default text color that stays readable when the fill under it changes (a data-driven fill,
+        a dark brand color): kept if it meets WCAG AA (4.5:1), else ink or paper, whichever reads
+        better. A color a stylesheet chose is never changed here; the contrast check judges it."""
+        from .parse import Color, color, contrast
+        if not isinstance(bg, Color):
+            return css(fg)
+        paper = color(self.token("paper"))
+        if contrast(fg, bg, paper) >= 4.5:
+            return css(fg)
+        best = max((color(self.token("ink")), paper), key=lambda c: contrast(c, bg, paper))
+        return best.css
+
+    def _encoded(self, v, c):
+        """Computed values with any {field, scale} read against this element's data (DESIGN 5.7),
+        and its legend text noted."""
+        if "legend" in c and isinstance(c["legend"], str):
+            self.rule_legends.setdefault(c["legend"], (v.type, c))
+        if not any(is_encoding(x) for x in c.values()):
+            return c
+        c = dict(c)
+        for prop, enc in list(c.items()):
+            if is_encoding(enc):
+                scale = self._scale(v.type, prop, enc)
+                c[prop] = scale(v.attr(enc["field"]))
+                self.scales.setdefault((v.type, prop, enc["field"]), scale)
+        return c
+
+    def _scale(self, kind, prop, enc):
+        import json
+        key = (kind, prop, json.dumps(enc, sort_keys=True, default=str))
+        if key not in self._scales:
+            values = [v.attr(enc["field"]) for v in self.views.get(kind + "s", {}).values()]
+            self._scales[key] = Scale(prop, enc, values, self.cascade.tokens)
+        return self._scales[key]
+
+    def legend_entries(self):
+        """What the legend lists beyond the preset's sentence: every scale an encoding used, then every
+        rule with a legend text. Reading every element's style first finds them all."""
+        for nid in list(self.views["nodes"]):
+            self.node(nid)
+        for eid in list(self.views["edges"]):
+            self.edge(eid)
+        out = []
+        for (kind, prop, field), scale in self.scales.items():
+            out.append({"type": "scale", "field": field, "prop": prop, "steps": scale.legend()})
+        for text, (kind, c) in self.rule_legends.items():
+            out.append({"type": "rule", "text": text, "kind": kind, "look": _look(c)})
+        return out
 
     def node(self, nid):
         v = self.view("node", nid)
-        c = self.cascade.computed(v)
+        c = self._encoded(v, self.cascade.computed(v))
         r = c.get("border-radius")
-        return {"fill": css(c.get("fill")), "stroke": css(c.get("stroke")), "stroke-width": c.get("stroke-width"),
+        fill = c.get("fill")
+        return {"fill": css(fill), "stroke": css(c.get("stroke")), "stroke-width": c.get("stroke-width"),
                 "radius": r[0] if isinstance(r, tuple) else r, "radii": r, "paper": self.token("paper"),
-                "label": self._text(v, "label"), "sub": self._text(v, "sub"), "tag": self._text(v, "tag"),
-                "computed": c}
+                "label": self._text(v, "label", fill), "sub": self._text(v, "sub", fill),
+                "tag": self._text(v, "tag", fill), "computed": c}
 
     def table(self, tid):
         """A schema table: its card (the node), its ::header band, its name (::label) and tag."""
@@ -121,7 +193,7 @@ class Styler:
 
     def edge(self, eid):
         v = self.view("edge", eid)
-        c = self.cascade.computed(v)
+        c = self._encoded(v, self.cascade.computed(v))
         return {"stroke": css(c.get("stroke")), "stroke-width": c.get("stroke-width"), "dasharray": c.get("stroke-dasharray"),
                 "label": self._text(v, "label"), "paper": self.token("paper"), "computed": c}
 

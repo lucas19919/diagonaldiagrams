@@ -68,5 +68,5 @@
 <text x="70" y="493" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">sku</text>
 <text x="288" y="493" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">string</text>
 <line x1="30" y1="548" x2="1084" y2="548" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="562" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">PK = primary key, FK = foreign key, blue = relation, coral = highlighted</text>
+<text x="30" y="562" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">PK = primary key, FK = foreign key, blue = relation</text>
 </svg>

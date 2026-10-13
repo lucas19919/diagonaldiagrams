@@ -73,6 +73,7 @@ class Cascade:
                 self.rules.append(_Rule(sel, self._read(decls, where), (layer, sel.specificity, order)))
         self.rules.sort(key=lambda r: r.rank)
         self._cache = {}
+        self._origins = {}  # (view, pseudo) -> {property: the layer (sheet index) that set it}
 
     def _add(self, s, seen):
         """A sheet and, before it, the bundled sheets it extends."""
@@ -113,6 +114,9 @@ class Cascade:
         else:
             base = self.computed(view.parent, None) if view.parent is not None else {}
         out = {p: v for p, v in base.items() if p in INHERITED}
+        base_from = self._origins.get((id(view), None) if pseudo is not None else
+                                      (id(view.parent), None) if view.parent is not None else None, {})
+        origin = {p: base_from.get(p, -1) for p in out}
         decls = []
         for rule in self.rules:
             if rule.selector.pseudo_element == pseudo and rule.selector.matches(view):
@@ -121,16 +125,25 @@ class Cascade:
             decls.append(((len(self.sheets), (0, 0, 0), 0), self._read(view.style, f"the style of '{view.id}'")))
             decls.sort(key=lambda d: d[0])
         # font-size first, so em lengths read against the element's own size
-        for _, ds in decls:
+        for rank, ds in decls:
             for p, raw, val in ds:
                 if p == "font-size":
                     out[p] = val if val is not None else parse.length(raw, out.get("font-size", 16.0))
-        for _, ds in decls:
+                    origin[p] = rank[0]
+        for rank, ds in decls:
             for p, raw, val in ds:
                 if p != "font-size":
                     out[p] = val if val is not None else parse.value(p, raw, self.tokens, out.get("font-size"))
+                    origin[p] = rank[0]
         self._cache[key] = out
+        self._origins[key] = origin
         return out
+
+    def origin(self, view, pseudo, prop):
+        """The layer that set a property for this element: the sheet's index in self.sheets, the
+        number of sheets for the element's own style, more for a policy, -1 when nothing did."""
+        self.computed(view, pseudo)
+        return self._origins[(id(view), pseudo)].get(prop, -1)
 
     def token(self, name, default=None):
         return self.tokens.get(name, self.tokens.get(name.replace("_", "-"), default))

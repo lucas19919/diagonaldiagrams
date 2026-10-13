@@ -325,6 +325,11 @@ Deviations:
   - Receipts keep the stylesheets' content, and export redraws with them.
   - `describe style` is generated from the property table, selector grammar and tokens.
   - Still to do: diagrams drawing `--caption` and `--figure` (B17).
+- **P3.7:** `style/encode.py` provides linear, sequential and categorical scales.
+  - Any style value can be `{field, scale}`. The domain comes from the elements' data, and an element without the field gets a neutral value.
+  - Legends come from what is drawn: the preset's sentence keeps only phrases whose parts appear, and it names colors as drawn. The print theme now says "black = highlighted". 7 goldens changed by their legend text.
+  - Swatch rows follow for every scale used and every rule with a `legend`, and the canvas grows only when there are any.
+  - A preset's default label color stays readable on a data-driven or dark fill: it switches to ink or paper below 4.5:1. A color a stylesheet chose is never changed; the contrast check (P3.9) judges it.
 
 | Task | Size | Work |
 | --- | --- | --- |
