@@ -23,6 +23,7 @@ do_export = lazy("diagonaldiagrams.export", "do_export")
 do_extract = lazy("diagonaldiagrams.extract", "do_extract")
 render_geo = lazy("diagonaldiagrams.geo", "render_geo")
 do_mcp = lazy("diagonaldiagrams.mcp", "do_mcp")
+do_apply = lazy("diagonaldiagrams.apply", "do_apply")
 _mermaid_kind = lazy("diagonaldiagrams.mermaid", "_mermaid_kind")
 load_spec = lazy("diagonaldiagrams.mermaid", "load_spec")
 render_bar = lazy("diagonaldiagrams.plots", "render_bar")
@@ -152,7 +153,7 @@ def _spec_to_file(a):
 
 
 COMMANDS = ("flow", "arch", "seq", "schema", "mermaid", "bar", "line", "geo", "doc", "monitor", "sync", "extract",
-            "scatter", "chart", "export", "describe", "validate", "infer", "audit", "mcp")
+            "scatter", "chart", "export", "describe", "validate", "infer", "audit", "mcp", "apply")
 
 
 class _Skipped:
@@ -314,11 +315,20 @@ def main():
     p.add_argument("target")
     p = sub.add_parser("audit", help="check rendered svg/html AFTER render; geometry+taste gate as JSON")
     p.add_argument("target")
+    p = sub.add_parser("apply", help="write a patch (pin, order, style, text, add, remove, move-to-group) into a spec")
+    p.add_argument("spec", help="the spec or scene to change (JSON; Mermaid or YAML with -o OUT.json)")
+    p.add_argument("patch", help="a JSON list of operations, or '-' for stdin")
+    p.add_argument("-o", default=None, help="write here instead of over the spec")
+    p.add_argument("--type", default=None, choices=["flow", "arch", "seq", "schema"],
+                   help="how to read a v1 spec (default: from its fields)")
     p = sub.add_parser("mcp", help="MCP server over stdio (describe/validate/infer/audit/scatter/diagram/bar/line)")
     p.add_argument("--isolate", action="store_true", help="run each tool call in its own process (180 s limit)")
     a = ap.parse_args()
     if a.cmd == "mcp":
         _exit_with(do_mcp(a))
+        return
+    if a.cmd == "apply":
+        _exit_with(do_apply(a))
         return
     if a.cmd == "export":
         _exit_with(do_export(a))

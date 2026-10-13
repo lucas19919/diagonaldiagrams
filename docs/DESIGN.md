@@ -1056,6 +1056,23 @@ HTML output has an edit mode. Dragging, resizing, recoloring, retyping and reord
 - An agent reads a patch as intent.
 - A patch that conflicts with a regenerated spec is reported (`patch-conflict`), never silently dropped.
 
+As built in P2.16 (`scene/patch.py`):
+
+- **Operations:**
+  - `pin` sets a node's `pin`.
+  - `order` rewrites the order constraint that already holds its ids, or adds one.
+  - `style` on `#id` merges into that element's own `style`; any other selector merges into the inline `style.rules`. A `null` value removes a property.
+  - `text` sets `name`, `sub` or `tag` (`label` on an edge).
+  - `add` takes `node`, `edge` or `group`.
+  - `remove` also removes a node's edges, memberships, constraint mentions and notes.
+  - `move-to-group` takes a group id, or `null` to leave every group.
+- **Conflicts.** Each operation applies on its own:
+  - one whose element is gone, whose optional `"was"` no longer matches the current text, or whose result would not be a valid scene is skipped and reported with its path (`patch[3]`) and a fix;
+  - the others still apply;
+  - the command exits 1 when anything conflicted, and says how many operations were written.
+- **Identity.** Retexting an edge keeps its id, even though a generated id includes the label: the old id is written into the spec.
+- **Files.** A v2 scene is written back as a scene, without the edge ids it would get anyway. A v1 spec stays v1, and fields only a scene has keep their scene names there (`style`, `pin`, `class`, `constraints`). Today's renderers ignore those fields and report them as `not-drawn` warnings. In particular, arch's repair loop may still reorder a row an `order` patch fixed, until the layered layout reads constraints (P4).
+
 ### 21.4 Live data and semantic diff
 
 - **Data by reference.** Sources are named in `data`, and text binds values: `"Revenue grew {{revenue.q3 | change(revenue.q2)}}"`. Prose and charts then always agree.

@@ -152,7 +152,8 @@ def _objects(raw, key, rep):
 
 
 def check(raw):
-    """(scene or None, errors, warnings). The scene is None only when raw isn't an object."""
+    """(scene or None, errors, warnings). The scene is None only when raw isn't an object. It
+    shares nested dicts and lists (data, style, constraints) with raw: copy before changing them."""
     rep = _Report()
     if not isinstance(raw, dict):
         rep.error("bad-value", f"the scene is a JSON {type(raw).__name__}, not an object",

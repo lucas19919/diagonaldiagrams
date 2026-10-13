@@ -332,6 +332,7 @@ def main():
     known_bugs()
     outline_checks()
     scene_checks()
+    apply_checks()
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed" + (f": {FAIL}" if FAIL else ""))
     raise SystemExit(1 if FAIL else 0)
@@ -992,6 +993,37 @@ def scene_checks():
     rc, out = run("validate", bad)
     check("validate lists every scene error with its path",
           rc == 1 and '"path": "nodes[1].id"' in out and '"path": "edges[0].to"' in out, out[-300:])
+
+
+def apply_checks():
+    """apply SPEC PATCH writes a patch into a v1 spec or a scene; conflicts are listed, not dropped (P2.16)."""
+    print("== apply ==")
+    spec = os.path.join(WORK, "apply-flow.json")
+    shutil.copy(os.path.join(HERE, "examples", "flow_decision.json"), spec)
+    patch = os.path.join(WORK, "apply-patch.json")
+    with open(patch, "w", encoding="utf-8") as f:
+        json.dump([{"op": "text", "id": "fix", "name": "Patch it"}, {"op": "remove", "id": "ghost"}], f)
+    rc, out = run("apply", spec, patch)
+    v = json.loads(out) if out.strip().startswith("{") else {}
+    with open(spec, encoding="utf-8") as f:
+        written = json.load(f)
+    check("apply writes what fits into the v1 spec and lists the conflict",
+          rc == 1 and v.get("applied") == 1 and [c["path"] for c in v.get("conflicts", [])] == ["patch[1]"]
+          and any(n.get("name") == "Patch it" for n in written.get("nodes", [])) and "version" not in written, out[-300:])
+    rc, out = run("flow", spec, "-o", os.path.join(WORK, "apply-flow.svg"))
+    check("the patched spec renders with the new text", rc == 0 and "Patch it" in out, out[-200:])
+    scene = os.path.join(WORK, "apply-scene.json")
+    with open(scene, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "preset": "seq", "nodes": [{"id": "u"}, {"id": "api"}],
+                   "edges": [{"from": "u", "to": "api", "label": "login"}]}, f)
+    out_path = os.path.join(WORK, "apply-scene-out.json")
+    p = subprocess.run([*ENGINE, "apply", scene, "-", "-o", out_path], input='[{"op": "text", "id": "u", "name": "User"}]',
+                       capture_output=True, text=True, cwd=HERE)
+    with open(out_path, encoding="utf-8") as f:
+        written = json.load(f)
+    check("apply reads the patch from stdin and writes a scene back as a scene, to -o",
+          p.returncode == 0 and written.get("version") == 2 and written["nodes"][0].get("name") == "User"
+          and "id" not in written["edges"][0], p.stdout[-300:] + p.stderr[-200:])
 
 
 if __name__ == "__main__":

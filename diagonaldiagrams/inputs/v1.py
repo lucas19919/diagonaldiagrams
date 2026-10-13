@@ -4,6 +4,10 @@ from_v1() turns a flow, arch, seq or schema spec into scene JSON with that prese
 scene back into the spec today's renderers draw, which is how a v2 scene renders until the layout
 kernels (P4) read scenes directly. For a v1 spec the round trip draws the same bytes; the golden
 corpus checks it.
+
+Fields only a scene has (style, class, pin, constraints, ...) are written into the v1 spec under
+their scene names. Today's renderers ignore them and from_v1() reads them back, so a patch applied
+to a v1 file (scene/patch.py) is kept there.
 """
 from ..errors import SpecError
 from ..scene.ids import EdgeIds
@@ -139,7 +143,8 @@ def to_v1(scene):
         spec["budget"] = False
     for key in ("source", "caption", "use", "size", "style", "defs", "data", "space"):
         if getattr(scene, key):
-            warn.append(_not_drawn(f"'{key}'", key))
+            warn.append(_not_drawn(f"the figure's '{key}'", key))
+            spec[key] = getattr(scene, key)
     nodes = list(scene.nodes)
     order = [c["order"] for c in scene.constraints if isinstance(c.get("order"), list)]
     others = [c for c in scene.constraints if not isinstance(c.get("order"), list)]
@@ -149,9 +154,10 @@ def to_v1(scene):
         others += [{"order": o} for o in order]
     if others:
         warn.append(_not_drawn(f"{len(others)} constraint(s)", "constraints"))
-    for n in nodes:
-        if n.style or n.classes or n.content and kind != "schema" or n.pin and kind != "schema":
-            warn.append(_not_drawn(f"node '{n.id}' style, class, content or pin", f"nodes.{n.id}"))
+        spec["constraints"] = others
+    for el in [*nodes, *scene.edges, *scene.groups]:
+        if el.style or el.classes or getattr(el, "pin", None) and kind != "schema":
+            warn.append(_not_drawn(f"the style, class or pin of '{el.id}'", f"{type(el).__name__.lower()}s.{el.id}"))
             break
     if kind in ("flow", "arch"):
         spec["nodes"] = [_v1_node(n, kind) for n in nodes]
@@ -168,13 +174,15 @@ def to_v1(scene):
         spec["relations"] = [_v1_relation(r) for r in _v1_edges(scene.edges)]
     if kind in ("seq", "schema") and scene.groups:
         warn.append(_not_drawn("groups", "groups"))
+        spec["groups"] = [_v1_group(g) for g in scene.groups]
     spec.update(scene.extra)
     return kind, spec, warn
 
 
 def _not_drawn(what, path):
-    return {"code": "not-drawn", "msg": f"{what} are kept but not drawn yet by this preset",
-            "fix": "drop them, or keep them for when the preset draws them", "path": path}
+    return {"code": "not-drawn", "msg": f"kept in the spec but not drawn yet: {what}",
+            "fix": "nothing to do: this preset draws it once the style and layout phases land (PLAN P3, P4); drop it if unwanted",
+            "path": path}
 
 
 def _v1_note(a):
@@ -215,8 +223,17 @@ def _v1_node(n, kind):
         out["lane"] = n.lane
     if n.order is not None:
         out["order"] = n.order
+    _scene_only(out, n, ("classes", "data", "style", "content", "ports", "pin"))
     out.update(n.extra)
     return out
+
+
+def _scene_only(out, el, keys):
+    """Fields v1 has no name for, written under their scene names."""
+    for key in keys:
+        v = getattr(el, key)
+        if v:
+            out["class" if key == "classes" else key] = " ".join(v) if key == "classes" else v
 
 
 def _v1_group(g):
@@ -224,6 +241,7 @@ def _v1_group(g):
     if g.tag:
         out["tag"] = g.tag
     out["nodes"] = list(g.members)
+    _scene_only(out, g, ("parent", "layout", "classes", "style"))
     out.update(g.extra)
     return out
 
@@ -236,14 +254,15 @@ def _v1_edges(edges):
             d["id"] = e.id  # only an id the renderer wouldn't give it itself
         name(e.from_, e.to, e.label, e.id)
         if e.from_port is not None:
-            d["from_port"] = e.from_port
+            d["from-port"] = e.from_port
         if e.to_port is not None:
-            d["to_port"] = e.to_port
+            d["to-port"] = e.to_port
         for key in EDGE_FLAGS:
             if getattr(e, key):
                 d[key.rstrip("_")] = getattr(e, key)
         if e.order is not None:
             d["order"] = e.order
+        _scene_only(d, e, ("labels", "classes", "data", "style", "router", "route"))
         d.update(e.extra)
         out.append(d)
     return out
@@ -261,13 +280,14 @@ def _v1_table(n):
     table = (n.content or {}).get("table")
     if isinstance(table, dict) and "columns" in table:
         out["columns"] = table["columns"]
+    _scene_only(out, n, ("classes", "data", "style"))
     out.update(n.extra)
     return out
 
 
 def _v1_relation(r):
     out = dict(r)
-    for v2, v1 in (("from_port", "from_col"), ("to_port", "to_col")):
+    for v2, v1 in (("from-port", "from_col"), ("to-port", "to_col")):
         if v2 in out:
             out[v1] = out.pop(v2)
     return out
