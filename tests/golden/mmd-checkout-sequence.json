@@ -4,7 +4,7 @@
   "examples/checkout_sequence.mmd"
  ],
  "exit": 0,
- "html_sha256": "9919a8dd0eebe86730507baab7074523d3c180e5343ceed2d3490e827c3ed0d2",
+ "html_sha256": "80b60ad266bc1f2153c635d47be491ac52624e484fdf335c6cd616bc6f767128",
  "receipt": {
   "auto": false,
   "cmd": "seq",

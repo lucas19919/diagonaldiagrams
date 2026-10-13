@@ -4,7 +4,7 @@
   "examples/palantir_stack.json"
  ],
  "exit": 0,
- "html_sha256": "ad4d300819970eff6655b280e876bb70cb7a9931783d05f455e724aecebbc12a",
+ "html_sha256": "4a0c45d9ba6203692099179c2e9d062d0739defd24329ad3b2330f684412d7c4",
  "receipt": {
   "auto": false,
   "cmd": "arch",

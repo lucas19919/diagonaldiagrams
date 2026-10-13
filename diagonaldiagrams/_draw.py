@@ -20,20 +20,6 @@ def render_pincallout(t, px, py, text, above=True, top=None):
     return "\n".join(s)
 
 
-def render_noterail(t, notes, rail_x, top, lh=92):
-    """Right-rail editorial callouts: italic serif note + thin leader to (ax, ay).
-    notes = [(ax, ay, text)]. Caller widens canvas by 200 when notes exist."""
-    s = []
-    for i, (ax, ay, text) in enumerate(notes):
-        ry = top + 14 + i * lh
-        tx = rail_x + 14
-        s.append(f'<line x1="{ax:.1f}" y1="{ay:.1f}" x2="{tx:.1f}" y2="{ry:.1f}" stroke="{t["soft"]}" stroke-width="1"/>')
-        s.append(f'<circle cx="{ax:.1f}" cy="{ay:.1f}" r="2.5" fill="{t["accent"]}"/>')
-        for j, ln in enumerate(_wrap(text)):
-            s.append(f'<text x="{tx:.1f}" y="{ry + 4 + j * 16:.1f}" font-size="13" font-style="italic" font-family="{SERIF}" fill="{t["ink"]}">{esc(ln)}</text>')
-    return "\n".join(s)
-
-
 def figure_heading(t, title, subtitle, x=28):
     """Title and subtitle drawn on the figure. Returns (svg bits, block height)."""
     bits, y = [], 8
@@ -389,33 +375,6 @@ def _frame_edges(groups, pos):
     return out
 
 
-def group_frames(t, groups, pos, avoid=()):
-    """A frame behind each group's members. Its name goes in the top corner (left, else right)
-    that no arrow crosses; avoid holds the arrows' segment boxes."""
-    parts = []
-    for g in groups:
-        f = _frame_box(g, pos)
-        if not f:
-            continue
-        x0, y0, x1, y1 = f
-        members = ",".join(esc(m) for m in g["members"])
-        parts.append(f'<rect x="{x0:.1f}" y="{y0:.1f}" width="{x1 - x0:.1f}" height="{y1 - y0:.1f}" rx="10" '
-                     f'fill="{t["rule"]}" fill-opacity=".35" stroke="{t["muted"]}" stroke-opacity=".55" '
-                     f'stroke-dasharray="4,3" data-group="{esc(g["id"])}" data-name="{esc(g["name"])}" data-members="{members}"/>')
-        label = ((g["tag"] + "  " if g.get("tag") else "") + str(g["name"])).upper()
-        lw = _text_w(label, 10, True) + 0.4 * len(label)
-
-        def hits(lx):
-            b = (lx - 8, y0 + 3, lx + lw + 8, y0 + 19)  # keep clear of arrows, not just off them
-            return sum(1 for a in avoid if b[0] < a[2] and a[0] < b[2] and b[1] < a[3] and a[1] < b[3])
-        # left corner if it is clear, else the nearest clear spot along the top band, else the least crossed
-        spots = [x0 + 10] + [x0 + 10 + 8 * k for k in range(1, int(max(0, x1 - 20 - lw - x0) // 8) + 1)]
-        lx = min(spots, key=lambda v: (hits(v), v - x0))
-        parts.append(f'<text x="{lx:.1f}" y="{y0 + 15:.1f}" font-size="10" font-weight="600" '
-                     f'font-family="{FONT}" fill="{t["muted"]}" letter-spacing=".04em">{esc(label)}</text>')
-    return parts
-
-
 BOX_W, BOX_H = 160, 56
 
 
@@ -460,52 +419,12 @@ _FA_ICONS = {"user": "user", "users": "user", "person": "user", "database": "dat
              "shield": "shield", "bolt": "bolt", "list": "queue", "inbox": "queue"}
 
 
-def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editorial", nid=None, icon=None):
-    fill = t["accent_tint"] if focal else t["card"]
-    stroke = t["accent"] if focal else t["ink"]
-    rx = corner_rx(corners)
-    cx = x + w / 2
-    mark = f' data-node="{esc(nid)}" data-label="{esc(name)}"' if nid is not None else ""
-    s = [f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{t["paper"]}"/>',
-         f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}" stroke="{stroke}"{mark}/>']
-    if tag:
-        s.append(f'<rect x="{x+8}" y="{y+6}" width="{max(28,len(tag)*7)}" height="12" rx="2" fill="none" stroke="{stroke}" stroke-opacity=".4" stroke-width=".8"/>')
-        s.append(f'<text x="{x+8+max(28,len(tag)*7)/2}" y="{y+15}" font-size="8" font-family="{FONT}" fill="{stroke}" text-anchor="middle">{esc(tag)}</text>')
-    if icon in ICONS:
-        s.append(f'<path d="{ICONS[icon]}" transform="translate({x + w - 24},{y + 5})" fill="none" stroke="{stroke}" '
-                 f'stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>')
-    # the wrapped name and sub, centered in the space below the tag and icon
-    nl, sl = _box_lines(name, sub, w)
-    block = 15 * len(nl) + (12 * len(sl) + 2 if sl else 0)
-    top = y + (20 if tag or icon in ICONS else 8)
-    base = top + max(0.0, (y + h - 8 - top - block) / 2.0) + 11
-    for i, line in enumerate(nl):
-        s.append(f'<text x="{cx}" y="{base + 15 * i:.1f}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle">{esc(line)}</text>')
-    for i, line in enumerate(sl):
-        s.append(f'<text x="{cx}" y="{base + 15 * len(nl) + 2 + 12 * i:.1f}" font-size="9" font-family="{MONO}" fill="{t["muted"]}" text-anchor="middle">{esc(line)}</text>')
-    return "\n".join(s)
-
-
 def _diamond_lines(name):
     return _wrap_px(name, 100, 12, True, 3)
 
 
 def _diamond_h(name):
     return {1: 64, 2: 84}.get(len(_diamond_lines(name)), 104)
-
-
-def diamond(t, cx, cy, w, h, name, focal=False, nid=None):
-    stroke = t["accent"] if focal else t["ink"]
-    fill = t["accent_tint"] if focal else t["card"]
-    pts = f"{cx},{cy-h/2} {cx+w/2},{cy} {cx},{cy+h/2} {cx-w/2},{cy}"
-    lines = _diamond_lines(name)
-    y0 = cy + 4 - 7.5 * (len(lines) - 1)
-    text = "".join(f'<text x="{cx}" y="{y0 + 15 * i:.1f}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle">{esc(line)}</text>'
-                   for i, line in enumerate(lines))
-    return (f'<polygon points="{pts}" fill="{t["paper"]}"/>'
-            f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}"'
-            + (f' data-node="{esc(nid)}" data-label="{esc(name)}" data-cx="{cx}" data-cy="{cy}"' if nid is not None else "")
-            + '/>' + text)
 
 
 def _pill_w(text):

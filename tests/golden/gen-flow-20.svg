@@ -1,118 +1,135 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 800 2272" width="800"><title>A 20-step process</title>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 800 2272" width="800">
+<title>A 20-step process</title>
 <desc>Generated for the golden corpus.</desc>
 <rect width="800" height="2272" fill="#f5f5f5"/>
 <defs><marker id="a" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#4f5d75"/></marker><marker id="aa" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#eb6c36"/></marker><marker id="al" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#7a8399"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">A 20-step process</text>
 <text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">Generated for the golden corpus.</text>
-<rect x="510.0" y="92.0" width="160" height="56" rx="20" fill="#f5f5f5"/>
-<rect x="510.0" y="92.0" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s0" data-label="Request received"/>
-<text x="590.0" y="123.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Request received</text>
-<rect x="510.0" y="212.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="212.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s1" data-label="Load the customer account (1)"/>
-<text x="590.0" y="236.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Load the customer</text>
-<text x="590.0" y="251.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">account (1)</text>
-<rect x="510.0" y="332.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="332.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s2" data-label="Score the fraud risk (2)"/>
-<text x="590.0" y="363.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Score the fraud risk (2)</text>
-<polygon points="590.0,448.0 670.0,480.0 590.0,512.0 510.0,480.0" fill="#f5f5f5"/><polygon points="590.0,448.0 670.0,480.0 590.0,512.0 510.0,480.0" fill="#ffffff" stroke="#2d3142" data-node="s3" data-label="Check 1 passed?" data-cx="590.0" data-cy="480.0"/><text x="590.0" y="484.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 1 passed?</text>
-<rect x="510.0" y="572.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="572.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s4" data-label="Charge the card (4)"/>
-<text x="590.0" y="603.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Charge the card (4)</text>
-<rect x="510.0" y="692.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="692.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s5" data-label="Write the ledger entry (5)"/>
-<text x="590.0" y="723.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Write the ledger entry (5)</text>
-<rect x="510.0" y="812.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="812.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s6" data-label="Notify the warehouse (6)"/>
-<text x="590.0" y="843.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Notify the warehouse (6)</text>
-<polygon points="350.0,928.0 430.0,960.0 350.0,992.0 270.0,960.0" fill="#f5f5f5"/><polygon points="350.0,928.0 430.0,960.0 350.0,992.0 270.0,960.0" fill="#ffffff" stroke="#2d3142" data-node="s7" data-label="Check 2 passed?" data-cx="350.0" data-cy="960.0"/><text x="350.0" y="964.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 2 passed?</text>
-<rect x="270.0" y="1052.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="270.0" y="1052.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s8" data-label="Send the receipt (8)"/>
-<text x="350.0" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Send the receipt (8)</text>
-<rect x="30.0" y="1052.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="30.0" y="1052.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s10" data-label="Validate the request (10)"/>
-<text x="110.0" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Validate the request (10)</text>
-<polygon points="590.0,1168.0 670.0,1200.0 590.0,1232.0 510.0,1200.0" fill="#f5f5f5"/><polygon points="590.0,1168.0 670.0,1200.0 590.0,1232.0 510.0,1200.0" fill="#ffffff" stroke="#2d3142" data-node="s11" data-label="Check 3 passed?" data-cx="590.0" data-cy="1200.0"/><text x="590.0" y="1204.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 3 passed?</text>
-<rect x="410.0" y="1292.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="410.0" y="1292.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s9" data-label="Update the order status (9)"/>
-<text x="490.0" y="1316.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Update the order status</text>
-<text x="490.0" y="1331.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">(9)</text>
-<rect x="610.0" y="1292.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="610.0" y="1292.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s12" data-label="Score the fraud risk (12)"/>
-<text x="690.0" y="1323.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Score the fraud risk (12)</text>
-<rect x="510.0" y="1412.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="1412.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s13" data-label="Reserve the stock (13)"/>
-<text x="590.0" y="1443.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Reserve the stock (13)</text>
-<rect x="510.0" y="1532.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="1532.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s14" data-label="Charge the card (14)"/>
-<text x="590.0" y="1563.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Charge the card (14)</text>
-<polygon points="590.0,1648.0 670.0,1680.0 590.0,1712.0 510.0,1680.0" fill="#f5f5f5"/><polygon points="590.0,1648.0 670.0,1680.0 590.0,1712.0 510.0,1680.0" fill="#ffffff" stroke="#2d3142" data-node="s15" data-label="Check 4 passed?" data-cx="590.0" data-cy="1680.0"/><text x="590.0" y="1684.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 4 passed?</text>
-<rect x="270.0" y="1772.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="270.0" y="1772.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s16" data-label="Notify the warehouse (16)"/>
-<text x="350.0" y="1803.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Notify the warehouse (16)</text>
-<rect x="270.0" y="1892.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="270.0" y="1892.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s17" data-label="Print the shipping label (17)"/>
-<text x="350.0" y="1916.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Print the shipping label</text>
-<text x="350.0" y="1931.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">(17)</text>
-<rect x="510.0" y="2012.0" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510.0" y="2012.0" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s18" data-label="Send the receipt (18)"/>
-<text x="590.0" y="2043.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Send the receipt (18)</text>
-<rect x="510.0" y="2132.0" width="160" height="56" rx="20" fill="#f5f5f5"/>
-<rect x="510.0" y="2132.0" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s19" data-label="Done"/>
-<text x="590.0" y="2163.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Done</text>
-<path d="M590.0,148.0 L590.0,212.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s0" data-to="s1" data-label=""/>
-<circle cx="590.0" cy="155.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,268.0 L590.0,332.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s1" data-to="s2" data-label=""/>
-<circle cx="590.0" cy="275.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,388.0 L590.0,448.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s2" data-to="s3" data-label=""/>
-<circle cx="590.0" cy="395.0" r="2.7" fill="#4f5d75"/>
-<path d="M670.0,480.0 L678.0,480.0 Q686.0,480.0 686.0,472.0 L686.0,248.0 Q686.0,240.0 678.0,240.0 L670.0,240.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s1" data-label="no"/>
-<circle cx="677.0" cy="480.0" r="2.7" fill="#4f5d75"/>
-<rect x="694.0" y="317.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="714.0" y="329.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M590.0,512.0 L590.0,572.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s4" data-label="yes"/>
-<circle cx="590.0" cy="519.0" r="2.7" fill="#4f5d75"/>
-<rect x="598.0" y="533.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="618.0" y="545.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M590.0,628.0 L590.0,692.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s4" data-to="s5" data-label=""/>
-<circle cx="590.0" cy="635.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,748.0 L590.0,812.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s5" data-to="s6" data-label=""/>
-<circle cx="590.0" cy="755.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,868.0 L590.0,890.0 Q590.0,898.0 582.0,898.0 L358.0,898.0 Q350.0,898.0 350.0,906.0 L350.0,928.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s6" data-to="s7" data-label=""/>
-<circle cx="590.0" cy="875.0" r="2.7" fill="#4f5d75"/>
-<path d="M270.0,960.0 L238.0,960.0 Q230.0,960.0 230.0,968.0 L230.0,1072.0 Q230.0,1080.0 222.0,1080.0 L190.0,1080.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s10" data-label="no"/>
-<circle cx="263.0" cy="960.0" r="2.7" fill="#4f5d75"/>
-<rect x="238.0" y="1011.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="258.0" y="1023.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M350.0,992.0 L350.0,1052.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s8" data-label="yes"/>
-<circle cx="350.0" cy="999.0" r="2.7" fill="#4f5d75"/>
-<rect x="358.0" y="1013.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="378.0" y="1025.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M350.0,1108.0 L350.0,1192.0 Q350.0,1200.0 358.0,1200.0 L482.0,1200.0 Q490.0,1200.0 490.0,1208.0 L490.0,1292.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s8" data-to="s9" data-label=""/>
-<circle cx="350.0" cy="1115.0" r="2.7" fill="#4f5d75"/>
-<path d="M410.0,1320.0 L22.0,1320.0 Q14.0,1320.0 14.0,1312.0 L14.0,1088.0 Q14.0,1080.0 22.0,1080.0 L30.0,1080.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s9" data-to="s10" data-label=""/>
-<circle cx="403.0" cy="1320.0" r="2.7" fill="#4f5d75"/>
-<path d="M110.0,1108.0 L110.0,1130.0 Q110.0,1138.0 118.0,1138.0 L582.0,1138.0 Q590.0,1138.0 590.0,1146.0 L590.0,1168.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s10" data-to="s11" data-label=""/>
-<circle cx="110.0" cy="1115.0" r="2.7" fill="#4f5d75"/>
-<path d="M580.0,1232.0 L580.0,1254.0 Q580.0,1262.0 572.0,1262.0 L498.0,1262.0 Q490.0,1262.0 490.0,1270.0 L490.0,1292.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s9" data-label="no"/>
-<circle cx="580.0" cy="1239.0" r="2.7" fill="#4f5d75"/>
-<rect x="515.0" y="1238.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="535.0" y="1250.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M600.0,1232.0 L600.0,1254.0 Q600.0,1262.0 608.0,1262.0 L682.0,1262.0 Q690.0,1262.0 690.0,1270.0 L690.0,1292.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s12" data-label="yes"/>
-<circle cx="600.0" cy="1239.0" r="2.7" fill="#4f5d75"/>
-<rect x="625.0" y="1238.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="645.0" y="1250.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M690.0,1348.0 L690.0,1372.0 Q690.0,1380.0 682.0,1380.0 L598.0,1380.0 Q590.0,1380.0 590.0,1388.0 L590.0,1412.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s12" data-to="s13" data-label=""/>
-<circle cx="690.0" cy="1355.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,1468.0 L590.0,1532.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s13" data-to="s14" data-label=""/>
-<circle cx="590.0" cy="1475.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,1588.0 L590.0,1648.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s14" data-to="s15" data-label=""/>
-<circle cx="590.0" cy="1595.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,1712.0 L590.0,2012.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s18" data-label="no"/>
-<circle cx="590.0" cy="1719.0" r="2.7" fill="#4f5d75"/>
-<rect x="598.0" y="1853.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="618.0" y="1865.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M510.0,1680.0 L478.0,1680.0 Q470.0,1680.0 470.0,1688.0 L470.0,1792.0 Q470.0,1800.0 462.0,1800.0 L430.0,1800.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s16" data-label="yes"/>
-<circle cx="503.0" cy="1680.0" r="2.7" fill="#4f5d75"/>
-<rect x="478.0" y="1731.0" width="40" height="16" rx="2" fill="#f5f5f5"/><text x="498.0" y="1743.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M350.0,1828.0 L350.0,1892.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s16" data-to="s17" data-label=""/>
-<circle cx="350.0" cy="1835.0" r="2.7" fill="#4f5d75"/>
-<path d="M350.0,1948.0 L350.0,1972.0 Q350.0,1980.0 358.0,1980.0 L582.0,1980.0 Q590.0,1980.0 590.0,1988.0 L590.0,2012.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s17" data-to="s18" data-label=""/>
-<circle cx="350.0" cy="1955.0" r="2.7" fill="#4f5d75"/>
-<path d="M590.0,2068.0 L590.0,2132.0" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s18" data-to="s19" data-label=""/>
-<circle cx="590.0" cy="2075.0" r="2.7" fill="#4f5d75"/>
+<rect x="510" y="92" width="160" height="56" rx="20" fill="#f5f5f5"/>
+<rect x="510" y="92" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s0" data-label="Request received"/>
+<text x="590" y="123.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Request received</text>
+<rect x="510" y="212" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="212" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s1" data-label="Load the customer account (1)"/>
+<text x="590" y="236" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Load the customer</text>
+<text x="590" y="251" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">account (1)</text>
+<rect x="510" y="332" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="332" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s2" data-label="Score the fraud risk (2)"/>
+<text x="590" y="363.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Score the fraud risk (2)</text>
+<polygon points="590,448 670,480 590,512 510,480" fill="#f5f5f5"/>
+<polygon points="590,448 670,480 590,512 510,480" fill="#ffffff" stroke="#2d3142" data-node="s3" data-label="Check 1 passed?" data-cx="590" data-cy="480"/>
+<text x="590" y="484" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 1 passed?</text>
+<rect x="510" y="572" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="572" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s4" data-label="Charge the card (4)"/>
+<text x="590" y="603.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Charge the card (4)</text>
+<rect x="510" y="692" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="692" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s5" data-label="Write the ledger entry (5)"/>
+<text x="590" y="723.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Write the ledger entry (5)</text>
+<rect x="510" y="812" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="812" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s6" data-label="Notify the warehouse (6)"/>
+<text x="590" y="843.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Notify the warehouse (6)</text>
+<polygon points="350,928 430,960 350,992 270,960" fill="#f5f5f5"/>
+<polygon points="350,928 430,960 350,992 270,960" fill="#ffffff" stroke="#2d3142" data-node="s7" data-label="Check 2 passed?" data-cx="350" data-cy="960"/>
+<text x="350" y="964" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 2 passed?</text>
+<rect x="270" y="1052" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="270" y="1052" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s8" data-label="Send the receipt (8)"/>
+<text x="350" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Send the receipt (8)</text>
+<rect x="30" y="1052" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="30" y="1052" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s10" data-label="Validate the request (10)"/>
+<text x="110" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Validate the request (10)</text>
+<polygon points="590,1168 670,1200 590,1232 510,1200" fill="#f5f5f5"/>
+<polygon points="590,1168 670,1200 590,1232 510,1200" fill="#ffffff" stroke="#2d3142" data-node="s11" data-label="Check 3 passed?" data-cx="590" data-cy="1200"/>
+<text x="590" y="1204" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 3 passed?</text>
+<rect x="410" y="1292" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="410" y="1292" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s9" data-label="Update the order status (9)"/>
+<text x="490" y="1316" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Update the order status</text>
+<text x="490" y="1331" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">(9)</text>
+<rect x="610" y="1292" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="610" y="1292" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s12" data-label="Score the fraud risk (12)"/>
+<text x="690" y="1323.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Score the fraud risk (12)</text>
+<rect x="510" y="1412" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="1412" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s13" data-label="Reserve the stock (13)"/>
+<text x="590" y="1443.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Reserve the stock (13)</text>
+<rect x="510" y="1532" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="1532" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s14" data-label="Charge the card (14)"/>
+<text x="590" y="1563.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Charge the card (14)</text>
+<polygon points="590,1648 670,1680 590,1712 510,1680" fill="#f5f5f5"/>
+<polygon points="590,1648 670,1680 590,1712 510,1680" fill="#ffffff" stroke="#2d3142" data-node="s15" data-label="Check 4 passed?" data-cx="590" data-cy="1680"/>
+<text x="590" y="1684" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 4 passed?</text>
+<rect x="270" y="1772" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="270" y="1772" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s16" data-label="Notify the warehouse (16)"/>
+<text x="350" y="1803.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Notify the warehouse (16)</text>
+<rect x="270" y="1892" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="270" y="1892" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s17" data-label="Print the shipping label (17)"/>
+<text x="350" y="1916" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Print the shipping label</text>
+<text x="350" y="1931" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">(17)</text>
+<rect x="510" y="2012" width="160" height="56" rx="6" fill="#f5f5f5"/>
+<rect x="510" y="2012" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s18" data-label="Send the receipt (18)"/>
+<text x="590" y="2043.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Send the receipt (18)</text>
+<rect x="510" y="2132" width="160" height="56" rx="20" fill="#f5f5f5"/>
+<rect x="510" y="2132" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s19" data-label="Done"/>
+<text x="590" y="2163.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Done</text>
+<path d="M590,148 L590,212" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s0" data-to="s1" data-label=""/>
+<circle cx="590" cy="155" r="2.7" fill="#4f5d75"/>
+<path d="M590,268 L590,332" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s1" data-to="s2" data-label=""/>
+<circle cx="590" cy="275" r="2.7" fill="#4f5d75"/>
+<path d="M590,388 L590,448" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s2" data-to="s3" data-label=""/>
+<circle cx="590" cy="395" r="2.7" fill="#4f5d75"/>
+<path d="M670,480 L678,480 Q686,480 686,472 L686,248 Q686,240 678,240 L670,240" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s1" data-label="no"/>
+<circle cx="677" cy="480" r="2.7" fill="#4f5d75"/>
+<rect x="694" y="317" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="714" y="329" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
+<path d="M590,512 L590,572" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s4" data-label="yes"/>
+<circle cx="590" cy="519" r="2.7" fill="#4f5d75"/>
+<rect x="598" y="533" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="618" y="545" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
+<path d="M590,628 L590,692" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s4" data-to="s5" data-label=""/>
+<circle cx="590" cy="635" r="2.7" fill="#4f5d75"/>
+<path d="M590,748 L590,812" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s5" data-to="s6" data-label=""/>
+<circle cx="590" cy="755" r="2.7" fill="#4f5d75"/>
+<path d="M590,868 L590,890 Q590,898 582,898 L358,898 Q350,898 350,906 L350,928" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s6" data-to="s7" data-label=""/>
+<circle cx="590" cy="875" r="2.7" fill="#4f5d75"/>
+<path d="M270,960 L238,960 Q230,960 230,968 L230,1072 Q230,1080 222,1080 L190,1080" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s10" data-label="no"/>
+<circle cx="263" cy="960" r="2.7" fill="#4f5d75"/>
+<rect x="238" y="1011" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="258" y="1023" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
+<path d="M350,992 L350,1052" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s8" data-label="yes"/>
+<circle cx="350" cy="999" r="2.7" fill="#4f5d75"/>
+<rect x="358" y="1013" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="378" y="1025" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
+<path d="M350,1108 L350,1192 Q350,1200 358,1200 L482,1200 Q490,1200 490,1208 L490,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s8" data-to="s9" data-label=""/>
+<circle cx="350" cy="1115" r="2.7" fill="#4f5d75"/>
+<path d="M410,1320 L22,1320 Q14,1320 14,1312 L14,1088 Q14,1080 22,1080 L30,1080" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s9" data-to="s10" data-label=""/>
+<circle cx="403" cy="1320" r="2.7" fill="#4f5d75"/>
+<path d="M110,1108 L110,1130 Q110,1138 118,1138 L582,1138 Q590,1138 590,1146 L590,1168" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s10" data-to="s11" data-label=""/>
+<circle cx="110" cy="1115" r="2.7" fill="#4f5d75"/>
+<path d="M580,1232 L580,1254 Q580,1262 572,1262 L498,1262 Q490,1262 490,1270 L490,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s9" data-label="no"/>
+<circle cx="580" cy="1239" r="2.7" fill="#4f5d75"/>
+<rect x="515" y="1238" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="535" y="1250" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
+<path d="M600,1232 L600,1254 Q600,1262 608,1262 L682,1262 Q690,1262 690,1270 L690,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s12" data-label="yes"/>
+<circle cx="600" cy="1239" r="2.7" fill="#4f5d75"/>
+<rect x="625" y="1238" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="645" y="1250" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
+<path d="M690,1348 L690,1372 Q690,1380 682,1380 L598,1380 Q590,1380 590,1388 L590,1412" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s12" data-to="s13" data-label=""/>
+<circle cx="690" cy="1355" r="2.7" fill="#4f5d75"/>
+<path d="M590,1468 L590,1532" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s13" data-to="s14" data-label=""/>
+<circle cx="590" cy="1475" r="2.7" fill="#4f5d75"/>
+<path d="M590,1588 L590,1648" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s14" data-to="s15" data-label=""/>
+<circle cx="590" cy="1595" r="2.7" fill="#4f5d75"/>
+<path d="M590,1712 L590,2012" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s18" data-label="no"/>
+<circle cx="590" cy="1719" r="2.7" fill="#4f5d75"/>
+<rect x="598" y="1853" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="618" y="1865" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
+<path d="M510,1680 L478,1680 Q470,1680 470,1688 L470,1792 Q470,1800 462,1800 L430,1800" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s16" data-label="yes"/>
+<circle cx="503" cy="1680" r="2.7" fill="#4f5d75"/>
+<rect x="478" y="1731" width="40" height="16" rx="2" fill="#f5f5f5"/>
+<text x="498" y="1743" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
+<path d="M350,1828 L350,1892" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s16" data-to="s17" data-label=""/>
+<circle cx="350" cy="1835" r="2.7" fill="#4f5d75"/>
+<path d="M350,1948 L350,1972 Q350,1980 358,1980 L582,1980 Q590,1980 590,1988 L590,2012" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s17" data-to="s18" data-label=""/>
+<circle cx="350" cy="1955" r="2.7" fill="#4f5d75"/>
+<path d="M590,2068 L590,2132" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s18" data-to="s19" data-label=""/>
+<circle cx="590" cy="2075" r="2.7" fill="#4f5d75"/>
 <line x1="30" y1="2224" x2="770" y2="2224" stroke="rgba(45,49,66,0.12)" stroke-width=".8"/>
 <text x="30" y="2240" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">box = step, diamond = decision, rounded = start or end</text>
 </svg>

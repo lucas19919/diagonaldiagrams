@@ -1,12 +1,11 @@
 """flow, arch, seq and schema: placement, routing and the repair loops."""
 import json
+from . import paint
 from ._draw import (
     BOX_H, BOX_W, GROUP_PAD, _below_heading, _box_h, _diamond_h, _frame_edges, _groups_of, _label_box,
-    _pill_w, _place_label, _seg_boxes, _tail, arrow_label, assign_ports, corner_rx, diamond, elbow,
-    figure_heading, group_frames, markers, node_box, render_noterail, route_edge,
+    _pill_w, _place_label, _seg_boxes, assign_ports, corner_rx, elbow, route_edge,
 )
-from ._text import esc
-from ._theme import FONT, MONO, SANS, THEME
+from ._theme import THEME
 from .audit import _svg_geometry
 
 
@@ -138,7 +137,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         n["_h"] = 8 if sh == "dot" else (_diamond_h(n["name"]) if sh == "diamond" else _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", "")))
     edges = spec.get("edges", [])  # [{from,to,label?,focal?}]
     _notes = (spec.get("notes", []) or [])[:2]
-    head_bits, head_h = figure_heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
     W, col_w, top, gap_y = (720 + (200 if _notes else 0)), 200, max(90, head_h + 20), 120
     if auto or not any("rank" in n for n in nodes):
         computed = auto_ranks(nodes, edges)
@@ -216,11 +215,9 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H}" width="{W}"><title>{esc(spec.get("title","flow"))}</title>',
-             f'<desc>{esc(spec.get("sub", spec.get("title", "flow")))}</desc>',
-             f'<rect width="{W}" height="{H}" fill="{t["paper"]}"/>', markers(t)]
-    parts.extend(head_bits)
-    frame_at, seg_boxes = len(parts), []
+    dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")))
+    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
+    frame_at, seg_boxes = len(dr.items), []
     node_boxes = [(cx - 80, cy - n["_h"] / 2, cx + 80, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
     frame_edges = _frame_edges(_groups_of(spec, set(pos)), pos)
     label_boxes = []
@@ -228,14 +225,15 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         sh = n.get("shape", "rect")
         h = n["_h"]
         if sh == "diamond":
-            parts.append(diamond(t, cx, cy, 160, h, n["name"], n.get("focal", False), nid))
+            dr.add(*paint.diamond(t, cx, cy, 160, h, n["name"], n.get("focal", False), nid))
         elif sh == "oval":
-            # both rects: the paper underlay and the visible box
-            parts.append(node_box(t, cx-80, cy-h/2, 160, h, n["name"], n.get("sub",""), n.get("tag",""), n.get("focal",False), corners, nid, n.get("icon")).replace(f'rx="{corner_rx(corners)}"','rx="20"', 2))
+            dr.add(*paint.node_box(t, cx - 80, cy - h / 2, 160, h, n["name"], n.get("sub", ""), n.get("tag", ""),
+                                   n.get("focal", False), corners, nid, n.get("icon"), rx=20))
         elif sh == "dot":
-            parts.append(f'<circle cx="{cx}" cy="{cy}" r="4" fill="{t["ink"]}"/>')
+            dr.add(*paint.dot(t, cx, cy, nid))
         else:
-            parts.append(node_box(t, cx-80, cy-h/2, 160, h, n["name"], n.get("sub",""), n.get("tag",""), n.get("focal",False), corners, nid, n.get("icon")))
+            dr.add(*paint.node_box(t, cx - 80, cy - h / 2, 160, h, n["name"], n.get("sub", ""), n.get("tag", ""),
+                                   n.get("focal", False), corners, nid, n.get("icon")))
     # edges after nodes. Ports are spread so an input and an output do not share a point.
     # An arrow going back up (a loop) leaves and enters on the outer side and runs up the outside,
     # instead of climbing through the boxes between its ends.
@@ -264,31 +262,27 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         d, lx, ly, vertical, pts = route_edge(x1, y1, s1, x2, y2, s2, nudge=nudge, track=tracks.get(i, 0))
         if not d:
             continue
-        dash = ' stroke-dasharray="5,4"' if e.get("async") else ""
-        ends = f' data-from="{esc(e.get("from"))}" data-to="{esc(e.get("to"))}" data-label="{esc(e.get("label", ""))}"'
-        parts.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="1.8"{dash} marker-end="url(#{mid})"{ends}/>')
-        parts.append(_tail(x1, y1, s1, col))
+        owner = f'{e.get("from")}->{e.get("to")}'
+        dr.add(paint.edge_path(d, col, mid, owner, e.get("async"),
+                               {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", "")}),
+               paint.tail(x1, y1, s1, col, owner))
         seg_boxes += _seg_boxes(pts)
         if e.get("label"):
             text = e["label"].upper()
             lx, ly, vertical, flip = _place_label(lx, ly + label_dy, vertical, text, pts,
                                                   node_boxes + label_boxes + frame_edges)
-            parts.append(arrow_label(t, lx, ly, text, vertical=vertical, flip=flip))
+            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vertical, flip=flip, owner=owner))
             label_boxes.append(_label_box(lx, ly, text, vertical, flip))
-    parts[frame_at:frame_at] = group_frames(t, _groups_of(spec, set(pos)), pos, seg_boxes)
+    dr.insert(frame_at, paint.group_frames(t, _groups_of(spec, set(pos)), pos, seg_boxes))
     if _notes:
         rail = []
         for nt in _notes:
             if nt.get("at") in pos:
                 cx, cy, _n = pos[nt["at"]]
                 rail.append((cx + 80, cy, nt["text"]))
-        parts.append(render_noterail(t, rail, W - 186, top))
-    # legend strip
-    ly = H - 40
-    parts.append(f'<line x1="30" y1="{ly-8}" x2="{W-30}" y2="{ly-8}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+8}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">box = step, diamond = decision, rounded = start or end</text>')
-    parts.append("</svg>")
-    return "\n".join(parts), W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
+        dr.add(*paint.note_rail(t, rail, W - 186, top))
+    dr.add(*paint.legend_line(t, W, H - 48, H - 32, "box = step, diamond = decision, rounded = start or end"))
+    return dr.svg(), W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
 
 
 def render_flow(spec, corners="editorial", auto=False, theme=None):
@@ -363,13 +357,12 @@ def render_arch(spec, corners="editorial", theme=None):
 
 
 def _layout_cost(out):
-    """(drawing, audit problems, cost) for the layout repair loops."""
+    """(drawing, audit problems, cost) for the layout repair loops. The drawing comes from
+    paint.Drawing, which always writes well-formed SVG, so a parse error is a bug and is raised
+    rather than scored as a layout with no problems."""
     import xml.etree.ElementTree as ET
     stats = {"crossings": 0, "wire": 0.0}
-    try:
-        found = _svg_geometry(ET.fromstring(out[0]), out[1], out[2], stats)
-    except ET.ParseError:
-        found = []
+    found = _svg_geometry(ET.fromstring(out[0]), out[1], out[2], stats)
     bad = [i for i in found if i["code"] in ("through", "strike", "overlap", "collide", "shared", "intrude")]
     return out, bad, 4 * len(bad) + stats["crossings"] + stats["wire"] / 400.0
 
@@ -438,7 +431,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         n.setdefault("name", n.get("id", ""))
         n["_h"] = _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""))
     _notes = (spec.get("notes", []) or [])[:2]
-    head_bits, head_h = figure_heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
     # simple layered: group by 'layer' (0 top..n), spread across width
     from collections import defaultdict
     layers = defaultdict(list)
@@ -492,13 +485,12 @@ def _render_arch_once(spec, corners="editorial", theme=None):
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H}" width="{W}"><title>{esc(spec.get("title","arch"))}</title>',
-             f'<desc>{esc(spec.get("sub", spec.get("title", "arch")))}</desc>',
-             f'<rect width="{W}" height="{H}" fill="{t["paper"]}"/>', markers(t)]
-    parts.extend(head_bits)
-    frame_at = len(parts)
-    for nid,(x,y,n) in pos.items():
-        parts.append(node_box(t, x-80, y-n["_h"]/2, 160, n["_h"], n["name"], n.get("sub",""), n.get("tag",""), n.get("focal",False), corners, nid, n.get("icon")))
+    dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")))
+    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
+    frame_at = len(dr.items)
+    for nid, (x, y, n) in pos.items():
+        dr.add(*paint.node_box(t, x - 80, y - n["_h"] / 2, 160, n["_h"], n["name"], n.get("sub", ""), n.get("tag", ""),
+                               n.get("focal", False), corners, nid, n.get("icon")))
     node_boxes = [(x - 80, y - n["_h"] / 2, x + 80, y + n["_h"] / 2) for x, y, n in pos.values()]
     frame_edges = _frame_edges(groups, pos)
     label_boxes = []
@@ -510,18 +502,18 @@ def _render_arch_once(spec, corners="editorial", theme=None):
             continue
         x1, y1, s1, x2, y2, s2 = ports[i]
         col = t["link"] if e.get("proto","").startswith("http") else (t["accent"] if e.get("focal") else t["muted"])
-        dash = ' stroke-dasharray="5,4"' if e.get("async") else ""
         mid = "al" if e.get("proto", "").startswith("http") else ("aa" if e.get("focal") else "a")
         d, lx, ly, vertical, pts = route_edge(x1, y1, s1, x2, y2, s2, track=tracks.get(i, 0))
         if not d:
             continue
-        ends = f' data-from="{esc(e.get("from"))}" data-to="{esc(e.get("to"))}" data-label="{esc(e.get("label", ""))}"'
-        parts.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="1.8"{dash} marker-end="url(#{mid})"{ends}/>')
-        parts.append(_tail(x1, y1, s1, col))
+        owner = f'{e.get("from")}->{e.get("to")}'
+        dr.add(paint.edge_path(d, col, mid, owner, e.get("async"),
+                               {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", "")}),
+               paint.tail(x1, y1, s1, col, owner))
         segs = [(min(p[0], q[0]) - 1, min(p[1], q[1]) - 1, max(p[0], q[0]) + 1, max(p[1], q[1]) + 1)
                 for p, q in zip(pts, pts[1:])]
         routes.append((e, lx, ly, vertical, pts, segs))
-    parts[frame_at:frame_at] = group_frames(t, groups, pos, [b for r in routes for b in r[5]])
+    dr.insert(frame_at, paint.group_frames(t, groups, pos, [b for r in routes for b in r[5]]))
     # Labels go last, once every arrow is routed: each one keeps clear of the boxes,
     # the labels already placed, and every other arrow.
     for k, (e, lx, ly, vertical, pts, _segs) in enumerate(routes):
@@ -529,7 +521,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
             text = e["label"].upper()
             others = [b for j, r in enumerate(routes) if j != k for b in r[5]]
             lx, ly, vertical, flip = _place_label(lx, ly, vertical, text, pts, node_boxes + label_boxes + frame_edges, others)
-            parts.append(arrow_label(t, lx, ly, text, vertical=vertical, flip=flip))
+            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vertical, flip=flip, owner=f'{e.get("from")}->{e.get("to")}'))
             label_boxes.append(_label_box(lx, ly, text, vertical, flip))
     if _notes:
         rail = []
@@ -537,12 +529,9 @@ def _render_arch_once(spec, corners="editorial", theme=None):
             if nt.get("at") in pos:
                 x, y, _n = pos[nt["at"]]
                 rail.append((x + 80, y, nt["text"]))
-        parts.append(render_noterail(t, rail, W - 186, top))
-    ly = H - 40
-    parts.append(f'<line x1="30" y1="{ly-8}" x2="{W-30}" y2="{ly-8}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+8}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">blue = HTTP call, dashed = sent in the background, coral = highlighted</text>')
-    parts.append("</svg>")
-    return "\n".join(parts), W, H
+        dr.add(*paint.note_rail(t, rail, W - 186, top))
+    dr.add(*paint.legend_line(t, W, H - 48, H - 32, "blue = HTTP call, dashed = sent in the background, coral = highlighted"))
+    return dr.svg(), W, H
 
 
 def render_seq(spec, corners="editorial", theme=None):
@@ -552,7 +541,7 @@ def render_seq(spec, corners="editorial", theme=None):
     n_act = max(1, len(actors))
     margin_x = 70
     _notes = (spec.get("notes", []) or [])[:2]
-    head_bits, head_h = figure_heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
     longest = 48
     for m in messages:
         if m.get("from") == m.get("to"):
@@ -571,13 +560,12 @@ def render_seq(spec, corners="editorial", theme=None):
     msg_gap = 52
     msg_start = top + 86  # the first message's label sits clear of the actor boxes
     H = msg_start + len(messages) * msg_gap + 80
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H}" width="{W}"><title>{esc(spec.get("title","sequence"))}</title>',
-             f'<desc>{esc(spec.get("sub", spec.get("title", "sequence")))}</desc>',
-             f'<rect width="{W}" height="{H}" fill="{t["paper"]}"/>', markers(t)]
-    parts.extend(head_bits)
+    dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")))
+    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     # Lifelines
     for aid, (cx, a) in pos.items():
-        parts.append(f'<line x1="{cx:.1f}" y1="{top+52}" x2="{cx:.1f}" y2="{H-50}" stroke="{t["rule"]}" stroke-width="1.2" stroke-dasharray="4,4"/>')
+        dr.add(paint.el("line", owner=aid, role="actor.lifeline", x1=cx, y1=top + 52, x2=cx, y2=H - 50, stroke=t["rule"],
+                        stroke_width=1.2, stroke_dasharray="4,4"))
     # Messages
     for i, m in enumerate(messages):
         f_id = m.get("from")
@@ -591,44 +579,45 @@ def render_seq(spec, corners="editorial", theme=None):
         is_http = m.get("proto", "").startswith("http")
         col = t["accent"] if focal else (t["link"] if is_http else t["muted"])
         mid = "aa" if focal else ("al" if is_http else "a")
-        dash = ' stroke-dasharray="4,4"' if (m.get("reply") or m.get("async")) else ''
+        owner = f"message{i}"
         # read back by the outline: who sends what to whom, in order
-        dash += (f' data-msg="{esc(m.get("label", ""))}" data-msg-from="{esc(pos[f_id][1].get("name", f_id))}"'
-                 f' data-msg-to="{esc(pos[t_id][1].get("name", t_id))}"')
+        look = {"stroke-dasharray": "4,4" if (m.get("reply") or m.get("async")) else None,
+                "data-msg": m.get("label", ""), "data-msg-from": pos[f_id][1].get("name", f_id),
+                "data-msg-to": pos[t_id][1].get("name", t_id), "marker-end": f"url(#{mid})"}
         if f_id == t_id:
             # Self-call loop
             lw = 32
-            parts.append(f'<path d="M{x1:.1f},{my} L{x1+lw:.1f},{my} L{x1+lw:.1f},{my+20} L{x1+4:.1f},{my+20}" fill="none" stroke="{col}" stroke-width="1.5"{dash} marker-end="url(#{mid})"/>')
+            dr.add(paint.el("path", owner=owner, role="message.path",
+                            d=f"M{x1},{my} L{x1 + lw},{my} L{x1 + lw},{my + 20} L{x1 + 4},{my + 20}",
+                            fill="none", stroke=col, stroke_width=1.5, **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
-                parts.append(arrow_label(t, x1 + lw + max(20, len(m["label"])*3.5), my + 10, m["label"].upper()))
+                dr.add(*paint.arrow_label(t, x1 + lw + max(20, len(m["label"]) * 3.5), my + 10, m["label"].upper(), owner=owner))
         else:
             direction = 1 if x2 >= x1 else -1
             x_from = x1 + direction * 8
             x_to = x2 - direction * 8
-            parts.append(f'<line x1="{x_from:.1f}" y1="{my}" x2="{x_to:.1f}" y2="{my}" stroke="{col}" stroke-width="1.6"{dash} marker-end="url(#{mid})"/>')
+            dr.add(paint.el("line", owner=owner, role="message.path", x1=x_from, y1=my, x2=x_to, y2=my, stroke=col,
+                            stroke_width=1.6, **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
                 lbl = m["label"]
                 if m.get("proto"):
                     lbl = f"[{m['proto'].upper()}] {lbl}"
-                parts.append(arrow_label(t, (x1 + x2) / 2, my, lbl.upper()))
+                dr.add(*paint.arrow_label(t, (x1 + x2) / 2, my, lbl.upper(), owner=owner))
     # Actor boxes at top
     for aid, (cx, a) in pos.items():
         bw, bh = 140, 52
         bx, by = cx - bw / 2, top
-        parts.append(node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""), a.get("focal", False), corners, aid))
+        dr.add(*paint.node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""),
+                               a.get("focal", False), corners, aid))
     if _notes:
         rail = []
         for nt in _notes:
             if nt.get("at") in pos:
                 cx, _a = pos[nt["at"]]
                 rail.append((cx + 70, top + 26, nt["text"]))
-        parts.append(render_noterail(t, rail, W - 186, top))
-    # Legend
-    ly = H - 28
-    parts.append(f'<line x1="30" y1="{ly-10}" x2="{W-30}" y2="{ly-10}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+4}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">solid = call, dashed = reply or event, blue = HTTP, coral = highlighted</text>')
-    parts.append("</svg>")
-    return "\n".join(parts), W, H
+        dr.add(*paint.note_rail(t, rail, W - 186, top))
+    dr.add(*paint.legend_line(t, W, H - 38, H - 24, "solid = call, dashed = reply or event, blue = HTTP, coral = highlighted"))
+    return dr.svg(), W, H
 
 
 def render_schema(spec, corners="editorial", theme=None):
@@ -658,7 +647,7 @@ def _render_schema_once(spec, corners="editorial", theme=None):
     t = theme or THEME
     tables = spec.get("tables", [])
     relations = spec.get("relations", [])
-    head_bits, head_h = figure_heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
+    head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30)
     base_y = max(90, head_h + 16)
     rx = corner_rx(corners)
     tbl_w, row_h = 240, 24
@@ -698,10 +687,8 @@ def _render_schema_once(spec, corners="editorial", theme=None):
         max_y = max(max_y, 110 + 14 + max(0, len(_notes) - 1) * 92 + 52)
     W = max(780, int(max_x + 60)) + (200 if _notes else 0)
     H = int(max_y + 72)
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H}" width="{W}"><title>{esc(spec.get("title","schema"))}</title>',
-             f'<desc>{esc(spec.get("sub", spec.get("title", "schema")))}</desc>',
-             f'<rect width="{W}" height="{H}" fill="{t["paper"]}"/>', markers(t)]
-    parts.extend(head_bits)
+    dr = paint.Drawing(W, H, spec.get("title", "schema"), spec.get("sub", spec.get("title", "schema")))
+    dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     # Relations (rendered behind table cards)
     rel_labels = []
     for rel in relations:
@@ -721,7 +708,9 @@ def _render_schema_once(spec, corners="editorial", theme=None):
         focal = rel.get("focal", False)
         col = t["accent"] if focal else t["link"]
         mid = "aa" if focal else "al"
-        parts.append(f'<path d="{elbow(x1, y1, x2, y2)}" fill="none" stroke="{col}" stroke-width="1.4" marker-end="url(#{mid})"/>')
+        owner = f"{from_id}->{to_id}"
+        dr.add(paint.el("path", owner=owner, role="edge.path", d=elbow(x1, y1, x2, y2), fill="none", stroke=col,
+                        stroke_width=1.4, marker_end=f"url(#{mid})"))
         if rel.get("label"):
             if x1 == x2 or y1 == y2:
                 pts = [(x1, y1), (x2, y2)]
@@ -731,47 +720,17 @@ def _render_schema_once(spec, corners="editorial", theme=None):
             text = rel["label"].upper()
             boxes = [(b["x"], b["y"], b["x"] + b["w"], b["y"] + b["h"]) for b in table_boxes.values()]
             lx, ly, vert, flip = _place_label((x1 + x2) / 2, (y1 + y2) / 2, False, text, pts, boxes + rel_labels)
-            parts.append(arrow_label(t, lx, ly, text, vertical=vert, flip=flip))
+            dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vert, flip=flip, owner=owner))
             rel_labels.append(_label_box(lx, ly, text, vert, flip))
     # Table cards
     for tid, b in table_boxes.items():
-        x, y, w, h = b["x"], b["y"], b["w"], b["h"]
-        tbl = b["tbl"]
-        focal = tbl.get("focal", False)
-        stroke = t["accent"] if focal else t["ink"]
-        fill_head = t["accent_tint"] if focal else "rgba(45,49,66,0.06)"
-        parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{t["card"]}" stroke="{stroke}" stroke-width="1.2"/>')
-        parts.append(f'<path d="M{x},{y+36} L{x},{y+rx} Q{x},{y} {x+rx},{y} L{x+w-rx},{y} Q{x+w},{y} {x+w},{y+rx} L{x+w},{y+36} Z" fill="{fill_head}"/>')
-        parts.append(f'<line x1="{x}" y1="{y+36}" x2="{x+w}" y2="{y+36}" stroke="{t["rule"]}" stroke-width="1"/>')
-        parts.append(f'<text x="{x+12}" y="{y+23}" font-size="13" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" data-role="table">{esc(tbl.get("name", tid))}</text>')
-        tag = tbl.get("tag", "")
-        if tag:
-            tw = max(32, len(tag) * 7 + 8)
-            parts.append(f'<rect x="{x+w-tw-10}" y="{y+12}" width="{tw}" height="14" rx="2" fill="none" stroke="{stroke}" stroke-opacity=".5" stroke-width=".8"/>')
-            parts.append(f'<text x="{x+w-tw/2-10}" y="{y+22}" font-size="8" font-family="{MONO}" fill="{stroke}" text-anchor="middle">{esc(tag)}</text>')
-        for c_idx, c in enumerate(tbl.get("columns", [])):
-            cy = y + 44 + c_idx * row_h
-            if c_idx > 0:
-                parts.append(f'<line x1="{x+6}" y1="{cy}" x2="{x+w-6}" y2="{cy}" stroke="{t["rule"]}" stroke-width="0.5"/>')
-            badge_x = x + 10
-            if c.get("pk"):
-                parts.append(f'<rect x="{badge_x}" y="{cy+4}" width="20" height="12" rx="2" fill="{t["accent"]}" fill-opacity=".15"/>')
-                parts.append(f'<text x="{badge_x+10}" y="{cy+13}" font-size="7" font-weight="600" font-family="{MONO}" fill="{t["accent"]}" text-anchor="middle">PK</text>')
-            elif c.get("fk"):
-                parts.append(f'<rect x="{badge_x}" y="{cy+4}" width="20" height="12" rx="2" fill="{t["link"]}" fill-opacity=".15"/>')
-                parts.append(f'<text x="{badge_x+10}" y="{cy+13}" font-size="7" font-weight="600" font-family="{MONO}" fill="{t["link"]}" text-anchor="middle">FK</text>')
-            name_x = badge_x + (25 if (c.get("pk") or c.get("fk")) else 0)
-            parts.append(f'<text x="{name_x}" y="{cy+15}" font-size="11" font-family="{MONO}" fill="{t["ink"]}">{esc(c["name"])}</text>')
-            parts.append(f'<text x="{x+w-12}" y="{cy+15}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="end">{esc(c.get("type",""))}</text>')
+        dr.add(*paint.table_card(t, b["x"], b["y"], b["w"], b["h"], rx, tid, b["tbl"], row_h))
     if _notes:
         rail = []
         for nt in _notes:
             if nt.get("at") in table_boxes:
                 b = table_boxes[nt["at"]]
                 rail.append((b["x"] + b["w"], b["y"] + 18, nt["text"]))
-        parts.append(render_noterail(t, rail, W - 186, 110))
-    ly = H - 28
-    parts.append(f'<line x1="30" y1="{ly-10}" x2="{W-30}" y2="{ly-10}" stroke="{t["rule"]}" stroke-width=".8"/>')
-    parts.append(f'<text x="30" y="{ly+4}" font-size="11" font-family="{FONT}" fill="{t["muted"]}">PK = primary key, FK = foreign key, blue = relation, coral = highlighted</text>')
-    parts.append("</svg>")
-    return "\n".join(parts), W, H
+        dr.add(*paint.note_rail(t, rail, W - 186, 110))
+    dr.add(*paint.legend_line(t, W, H - 38, H - 24, "PK = primary key, FK = foreign key, blue = relation, coral = highlighted"))
+    return dr.svg(), W, H

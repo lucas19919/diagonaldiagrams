@@ -6,7 +6,7 @@
   "sharp"
  ],
  "exit": 0,
- "html_sha256": "e6069922fb321dae8de5e10124e7a3ade2d883f62ae4f85f28d60dbcd86678a1",
+ "html_sha256": "7981b66cf987d870b70c8ea8a5ad91a3e550a07323417016d5c555b24f4694da",
  "receipt": {
   "auto": false,
   "cmd": "flow",

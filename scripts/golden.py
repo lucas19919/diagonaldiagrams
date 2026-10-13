@@ -187,18 +187,32 @@ def _read(path):
         return f.read().replace("\r\n", "\n")
 
 
-def compare(rec, svg, name, folder=GOLDEN):
-    """Differences between a fresh render and the stored one, as short readable lines."""
+def compare(rec, svg, name, folder=GOLDEN, semantic=False):
+    """Differences between a fresh render and the stored one, as short readable lines.
+
+    semantic: an SVG whose text changed but which draws the same thing (diagonaldiagrams.svgdiff:
+    same elements, attributes and text, numbers within 0.05) passes, and so does the HTML hash
+    that changes with it. Everything else in the record must still match exactly."""
     svg_p, json_p = os.path.join(folder, name + ".svg"), os.path.join(folder, name + ".json")
     old_json = _read(json_p)
     if old_json is None:
         return ["no golden file (run --update)"]
     problems = []
+    old_svg = _read(svg_p)
+    same_drawing = False
+    if semantic and old_svg is not None and svg is not None and old_svg != svg:
+        from diagonaldiagrams.svgdiff import compare as drawing_diff
+        diffs = drawing_diff(old_svg, svg, tol=0.051)  # the old writer rounded some numbers to 0.1
+        if diffs:
+            return ["draws something else:\n      " + "\n      ".join(diffs)]
+        same_drawing = True
+        rec = dict(rec, html_sha256=json.loads(old_json).get("html_sha256"))
     new_json = json.dumps(rec, indent=1, sort_keys=True, ensure_ascii=False) + "\n"
     if old_json != new_json:
         diff = list(difflib.unified_diff(old_json.splitlines(), new_json.splitlines(), "golden", "now", n=0, lineterm=""))
         problems.append("record differs:\n      " + "\n      ".join(diff[2:14]) + ("\n      ..." if len(diff) > 14 else ""))
-    old_svg = _read(svg_p)
+    if same_drawing:
+        return problems
     if (old_svg is None) != (svg is None):
         problems.append("svg " + ("appeared" if old_svg is None else "disappeared"))
     elif svg is not None and old_svg != svg:
@@ -256,6 +270,8 @@ def main(argv=None):
     mode.add_argument("--list", action="store_true", help="list corpus entries")
     ap.add_argument("--only", nargs="+", metavar="NAME_OR_TAG", help="limit to these names or tags")
     ap.add_argument("--png", action="store_true", help="also rasterize every figure to bench/golden-png/")
+    ap.add_argument("--semantic", action="store_true",
+                    help="with --check: accept an SVG written differently that draws the same thing")
     a = ap.parse_args(argv)
 
     if a.determinism:
@@ -286,7 +302,7 @@ def main(argv=None):
             elif a.update:
                 dump(rec, svg, entry["name"], GOLDEN)
             else:
-                problems = compare(rec, svg, entry["name"])
+                problems = compare(rec, svg, entry["name"], semantic=a.semantic)
                 if problems:
                     changed.append(entry["name"])
                     print(f"CHANGED {entry['name']}")

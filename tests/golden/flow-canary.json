@@ -4,7 +4,7 @@
   "examples/show_canary.json"
  ],
  "exit": 0,
- "html_sha256": "cd2d9ef77bbff80baab55ebebb519efddf5978657a036f9ab0f0f5bc04845cd6",
+ "html_sha256": "6c2b136d690be2540c02e9f8c26c29d05ae6ebdfd091eb771be6d9044f8d158b",
  "receipt": {
   "auto": false,
   "cmd": "flow",
