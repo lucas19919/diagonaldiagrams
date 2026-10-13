@@ -11,6 +11,80 @@
   "auto": false,
   "cmd": "arch",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "constraints": [
+    {
+     "order": [
+      "api",
+      "auth"
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "web",
+     "label": "https",
+     "proto": "https",
+     "to": "api"
+    },
+    {
+     "async": true,
+     "from": "api",
+     "label": "validate",
+     "to": "auth"
+    },
+    {
+     "from": "api",
+     "label": "insert",
+     "to": "db"
+    },
+    {
+     "from": "auth",
+     "label": "query",
+     "to": "db"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "web",
+     "name": "Web App",
+     "rank": 0,
+     "sub": ":3000",
+     "tag": "UI"
+    },
+    {
+     "focal": true,
+     "id": "api",
+     "name": "API",
+     "rank": 1,
+     "sub": "Go:8080",
+     "tag": "API"
+    },
+    {
+     "id": "auth",
+     "name": "Auth",
+     "rank": 1,
+     "sub": "Go:8081",
+     "tag": "SVC"
+    },
+    {
+     "id": "db",
+     "name": "Postgres",
+     "rank": 2,
+     "sub": ":5432",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "arch",
+   "subtitle": "focal = API · blue = HTTP · dashed = async",
+   "title": "Checkout containers",
+   "version": 2
+  },
   "spec": "arch.json",
   "theme": "print"
  },

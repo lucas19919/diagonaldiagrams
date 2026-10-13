@@ -16,6 +16,7 @@
  "exit": 0,
  "html_sha256": "ef52676138d46f44b1f0e98510ea7800412d115a2fc19266f83e131e26ce846f",
  "receipt": {
+  "caption": "Categorical comparison.",
   "cat": "service",
   "cmd": "bar",
   "corners": "editorial",
@@ -26,6 +27,7 @@
   "highlights": [],
   "markers": true,
   "orientation": "h",
+  "receipt": 2,
   "sort": "desc",
   "source": "",
   "subtitle": "",

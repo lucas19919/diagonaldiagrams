@@ -9,6 +9,124 @@
   "auto": false,
   "cmd": "seq",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "user",
+     "label": "Ask",
+     "order": 0,
+     "to": "agent"
+    },
+    {
+     "focal": true,
+     "from": "agent",
+     "label": "Plan",
+     "order": 1,
+     "to": "model"
+    },
+    {
+     "from": "model",
+     "label": "Call tool",
+     "order": 2,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Search",
+     "order": 3,
+     "proto": "https",
+     "to": "tools"
+    },
+    {
+     "from": "tools",
+     "label": "Passages",
+     "order": 4,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Ground",
+     "order": 5,
+     "to": "model"
+    },
+    {
+     "focal": true,
+     "from": "model",
+     "label": "Draft",
+     "order": 6,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Record",
+     "order": 7,
+     "to": "ledger"
+    },
+    {
+     "from": "ledger",
+     "label": "Stored",
+     "order": 8,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Answer",
+     "order": 9,
+     "reply": true,
+     "to": "user"
+    },
+    {
+     "from": "user",
+     "label": "Follow up",
+     "order": 10,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Revise",
+     "order": 11,
+     "to": "model"
+    }
+   ],
+   "layout": "sequence",
+   "nodes": [
+    {
+     "id": "user",
+     "name": "User",
+     "tag": "USER"
+    },
+    {
+     "focal": true,
+     "id": "agent",
+     "name": "Agent",
+     "tag": "SVC"
+    },
+    {
+     "id": "model",
+     "name": "Model",
+     "tag": "SVC"
+    },
+    {
+     "id": "tools",
+     "name": "Tools",
+     "tag": "GATEWAY"
+    },
+    {
+     "id": "ledger",
+     "name": "Ledger",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "seq",
+   "subtitle": "The model asks, the tool answers, the ledger keeps the trace.",
+   "title": "Tool loop",
+   "version": 2
+  },
   "spec": "show_toolloop.json",
   "theme": "editorial"
  },

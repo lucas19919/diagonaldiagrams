@@ -9,6 +9,120 @@
   "auto": false,
   "cmd": "flow",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "merge",
+     "label": "land",
+     "to": "build"
+    },
+    {
+     "from": "build",
+     "label": "push",
+     "to": "canary"
+    },
+    {
+     "from": "canary",
+     "label": "watch",
+     "to": "slo"
+    },
+    {
+     "focal": true,
+     "from": "slo",
+     "label": "yes",
+     "to": "promote"
+    },
+    {
+     "from": "slo",
+     "label": "no",
+     "to": "rollback"
+    },
+    {
+     "from": "rollback",
+     "label": "patch",
+     "to": "build"
+    },
+    {
+     "from": "promote",
+     "label": "ramp",
+     "to": "observe"
+    },
+    {
+     "from": "observe",
+     "label": "hold",
+     "to": "steady"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "merge",
+     "name": "Merge",
+     "rank": 0,
+     "shape": "oval",
+     "tag": "START"
+    },
+    {
+     "id": "build",
+     "name": "Bake image",
+     "rank": 1,
+     "sub": "sha 8f3c",
+     "tag": "STEP"
+    },
+    {
+     "id": "canary",
+     "name": "Canary 5%",
+     "rank": 2,
+     "sub": "15 min",
+     "tag": "STEP"
+    },
+    {
+     "focal": true,
+     "id": "slo",
+     "name": "SLO hold?",
+     "rank": 3,
+     "shape": "diamond"
+    },
+    {
+     "id": "rollback",
+     "lane": -1,
+     "name": "Roll back",
+     "rank": 3,
+     "sub": "previous",
+     "tag": "STEP"
+    },
+    {
+     "id": "promote",
+     "lane": 1,
+     "name": "Promote",
+     "rank": 4,
+     "sub": "100%",
+     "tag": "STEP"
+    },
+    {
+     "id": "observe",
+     "name": "Observe",
+     "rank": 5,
+     "sub": "1 hour",
+     "tag": "STEP"
+    },
+    {
+     "id": "steady",
+     "name": "Steady",
+     "rank": 6,
+     "shape": "oval",
+     "tag": "END"
+    }
+   ],
+   "preset": "flow",
+   "subtitle": "Yes promotes. No rolls back into the build.",
+   "title": "Canary promotion",
+   "version": 2
+  },
   "spec": "show_canary.json",
   "theme": "editorial"
  },

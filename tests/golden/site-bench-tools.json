@@ -20,6 +20,7 @@
  "exit": 0,
  "html_sha256": "3f7a0786bbf2e2b47c7e10e6632e94f587fdae5b75d749ee1215860632876d19",
  "receipt": {
+  "caption": "Trend over time or continuous variable.",
   "cmd": "line",
   "corners": "editorial",
   "csv": "bench_tools.csv",
@@ -30,6 +31,7 @@
    "diagonaldiagrams"
   ],
   "markers": true,
+  "receipt": 2,
   "source": "",
   "subtitle": "",
   "theme": "editorial",

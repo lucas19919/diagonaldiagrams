@@ -9,6 +9,160 @@
   "auto": false,
   "cmd": "schema",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "_kind": "schema",
+   "budget": false,
+   "edges": [
+    {
+     "from": "CUSTOMER",
+     "label": "1:N places",
+     "to": "ORDER"
+    },
+    {
+     "from": "ORDER",
+     "label": "1:N contains",
+     "to": "LINE_ITEM"
+    },
+    {
+     "from": "PRODUCT",
+     "label": "1:N ordered in",
+     "to": "LINE_ITEM"
+    }
+   ],
+   "layout": "table",
+   "nodes": [
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "name": "email",
+         "type": "string",
+         "unique": true
+        }
+       ]
+      }
+     },
+     "id": "CUSTOMER",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "email"
+      }
+     ],
+     "shape": "table"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "customer_id",
+         "type": "uuid"
+        },
+        {
+         "name": "total_cents",
+         "type": "int"
+        }
+       ]
+      }
+     },
+     "id": "ORDER",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "customer_id"
+      },
+      {
+       "id": "total_cents"
+      }
+     ],
+     "shape": "table"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "fk": true,
+         "name": "order_id",
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "product_id",
+         "type": "uuid"
+        },
+        {
+         "name": "quantity",
+         "type": "int"
+        }
+       ]
+      }
+     },
+     "id": "LINE_ITEM",
+     "ports": [
+      {
+       "id": "order_id"
+      },
+      {
+       "id": "product_id"
+      },
+      {
+       "id": "quantity"
+      }
+     ],
+     "shape": "table"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "name": "sku",
+         "type": "string",
+         "unique": true
+        }
+       ]
+      }
+     },
+     "id": "PRODUCT",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "sku"
+      }
+     ],
+     "shape": "table"
+    }
+   ],
+   "preset": "schema",
+   "title": "Shop data model",
+   "version": 2
+  },
   "spec": "shop_er.mmd",
   "theme": "editorial"
  },

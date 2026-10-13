@@ -10,6 +10,102 @@
   "auto": true,
   "cmd": "flow",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "focal": true,
+     "from": "start",
+     "label": "push",
+     "to": "tests"
+    },
+    {
+     "from": "tests",
+     "label": "pass",
+     "to": "risk?"
+    },
+    {
+     "from": "tests",
+     "label": "fail",
+     "to": "fix"
+    },
+    {
+     "focal": true,
+     "from": "risk?",
+     "label": "yes",
+     "to": "review"
+    },
+    {
+     "from": "risk?",
+     "label": "no",
+     "to": "ship"
+    },
+    {
+     "from": "fix",
+     "label": "retry",
+     "to": "tests"
+    },
+    {
+     "from": "review",
+     "label": "approve",
+     "to": "ship"
+    }
+   ],
+   "eyebrow": "flow · decision",
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "start",
+     "name": "Push",
+     "rank": 0,
+     "shape": "oval",
+     "tag": "START"
+    },
+    {
+     "id": "tests",
+     "name": "CI tests",
+     "rank": 1,
+     "sub": "ci: 4 min",
+     "tag": "STEP"
+    },
+    {
+     "focal": true,
+     "id": "risk?",
+     "name": "Risky?",
+     "rank": 2,
+     "shape": "diamond"
+    },
+    {
+     "id": "fix",
+     "lane": -1,
+     "name": "Fix",
+     "rank": 3,
+     "tag": "STEP"
+    },
+    {
+     "id": "review",
+     "lane": 1,
+     "name": "Review",
+     "rank": 3,
+     "sub": "owner:payments",
+     "tag": "STEP"
+    },
+    {
+     "id": "ship",
+     "name": "Ship",
+     "rank": 4,
+     "shape": "oval",
+     "tag": "END"
+    }
+   ],
+   "preset": "flow",
+   "subtitle": "Yes = right · No = down · diamond <= 3 exits",
+   "title": "Deploy approval",
+   "version": 2
+  },
   "spec": "flow_decision.json",
   "theme": "editorial"
  },

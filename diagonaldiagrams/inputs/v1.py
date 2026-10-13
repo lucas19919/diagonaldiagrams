@@ -13,6 +13,8 @@ from ..errors import SpecError
 from ..scene.ids import EdgeIds
 
 KINDS = ("flow", "arch", "seq", "schema")
+LAYOUTS = {"flow": {"type": "layered", "ranks": "explicit-then-index"}, "arch": {"type": "layered", "ranks": "explicit"},
+           "seq": "sequence", "schema": "table"}  # what each preset's v1 renderer does
 EDGE_FLAGS = ("label", "proto", "async_", "reply", "focal")  # in the order v1 specs write them
 
 
@@ -62,19 +64,19 @@ def from_v1(spec, kind=None):
                 if isinstance(n, dict) and "id" in n:
                     rows.setdefault(str(n["layer"]), []).append(n["id"])
             out["constraints"] = [{"order": ids} for ids in rows.values() if len(ids) > 1]
-        out["layout"] = {"type": "layered", "ranks": "explicit" if kind == "arch" else "explicit-then-index"}
+        out["layout"] = dict(LAYOUTS[kind])
     elif kind == "seq":
         nodes, edges = rest.pop("actors", None), rest.pop("messages", None)
         if isinstance(edges, list):
             edges = [dict(m, order=i) if isinstance(m, dict) else m for i, m in enumerate(edges)]
-        out["layout"] = "sequence"
+        out["layout"] = LAYOUTS[kind]
     else:
         nodes, edges = rest.pop("tables", None), rest.pop("relations", None)
         if isinstance(nodes, list):
             nodes = [_table(t) if isinstance(t, dict) else t for t in nodes]
         if isinstance(edges, list):
             edges = [_relation(r) if isinstance(r, dict) else r for r in edges]
-        out["layout"] = "table"
+        out["layout"] = LAYOUTS[kind]
     if nodes is not None:
         out["nodes"] = nodes
     if edges is not None:
@@ -145,6 +147,12 @@ def to_v1(scene):
         if getattr(scene, key):
             warn.append(_not_drawn(f"the figure's '{key}'", key))
             spec[key] = getattr(scene, key)
+    if scene.layout not in (None, LAYOUTS[kind]):
+        warn.append(_not_drawn(f"the layout {scene.layout!r} (the {kind} preset lays out its own way until P4)", "layout"))
+        spec["layout"] = scene.layout
+    if scene.legend != "auto":
+        warn.append(_not_drawn("the legend setting", "legend"))
+        spec["legend"] = scene.legend
     nodes = list(scene.nodes)
     order = [c["order"] for c in scene.constraints if isinstance(c.get("order"), list)]
     others = [c for c in scene.constraints if not isinstance(c.get("order"), list)]

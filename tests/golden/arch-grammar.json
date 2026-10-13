@@ -9,6 +9,199 @@
   "auto": false,
   "cmd": "arch",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "budget": false,
+   "constraints": [
+    {
+     "order": [
+      "axiom",
+      "lemma",
+      "cli"
+     ]
+    },
+    {
+     "order": [
+      "wheel",
+      "engine",
+      "grammar"
+     ]
+    },
+    {
+     "order": [
+      "authority",
+      "writer",
+      "packs"
+     ]
+    },
+    {
+     "order": [
+      "intake",
+      "duck",
+      "vectors"
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "axiom",
+     "label": "load",
+     "to": "wheel"
+    },
+    {
+     "from": "lemma",
+     "label": "embed",
+     "to": "engine"
+    },
+    {
+     "from": "cli",
+     "label": "check",
+     "to": "grammar"
+    },
+    {
+     "from": "wheel",
+     "label": "open",
+     "to": "engine"
+    },
+    {
+     "from": "engine",
+     "label": "holds",
+     "to": "grammar"
+    },
+    {
+     "from": "engine",
+     "label": "act",
+     "to": "writer"
+    },
+    {
+     "from": "writer",
+     "label": "append",
+     "to": "duck"
+    },
+    {
+     "from": "writer",
+     "label": "audit",
+     "to": "authority"
+    },
+    {
+     "from": "intake",
+     "label": "load",
+     "to": "duck"
+    },
+    {
+     "from": "grammar",
+     "label": "uses",
+     "to": "packs"
+    },
+    {
+     "from": "packs",
+     "label": "goldens",
+     "to": "vectors"
+    },
+    {
+     "from": "cli",
+     "label": "serve",
+     "proto": "https",
+     "to": "engine"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "axiom",
+     "name": "Axiom",
+     "rank": 0,
+     "sub": "tenant server",
+     "tag": "APP"
+    },
+    {
+     "id": "lemma",
+     "name": "Lemma",
+     "rank": 0,
+     "sub": "fleet hub",
+     "tag": "APP"
+    },
+    {
+     "id": "cli",
+     "name": "strohmann",
+     "rank": 0,
+     "sub": "check and serve",
+     "tag": "CLI"
+    },
+    {
+     "id": "wheel",
+     "name": "Python wheel",
+     "rank": 1,
+     "sub": "grammar-py",
+     "tag": "LIB"
+    },
+    {
+     "focal": true,
+     "id": "engine",
+     "name": "Engine",
+     "rank": 1,
+     "sub": "planner and doors",
+     "tag": "LIB"
+    },
+    {
+     "focal": true,
+     "id": "grammar",
+     "name": "Grammar",
+     "rank": 1,
+     "sub": "pure crate",
+     "tag": "LIB"
+    },
+    {
+     "id": "authority",
+     "name": "Authority",
+     "rank": 2,
+     "sub": "grants, audit",
+     "tag": "SVC"
+    },
+    {
+     "id": "writer",
+     "name": "Writer",
+     "rank": 2,
+     "sub": "one effect",
+     "tag": "SVC"
+    },
+    {
+     "id": "packs",
+     "name": "Packs",
+     "rank": 2,
+     "sub": "core, mfg, ship",
+     "tag": "LIB"
+    },
+    {
+     "id": "intake",
+     "name": "Intake",
+     "rank": 3,
+     "sub": "raw to things",
+     "tag": "SVC"
+    },
+    {
+     "id": "duck",
+     "name": "DuckDB",
+     "rank": 3,
+     "sub": "current and history",
+     "tag": "STORE"
+    },
+    {
+     "id": "vectors",
+     "name": "Vectors",
+     "rank": 3,
+     "sub": "one refusal each",
+     "tag": "TEST"
+    }
+   ],
+   "preset": "arch",
+   "subtitle": "Axiom and Lemma embed one engine. A question is an object set. strohmann-grammar df08242.",
+   "title": "Grammar",
+   "version": 2
+  },
   "spec": "grammar_arch.json",
   "theme": "editorial"
  },

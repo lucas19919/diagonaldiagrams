@@ -208,11 +208,16 @@ def do_export(args):
         raise SpecError(f"no receipt {rcpt} — re-render with: diagonaldiagrams scatter ... -o {base}.html")
     with open(rcpt, encoding="utf-8") as f:
         r = _receipt_inputs(json.load(f), rcpt)
-    missing = [r[k] for k in _RECEIPT_PATHS if isinstance(r.get(k), str) and not os.path.exists(r[k])]
+    # a v2 diagram receipt holds the scene it drew, so its spec file may have moved or changed
+    missing = [r[k] for k in _RECEIPT_PATHS if isinstance(r.get(k), str) and not os.path.exists(r[k])
+               and not (k == "spec" and r.get("scene"))]
     if missing:
         raise SpecError(f"export: the input {missing[0]} named in {rcpt} is gone. Render again from the spec.")
     cmd, lay = r.get("cmd", "scatter"), LAYOUTS[args.layout]
     theme = get_theme(args.theme or r.get("theme") or "editorial", args.theme_file)
+    if not (args.theme or args.theme_file):
+        theme.update(r.get("theme_overrides") or {})  # the colors the figure was drawn with (B11)
+    notes = r.get("notes") or None
     note = ""
     if cmd == "scatter":
         svg, _, _, n = render_scatter(r["csv"], r.get("x"), r.get("y"), r.get("title", "Scatter"),
@@ -222,7 +227,7 @@ def do_export(args):
                                       r.get("source", ""), r.get("corners", "editorial"),
                                       chrome=lay["chrome"], width=lay["width"], facet_dir=lay["facet_dir"],
                                       theme=theme, grid=r.get("grid", True), markers=r.get("markers", True),
-                                      highlights=r.get("highlights") or None)
+                                      highlights=r.get("highlights") or None, notes=notes)
         unit, dest = "points", args.o or f"{base}-{args.layout}.{args.to}"
     elif cmd == "bar":
         svg, _, _, n = render_bar(r["csv"], r.get("cat"), r.get("val"), r.get("title", "Bar Chart"),
@@ -231,7 +236,7 @@ def do_export(args):
                                   r.get("ylabel"), r.get("unit", ""), r.get("source", ""),
                                   r.get("corners", "editorial"), chrome=True, theme=theme,
                                   grid=r.get("grid", True), markers=r.get("markers", True),
-                                  highlights=r.get("highlights") or None)
+                                  highlights=r.get("highlights") or None, notes=notes)
         unit, dest, note = "bars", args.o or f"{base}.{args.to}", " (layouts: scatter only)"
     elif cmd == "line":
         svg, _, _, n = render_line(r["csv"], r.get("x"), r.get("y"), r.get("title", "Line Trend"),
@@ -239,10 +244,14 @@ def do_export(args):
                                    r.get("xlabel"), r.get("xunit", ""), r.get("ylabel"), r.get("yunit", ""),
                                    r.get("source", ""), r.get("corners", "editorial"), chrome=True, theme=theme,
                                    grid=r.get("grid", True), markers=r.get("markers", True),
-                                   highlights=r.get("highlights") or None)
+                                   highlights=r.get("highlights") or None, notes=notes)
         unit, dest, note = "points", args.o or f"{base}.{args.to}", " (layouts: scatter only)"
     elif cmd in ("flow", "arch", "seq", "schema"):
-        spec = load_spec(r["spec"], cmd)
+        if r.get("scene"):  # v2: the scene that was drawn
+            from .inputs.v1 import scene_as_v1
+            spec = scene_as_v1(dict(r["scene"], version=2), cmd)
+        else:
+            spec = load_spec(r["spec"], cmd)
         fn = {"flow": render_flow, "arch": render_arch, "seq": render_seq, "schema": render_schema}[cmd]
         if cmd == "flow":
             svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme)

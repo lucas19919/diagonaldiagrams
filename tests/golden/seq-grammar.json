@@ -9,6 +9,97 @@
   "auto": false,
   "cmd": "seq",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "caller",
+     "label": "act",
+     "order": 0,
+     "proto": "https",
+     "to": "doors"
+    },
+    {
+     "from": "doors",
+     "label": "decide",
+     "order": 1,
+     "to": "grammar"
+    },
+    {
+     "from": "grammar",
+     "label": "commit",
+     "order": 2,
+     "reply": true,
+     "to": "doors"
+    },
+    {
+     "from": "doors",
+     "label": "effect",
+     "order": 3,
+     "to": "writer"
+    },
+    {
+     "from": "writer",
+     "label": "append",
+     "order": 4,
+     "to": "duck"
+    },
+    {
+     "from": "writer",
+     "label": "written",
+     "order": 5,
+     "reply": true,
+     "to": "doors"
+    },
+    {
+     "from": "doors",
+     "label": "answered",
+     "order": 6,
+     "proto": "https",
+     "reply": true,
+     "to": "caller"
+    }
+   ],
+   "layout": "sequence",
+   "nodes": [
+    {
+     "id": "caller",
+     "name": "Caller",
+     "sub": "bearer",
+     "tag": "USER"
+    },
+    {
+     "focal": true,
+     "id": "doors",
+     "name": "Doors",
+     "sub": "envelope",
+     "tag": "API"
+    },
+    {
+     "focal": true,
+     "id": "grammar",
+     "name": "Grammar",
+     "sub": "decide",
+     "tag": "LIB"
+    },
+    {
+     "id": "writer",
+     "name": "Writer",
+     "sub": "act",
+     "tag": "SVC"
+    },
+    {
+     "id": "duck",
+     "name": "DuckDB",
+     "sub": "history",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "seq",
+   "subtitle": "A door asks the grammar to decide. The writer commits the effect and one audit line.",
+   "title": "One action",
+   "version": 2
+  },
   "spec": "grammar_act.json",
   "theme": "editorial"
  },

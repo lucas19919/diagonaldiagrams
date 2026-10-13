@@ -583,6 +583,15 @@ The one-line JSON verdict keeps every field it has today (`ok`, `svg`, `html`, `
 
 `export` reads v1 receipts (today's fields) and v2 receipts. Re-rendering a v2 receipt does not need the original inputs.
 
+As built in P2.10, a v2 receipt keeps every v1 field where it was and adds new fields beside them. That way v1 readers, and the golden files, see no change in what they already read. The additions:
+- `"receipt": 2`;
+- `theme_overrides`: the theme keys that `--theme-file` changed;
+- `caption` and `notes` (from `--caption` and `--note`/`--note-at`);
+- `audit: false` after `--no-audit`;
+- for flow, arch, seq and schema, `scene`: the normalized scene that was drawn.
+
+Export draws a diagram from that scene, so it reproduces the figure even after the spec file has changed or gone. CSV inputs are still read from their files. The nested layout above (`inputs`, `options`, `styles`, `toolkits`, `fonts`) comes with the phases that add those fields (P3, P5).
+
 ## 11. Extension system
 
 ### 11.1 Extension points

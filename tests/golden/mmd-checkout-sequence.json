@@ -9,6 +9,86 @@
   "auto": false,
   "cmd": "seq",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "_kind": "seq",
+   "budget": false,
+   "edges": [
+    {
+     "from": "U",
+     "label": "POST /checkout",
+     "order": 0,
+     "to": "GW"
+    },
+    {
+     "from": "GW",
+     "label": "verify token",
+     "order": 1,
+     "to": "A"
+    },
+    {
+     "from": "A",
+     "label": "ok",
+     "order": 2,
+     "reply": true,
+     "to": "GW"
+    },
+    {
+     "from": "GW",
+     "label": "create order",
+     "order": 3,
+     "to": "O"
+    },
+    {
+     "async": true,
+     "from": "O",
+     "label": "OrderCreated",
+     "order": 4,
+     "to": "P"
+    },
+    {
+     "from": "O",
+     "label": "201 Created",
+     "order": 5,
+     "reply": true,
+     "to": "GW"
+    },
+    {
+     "from": "GW",
+     "label": "201 Created",
+     "order": 6,
+     "reply": true,
+     "to": "U"
+    }
+   ],
+   "layout": "sequence",
+   "nodes": [
+    {
+     "id": "U",
+     "name": "User",
+     "tag": "USER"
+    },
+    {
+     "id": "GW",
+     "name": "API Gateway"
+    },
+    {
+     "id": "A",
+     "name": "Auth"
+    },
+    {
+     "id": "O",
+     "name": "Orders"
+    },
+    {
+     "id": "P",
+     "name": "Payments"
+    }
+   ],
+   "preset": "seq",
+   "title": "Checkout, one request",
+   "version": 2
+  },
   "spec": "checkout_sequence.mmd",
   "theme": "editorial"
  },

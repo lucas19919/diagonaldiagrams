@@ -14,6 +14,7 @@
  "exit": 0,
  "html_sha256": "0d93224617192fdea48cae640075dd1355ff20daca01cf02cc335ce23bada70d",
  "receipt": {
+  "caption": "Relationship between the two variables. Points show individual observations.",
   "cmd": "scatter",
   "corners": "editorial",
   "csv": "show_latency.csv",
@@ -23,6 +24,7 @@
   "group": "machine",
   "highlights": [],
   "markers": true,
+  "receipt": 2,
   "source": "",
   "subtitle": "",
   "theme": "editorial",

@@ -56,6 +56,35 @@ def _cli_notes(args, kind):
     return out or None
 
 
+def _receipt(a, theme, payload, notes=None, scene=None):
+    """Receipt v2 (P2.10): what export needs to draw the same figure again. On top of v1's fields:
+    the theme keys --theme-file changed, the caption, chart notes, whether the audit ran, and for a
+    diagram the scene that was drawn, so export doesn't depend on the spec file staying as it was."""
+    base = THEMES.get(theme.get("_name"), THEMES["editorial"])
+    out = {"receipt": 2, **payload}
+    over = {k: v for k, v in theme.items() if not k.startswith("_") and base.get(k) != v}
+    if over:
+        out["theme_overrides"] = over
+    if getattr(a, "caption", None) is not None:
+        out["caption"] = a.caption
+    if notes:
+        out["notes"] = notes
+    if getattr(a, "no_audit", False):
+        out["audit"] = False
+    if scene is not None:
+        out["scene"] = scene
+    return out
+
+
+def _drawn_scene(spec, kind):
+    """The scene a diagram spec draws as, for its receipt (None if it can't be read as one)."""
+    from .inputs.v1 import from_v1
+    from .scene import check
+    from .scene.patch import compact
+    scene, errors, _ = check(from_v1({k: v for k, v in spec.items() if k not in ("_warnings", "_errors")}, kind))
+    return None if errors else compact(scene.to_dict())
+
+
 def _exit_with(code):
     """Command handlers return their exit code; only the command line ends the process."""
     if code:
@@ -391,8 +420,8 @@ def main():
                          f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
                          caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",
                          source="Self-contained HTML + SVG.", corners=a.corners, theme=theme)
-        save_receipt(o, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
-                          "auto": bool(getattr(a, "auto", False))})
+        save_receipt(o, _receipt(a, theme, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
+                                            "auto": bool(getattr(a, "auto", False))}, scene=_drawn_scene(spec, a.cmd)))
         _finish(a, o, s, item_cnt, "items", pre)
     elif a.cmd == "bar":
         theme = _cli_theme(a)
@@ -405,12 +434,12 @@ def main():
                          f"{a.figure} · bar · {os.path.basename(a.csv)}", a.o,
                          caption=a.caption, cap_title=a.title + ".",
                          source=(a.source or os.path.basename(a.csv)), corners=a.corners, theme=theme)
-        save_receipt(o, {"cmd": "bar", "csv": a.csv, "cat": a.cat, "val": a.val, "title": a.title,
+        save_receipt(o, _receipt(a, theme, {"cmd": "bar", "csv": a.csv, "cat": a.cat, "val": a.val, "title": a.title,
                          "subtitle": a.subtitle, "figure": a.figure, "group": a.group,
                          "orientation": a.orientation, "sort": a.sort, "unit": a.unit,
                          "xlabel": a.xlabel, "ylabel": a.ylabel,
                          "source": a.source, "corners": a.corners, "theme": theme.get("_name"),
-                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight})
+                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight}, notes))
         _finish(a, o, s, n, "bars", pre)
     elif a.cmd == "line":
         theme = _cli_theme(a)
@@ -423,11 +452,11 @@ def main():
                          f"{a.figure} · line · {os.path.basename(a.csv)}", a.o,
                          caption=a.caption, cap_title=a.title + ".",
                          source=(a.source or os.path.basename(a.csv)), corners=a.corners, theme=theme)
-        save_receipt(o, {"cmd": "line", "csv": a.csv, "x": a.x, "y": a.y, "title": a.title,
+        save_receipt(o, _receipt(a, theme, {"cmd": "line", "csv": a.csv, "x": a.x, "y": a.y, "title": a.title,
                          "subtitle": a.subtitle, "figure": a.figure, "group": a.group,
                          "xlabel": a.xlabel, "xunit": a.xunit, "ylabel": a.ylabel, "yunit": a.yunit,
                          "source": a.source, "corners": a.corners, "theme": theme.get("_name"),
-                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight})
+                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight}, notes))
         _finish(a, o, s, n, "points", pre)
     elif a.cmd == "geo":
         theme = _cli_theme(a)
@@ -438,10 +467,10 @@ def main():
                          f"{a.figure} · geo · {os.path.basename(a.src)}", a.o,
                          caption=a.caption, cap_title=a.title + ".",
                          source=(a.source or os.path.basename(a.src)), theme=theme)
-        save_receipt(o, {"cmd": "geo", "src": a.src, "lat": a.lat, "lon": a.lon, "label": a.label,
+        save_receipt(o, _receipt(a, theme, {"cmd": "geo", "src": a.src, "lat": a.lat, "lon": a.lon, "label": a.label,
                          "val": a.val, "title": a.title, "subtitle": a.subtitle, "figure": a.figure,
                          "source": a.source, "theme": theme.get("_name"),
-                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight})
+                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight}))
         _finish(a, o, s, n, "places", pre)
     elif a.cmd == "chart":
         theme = _cli_theme(a)
@@ -455,13 +484,13 @@ def main():
                          f"chart · {a.kind}", a.o,
                          caption=a.subtitle or a.kind, cap_title=shown + ".",
                          source=(a.source or os.path.basename(a.src)), theme=theme)
-        save_receipt(o, {"cmd": "chart", "kind": a.kind, "src": a.src, "title": a.title,
+        save_receipt(o, _receipt(a, theme, {"cmd": "chart", "kind": a.kind, "src": a.src, "title": a.title,
                          "subtitle": a.subtitle, "source": a.source,
                          "x": a.x, "y": a.y, "group": a.group, "size": a.size,
                          "label": a.label, "parent": a.parent, "val": a.val,
                          "a": a.a, "b": a.b, "lo": a.lo, "hi": a.hi,
                          "theme": theme.get("_name"), "grid": a.grid, "markers": a.markers,
-                         "highlights": a.highlight, "budget": False if a.no_budget else True})
+                         "highlights": a.highlight, "budget": False if a.no_budget else True}))
         _finish(a, o, s, n, "items", pre)
     else:
         theme = _cli_theme(a)
@@ -477,13 +506,13 @@ def main():
                          caption=a.caption, cap_title=a.title + ".",
                          source=(a.source or os.path.basename(a.csv)),
                          corners=a.corners, theme=theme)
-        save_receipt(o, {"cmd": "scatter", "csv": a.csv, "x": a.x, "y": a.y, "title": a.title,
+        save_receipt(o, _receipt(a, theme, {"cmd": "scatter", "csv": a.csv, "x": a.x, "y": a.y, "title": a.title,
                          "subtitle": a.subtitle, "figure": a.figure,
                          "xlabel": a.xlabel or a.x or "", "xunit": a.xunit,
                          "ylabel": a.ylabel or a.y or "", "yunit": a.yunit,
                          "group": a.group, "yerr": a.yerr, "facet": a.facet,
                          "source": a.source, "corners": a.corners, "theme": theme.get("_name"),
-                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight})
+                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight}, kw["notes"]))
         _finish(a, o, s, n, "points", pre)
 
 

@@ -9,6 +9,83 @@
   "auto": false,
   "cmd": "flow",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "_kind": "flow",
+   "budget": false,
+   "edges": [
+    {
+     "from": "U",
+     "to": "W"
+    },
+    {
+     "from": "W",
+     "to": "G"
+    },
+    {
+     "from": "G",
+     "to": "O"
+    },
+    {
+     "from": "O",
+     "to": "D"
+    },
+    {
+     "async": true,
+     "from": "O",
+     "to": "Q"
+    },
+    {
+     "from": "Q",
+     "to": "M"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "icon": "user",
+     "id": "U",
+     "name": "Customer"
+    },
+    {
+     "icon": "web",
+     "id": "W",
+     "name": "Web app"
+    },
+    {
+     "icon": "shield",
+     "id": "G",
+     "name": "API gateway"
+    },
+    {
+     "icon": "gear",
+     "id": "O",
+     "name": "Orders service"
+    },
+    {
+     "icon": "database",
+     "id": "D",
+     "name": "Orders DB",
+     "tag": "DB"
+    },
+    {
+     "icon": "queue",
+     "id": "Q",
+     "name": "Event queue"
+    },
+    {
+     "icon": "mail",
+     "id": "M",
+     "name": "Email sender"
+    }
+   ],
+   "preset": "flow",
+   "title": "An order, end to end",
+   "version": 2
+  },
   "spec": "icons.mmd",
   "theme": "editorial"
  },

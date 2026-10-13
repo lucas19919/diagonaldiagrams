@@ -9,6 +9,48 @@
   "auto": false,
   "cmd": "flow",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "l",
+     "label": "a",
+     "to": "y"
+    },
+    {
+     "from": "r",
+     "label": "b",
+     "to": "x"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "l",
+     "name": "Left src",
+     "shape": "oval"
+    },
+    {
+     "id": "r",
+     "name": "Right src",
+     "shape": "oval"
+    },
+    {
+     "id": "x",
+     "name": "X"
+    },
+    {
+     "id": "y",
+     "name": "Y"
+    }
+   ],
+   "preset": "flow",
+   "title": "Cross test",
+   "version": 2
+  },
   "spec": "flow_cross.json",
   "theme": "editorial"
  },

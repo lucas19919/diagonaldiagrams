@@ -10,6 +10,7 @@
  "exit": 0,
  "html_sha256": "a655b417bf4ec7c1579457acb4d779294e85aca85cacd5b0721ac58766051409",
  "receipt": {
+  "caption": "Relationship between the two variables. Points show individual observations.",
   "cmd": "scatter",
   "corners": "editorial",
   "csv": "scatter.csv",
@@ -19,6 +20,7 @@
   "group": null,
   "highlights": [],
   "markers": true,
+  "receipt": 2,
   "source": "",
   "subtitle": "",
   "theme": "editorial",

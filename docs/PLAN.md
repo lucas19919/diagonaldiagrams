@@ -64,7 +64,7 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
 | Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) |  | 0, once the swim preset lands | P8 |
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
-| Known bugs (table below) | 24 | after P2.8: 12 open | 0 | P1b–P8 |
+| Known bugs (table below) | 24 | after P2.10: 11 open | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
 | Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
 | Human edits that survive regeneration | none survive (edits are pixels) |  | 100% or a reported conflict | P10 |
@@ -215,7 +215,7 @@ The remaining bugs are fixed where their code is replaced:
 | # | Bug | Fixed in |
 | --- | --- | --- |
 | B10 | `_layout_cost` counts an SVG parse error as zero problems | P2.6, fixed: the parse error propagates |
-| B11 | Receipts drop `--caption`, `--note`, `--theme-file` overrides and `--no-audit`, so export loses them | P2.10 |
+| B11 | Receipts drop `--caption`, `--note`, `--theme-file` overrides and `--no-audit`, so export loses them | P2.10, fixed |
 | B12 | Audit blind spots: circles, ellipses and closed paths aren't obstacles; curves become chords; CSS or parent markers missed; skew ignored; 4-point polygons taken for diamonds; vertical spill unchecked | P2.5, fixed except closed paths (DESIGN 9.6) |
 | B13 | `_c_*` boxes carry no `data-node`, so no outline, `intrude` or export | P2.8, fixed for dag, integration and swim (the charts that draw boxes and links) |
 | B14 | The theme `_name` is "custom" only through the API; the default `THEME` has no name | P3.1 |
@@ -237,10 +237,11 @@ The remaining bugs are fixed where their code is replaced:
 **Goal:** the internal model from DESIGN 3, 4, 8, 9 and 10 exists. Flow, arch, seq and schema paint through it, and the audit no longer re-parses SVG. Layout algorithms are unchanged in this phase.
 
 **Status (2026-10-13):** in progress on branch `p2-core`.
-- **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11, P2.3, P2.15 and P2.16.
+- **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11, P2.3, P2.15, P2.16 and P2.10.
 - **P2.3:** scene JSON reads into `scene/model.py` (DESIGN 4.8). A v2 scene file (`"version": 2`) with preset `flow`, `arch`, `seq` or `schema` draws through today's renderers. This works from the command line, the API (`render(kind, scene=...)`) and MCP (`scene`). The v1 → scene → v1 round trip draws the same bytes for all 29 diagram inputs in the golden corpus and for 60 generated specs.
 - **P2.15:** edges, messages and relations are named by content (`from->to:label`, then `#2`) in the scene, the SVG (`data-id`), `--outline` and the draw.io and Excalidraw cells. `tests/unit/test_identity.py` edits a spec and checks that what it didn't touch keeps its ids. 36 goldens changed by the new attributes only. Layout is not incremental yet; that is P4.
 - **P2.16:** `diagonaldiagrams apply SPEC PATCH [-o OUT]` writes a patch's operations into a v1 spec or a scene (DESIGN 21.3). Each conflict is reported with its path and a fix, and the rest still apply. Unit tests cover every operation and conflict; smoke tests cover the command.
+- **P2.10:** receipts gain `"receipt": 2`, theme overrides, caption, notes, `audit: false` and, for diagrams, the drawn scene, beside the v1 fields (DESIGN 10.2). Export now keeps `--theme-file` and `--note` (B11; both were lost before) and redraws a diagram after its spec file is gone. No SVG or verdict changed; 113 golden receipts gained the new fields only.
 
 Deviations so far:
 - `geom.py`, `displaylist.py` and `paint.py` are single modules rather than the `geom/`, `paint/` and `emit/` packages. Geometry works on tuples, not `Point`/`Box`/`Path` classes.

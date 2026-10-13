@@ -9,6 +9,295 @@
   "auto": false,
   "cmd": "arch",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "budget": false,
+   "constraints": [
+    {
+     "order": [
+      "web",
+      "mobile",
+      "mail"
+     ]
+    },
+    {
+     "order": [
+      "gw",
+      "auth"
+     ]
+    },
+    {
+     "order": [
+      "memory",
+      "agent",
+      "llm"
+     ]
+    },
+    {
+     "order": [
+      "search",
+      "sandbox",
+      "draw",
+      "bus"
+     ]
+    },
+    {
+     "order": [
+      "blob",
+      "pg",
+      "obs"
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "web",
+     "label": "chat",
+     "proto": "https",
+     "to": "gw"
+    },
+    {
+     "from": "mobile",
+     "label": "chat",
+     "proto": "https",
+     "to": "gw"
+    },
+    {
+     "from": "mail",
+     "label": "forward",
+     "proto": "https",
+     "to": "gw"
+    },
+    {
+     "from": "gw",
+     "label": "verify",
+     "to": "auth"
+    },
+    {
+     "from": "gw",
+     "label": "run",
+     "proto": "https",
+     "to": "agent"
+    },
+    {
+     "focal": true,
+     "from": "agent",
+     "label": "prompt",
+     "to": "llm"
+    },
+    {
+     "from": "agent",
+     "label": "recall",
+     "to": "memory"
+    },
+    {
+     "from": "agent",
+     "label": "search",
+     "to": "search"
+    },
+    {
+     "from": "agent",
+     "label": "execute",
+     "to": "sandbox"
+    },
+    {
+     "from": "agent",
+     "label": "draw",
+     "to": "draw"
+    },
+    {
+     "async": true,
+     "from": "agent",
+     "label": "events",
+     "to": "bus"
+    },
+    {
+     "from": "sandbox",
+     "label": "files",
+     "to": "blob"
+    },
+    {
+     "from": "draw",
+     "label": "svg",
+     "to": "blob"
+    },
+    {
+     "async": true,
+     "from": "bus",
+     "label": "persist",
+     "to": "pg"
+    },
+    {
+     "async": true,
+     "from": "bus",
+     "label": "ingest",
+     "to": "obs"
+    }
+   ],
+   "groups": [
+    {
+     "id": "clients",
+     "members": [
+      "web",
+      "mobile",
+      "mail"
+     ],
+     "name": "Clients"
+    },
+    {
+     "id": "runtime",
+     "members": [
+      "memory",
+      "agent"
+     ],
+     "name": "Agent runtime"
+    },
+    {
+     "id": "tools",
+     "members": [
+      "search",
+      "sandbox",
+      "draw"
+     ],
+     "name": "Tools"
+    },
+    {
+     "id": "data",
+     "members": [
+      "blob",
+      "pg"
+     ],
+     "name": "Storage"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "group": "clients",
+     "icon": "web",
+     "id": "web",
+     "name": "Web chat",
+     "rank": 0,
+     "sub": "Next.js"
+    },
+    {
+     "group": "clients",
+     "icon": "mobile",
+     "id": "mobile",
+     "name": "Mobile app",
+     "rank": 0,
+     "sub": "Swift"
+    },
+    {
+     "group": "clients",
+     "icon": "mail",
+     "id": "mail",
+     "name": "Email intake",
+     "rank": 0,
+     "sub": "SES"
+    },
+    {
+     "icon": "shield",
+     "id": "gw",
+     "name": "API gateway",
+     "rank": 1,
+     "sub": "Envoy:443"
+    },
+    {
+     "icon": "key",
+     "id": "auth",
+     "name": "Auth",
+     "rank": 1,
+     "sub": "OIDC"
+    },
+    {
+     "group": "runtime",
+     "icon": "database",
+     "id": "memory",
+     "name": "Memory",
+     "rank": 2,
+     "sub": "pgvector"
+    },
+    {
+     "focal": true,
+     "group": "runtime",
+     "icon": "bot",
+     "id": "agent",
+     "name": "Agent",
+     "rank": 2,
+     "sub": "Python:8000"
+    },
+    {
+     "focal": true,
+     "icon": "cloud",
+     "id": "llm",
+     "name": "Model API",
+     "rank": 2,
+     "sub": "external"
+    },
+    {
+     "group": "tools",
+     "icon": "globe",
+     "id": "search",
+     "name": "Web search",
+     "rank": 3,
+     "sub": "tool"
+    },
+    {
+     "group": "tools",
+     "icon": "server",
+     "id": "sandbox",
+     "name": "Code sandbox",
+     "rank": 3,
+     "sub": "Firecracker"
+    },
+    {
+     "group": "tools",
+     "icon": "chart",
+     "id": "draw",
+     "name": "diagonaldiagrams",
+     "rank": 3,
+     "sub": "MCP"
+    },
+    {
+     "icon": "queue",
+     "id": "bus",
+     "name": "Event bus",
+     "rank": 3,
+     "sub": "Kafka"
+    },
+    {
+     "group": "data",
+     "icon": "file",
+     "id": "blob",
+     "name": "Object store",
+     "rank": 4,
+     "sub": "files, figures"
+    },
+    {
+     "group": "data",
+     "icon": "database",
+     "id": "pg",
+     "name": "Postgres",
+     "rank": 4,
+     "sub": "runs, users"
+    },
+    {
+     "icon": "chart",
+     "id": "obs",
+     "name": "Traces",
+     "rank": 4,
+     "sub": "OpenTelemetry"
+    }
+   ],
+   "preset": "arch",
+   "subtitle": "Requests come in at the top; the agent calls a model and its tools; results land in storage.",
+   "title": "An AI agent platform",
+   "version": 2
+  },
   "spec": "agent_platform.json",
   "theme": "editorial"
  },

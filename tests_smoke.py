@@ -910,6 +910,26 @@ def known_bugs():
     enum = tools.get("export", {}).get("inputSchema", {}).get("properties", {}).get("to", {}).get("enum", [])
     check("B9 MCP export offers drawio and excalidraw", {"drawio", "excalidraw"} <= set(enum), str(enum))
 
+    # B11: export draws from the receipt, which now keeps theme overrides and notes
+    theme = _dump("b11-theme.json", {"ink": "#3a1f5d"})
+    b11 = os.path.join(WORK, "b11.html")
+    run("bar", "examples/bar_latency.csv", "--cat", "service", "--val", "p99_latency_ms", "-o", b11,
+        "--theme-file", theme, "--note", "Slowest", "--note-at", "Catalog API")
+    rc, out = run("export", b11, "--to", "svg", "-o", os.path.join(WORK, "b11-export.svg"))
+    with open(os.path.join(WORK, "b11-export.svg"), encoding="utf-8") as f:
+        exported = f.read()
+    check("B11 export keeps --theme-file overrides and --note", rc == 0 and "#3a1f5d" in exported and "Slowest" in exported,
+          out[-200:])
+    # receipt v2: a diagram's receipt holds the scene it drew, so export doesn't need the spec file
+    spec = _dump("b11-flow.json", json.load(open(os.path.join(HERE, "examples", "flow_decision.json"), encoding="utf-8")))
+    b11f = os.path.join(WORK, "b11-flow.svg")
+    run("flow", spec, "-o", b11f)
+    os.remove(spec)
+    rc, out = run("export", b11f, "--to", "svg", "-o", os.path.join(WORK, "b11-flow-export.svg"))
+    with open(b11f, encoding="utf-8") as f, open(os.path.join(WORK, "b11-flow-export.svg"), encoding="utf-8") as g:
+        same = f.read() == g.read()
+    check("a diagram exports from its receipt's scene after the spec file is gone", rc == 0 and same, out[-200:])
+
     # B12: the audit's blind spots, each on a small hand-written SVG
     def audit_svg(name, body):
         path = os.path.join(WORK, name)

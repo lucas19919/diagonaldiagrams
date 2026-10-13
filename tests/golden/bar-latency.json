@@ -10,6 +10,7 @@
  "exit": 0,
  "html_sha256": "37adaf8cc502a336869d80ae5269a5c039438235c85a3d14c716475319a5195e",
  "receipt": {
+  "caption": "Categorical comparison.",
   "cat": "service",
   "cmd": "bar",
   "corners": "editorial",
@@ -20,6 +21,7 @@
   "highlights": [],
   "markers": true,
   "orientation": "v",
+  "receipt": 2,
   "sort": "none",
   "source": "",
   "subtitle": "",

@@ -9,6 +9,289 @@
   "auto": false,
   "cmd": "schema",
   "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "datasets",
+     "from-port": "id",
+     "label": "1:N",
+     "to": "runs",
+     "to-port": "dataset_id"
+    },
+    {
+     "from": "runs",
+     "from-port": "id",
+     "label": "1:N",
+     "to": "checks",
+     "to-port": "run_id"
+    },
+    {
+     "from": "runs",
+     "from-port": "id",
+     "label": "1:N",
+     "to": "metrics",
+     "to-port": "run_id"
+    },
+    {
+     "from": "checks",
+     "from-port": "id",
+     "label": "1:N",
+     "to": "evals",
+     "to-port": "check_id"
+    }
+   ],
+   "layout": "table",
+   "nodes": [
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "name": "name",
+         "type": "text"
+        },
+        {
+         "name": "rows",
+         "type": "bigint"
+        },
+        {
+         "name": "sha256",
+         "type": "char(64)"
+        }
+       ]
+      }
+     },
+     "id": "datasets",
+     "pin": {
+      "x": 40,
+      "y": 96
+     },
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "name"
+      },
+      {
+       "id": "rows"
+      },
+      {
+       "id": "sha256"
+      }
+     ],
+     "shape": "table",
+     "tag": "DATA"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "dataset_id",
+         "type": "uuid"
+        },
+        {
+         "name": "name",
+         "type": "text"
+        },
+        {
+         "name": "status",
+         "type": "text"
+        },
+        {
+         "name": "started_at",
+         "type": "timestamptz"
+        }
+       ]
+      }
+     },
+     "focal": true,
+     "id": "runs",
+     "pin": {
+      "x": 370,
+      "y": 96
+     },
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "dataset_id"
+      },
+      {
+       "id": "name"
+      },
+      {
+       "id": "status"
+      },
+      {
+       "id": "started_at"
+      }
+     ],
+     "shape": "table",
+     "tag": "CORE"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "run_id",
+         "type": "uuid"
+        },
+        {
+         "name": "step",
+         "type": "integer"
+        },
+        {
+         "name": "loss",
+         "type": "float"
+        }
+       ]
+      }
+     },
+     "id": "checks",
+     "name": "checkpoints",
+     "pin": {
+      "x": 700,
+      "y": 96
+     },
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "run_id"
+      },
+      {
+       "id": "step"
+      },
+      {
+       "id": "loss"
+      }
+     ],
+     "shape": "table",
+     "tag": "CORE"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "run_id",
+         "type": "uuid"
+        },
+        {
+         "name": "split",
+         "type": "text"
+        },
+        {
+         "name": "score",
+         "type": "float"
+        }
+       ]
+      }
+     },
+     "id": "metrics",
+     "pin": {
+      "x": 370,
+      "y": 320
+     },
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "run_id"
+      },
+      {
+       "id": "split"
+      },
+      {
+       "id": "score"
+      }
+     ],
+     "shape": "table",
+     "tag": "AUDIT"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "check_id",
+         "type": "uuid"
+        },
+        {
+         "name": "task",
+         "type": "text"
+        },
+        {
+         "name": "score",
+         "type": "float"
+        }
+       ]
+      }
+     },
+     "id": "evals",
+     "pin": {
+      "x": 700,
+      "y": 320
+     },
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "check_id"
+      },
+      {
+       "id": "task"
+      },
+      {
+       "id": "score"
+      }
+     ],
+     "shape": "table",
+     "tag": "AUDIT"
+    }
+   ],
+   "preset": "schema",
+   "subtitle": "A run points at its data, its checkpoints, and its scores.",
+   "title": "Training store",
+   "version": 2
+  },
   "spec": "show_store.json",
   "theme": "editorial"
  },

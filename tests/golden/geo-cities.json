@@ -16,6 +16,7 @@
  "exit": 0,
  "html_sha256": "30b4b4b35628ed1e0006e850ed519f561a27b141951318fa71f7de16e05c095b",
  "receipt": {
+  "caption": "Locations. Dot size follows the value column when one is set.",
   "cmd": "geo",
   "figure": "Fig. 1",
   "grid": true,
@@ -24,6 +25,7 @@
   "lat": "lat",
   "lon": "lon",
   "markers": true,
+  "receipt": 2,
   "source": "",
   "src": "geo_cities.csv",
   "subtitle": "",
