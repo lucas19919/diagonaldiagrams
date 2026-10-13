@@ -257,8 +257,10 @@ def svg_import(root, width, height):
             if filled and b[2] - b[0] >= 10 and b[3] - b[1] >= 10 and not big and key not in seen:
                 seen.add(key)
                 dl.add(Item("shape", box=b, tag=tag, ellipse=((b[0] + b[2]) / 2, (b[1] + b[3]) / 2,
-                                                             (b[2] - b[0]) / 2, (b[3] - b[1]) / 2)))
+                                                             (b[2] - b[0]) / 2, (b[3] - b[1]) / 2),
+                            depth=num(el.get("data-depth"), 0.0)))
         if item is not None:
+            item.depth = num(el.get("data-depth"), 0.0)  # set by the projection stage in 3D (paint.project)
             bw, bh = box[2] - box[0], box[3] - box[1]
             filled = (el.get("fill") or "black") != "none" or el.get("stroke")
             big = width and height and bw * bh > 0.5 * width * height

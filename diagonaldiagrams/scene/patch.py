@@ -4,7 +4,7 @@ A patch is a list of operations. A human's drag, retype or recolor becomes one, 
 agent's edit; either way it lands in the spec as fields, constraints and style rules, so it survives
 the next generation of the spec.
 
-    {"op": "pin",   "id": "psp", "x": 640, "y": 210}
+    {"op": "pin",   "id": "psp", "x": 640, "y": 210}                     "z" too, in 3D
     {"op": "order", "ids": ["auth", "api"]}
     {"op": "style", "selector": "#psp", "set": {"fill": "#fee2e2"}}      null removes a property
     {"op": "text",  "id": "psp", "name": "Payment provider", "was": "PSP"}
@@ -53,10 +53,10 @@ def _pin(d, op):
     kind, el = _find(d, op.get("id"))
     if kind != "node":
         raise _Conflict(f"'{op['id']}' is {'an' if kind == 'edge' else 'a'} {kind}; only nodes are pinned", "pin a node")
-    x, y = op.get("x"), op.get("y")
-    if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (x, y)):
-        raise _Conflict("a pin needs numbers x and y", 'write "x": 640, "y": 210')
-    el["pin"] = {"x": x, "y": y}
+    pin = {k: op[k] for k in ("x", "y", "z") if k in op}
+    if not ("x" in pin and "y" in pin) or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in pin.values()):
+        raise _Conflict("a pin needs numbers x and y, and z if the figure is 3D", 'write "x": 640, "y": 210')
+    el["pin"] = pin
 
 
 def _order(d, op):

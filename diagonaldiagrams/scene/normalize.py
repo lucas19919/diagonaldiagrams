@@ -180,6 +180,11 @@ def check(raw):
         node = _build(Node, known, extra)
         if "name" not in known:
             node.name = node.id
+        if node.pin is not None and not (
+                "x" in node.pin and "y" in node.pin and set(node.pin) <= {"x", "y", "z"}
+                and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in node.pin.values())):
+            rep.error("bad-value", f"{path}.pin is {_show(node.pin)}; a pin is numbers x and y, and z in 3D",
+                      'write "pin": {"x": 120, "y": 80}', f"{path}.pin")
         scene.nodes.append(node)
     seen = {}
     for k, n in enumerate(scene.nodes):

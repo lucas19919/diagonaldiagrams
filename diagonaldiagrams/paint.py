@@ -8,9 +8,13 @@ audit read owners and roles instead of guessing them back from the SVG.
 
 Drawing.svg() writes every figure the same way: one top-level element per line, attributes in the
 order given, numbers with at most two decimals (trailing zeros dropped), text escaped once.
+
+Before writing, a drawing passes through the projection stage (DESIGN 13), which is the identity
+in 2D. An element may carry 3D corner points (pts3d); with a projection set, those faces get their
+2D outline and depth from it and are painted back to front. The core never sets one: the 3D toolkit
+(P7) does, without core edits.
 """
 import re
-from dataclasses import dataclass, field
 
 from ._draw import ICONS, _box_lines, _diamond_lines, _frame_box, _label_box, _pill_w, corner_rx
 from ._text import _text_w, _wrap
@@ -40,14 +44,17 @@ def _text(v):
     return str(v).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-@dataclass
 class Element:
-    tag: str
-    attrs: dict = field(default_factory=dict)
-    text: str = None
-    children: list = field(default_factory=list)
-    owner: str = ""
-    role: str = ""
+    """One SVG element. depth and pts3d are the 3D hooks: a face's 3D corners, and its distance from
+    the viewer once projected (0 in 2D)."""
+    __slots__ = ("tag", "attrs", "text", "children", "owner", "role", "depth", "pts3d")
+
+    def __init__(self, tag, attrs=None, text=None, children=None, owner="", role="", depth=0.0, pts3d=None):
+        self.tag, self.attrs, self.text, self.children = tag, attrs if attrs is not None else {}, text, children or []
+        self.owner, self.role, self.depth, self.pts3d = owner, role, depth, pts3d
+
+    def __repr__(self):
+        return f"Element({self.tag!r}, owner={self.owner!r}, role={self.role!r})"
 
     def svg(self):
         parts = []
@@ -67,13 +74,34 @@ def el(tag, text=None, owner="", role="", children=None, **attrs):
     return Element(tag, {k.replace("_", "-"): v for k, v in attrs.items()}, text, children or [], owner, role)
 
 
-@dataclass
+def project(items, projection=None):
+    """The projection stage: the identity when projection is None. A projection is a callable
+    (x, y, z) -> (x, y, depth), larger depth farther away. Each element with pts3d (a polygon face)
+    gets its points and a data-depth from it; the faces are then reordered back to front among the
+    places they hold in the paint order, so everything 2D (paper, labels) stays where it was."""
+    if projection is None:
+        return items
+    slots = [k for k, e in enumerate(items) if e.pts3d]
+    for k in slots:
+        e = items[k]
+        flat = [projection(*p) for p in e.pts3d]
+        e.depth = sum(d for _, _, d in flat) / len(flat)
+        e.attrs["points"] = " ".join(f"{fmt(x)},{fmt(y)}" for x, y, _ in flat)
+        e.attrs["data-depth"] = e.depth
+    out = list(items)
+    for k, e in zip(slots, sorted((items[k] for k in slots), key=lambda e: -e.depth)):  # stable for ties
+        out[k] = e
+    return out
+
+
 class Drawing:
-    width: float
-    height: float
-    title: str = ""
-    desc: str = ""
-    items: list = field(default_factory=list)
+    """A figure being painted: its size, its accessible title and description, the elements in
+    paint order, and the projection (None in 2D)."""
+    __slots__ = ("width", "height", "title", "desc", "items", "projection")
+
+    def __init__(self, width, height, title="", desc="", items=None, projection=None):
+        self.width, self.height, self.title, self.desc = width, height, title, desc
+        self.items, self.projection = list(items or []), projection
 
     def add(self, *elements):
         self.items.extend(elements)
@@ -85,7 +113,7 @@ class Drawing:
         head = (f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {fmt(self.width)} {fmt(self.height)}" '
                 f'width="{fmt(self.width)}">')
         lines = [head, f"<title>{_text(self.title)}</title>", f"<desc>{_text(self.desc)}</desc>"]
-        lines += [e.svg() for e in self.items]
+        lines += [e.svg() for e in project(self.items, self.projection)]
         lines.append("</svg>")
         return "\n".join(lines)
 

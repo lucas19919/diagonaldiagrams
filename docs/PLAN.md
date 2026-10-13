@@ -237,11 +237,13 @@ The remaining bugs are fixed where their code is replaced:
 **Goal:** the internal model from DESIGN 3, 4, 8, 9 and 10 exists. Flow, arch, seq and schema paint through it, and the audit no longer re-parses SVG. Layout algorithms are unchanged in this phase.
 
 **Status (2026-10-13):** in progress on branch `p2-core`.
-- **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11, P2.3, P2.15, P2.16 and P2.10.
+- **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11, P2.3, P2.15, P2.16, P2.10, P2.13 and P2.14.
 - **P2.3:** scene JSON reads into `scene/model.py` (DESIGN 4.8). A v2 scene file (`"version": 2`) with preset `flow`, `arch`, `seq` or `schema` draws through today's renderers. This works from the command line, the API (`render(kind, scene=...)`) and MCP (`scene`). The v1 → scene → v1 round trip draws the same bytes for all 29 diagram inputs in the golden corpus and for 60 generated specs.
 - **P2.15:** edges, messages and relations are named by content (`from->to:label`, then `#2`) in the scene, the SVG (`data-id`), `--outline` and the draw.io and Excalidraw cells. `tests/unit/test_identity.py` edits a spec and checks that what it didn't touch keeps its ids. 36 goldens changed by the new attributes only. Layout is not incremental yet; that is P4.
 - **P2.16:** `diagonaldiagrams apply SPEC PATCH [-o OUT]` writes a patch's operations into a v1 spec or a scene (DESIGN 21.3). Each conflict is reported with its path and a fix, and the rest still apply. Unit tests cover every operation and conflict; smoke tests cover the command.
 - **P2.10:** receipts gain `"receipt": 2`, theme overrides, caption, notes, `audit: false` and, for diagrams, the drawn scene, beside the v1 fields (DESIGN 10.2). Export now keeps `--theme-file` and `--note` (B11; both were lost before) and redraws a diagram after its spec file is gone. No SVG or verdict changed; 113 golden receipts gained the new fields only.
+- **P2.13:** `tests/unit/test_imports.py` walks every import in the package, including imports inside functions and `lazy()` ones. It fails if the scene, geometry, text, theme or display-list modules can reach the CLI, MCP, the API or a writer, and it prints the chain.
+- **P2.14:** the 3D hooks (DESIGN 13): `z` in pins, `pts3d` on painted elements, the projection stage, and `depth` on display-list items. A unit test builds a projection and a solid outside the core. Dropping `dataclasses` from the paint and display-list modules cut the renderers' import from 59 to 35 ms compiled (median of 9), about 25 ms off every CLI render.
 
 Deviations so far:
 - `geom.py`, `displaylist.py` and `paint.py` are single modules rather than the `geom/`, `paint/` and `emit/` packages. Geometry works on tuples, not `Point`/`Box`/`Path` classes.

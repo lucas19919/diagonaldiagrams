@@ -724,6 +724,14 @@ The 3D toolkit is the test of the modularity goal. It must be buildable without 
 - items carry `depth`;
 - the pipeline has a projection stage (identity in 2D).
 
+As reserved in P2.14:
+- A node's `pin` takes an optional `z`, and so does the patch `pin` operation.
+- A painted element (`paint.Element`) may carry `pts3d`, its 3D corner points. A shape painter returns a list of elements, so a solid returns one per face.
+- `Drawing.projection` is a callable `(x, y, z) -> (x, y, depth)` and is `None` in 2D. `paint.project` gives each face its 2D points and a `data-depth`, then reorders the faces back to front among the places they hold in the paint order, so the paper and labels stay put.
+- Display-list items carry `depth`, read back from `data-depth`.
+
+`tests/unit/test_3d_hooks.py` builds a projection and a two-faced solid entirely outside the core, as P7 will.
+
 **Space.** `"space": {"projection": {"type": "isometric", "azimuth": 45, "elevation": 30}, "light": "top-left", "floor": true}`. Projections: isometric, dimetric, orthographic, perspective (with `distance` and `fov`).
 
 **Placement.** 2D layouts place on the floor plane. The `elevation` style or attribute lifts elements (`by-rank` lifts each layer). Groups become plates. 3D layouts: `stack3d` (layered plates, the classic platform-stack picture), `grid3d`, and `scale3d` (three data axes).
