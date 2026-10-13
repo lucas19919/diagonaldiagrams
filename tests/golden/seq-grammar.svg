@@ -1,66 +1,66 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 1000 620" width="1000">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="sequence diagram" viewBox="0 0 1000 620" width="1000">
 <title>One action</title>
 <desc>A door asks the grammar to decide. The writer commits the effect and one audit line.</desc>
-<rect width="1000" height="620" fill="#f5f5f5"/>
+<rect width="1000" height="620" fill="#f5f5f5" aria-hidden="true"/>
 <defs><marker id="a" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#4f5d75"/></marker><marker id="aa" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#eb6c36"/></marker><marker id="al" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#7a8399"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">One action</text>
 <text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">A door asks the grammar to decide. The writer commits the effect and one audit line.</text>
-<line x1="140" y1="142" x2="140" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4"/>
-<line x1="320" y1="142" x2="320" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4"/>
-<line x1="500" y1="142" x2="500" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4"/>
-<line x1="680" y1="142" x2="680" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4"/>
-<line x1="860" y1="142" x2="860" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4"/>
-<line x1="148" y1="176" x2="312" y2="176" stroke="#2e5aa8" stroke-width="1.6" data-msg="act" data-msg-from="Caller" data-msg-to="Doors" marker-end="url(#al)" data-id="caller-&gt;doors:act"/>
-<rect x="189" y="152" width="82" height="16" rx="2" fill="#f5f5f5"/>
-<text x="230" y="164" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">[HTTPS] ACT</text>
-<line x1="328" y1="228" x2="492" y2="228" stroke="#4f5d75" stroke-width="1.6" data-msg="decide" data-msg-from="Doors" data-msg-to="Grammar" marker-end="url(#a)" data-id="doors-&gt;grammar:decide"/>
-<rect x="385" y="204" width="50" height="16" rx="2" fill="#f5f5f5"/>
-<text x="410" y="216" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">DECIDE</text>
-<line x1="492" y1="280" x2="328" y2="280" stroke="#4f5d75" stroke-width="1.6" stroke-dasharray="4,4" data-msg="commit" data-msg-from="Grammar" data-msg-to="Doors" marker-end="url(#a)" data-id="grammar-&gt;doors:commit"/>
-<rect x="385" y="256" width="50" height="16" rx="2" fill="#f5f5f5"/>
-<text x="410" y="268" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">COMMIT</text>
-<line x1="328" y1="332" x2="672" y2="332" stroke="#4f5d75" stroke-width="1.6" data-msg="effect" data-msg-from="Doors" data-msg-to="Writer" marker-end="url(#a)" data-id="doors-&gt;writer:effect"/>
-<rect x="475" y="308" width="50" height="16" rx="2" fill="#f5f5f5"/>
-<text x="500" y="320" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">EFFECT</text>
-<line x1="688" y1="384" x2="852" y2="384" stroke="#4f5d75" stroke-width="1.6" data-msg="append" data-msg-from="Writer" data-msg-to="DuckDB" marker-end="url(#a)" data-id="writer-&gt;duck:append"/>
-<rect x="745" y="360" width="50" height="16" rx="2" fill="#f5f5f5"/>
-<text x="770" y="372" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">APPEND</text>
-<line x1="672" y1="436" x2="328" y2="436" stroke="#4f5d75" stroke-width="1.6" stroke-dasharray="4,4" data-msg="written" data-msg-from="Writer" data-msg-to="Doors" marker-end="url(#a)" data-id="writer-&gt;doors:written"/>
-<rect x="472" y="412" width="56" height="16" rx="2" fill="#f5f5f5"/>
-<text x="500" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">WRITTEN</text>
-<line x1="312" y1="488" x2="148" y2="488" stroke="#2e5aa8" stroke-width="1.6" stroke-dasharray="4,4" data-msg="answered" data-msg-from="Doors" data-msg-to="Caller" marker-end="url(#al)" data-id="doors-&gt;caller:answered"/>
-<rect x="173" y="464" width="114" height="16" rx="2" fill="#f5f5f5"/>
-<text x="230" y="476" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">[HTTPS] ANSWERED</text>
-<rect x="70" y="90" width="140" height="52" rx="6" fill="#f5f5f5"/>
-<rect x="70" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="caller" data-label="Caller"/>
-<rect x="78" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8"/>
-<text x="92" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">USER</text>
-<text x="140" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Caller</text>
-<text x="140" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">bearer</text>
-<rect x="250" y="90" width="140" height="52" rx="6" fill="#f5f5f5"/>
-<rect x="250" y="90" width="140" height="52" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="doors" data-label="Doors"/>
-<rect x="258" y="96" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8"/>
-<text x="272" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle">API</text>
-<text x="320" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Doors</text>
-<text x="320" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">envelope</text>
-<rect x="430" y="90" width="140" height="52" rx="6" fill="#f5f5f5"/>
-<rect x="430" y="90" width="140" height="52" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="grammar" data-label="Grammar"/>
-<rect x="438" y="96" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8"/>
-<text x="452" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle">LIB</text>
-<text x="500" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Grammar</text>
-<text x="500" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">decide</text>
-<rect x="610" y="90" width="140" height="52" rx="6" fill="#f5f5f5"/>
-<rect x="610" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="writer" data-label="Writer"/>
-<rect x="618" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8"/>
-<text x="632" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">SVC</text>
-<text x="680" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Writer</text>
-<text x="680" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">act</text>
-<rect x="790" y="90" width="140" height="52" rx="6" fill="#f5f5f5"/>
-<rect x="790" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="duck" data-label="DuckDB"/>
-<rect x="798" y="96" width="35" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8"/>
-<text x="815.5" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">STORE</text>
-<text x="860" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">DuckDB</text>
-<text x="860" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">history</text>
-<line x1="30" y1="582" x2="970" y2="582" stroke="rgba(45,49,66,0.12)" stroke-width=".8"/>
+<line x1="140" y1="142" x2="140" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4" aria-hidden="true"/>
+<line x1="320" y1="142" x2="320" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4" aria-hidden="true"/>
+<line x1="500" y1="142" x2="500" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4" aria-hidden="true"/>
+<line x1="680" y1="142" x2="680" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4" aria-hidden="true"/>
+<line x1="860" y1="142" x2="860" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4" aria-hidden="true"/>
+<line x1="148" y1="176" x2="312" y2="176" stroke="#2e5aa8" stroke-width="1.6" data-msg="act" data-msg-from="Caller" data-msg-to="Doors" marker-end="url(#al)" data-id="caller-&gt;doors:act" role="graphics-symbol" aria-roledescription="message" aria-label="1. Caller to Doors: act"/>
+<rect x="189" y="152" width="82" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="230" y="164" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">[HTTPS] ACT</text>
+<line x1="328" y1="228" x2="492" y2="228" stroke="#4f5d75" stroke-width="1.6" data-msg="decide" data-msg-from="Doors" data-msg-to="Grammar" marker-end="url(#a)" data-id="doors-&gt;grammar:decide" role="graphics-symbol" aria-roledescription="message" aria-label="2. Doors to Grammar: decide"/>
+<rect x="385" y="204" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="410" y="216" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">DECIDE</text>
+<line x1="492" y1="280" x2="328" y2="280" stroke="#4f5d75" stroke-width="1.6" stroke-dasharray="4,4" data-msg="commit" data-msg-from="Grammar" data-msg-to="Doors" marker-end="url(#a)" data-id="grammar-&gt;doors:commit" role="graphics-symbol" aria-roledescription="message" aria-label="3. Grammar to Doors: commit"/>
+<rect x="385" y="256" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="410" y="268" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">COMMIT</text>
+<line x1="328" y1="332" x2="672" y2="332" stroke="#4f5d75" stroke-width="1.6" data-msg="effect" data-msg-from="Doors" data-msg-to="Writer" marker-end="url(#a)" data-id="doors-&gt;writer:effect" role="graphics-symbol" aria-roledescription="message" aria-label="4. Doors to Writer: effect"/>
+<rect x="475" y="308" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="500" y="320" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">EFFECT</text>
+<line x1="688" y1="384" x2="852" y2="384" stroke="#4f5d75" stroke-width="1.6" data-msg="append" data-msg-from="Writer" data-msg-to="DuckDB" marker-end="url(#a)" data-id="writer-&gt;duck:append" role="graphics-symbol" aria-roledescription="message" aria-label="5. Writer to DuckDB: append"/>
+<rect x="745" y="360" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="770" y="372" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">APPEND</text>
+<line x1="672" y1="436" x2="328" y2="436" stroke="#4f5d75" stroke-width="1.6" stroke-dasharray="4,4" data-msg="written" data-msg-from="Writer" data-msg-to="Doors" marker-end="url(#a)" data-id="writer-&gt;doors:written" role="graphics-symbol" aria-roledescription="message" aria-label="6. Writer to Doors: written"/>
+<rect x="472" y="412" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="500" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">WRITTEN</text>
+<line x1="312" y1="488" x2="148" y2="488" stroke="#2e5aa8" stroke-width="1.6" stroke-dasharray="4,4" data-msg="answered" data-msg-from="Doors" data-msg-to="Caller" marker-end="url(#al)" data-id="doors-&gt;caller:answered" role="graphics-symbol" aria-roledescription="message" aria-label="7. Doors to Caller: answered"/>
+<rect x="173" y="464" width="114" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="230" y="476" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">[HTTPS] ANSWERED</text>
+<rect x="70" y="90" width="140" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="70" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="caller" data-label="Caller" role="graphics-symbol" aria-roledescription="actor" aria-label="Caller, bearer"/>
+<rect x="78" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="92" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">USER</text>
+<text x="140" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Caller</text>
+<text x="140" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">bearer</text>
+<rect x="250" y="90" width="140" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="250" y="90" width="140" height="52" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="doors" data-label="Doors" role="graphics-symbol" aria-roledescription="actor" aria-label="Doors, envelope"/>
+<rect x="258" y="96" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="272" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">API</text>
+<text x="320" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Doors</text>
+<text x="320" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">envelope</text>
+<rect x="430" y="90" width="140" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="430" y="90" width="140" height="52" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="grammar" data-label="Grammar" role="graphics-symbol" aria-roledescription="actor" aria-label="Grammar, decide"/>
+<rect x="438" y="96" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="452" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">LIB</text>
+<text x="500" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Grammar</text>
+<text x="500" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">decide</text>
+<rect x="610" y="90" width="140" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="610" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="writer" data-label="Writer" role="graphics-symbol" aria-roledescription="actor" aria-label="Writer, act"/>
+<rect x="618" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="632" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">SVC</text>
+<text x="680" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Writer</text>
+<text x="680" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">act</text>
+<rect x="790" y="90" width="140" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="790" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="duck" data-label="DuckDB" role="graphics-symbol" aria-roledescription="actor" aria-label="DuckDB, history"/>
+<rect x="798" y="96" width="35" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
+<text x="815.5" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">STORE</text>
+<text x="860" y="121" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">DuckDB</text>
+<text x="860" y="138" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">history</text>
+<line x1="30" y1="582" x2="970" y2="582" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
 <text x="30" y="596" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">solid = call, dashed = reply or event, blue = HTTP, coral = highlighted</text>
 </svg>

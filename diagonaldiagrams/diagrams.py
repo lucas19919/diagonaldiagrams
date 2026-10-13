@@ -216,7 +216,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
-    dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")))
+    dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")), kind="flow diagram")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     frame_at, seg_boxes = len(dr.items), []
     node_boxes = [(cx - 80, cy - n["_h"] / 2, cx + 80, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
@@ -255,9 +255,12 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
         if not d:
             continue
         owner = eids[i]
-        dr.add(paint.edge_path(d, col, mid, owner, e.get("async"),
+        path = paint.edge_path(d, col, mid, owner, e.get("async"),
                                {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", ""),
-                                "data-id": owner}),
+                                "data-id": owner})
+        path.a11y = {"name": _edge_name(pos, e), "kind": "arrow"}
+        path.attach = {"from": {"node": e.get("from"), "port": s1}, "to": {"node": e.get("to"), "port": s2}}
+        dr.add(path,
                paint.tail(x1, y1, s1, col, owner))
         seg_boxes += _seg_boxes(pts)
         if e.get("label"):
@@ -357,6 +360,14 @@ def _layout_cost(out):
     found = _svg_geometry(out[0].etree(), out[1], out[2], stats)
     bad = [i for i in found if i["code"] in ("through", "strike", "overlap", "collide", "shared", "intrude")]
     return out, bad, 4 * len(bad) + stats["crossings"] + stats["wire"] / 400.0
+
+
+def _edge_name(pos, e, label=None):
+    """An arrow as a reader hears it: "Tests to Deploy: pass"."""
+    def name(nid):
+        return str(pos[nid][2].get("name", nid)) if nid in pos else str(nid)
+    text = e.get("label", "") if label is None else label
+    return f"{name(e.get('from'))} to {name(e.get('to'))}" + (f": {text}" if text else "")
 
 
 def _as_svg(out):
@@ -482,7 +493,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
     if _notes:
         low = max(low, top + 14 + max(0, len(_notes) - 1) * 92 + 52)
     H = int(low + 112)
-    dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")))
+    dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")), kind="architecture diagram")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
     for nid, (x, y, n) in pos.items():
@@ -504,9 +515,12 @@ def _render_arch_once(spec, corners="editorial", theme=None):
         if not d:
             continue
         owner = eids[i]
-        dr.add(paint.edge_path(d, col, mid, owner, e.get("async"),
+        path = paint.edge_path(d, col, mid, owner, e.get("async"),
                                {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", ""),
-                                "data-id": owner}),
+                                "data-id": owner})
+        path.a11y = {"name": _edge_name(pos, e), "kind": "arrow"}
+        path.attach = {"from": {"node": e.get("from"), "port": s1}, "to": {"node": e.get("to"), "port": s2}}
+        dr.add(path,
                paint.tail(x1, y1, s1, col, owner))
         segs = [(min(p[0], q[0]) - 1, min(p[1], q[1]) - 1, max(p[0], q[0]) + 1, max(p[1], q[1]) + 1)
                 for p, q in zip(pts, pts[1:])]
@@ -558,7 +572,8 @@ def render_seq(spec, corners="editorial", theme=None):
     msg_gap = 52
     msg_start = top + 86  # the first message's label sits clear of the actor boxes
     H = msg_start + len(messages) * msg_gap + 80
-    dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")))
+    dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")),
+                       kind="sequence diagram")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     # Lifelines
     for aid, (cx, a) in pos.items():
@@ -583,10 +598,12 @@ def render_seq(spec, corners="editorial", theme=None):
         look = {"stroke-dasharray": "4,4" if (m.get("reply") or m.get("async")) else None,
                 "data-msg": m.get("label", ""), "data-msg-from": pos[f_id][1].get("name", f_id),
                 "data-msg-to": pos[t_id][1].get("name", t_id), "marker-end": f"url(#{mid})", "data-id": owner}
+        said = {"name": f"{i + 1}. {pos[f_id][1].get('name', f_id)} to {pos[t_id][1].get('name', t_id)}"
+                        + (f": {m['label']}" if m.get("label") else ""), "kind": "message"}
         if f_id == t_id:
             # Self-call loop
             lw = 32
-            dr.add(paint.el("path", owner=owner, role="message.path",
+            dr.add(paint.el("path", owner=owner, role="message.path", a11y=said,
                             d=f"M{x1},{my} L{x1 + lw},{my} L{x1 + lw},{my + 20} L{x1 + 4},{my + 20}",
                             fill="none", stroke=col, stroke_width=1.5, **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
@@ -595,7 +612,7 @@ def render_seq(spec, corners="editorial", theme=None):
             direction = 1 if x2 >= x1 else -1
             x_from = x1 + direction * 8
             x_to = x2 - direction * 8
-            dr.add(paint.el("line", owner=owner, role="message.path", x1=x_from, y1=my, x2=x_to, y2=my, stroke=col,
+            dr.add(paint.el("line", owner=owner, role="message.path", a11y=said, x1=x_from, y1=my, x2=x_to, y2=my, stroke=col,
                             stroke_width=1.6, **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
                 lbl = m["label"]
@@ -606,8 +623,8 @@ def render_seq(spec, corners="editorial", theme=None):
     for aid, (cx, a) in pos.items():
         bw, bh = 140, 52
         bx, by = cx - bw / 2, top
-        dr.add(*paint.node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""),
-                               a.get("focal", False), corners, aid))
+        dr.add(*paint.named(paint.node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""),
+                                           a.get("focal", False), corners, aid), "actor", paint.node_name(a, aid)))
     if _notes:
         rail = []
         for nt in _notes:
@@ -686,7 +703,8 @@ def _render_schema_once(spec, corners="editorial", theme=None):
         max_y = max(max_y, 110 + 14 + max(0, len(_notes) - 1) * 92 + 52)
     W = max(780, int(max_x + 60)) + (200 if _notes else 0)
     H = int(max_y + 72)
-    dr = paint.Drawing(W, H, spec.get("title", "schema"), spec.get("sub", spec.get("title", "schema")))
+    dr = paint.Drawing(W, H, spec.get("title", "schema"), spec.get("sub", spec.get("title", "schema")),
+                       kind="database schema")
     dr.add(paint.paper(t, W, H), paint.marker_defs(t), *head_els)
     # Relations (rendered behind table cards)
     rel_labels = []
@@ -709,9 +727,12 @@ def _render_schema_once(spec, corners="editorial", theme=None):
         col = t["accent"] if focal else t["link"]
         mid = "aa" if focal else "al"
         owner = rids[k]
+        names = {tid: {"name": b["tbl"].get("name", tid)} for tid, b in table_boxes.items()}
         dr.add(paint.el("path", owner=owner, role="edge.path", d=elbow(x1, y1, x2, y2), fill="none", stroke=col,
                         stroke_width=1.4, marker_end=f"url(#{mid})", data_from=from_id, data_to=to_id,
-                        data_label=rel.get("label", ""), data_id=owner))
+                        data_label=rel.get("label", ""), data_id=owner,
+                        a11y={"name": _edge_name({k: (0, 0, v) for k, v in names.items()}, rel), "kind": "relation"},
+                        attach={"from": {"node": from_id, "port": from_col}, "to": {"node": to_id, "port": to_col}}))
         if rel.get("label"):
             if x1 == x2 or y1 == y2:
                 pts = [(x1, y1), (x2, y2)]

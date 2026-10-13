@@ -1,135 +1,135 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 800 2272" width="800">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" viewBox="0 0 800 2272" width="800">
 <title>A 20-step process</title>
 <desc>Generated for the golden corpus.</desc>
-<rect width="800" height="2272" fill="#f5f5f5"/>
+<rect width="800" height="2272" fill="#f5f5f5" aria-hidden="true"/>
 <defs><marker id="a" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#4f5d75"/></marker><marker id="aa" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#eb6c36"/></marker><marker id="al" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#7a8399"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">A 20-step process</text>
 <text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">Generated for the golden corpus.</text>
-<rect x="510" y="92" width="160" height="56" rx="20" fill="#f5f5f5"/>
-<rect x="510" y="92" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s0" data-label="Request received"/>
-<text x="590" y="123.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Request received</text>
-<rect x="510" y="212" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="212" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s1" data-label="Load the customer account (1)"/>
-<text x="590" y="236" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Load the customer</text>
-<text x="590" y="251" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">account (1)</text>
-<rect x="510" y="332" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="332" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s2" data-label="Score the fraud risk (2)"/>
-<text x="590" y="363.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Score the fraud risk (2)</text>
-<polygon points="590,448 670,480 590,512 510,480" fill="#f5f5f5"/>
-<polygon points="590,448 670,480 590,512 510,480" fill="#ffffff" stroke="#2d3142" data-node="s3" data-label="Check 1 passed?" data-cx="590" data-cy="480"/>
-<text x="590" y="484" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 1 passed?</text>
-<rect x="510" y="572" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="572" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s4" data-label="Charge the card (4)"/>
-<text x="590" y="603.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Charge the card (4)</text>
-<rect x="510" y="692" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="692" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s5" data-label="Write the ledger entry (5)"/>
-<text x="590" y="723.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Write the ledger entry (5)</text>
-<rect x="510" y="812" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="812" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s6" data-label="Notify the warehouse (6)"/>
-<text x="590" y="843.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Notify the warehouse (6)</text>
-<polygon points="350,928 430,960 350,992 270,960" fill="#f5f5f5"/>
-<polygon points="350,928 430,960 350,992 270,960" fill="#ffffff" stroke="#2d3142" data-node="s7" data-label="Check 2 passed?" data-cx="350" data-cy="960"/>
-<text x="350" y="964" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 2 passed?</text>
-<rect x="270" y="1052" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="270" y="1052" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s8" data-label="Send the receipt (8)"/>
-<text x="350" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Send the receipt (8)</text>
-<rect x="30" y="1052" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="30" y="1052" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s10" data-label="Validate the request (10)"/>
-<text x="110" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Validate the request (10)</text>
-<polygon points="590,1168 670,1200 590,1232 510,1200" fill="#f5f5f5"/>
-<polygon points="590,1168 670,1200 590,1232 510,1200" fill="#ffffff" stroke="#2d3142" data-node="s11" data-label="Check 3 passed?" data-cx="590" data-cy="1200"/>
-<text x="590" y="1204" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 3 passed?</text>
-<rect x="410" y="1292" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="410" y="1292" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s9" data-label="Update the order status (9)"/>
-<text x="490" y="1316" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Update the order status</text>
-<text x="490" y="1331" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">(9)</text>
-<rect x="610" y="1292" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="610" y="1292" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s12" data-label="Score the fraud risk (12)"/>
-<text x="690" y="1323.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Score the fraud risk (12)</text>
-<rect x="510" y="1412" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="1412" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s13" data-label="Reserve the stock (13)"/>
-<text x="590" y="1443.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Reserve the stock (13)</text>
-<rect x="510" y="1532" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="1532" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s14" data-label="Charge the card (14)"/>
-<text x="590" y="1563.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Charge the card (14)</text>
-<polygon points="590,1648 670,1680 590,1712 510,1680" fill="#f5f5f5"/>
-<polygon points="590,1648 670,1680 590,1712 510,1680" fill="#ffffff" stroke="#2d3142" data-node="s15" data-label="Check 4 passed?" data-cx="590" data-cy="1680"/>
-<text x="590" y="1684" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Check 4 passed?</text>
-<rect x="270" y="1772" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="270" y="1772" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s16" data-label="Notify the warehouse (16)"/>
-<text x="350" y="1803.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Notify the warehouse (16)</text>
-<rect x="270" y="1892" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="270" y="1892" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s17" data-label="Print the shipping label (17)"/>
-<text x="350" y="1916" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Print the shipping label</text>
-<text x="350" y="1931" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">(17)</text>
-<rect x="510" y="2012" width="160" height="56" rx="6" fill="#f5f5f5"/>
-<rect x="510" y="2012" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s18" data-label="Send the receipt (18)"/>
-<text x="590" y="2043.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Send the receipt (18)</text>
-<rect x="510" y="2132" width="160" height="56" rx="20" fill="#f5f5f5"/>
-<rect x="510" y="2132" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s19" data-label="Done"/>
-<text x="590" y="2163.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Done</text>
-<path d="M590,148 L590,212" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s0" data-to="s1" data-label="" data-id="s0-&gt;s1"/>
-<circle cx="590" cy="155" r="2.7" fill="#4f5d75"/>
-<path d="M590,268 L590,332" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s1" data-to="s2" data-label="" data-id="s1-&gt;s2"/>
-<circle cx="590" cy="275" r="2.7" fill="#4f5d75"/>
-<path d="M590,388 L590,448" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s2" data-to="s3" data-label="" data-id="s2-&gt;s3"/>
-<circle cx="590" cy="395" r="2.7" fill="#4f5d75"/>
-<path d="M670,480 L678,480 Q686,480 686,472 L686,248 Q686,240 678,240 L670,240" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s1" data-label="no" data-id="s3-&gt;s1:no"/>
-<circle cx="677" cy="480" r="2.7" fill="#4f5d75"/>
-<rect x="694" y="317" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="714" y="329" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M590,512 L590,572" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s4" data-label="yes" data-id="s3-&gt;s4:yes"/>
-<circle cx="590" cy="519" r="2.7" fill="#4f5d75"/>
-<rect x="598" y="533" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="618" y="545" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M590,628 L590,692" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s4" data-to="s5" data-label="" data-id="s4-&gt;s5"/>
-<circle cx="590" cy="635" r="2.7" fill="#4f5d75"/>
-<path d="M590,748 L590,812" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s5" data-to="s6" data-label="" data-id="s5-&gt;s6"/>
-<circle cx="590" cy="755" r="2.7" fill="#4f5d75"/>
-<path d="M590,868 L590,890 Q590,898 582,898 L358,898 Q350,898 350,906 L350,928" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s6" data-to="s7" data-label="" data-id="s6-&gt;s7"/>
-<circle cx="590" cy="875" r="2.7" fill="#4f5d75"/>
-<path d="M270,960 L238,960 Q230,960 230,968 L230,1072 Q230,1080 222,1080 L190,1080" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s10" data-label="no" data-id="s7-&gt;s10:no"/>
-<circle cx="263" cy="960" r="2.7" fill="#4f5d75"/>
-<rect x="238" y="1011" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="258" y="1023" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M350,992 L350,1052" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s8" data-label="yes" data-id="s7-&gt;s8:yes"/>
-<circle cx="350" cy="999" r="2.7" fill="#4f5d75"/>
-<rect x="358" y="1013" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="378" y="1025" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M350,1108 L350,1192 Q350,1200 358,1200 L482,1200 Q490,1200 490,1208 L490,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s8" data-to="s9" data-label="" data-id="s8-&gt;s9"/>
-<circle cx="350" cy="1115" r="2.7" fill="#4f5d75"/>
-<path d="M410,1320 L22,1320 Q14,1320 14,1312 L14,1088 Q14,1080 22,1080 L30,1080" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s9" data-to="s10" data-label="" data-id="s9-&gt;s10"/>
-<circle cx="403" cy="1320" r="2.7" fill="#4f5d75"/>
-<path d="M110,1108 L110,1130 Q110,1138 118,1138 L582,1138 Q590,1138 590,1146 L590,1168" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s10" data-to="s11" data-label="" data-id="s10-&gt;s11"/>
-<circle cx="110" cy="1115" r="2.7" fill="#4f5d75"/>
-<path d="M580,1232 L580,1254 Q580,1262 572,1262 L498,1262 Q490,1262 490,1270 L490,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s9" data-label="no" data-id="s11-&gt;s9:no"/>
-<circle cx="580" cy="1239" r="2.7" fill="#4f5d75"/>
-<rect x="515" y="1238" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="535" y="1250" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M600,1232 L600,1254 Q600,1262 608,1262 L682,1262 Q690,1262 690,1270 L690,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s12" data-label="yes" data-id="s11-&gt;s12:yes"/>
-<circle cx="600" cy="1239" r="2.7" fill="#4f5d75"/>
-<rect x="625" y="1238" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="645" y="1250" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M690,1348 L690,1372 Q690,1380 682,1380 L598,1380 Q590,1380 590,1388 L590,1412" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s12" data-to="s13" data-label="" data-id="s12-&gt;s13"/>
-<circle cx="690" cy="1355" r="2.7" fill="#4f5d75"/>
-<path d="M590,1468 L590,1532" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s13" data-to="s14" data-label="" data-id="s13-&gt;s14"/>
-<circle cx="590" cy="1475" r="2.7" fill="#4f5d75"/>
-<path d="M590,1588 L590,1648" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s14" data-to="s15" data-label="" data-id="s14-&gt;s15"/>
-<circle cx="590" cy="1595" r="2.7" fill="#4f5d75"/>
-<path d="M590,1712 L590,2012" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s18" data-label="no" data-id="s15-&gt;s18:no"/>
-<circle cx="590" cy="1719" r="2.7" fill="#4f5d75"/>
-<rect x="598" y="1853" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="618" y="1865" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">NO</text>
-<path d="M510,1680 L478,1680 Q470,1680 470,1688 L470,1792 Q470,1800 462,1800 L430,1800" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s16" data-label="yes" data-id="s15-&gt;s16:yes"/>
-<circle cx="503" cy="1680" r="2.7" fill="#4f5d75"/>
-<rect x="478" y="1731" width="40" height="16" rx="2" fill="#f5f5f5"/>
-<text x="498" y="1743" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">YES</text>
-<path d="M350,1828 L350,1892" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s16" data-to="s17" data-label="" data-id="s16-&gt;s17"/>
-<circle cx="350" cy="1835" r="2.7" fill="#4f5d75"/>
-<path d="M350,1948 L350,1972 Q350,1980 358,1980 L582,1980 Q590,1980 590,1988 L590,2012" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s17" data-to="s18" data-label="" data-id="s17-&gt;s18"/>
-<circle cx="350" cy="1955" r="2.7" fill="#4f5d75"/>
-<path d="M590,2068 L590,2132" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s18" data-to="s19" data-label="" data-id="s18-&gt;s19"/>
-<circle cx="590" cy="2075" r="2.7" fill="#4f5d75"/>
-<line x1="30" y1="2224" x2="770" y2="2224" stroke="rgba(45,49,66,0.12)" stroke-width=".8"/>
+<rect x="510" y="92" width="160" height="56" rx="20" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="92" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s0" data-label="Request received" role="graphics-symbol" aria-roledescription="start or end" aria-label="Request received"/>
+<text x="590" y="123.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Request received</text>
+<rect x="510" y="212" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="212" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s1" data-label="Load the customer account (1)" role="graphics-symbol" aria-roledescription="box" aria-label="Load the customer account (1)"/>
+<text x="590" y="236" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Load the customer</text>
+<text x="590" y="251" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">account (1)</text>
+<rect x="510" y="332" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="332" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s2" data-label="Score the fraud risk (2)" role="graphics-symbol" aria-roledescription="box" aria-label="Score the fraud risk (2)"/>
+<text x="590" y="363.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Score the fraud risk (2)</text>
+<polygon points="590,448 670,480 590,512 510,480" fill="#f5f5f5" aria-hidden="true"/>
+<polygon points="590,448 670,480 590,512 510,480" fill="#ffffff" stroke="#2d3142" data-node="s3" data-label="Check 1 passed?" data-cx="590" data-cy="480" role="graphics-symbol" aria-roledescription="decision" aria-label="Check 1 passed?"/>
+<text x="590" y="484" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Check 1 passed?</text>
+<rect x="510" y="572" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="572" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s4" data-label="Charge the card (4)" role="graphics-symbol" aria-roledescription="box" aria-label="Charge the card (4)"/>
+<text x="590" y="603.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Charge the card (4)</text>
+<rect x="510" y="692" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="692" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s5" data-label="Write the ledger entry (5)" role="graphics-symbol" aria-roledescription="box" aria-label="Write the ledger entry (5)"/>
+<text x="590" y="723.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Write the ledger entry (5)</text>
+<rect x="510" y="812" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="812" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s6" data-label="Notify the warehouse (6)" role="graphics-symbol" aria-roledescription="box" aria-label="Notify the warehouse (6)"/>
+<text x="590" y="843.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Notify the warehouse (6)</text>
+<polygon points="350,928 430,960 350,992 270,960" fill="#f5f5f5" aria-hidden="true"/>
+<polygon points="350,928 430,960 350,992 270,960" fill="#ffffff" stroke="#2d3142" data-node="s7" data-label="Check 2 passed?" data-cx="350" data-cy="960" role="graphics-symbol" aria-roledescription="decision" aria-label="Check 2 passed?"/>
+<text x="350" y="964" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Check 2 passed?</text>
+<rect x="270" y="1052" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="270" y="1052" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s8" data-label="Send the receipt (8)" role="graphics-symbol" aria-roledescription="box" aria-label="Send the receipt (8)"/>
+<text x="350" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Send the receipt (8)</text>
+<rect x="30" y="1052" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="30" y="1052" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s10" data-label="Validate the request (10)" role="graphics-symbol" aria-roledescription="box" aria-label="Validate the request (10)"/>
+<text x="110" y="1083.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Validate the request (10)</text>
+<polygon points="590,1168 670,1200 590,1232 510,1200" fill="#f5f5f5" aria-hidden="true"/>
+<polygon points="590,1168 670,1200 590,1232 510,1200" fill="#ffffff" stroke="#2d3142" data-node="s11" data-label="Check 3 passed?" data-cx="590" data-cy="1200" role="graphics-symbol" aria-roledescription="decision" aria-label="Check 3 passed?"/>
+<text x="590" y="1204" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Check 3 passed?</text>
+<rect x="410" y="1292" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="410" y="1292" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s9" data-label="Update the order status (9)" role="graphics-symbol" aria-roledescription="box" aria-label="Update the order status (9)"/>
+<text x="490" y="1316" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Update the order status</text>
+<text x="490" y="1331" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">(9)</text>
+<rect x="610" y="1292" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="610" y="1292" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s12" data-label="Score the fraud risk (12)" role="graphics-symbol" aria-roledescription="box" aria-label="Score the fraud risk (12)"/>
+<text x="690" y="1323.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Score the fraud risk (12)</text>
+<rect x="510" y="1412" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="1412" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s13" data-label="Reserve the stock (13)" role="graphics-symbol" aria-roledescription="box" aria-label="Reserve the stock (13)"/>
+<text x="590" y="1443.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Reserve the stock (13)</text>
+<rect x="510" y="1532" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="1532" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s14" data-label="Charge the card (14)" role="graphics-symbol" aria-roledescription="box" aria-label="Charge the card (14)"/>
+<text x="590" y="1563.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Charge the card (14)</text>
+<polygon points="590,1648 670,1680 590,1712 510,1680" fill="#f5f5f5" aria-hidden="true"/>
+<polygon points="590,1648 670,1680 590,1712 510,1680" fill="#ffffff" stroke="#2d3142" data-node="s15" data-label="Check 4 passed?" data-cx="590" data-cy="1680" role="graphics-symbol" aria-roledescription="decision" aria-label="Check 4 passed?"/>
+<text x="590" y="1684" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Check 4 passed?</text>
+<rect x="270" y="1772" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="270" y="1772" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s16" data-label="Notify the warehouse (16)" role="graphics-symbol" aria-roledescription="box" aria-label="Notify the warehouse (16)"/>
+<text x="350" y="1803.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Notify the warehouse (16)</text>
+<rect x="270" y="1892" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="270" y="1892" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s17" data-label="Print the shipping label (17)" role="graphics-symbol" aria-roledescription="box" aria-label="Print the shipping label (17)"/>
+<text x="350" y="1916" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Print the shipping label</text>
+<text x="350" y="1931" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">(17)</text>
+<rect x="510" y="2012" width="160" height="56" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="2012" width="160" height="56" rx="6" fill="#ffffff" stroke="#2d3142" data-node="s18" data-label="Send the receipt (18)" role="graphics-symbol" aria-roledescription="box" aria-label="Send the receipt (18)"/>
+<text x="590" y="2043.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Send the receipt (18)</text>
+<rect x="510" y="2132" width="160" height="56" rx="20" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="510" y="2132" width="160" height="56" rx="20" fill="#ffffff" stroke="#2d3142" data-node="s19" data-label="Done" role="graphics-symbol" aria-roledescription="start or end" aria-label="Done"/>
+<text x="590" y="2163.5" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Done</text>
+<path d="M590,148 L590,212" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s0" data-to="s1" data-label="" data-id="s0-&gt;s1" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Request received to Load the customer account (1)"/>
+<circle cx="590" cy="155" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,268 L590,332" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s1" data-to="s2" data-label="" data-id="s1-&gt;s2" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Load the customer account (1) to Score the fraud risk (2)"/>
+<circle cx="590" cy="275" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,388 L590,448" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s2" data-to="s3" data-label="" data-id="s2-&gt;s3" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Score the fraud risk (2) to Check 1 passed?"/>
+<circle cx="590" cy="395" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M670,480 L678,480 Q686,480 686,472 L686,248 Q686,240 678,240 L670,240" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s1" data-label="no" data-id="s3-&gt;s1:no" data-from-port="e" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 1 passed? to Load the customer account (1): no"/>
+<circle cx="677" cy="480" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="694" y="317" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="714" y="329" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">NO</text>
+<path d="M590,512 L590,572" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s3" data-to="s4" data-label="yes" data-id="s3-&gt;s4:yes" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 1 passed? to Charge the card (4): yes"/>
+<circle cx="590" cy="519" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="598" y="533" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="618" y="545" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">YES</text>
+<path d="M590,628 L590,692" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s4" data-to="s5" data-label="" data-id="s4-&gt;s5" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Charge the card (4) to Write the ledger entry (5)"/>
+<circle cx="590" cy="635" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,748 L590,812" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s5" data-to="s6" data-label="" data-id="s5-&gt;s6" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Write the ledger entry (5) to Notify the warehouse (6)"/>
+<circle cx="590" cy="755" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,868 L590,890 Q590,898 582,898 L358,898 Q350,898 350,906 L350,928" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s6" data-to="s7" data-label="" data-id="s6-&gt;s7" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Notify the warehouse (6) to Check 2 passed?"/>
+<circle cx="590" cy="875" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M270,960 L238,960 Q230,960 230,968 L230,1072 Q230,1080 222,1080 L190,1080" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s10" data-label="no" data-id="s7-&gt;s10:no" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 2 passed? to Validate the request (10): no"/>
+<circle cx="263" cy="960" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="238" y="1011" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="258" y="1023" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">NO</text>
+<path d="M350,992 L350,1052" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s7" data-to="s8" data-label="yes" data-id="s7-&gt;s8:yes" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 2 passed? to Send the receipt (8): yes"/>
+<circle cx="350" cy="999" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="358" y="1013" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="378" y="1025" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">YES</text>
+<path d="M350,1108 L350,1192 Q350,1200 358,1200 L482,1200 Q490,1200 490,1208 L490,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s8" data-to="s9" data-label="" data-id="s8-&gt;s9" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Send the receipt (8) to Update the order status (9)"/>
+<circle cx="350" cy="1115" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M410,1320 L22,1320 Q14,1320 14,1312 L14,1088 Q14,1080 22,1080 L30,1080" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s9" data-to="s10" data-label="" data-id="s9-&gt;s10" data-from-port="w" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Update the order status (9) to Validate the request (10)"/>
+<circle cx="403" cy="1320" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M110,1108 L110,1130 Q110,1138 118,1138 L582,1138 Q590,1138 590,1146 L590,1168" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s10" data-to="s11" data-label="" data-id="s10-&gt;s11" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Validate the request (10) to Check 3 passed?"/>
+<circle cx="110" cy="1115" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M580,1232 L580,1254 Q580,1262 572,1262 L498,1262 Q490,1262 490,1270 L490,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s9" data-label="no" data-id="s11-&gt;s9:no" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 3 passed? to Update the order status (9): no"/>
+<circle cx="580" cy="1239" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="515" y="1238" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="535" y="1250" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">NO</text>
+<path d="M600,1232 L600,1254 Q600,1262 608,1262 L682,1262 Q690,1262 690,1270 L690,1292" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s11" data-to="s12" data-label="yes" data-id="s11-&gt;s12:yes" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 3 passed? to Score the fraud risk (12): yes"/>
+<circle cx="600" cy="1239" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="625" y="1238" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="645" y="1250" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">YES</text>
+<path d="M690,1348 L690,1372 Q690,1380 682,1380 L598,1380 Q590,1380 590,1388 L590,1412" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s12" data-to="s13" data-label="" data-id="s12-&gt;s13" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Score the fraud risk (12) to Reserve the stock (13)"/>
+<circle cx="690" cy="1355" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,1468 L590,1532" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s13" data-to="s14" data-label="" data-id="s13-&gt;s14" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Reserve the stock (13) to Charge the card (14)"/>
+<circle cx="590" cy="1475" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,1588 L590,1648" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s14" data-to="s15" data-label="" data-id="s14-&gt;s15" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Charge the card (14) to Check 4 passed?"/>
+<circle cx="590" cy="1595" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,1712 L590,2012" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s18" data-label="no" data-id="s15-&gt;s18:no" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 4 passed? to Send the receipt (18): no"/>
+<circle cx="590" cy="1719" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="598" y="1853" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="618" y="1865" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">NO</text>
+<path d="M510,1680 L478,1680 Q470,1680 470,1688 L470,1792 Q470,1800 462,1800 L430,1800" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s15" data-to="s16" data-label="yes" data-id="s15-&gt;s16:yes" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Check 4 passed? to Notify the warehouse (16): yes"/>
+<circle cx="503" cy="1680" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<rect x="478" y="1731" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="498" y="1743" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">YES</text>
+<path d="M350,1828 L350,1892" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s16" data-to="s17" data-label="" data-id="s16-&gt;s17" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Notify the warehouse (16) to Print the shipping label (17)"/>
+<circle cx="350" cy="1835" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M350,1948 L350,1972 Q350,1980 358,1980 L582,1980 Q590,1980 590,1988 L590,2012" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s17" data-to="s18" data-label="" data-id="s17-&gt;s18" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Print the shipping label (17) to Send the receipt (18)"/>
+<circle cx="350" cy="1955" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<path d="M590,2068 L590,2132" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="s18" data-to="s19" data-label="" data-id="s18-&gt;s19" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Send the receipt (18) to Done"/>
+<circle cx="590" cy="2075" r="2.7" fill="#4f5d75" aria-hidden="true"/>
+<line x1="30" y1="2224" x2="770" y2="2224" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
 <text x="30" y="2240" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">box = step, diamond = decision, rounded = start or end</text>
 </svg>

@@ -1141,6 +1141,19 @@ As built in P2.16 (`scene/patch.py`):
 - Alt text is generated from the outline.
 - The target is WCAG 2.2 AA, which covers Section 508 and the EU Accessibility Act.
 
+As built in P2.17, for flow, arch, seq and schema (the diagrams that paint through `paint.Drawing`):
+- The root is `role="graphics-document"` with an `aria-roledescription` ("flow diagram", "database schema"), following the WAI-ARIA Graphics Module.
+- Nodes, arrows, messages, tables and groups are `role="graphics-symbol"`, each with a kind (`aria-roledescription`: "decision", "arrow", "table", ...) and a spoken name:
+  - a node is its name and sub-label ("Review, owner:payments");
+  - an arrow is "CI tests to Fix: fail";
+  - a message is numbered ("1. Customer to Web: Submit Order");
+  - a table lists its columns, with keys;
+  - a group lists its members.
+- What a part owns (its texts, pills, tails) and pure decoration are `aria-hidden`, so nothing is read twice. Headings, notes and the legend stay readable.
+- Reading order is document order. Edges also carry `data-from-port`/`data-to-port` (a side, or a column for schemas).
+- The display list reads both back: `Item.a11y` (name, kind, order) and `Item.attach`.
+- Charts keep `role="img"` with a title and description until they paint through the drawing (P6).
+
 ### 22.4 Brand policy and project config
 
 `diagonaldiagrams.toml` at the project root, and an organization config path, set:

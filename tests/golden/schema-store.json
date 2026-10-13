@@ -4,7 +4,7 @@
   "examples/show_store.json"
  ],
  "exit": 0,
- "html_sha256": "204ee713e6f117126804c12dcc8eee71a15bb025df6fcbbe2f9a02c0972ef89f",
+ "html_sha256": "160b09d98d37c58326e1da39d97d62aa29953cbe6f90ef4f0b4deb3fba4363ac",
  "receipt": {
   "auto": false,
   "cmd": "schema",

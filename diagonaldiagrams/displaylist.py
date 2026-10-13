@@ -25,6 +25,8 @@ class Item:
         ("diamond", None),          # (cx, cy, width, height) of a decision's outline
         ("ellipse", None),          # (cx, cy, rx, ry): a circle or ellipse arrows must go around
         ("depth", 0.0),             # distance from the viewer once projected (DESIGN 13); 0 in 2D
+        ("a11y", None),             # a part a reader navigates: {"name", "kind", "order"} (DESIGN 22.3)
+        ("attach", None),           # arrow: {"from": {"node", "port"}, "to": {...}} when the SVG says
     )
     __slots__ = ("kind",) + tuple(name for name, _ in FIELDS)
 

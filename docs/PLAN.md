@@ -237,7 +237,7 @@ The remaining bugs are fixed where their code is replaced:
 **Goal:** the internal model from DESIGN 3, 4, 8, 9 and 10 exists. Flow, arch, seq and schema paint through it, and the audit no longer re-parses SVG. Layout algorithms are unchanged in this phase.
 
 **Status (2026-10-13):** in progress on branch `p2-core`.
-- **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11, P2.3, P2.15, P2.16, P2.10, P2.13, P2.14, P2.7, P2.18 and P2.12.
+- **Done:** P2.1, P2.2, P2.4, P2.5, P2.6, P2.8, P2.9, P2.11, P2.3, P2.15, P2.16, P2.10, P2.13, P2.14, P2.7, P2.18, P2.12 and P2.17: every P2 task.
 - **P2.3:** scene JSON reads into `scene/model.py` (DESIGN 4.8). A v2 scene file (`"version": 2`) with preset `flow`, `arch`, `seq` or `schema` draws through today's renderers. This works from the command line, the API (`render(kind, scene=...)`) and MCP (`scene`). The v1 → scene → v1 round trip draws the same bytes for all 29 diagram inputs in the golden corpus and for 60 generated specs.
 - **P2.15:** edges, messages and relations are named by content (`from->to:label`, then `#2`) in the scene, the SVG (`data-id`), `--outline` and the draw.io and Excalidraw cells. `tests/unit/test_identity.py` edits a spec and checks that what it didn't touch keeps its ids. 36 goldens changed by the new attributes only. Layout is not incremental yet; that is P4.
 - **P2.16:** `diagonaldiagrams apply SPEC PATCH [-o OUT]` writes a patch's operations into a v1 spec or a scene (DESIGN 21.3). Each conflict is reported with its path and a fix, and the rest still apply. Unit tests cover every operation and conflict; smoke tests cover the command.
@@ -253,6 +253,7 @@ The remaining bugs are fixed where their code is replaced:
   - This machine currently runs about 2× slower than when P1 was measured: the P1b tree itself renders the corpus in 10.3 s today, against 5.3 s then.
 - **P2.18:** node `content.svg` passes through an allowlist sanitizer (DESIGN 4.5). `tests/unit/test_sanitize.py` tries scripts, handlers, outside references, `javascript:`/`data:` URLs, CSS `expression` and `@import`, entities and oversize input.
 - **P2.12:** `registry.py` holds three name-to-function tables: `paint.SHAPES` (rect, oval, diamond, dot; flow and arch look shapes up there), `audit.checks.CHECKS` (in run order, with the codes each reports) and `export.OUTPUTS` (svg, drawio, excalidraw, png, pdf). `tests/unit/test_registry.py` registers a hexagon from outside the core, and flow draws it.
+- **P2.17:** the four diagram types are WAI-ARIA graphics documents with named, navigable parts, and edges carry their attachment (DESIGN 22.3). 32 goldens change by the new attributes only.
 
 Deviations so far:
 - `geom.py`, `displaylist.py` and `paint.py` are single modules rather than the `geom/`, `paint/` and `emit/` packages. Geometry works on tuples, not `Point`/`Box`/`Path` classes.

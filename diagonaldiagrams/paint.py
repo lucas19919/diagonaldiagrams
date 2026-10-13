@@ -13,6 +13,12 @@ Before writing, a drawing passes through the projection stage (DESIGN 13), which
 in 2D. An element may carry 3D corner points (pts3d); with a projection set, those faces get their
 2D outline and depth from it and are painted back to front. The core never sets one: the 3D toolkit
 (P7) does, without core edits.
+
+Accessibility (DESIGN 22.3): the parts a reader navigates (nodes, arrows, messages, tables, groups)
+carry a11y = {"name", "kind"}. A drawing with a `kind` ("flow diagram") is written as a WAI-ARIA
+graphics document: those parts become role="graphics-symbol" with an aria-label, and everything
+else a part owns (its texts, pills, tails) is aria-hidden, so nothing is read twice. An edge
+also carries attach: the node and port at each end, written as data-from-port and data-to-port.
 """
 import re
 
@@ -45,42 +51,63 @@ def _text(v):
     return str(v).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+_DECOR = {"figure.paper", "legend.rule", "note.leader", "note.dot"}  # drawn, but nothing to read
+
+
 class Element:
     """One SVG element. depth and pts3d are the 3D hooks: a face's 3D corners, and its distance from
-    the viewer once projected (0 in 2D)."""
-    __slots__ = ("tag", "attrs", "text", "children", "owner", "role", "depth", "pts3d")
+    the viewer once projected (0 in 2D). a11y names a part a reader navigates; attach says what an
+    edge joins: {"from": {"node", "port"}, "to": {...}}."""
+    __slots__ = ("tag", "attrs", "text", "children", "owner", "role", "depth", "pts3d", "a11y", "attach")
 
-    def __init__(self, tag, attrs=None, text=None, children=None, owner="", role="", depth=0.0, pts3d=None):
+    def __init__(self, tag, attrs=None, text=None, children=None, owner="", role="", depth=0.0, pts3d=None,
+                 a11y=None, attach=None):
         self.tag, self.attrs, self.text, self.children = tag, attrs if attrs is not None else {}, text, children or []
         self.owner, self.role, self.depth, self.pts3d = owner, role, depth, pts3d
+        self.a11y, self.attach = a11y, attach
 
     def __repr__(self):
         return f"Element({self.tag!r}, owner={self.owner!r}, role={self.role!r})"
 
-    def values(self):
-        """Attribute values as the SVG text will hold them (numbers canonical, not yet escaped)."""
-        return {k: (fmt(v) if isinstance(v, (int, float)) else (_numbers(v) if k in GEOMETRY else str(v)))
-                for k, v in self.attrs.items() if v is not None}
+    def values(self, aria=False):
+        """Attribute values as the SVG text will hold them (numbers canonical, not yet escaped).
+        aria: this element sits in a graphics document, so it gets its ARIA attributes too."""
+        out = {k: (fmt(v) if isinstance(v, (int, float)) else (_numbers(v) if k in GEOMETRY else str(v)))
+               for k, v in self.attrs.items() if v is not None}
+        if self.attach:
+            for end in ("from", "to"):
+                port = self.attach.get(end, {}).get("port")
+                if port is not None:
+                    out[f"data-{end}-port"] = str(port)
+        if aria:
+            if self.a11y:
+                out["role"] = "graphics-symbol"
+                out["aria-roledescription"] = self.a11y["kind"]
+                out["aria-label"] = self.a11y["name"]
+            elif self.owner or self.role in _DECOR:
+                out["aria-hidden"] = "true"
+        return out
 
-    def etree(self):
+    def etree(self, aria=False):
         """This element as an ElementTree element, equal to what parsing svg() would give."""
         import xml.etree.ElementTree as ET
-        node = ET.Element(self.tag, self.values())
+        node = ET.Element(self.tag, self.values(aria))
         node.text = self.text or None
         node.extend(c.etree() for c in self.children)
         return node
 
-    def svg(self):
-        parts = [f' {k}="{_attr(v)}"' for k, v in self.values().items()]
+    def svg(self, aria=False):
+        parts = [f' {k}="{_attr(v)}"' for k, v in self.values(aria).items()]
         head = f"<{self.tag}{''.join(parts)}"
         if self.text is None and not self.children:
             return head + "/>"
         return head + ">" + _text(self.text or "") + "".join(c.svg() for c in self.children) + f"</{self.tag}>"
 
 
-def el(tag, text=None, owner="", role="", children=None, **attrs):
+def el(tag, text=None, owner="", role="", children=None, a11y=None, attach=None, **attrs):
     """An Element; attribute names are written with dashes (stroke_width -> stroke-width)."""
-    return Element(tag, {k.replace("_", "-"): v for k, v in attrs.items()}, text, children or [], owner, role)
+    return Element(tag, {k.replace("_", "-"): v for k, v in attrs.items()}, text, children or [], owner, role,
+                   a11y=a11y, attach=attach)
 
 
 def project(items, projection=None):
@@ -105,12 +132,17 @@ def project(items, projection=None):
 
 class Drawing:
     """A figure being painted: its size, its accessible title and description, the elements in
-    paint order, and the projection (None in 2D)."""
-    __slots__ = ("width", "height", "title", "desc", "items", "projection")
+    paint order, the projection (None in 2D), and its kind ("flow diagram"), which makes it a
+    navigable graphics document rather than a single image (None: role="img", as charts are)."""
+    __slots__ = ("width", "height", "title", "desc", "items", "projection", "kind")
 
-    def __init__(self, width, height, title="", desc="", items=None, projection=None):
+    def __init__(self, width, height, title="", desc="", items=None, projection=None, kind=None):
         self.width, self.height, self.title, self.desc = width, height, title, desc
-        self.items, self.projection = list(items or []), projection
+        self.items, self.projection, self.kind = list(items or []), projection, kind
+
+    def _root(self):
+        role = (f'role="graphics-document" aria-roledescription="{_attr(self.kind)}"' if self.kind else 'role="img"')
+        return role
 
     def add(self, *elements):
         self.items.extend(elements)
@@ -125,14 +157,14 @@ class Drawing:
         root = ET.Element("svg", {"viewBox": f"0 0 {fmt(self.width)} {fmt(self.height)}", "width": fmt(self.width)})
         ET.SubElement(root, "title").text = self.title or None
         ET.SubElement(root, "desc").text = self.desc or None
-        root.extend(e.etree() for e in project(self.items, self.projection))
+        root.extend(e.etree(bool(self.kind)) for e in project(self.items, self.projection))
         return root
 
     def svg(self):
-        head = (f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {fmt(self.width)} {fmt(self.height)}" '
+        head = (f'<svg xmlns="http://www.w3.org/2000/svg" {self._root()} viewBox="0 0 {fmt(self.width)} {fmt(self.height)}" '
                 f'width="{fmt(self.width)}">')
         lines = [head, f"<title>{_text(self.title)}</title>", f"<desc>{_text(self.desc)}</desc>"]
-        lines += [e.svg() for e in project(self.items, self.projection)]
+        lines += [e.svg(bool(self.kind)) for e in project(self.items, self.projection)]
         lines.append("</svg>")
         return "\n".join(lines)
 
@@ -249,25 +281,40 @@ def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner=""):
 
 
 
+def named(els, kind, name, role="node.shape"):
+    """Give the part's main element (by role) its accessible name, and return the elements."""
+    for e in els:
+        if e.role == role:
+            e.a11y = {"name": name, "kind": kind}
+            break
+    return els
+
+
+def node_name(n, nid=None):
+    """A node as a reader hears it: its name, then its sub-label."""
+    name = str(n.get("name", nid if nid is not None else n.get("id", "")))
+    return name + (f", {n['sub']}" if n.get("sub") else "")
+
+
 @SHAPES.add("rect")
-def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None):
-    return node_box(t, cx - w / 2, cy - h / 2, w, h, n["name"], n.get("sub", ""), n.get("tag", ""),
-                    n.get("focal", False), corners, nid, n.get("icon"), rx=rx)
+def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None, kind="box"):
+    return named(node_box(t, cx - w / 2, cy - h / 2, w, h, n["name"], n.get("sub", ""), n.get("tag", ""),
+                          n.get("focal", False), corners, nid, n.get("icon"), rx=rx), kind, node_name(n, nid))
 
 
 @SHAPES.add("oval")
 def _oval(t, nid, n, cx, cy, w, h, corners="editorial"):
-    return _rect(t, nid, n, cx, cy, w, h, corners, rx=20)
+    return _rect(t, nid, n, cx, cy, w, h, corners, rx=20, kind="start or end")
 
 
 @SHAPES.add("diamond")
 def _diamond(t, nid, n, cx, cy, w, h, corners="editorial"):
-    return diamond(t, cx, cy, w, h, n["name"], n.get("focal", False), nid)
+    return named(diamond(t, cx, cy, w, h, n["name"], n.get("focal", False), nid), "decision", node_name(n, nid))
 
 
 @SHAPES.add("dot")
 def _dot(t, nid, n, cx, cy, w, h, corners="editorial"):
-    return dot(t, cx, cy, nid)
+    return named(dot(t, cx, cy, nid), "merge point", node_name(n, nid))
 
 def table_card(t, x, y, w, h, rx, tid, tbl, row_h):
     """A table: card, tinted header with the name and an optional tag, then one row per column
@@ -275,8 +322,11 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h):
     focal = tbl.get("focal", False)
     stroke = t["accent"] if focal else t["ink"]
     fill_head = t["accent_tint"] if focal else "rgba(45,49,66,0.06)"
+    cols = ", ".join(str(c.get("name", "")) + (" (primary key)" if c.get("pk") else " (foreign key)" if c.get("fk") else "")
+                     for c in tbl.get("columns", []))
     out = [el("rect", owner=tid, role="table.card", x=x, y=y, width=w, height=h, rx=rx, fill=t["card"], stroke=stroke,
-              stroke_width=1.2, data_node=tid, data_label=tbl.get("name", tid)),
+              stroke_width=1.2, data_node=tid, data_label=tbl.get("name", tid),
+              a11y={"name": f"{tbl.get('name', tid)}" + (f": {cols}" if cols else ""), "kind": "table"}),
            el("path", owner=tid, role="table.header",
               d=f"M{x},{y + 36} L{x},{y + rx} Q{x},{y} {x + rx},{y} L{x + w - rx},{y} Q{x + w},{y} {x + w},{y + rx} L{x + w},{y + 36} Z",
               fill=fill_head),
@@ -321,9 +371,11 @@ def group_frames(t, groups, pos, avoid=()):
         if not f:
             continue
         x0, y0, x1, y1 = f
+        names = ", ".join(str(pos[m][2].get("name", m)) if m in pos else str(m) for m in g["members"])
         out.append(el("rect", owner=g["id"], role="group.frame", x=x0, y=y0, width=x1 - x0, height=y1 - y0, rx=10,
                       fill=t["rule"], fill_opacity=".35", stroke=t["muted"], stroke_opacity=".55", stroke_dasharray="4,3",
-                      data_group=g["id"], data_name=g["name"], data_members=",".join(g["members"])))
+                      data_group=g["id"], data_name=g["name"], data_members=",".join(g["members"]),
+                      a11y={"name": f"{g['name']}: {names}", "kind": "group"}))
         label = ((g["tag"] + "  " if g.get("tag") else "") + str(g["name"])).upper()
         lw = _text_w(label, 10, True) + 0.4 * len(label)
 

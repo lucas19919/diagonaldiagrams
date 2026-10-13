@@ -191,6 +191,14 @@ def svg_import(root, width, height):
     css = stylesheet(root)
     seen, centers, z = set(), [], [0]
 
+    def _read_a11y(item, el):
+        if el.get("aria-label") is not None:
+            item.a11y = {"name": el.get("aria-label"), "kind": el.get("aria-roledescription") or "",
+                         "order": order[0]}
+            order[0] += 1
+
+    order = [0]  # reading order: the document order of the parts that have names
+
     def walk(el, st, m):
         tag = str(el.tag).split("}")[-1]
         if tag in SKIP:
@@ -225,7 +233,11 @@ def svg_import(root, width, height):
             real = [q for q in pts if q is not None]
             if len(real) >= 2:
                 z[0] += 1
-                dl.add(Item("arrow", z=z[0], pts=pts, ends=(real[0], real[-1])))
+                arrow = dl.add(Item("arrow", z=z[0], pts=pts, ends=(real[0], real[-1])))
+                if el.get("data-from") is not None and el.get("data-to") is not None:
+                    arrow.attach = {end: {"node": el.get(f"data-{end}"), "port": el.get(f"data-{end}-port")}
+                                    for end in ("from", "to")}
+                _read_a11y(arrow, el)
         box, item = None, None
         if tag == "rect":
             x, y, w, h = (num(el.get(k)) for k in ("x", "y", "width", "height"))
@@ -265,6 +277,7 @@ def svg_import(root, width, height):
                             depth=num(el.get("data-depth"), 0.0)))
         if item is not None:
             item.depth = num(el.get("data-depth"), 0.0)  # set by the projection stage in 3D (paint.project)
+            _read_a11y(item, el)
             bw, bh = box[2] - box[0], box[3] - box[1]
             filled = (el.get("fill") or "black") != "none" or el.get("stroke")
             big = width and height and bw * bh > 0.5 * width * height
