@@ -27,6 +27,45 @@ jobs:
       - name: Smoke tests
         run: python tests_smoke.py
 
+  entry-points:
+    # The same contract through `python -m diagonaldiagrams` and through an installed wheel.
+    name: smoke (${{ matrix.entry }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        entry: [module, installed]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the wheel
+        if: matrix.entry == 'installed'
+        run: python -m pip install .
+      - name: Smoke tests
+        env:
+          DD_ENTRY: ${{ matrix.entry }}
+        run: python tests_smoke.py
+
+  pyodide:
+    # The browser playground's path: the wheel unpacked into the Pyodide that docs/index.html loads.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build the wheel
+        run: python -m pip wheel . --no-deps -w dist
+      - name: Render in Pyodide
+        run: |
+          npm install --no-save pyodide@0.27.2
+          node tests/pyodide_smoke.mjs dist/diagonaldiagrams-*.whl
+
   golden:
     # Byte-for-byte output on both OSes, and the same output under any hash seed.
     name: golden (${{ matrix.os }})

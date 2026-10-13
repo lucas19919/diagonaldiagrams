@@ -5,18 +5,29 @@ Renders into the system temp dir; the workspace is never polluted.
 """
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GRAPH = os.path.join(HERE, "graph.py")
+# Which entry point runs the checks: the checkout shim (default), the package as a module, or an
+# installed `diagonaldiagrams` command. CI runs all three.
+ENTRY = os.environ.get("DD_ENTRY", "shim")
+if ENTRY == "module":
+    ENGINE = [sys.executable, "-m", "diagonaldiagrams"]
+    os.environ["PYTHONPATH"] = HERE + (os.pathsep + os.environ["PYTHONPATH"] if os.environ.get("PYTHONPATH") else "")
+elif ENTRY == "installed":
+    ENGINE = [shutil.which("diagonaldiagrams") or sys.exit("DD_ENTRY=installed, but no diagonaldiagrams on PATH")]
+else:
+    ENGINE = [sys.executable, GRAPH]
 WORK = os.path.join(tempfile.gettempdir(), "graph_smoke")
 PASS, FAIL = [], []
 
 
 def run(*cmd, expect=0):
-    p = subprocess.run([sys.executable, GRAPH, *cmd], capture_output=True, text=True, cwd=HERE)
+    p = subprocess.run([*ENGINE, *cmd], capture_output=True, text=True, cwd=HERE)
     return p.returncode, (p.stdout or "") + (p.stderr or "")
 
 
@@ -26,13 +37,14 @@ def check(name, cond, detail=""):
 
 
 def mcp(messages):
-    p = subprocess.run([sys.executable, GRAPH, "mcp"], input="\n".join(messages),
+    p = subprocess.run([*ENGINE, "mcp"], input="\n".join(messages),
                        capture_output=True, text=True, cwd=HERE)
     return [json.loads(l) for l in p.stdout.splitlines() if l.strip()]
 
 
 def main():
     os.makedirs(WORK, exist_ok=True)
+    print(f"engine: {' '.join(ENGINE)} (DD_ENTRY={ENTRY})")
     print("== cli ==")
     rc, _ = run("--help")
     check("help exits 0", rc == 0)
@@ -671,7 +683,7 @@ def agent_loop():
 
     far = os.path.join(WORK, "far")
     os.makedirs(far, exist_ok=True)
-    p = subprocess.run([sys.executable, GRAPH, "export", os.path.join(WORK, "loop"), "--to", "svg",
+    p = subprocess.run([*ENGINE, "export", os.path.join(WORK, "loop"), "--to", "svg",
                         "-o", os.path.join(far, "loop.svg")], capture_output=True, text=True, cwd=far)
     check("export works from another directory", p.returncode == 0, (p.stdout + p.stderr)[:200])
 
@@ -818,7 +830,7 @@ def agent_loop():
     rep = json.loads(out) if rc == 0 else {}
     check("flow -s inline json spec renders", rc == 0 and rep.get("ok"), out[:200])
 
-    p = subprocess.Popen([sys.executable, os.path.join(HERE, "graph.py"), "mermaid", "-", "-o", os.path.join(WORK, "pipe_test.svg")],
+    p = subprocess.Popen([*ENGINE, "mermaid", "-", "-o", os.path.join(WORK, "pipe_test.svg")],
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8")
     pipe_out, _ = p.communicate("flowchart TD; X[Start]-->Y[Café → Finish]")
     check("piped stdin to mermaid renders cleanly", p.returncode == 0 and '"ok": true' in pipe_out, pipe_out[:200])
