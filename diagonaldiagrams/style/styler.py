@@ -102,6 +102,7 @@ class Styler:
         self.font_files = {}  # family -> font file, from the stylesheets' "fonts"
         for s in self.cascade.sheets:
             self.font_files.update(s.get("fonts") or {})
+        self._memo = {}  # (kind, id) -> painting values: styles don't change while a render's drafts are drawn
         self._scales = {}
         self.scales = {}  # (type, property, field) -> Scale: the encodings drawn, for the legend
         self.rule_legends = {}  # legend text -> the look it names, from rules with "legend"
@@ -142,11 +143,14 @@ class Styler:
         from .parse import Color, color, contrast
         if not isinstance(bg, Color):
             return css(fg)
-        paper = color(self.token("paper"))
-        if contrast(fg, bg, paper) >= 4.5:
-            return css(fg)
-        best = max((color(self.token("ink")), paper), key=lambda c: contrast(c, bg, paper))
-        return best.css
+        key = ("readable", css(fg), bg.css)
+        if key not in self._memo:
+            paper = color(self.token("paper"))
+            if contrast(fg, bg, paper) >= 4.5:
+                self._memo[key] = css(fg)
+            else:
+                self._memo[key] = max((color(self.token("ink")), paper), key=lambda c: contrast(c, bg, paper)).css
+        return self._memo[key]
 
     def _font(self, text_style):
         """(the font file measuring this text, or None; a named family that wasn't found, or None)."""
@@ -263,7 +267,12 @@ class Styler:
 
     def legend_entries(self):
         """What the legend lists beyond the preset's sentence: every scale an encoding used, then every
-        rule with a legend text. Reading every element's style first finds them all."""
+        rule with a legend text. Reading every element's style first finds them all. Worked out once."""
+        if ("legend", None) not in self._memo:
+            self._memo[("legend", None)] = self._legend_entries()
+        return self._memo[("legend", None)]
+
+    def _legend_entries(self):
         for nid in list(self.views["nodes"]):
             self.node(nid)
         for eid in list(self.views["edges"]):
@@ -276,6 +285,12 @@ class Styler:
         return out
 
     def node(self, nid):
+        key = ("node", nid)
+        if key not in self._memo:
+            self._memo[key] = self._node(nid)
+        return self._memo[key]
+
+    def _node(self, nid):
         v = self.view("node", nid)
         c = self._encoded(v, self.cascade.computed(v))
         r = c.get("border-radius")
@@ -288,12 +303,17 @@ class Styler:
     def table(self, tid):
         """A schema table: its card (the node), its ::header band, its name (::label) and tag."""
         v = self.view("node", tid)
-        st = self.node(tid)
+        st = dict(self.node(tid))
         st["header"] = css(self.cascade.computed(v, "header").get("fill"))
         return st
 
     def figure(self):
         """The figure's own parts: paper, title and subtitle, the legend, notes (annotations)."""
+        if ("figure", None) not in self._memo:
+            self._memo[("figure", None)] = self._figure()
+        return self._memo[("figure", None)]
+
+    def _figure(self):
         fig = self.views["figure"]
         c = self.cascade.computed(fig)
         legend = self._part("legend")
@@ -311,6 +331,11 @@ class Styler:
 
     def group(self, gid):
         """A group's frame (fill, stroke, dash, radius) and its title text."""
+        if ("group", gid) not in self._memo:
+            self._memo[("group", gid)] = self._group(gid)
+        return self._memo[("group", gid)]
+
+    def _group(self, gid):
         v = self.view("group", gid)
         c = self.cascade.computed(v)
         r = c.get("border-radius")
@@ -318,6 +343,12 @@ class Styler:
                 "radius": r[0] if isinstance(r, tuple) else r, "title": self._text(v, "title"), "computed": c}
 
     def edge(self, eid):
+        key = ("edge", eid)
+        if key not in self._memo:
+            self._memo[key] = self._edge(eid)
+        return self._memo[key]
+
+    def _edge(self, eid):
         v = self.view("edge", eid)
         c = self._encoded(v, self.cascade.computed(v))
         return {"stroke": css(c.get("stroke")), "stroke-width": c.get("stroke-width"), "dasharray": c.get("stroke-dasharray"),

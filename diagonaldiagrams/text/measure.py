@@ -14,6 +14,7 @@ from . import markup
 
 MIN_SIZE = 9.0
 NO_LIMIT = 10 ** 6
+_WRAPPED = {}  # wrap's answers: every draft of a figure wraps the same names the same way
 
 
 def width(text, size, bold=False, kind="", font=None):
@@ -99,7 +100,18 @@ def _merge(line):
 
 def wrap(text, max_w, size, bold=False, max_lines=None, overflow="wrap", font=None):
     """(lines, size): each line a list of (text, kind) runs, and the size the text ends up at. With a
-    font, widths are its own advances; without, the built-in estimate."""
+    font, widths are its own advances; without, the built-in estimate. The answer is shared between
+    calls with the same arguments: read it, don't change it."""
+    key = (text, max_w, size, bold, max_lines, overflow, font)
+    hit = _WRAPPED.get(key)
+    if hit is None:
+        if len(_WRAPPED) > 8192:  # a long-running server draws many figures; keep the memory bounded
+            _WRAPPED.clear()
+        hit = _WRAPPED[key] = _lay_out(text, max_w, size, bold, max_lines, overflow, font)
+    return hit
+
+
+def _lay_out(text, max_w, size, bold, max_lines, overflow, font):
     def lay(sz, limit):
         if markup.has_markup(text):
             lines = _wrap_runs(text, max_w, sz, bold, font)

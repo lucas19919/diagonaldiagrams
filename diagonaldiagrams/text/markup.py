@@ -9,13 +9,21 @@ import re
 _TOKEN = re.compile(r"\*\*(?P<b>.+?)\*\*|(?<![\w])_(?P<i>[^_\s](?:[^_]*?[^_\s])?)_(?![\w])|`(?P<m>[^`]+)`")
 
 
+def _bare(text):
+    """No marker character at all: most labels, answered without the regex."""
+    return "*" not in text and "_" not in text and "`" not in text
+
+
 def has_markup(text):
-    return bool(_TOKEN.search(str(text)))
+    text = str(text)
+    return not _bare(text) and bool(_TOKEN.search(text))
 
 
 def runs(text):
     """[(text, kind)] in order, adjacent plain text kept together."""
     text = str(text)
+    if _bare(text):
+        return [(text, "")]
     out, pos = [], 0
     for m in _TOKEN.finditer(text):
         if m.start() > pos:
@@ -30,4 +38,5 @@ def runs(text):
 
 def plain(text):
     """The text as read aloud: markers removed."""
-    return "".join(t for t, _ in runs(text))
+    text = str(text)
+    return text if _bare(text) else "".join(t for t, _ in runs(text))

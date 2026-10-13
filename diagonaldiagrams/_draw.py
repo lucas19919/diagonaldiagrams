@@ -387,13 +387,33 @@ def _bold(st):
     return w == "bold" or (w.isdigit() and int(w) >= 600)
 
 
+_BOXED = {}  # box_text's answers by value: every draft of a figure lays out the same boxes
+
+
 def box_text(name, sub="", w=BOX_W, st=None):
     """A box's text laid out in its computed style (P3.6): (name lines, sub lines, label style,
     sub style), each line a list of (text, kind) runs, the styles carrying the size the text ended
-    up at and its line pitch. Nothing is cut unless the style asks for overflow: ellipsis."""
+    up at and its line pitch. Nothing is cut unless the style asks for overflow: ellipsis. The
+    answer is shared between calls with the same text and style: read it, don't change it."""
+    label, subst = (st or {}).get("label") or {}, (st or {}).get("sub") or {}
+    try:
+        key = (name, sub, w, tuple(label.items()), tuple(subst.items()))
+        hit = _BOXED.get(key)
+    except TypeError:  # a style value that can't be a key: lay it out every time
+        key, hit = None, None
+    if hit is None:
+        hit = _box_text(name, sub, w, label, subst)
+        if key is not None:
+            if len(_BOXED) > 8192:
+                _BOXED.clear()
+            _BOXED[key] = hit
+    return hit
+
+
+def _box_text(name, sub, w, label, subst):
     from .text.measure import line_height, wrap
-    lab = dict(BOX_LABEL, **{k: v for k, v in ((st or {}).get("label") or {}).items() if v is not None})
-    sb = dict(BOX_SUB, **{k: v for k, v in ((st or {}).get("sub") or {}).items() if v is not None})
+    lab = dict(BOX_LABEL, **{k: v for k, v in label.items() if v is not None})
+    sb = dict(BOX_SUB, **{k: v for k, v in subst.items() if v is not None})
     nl, lab["font-size"] = wrap(name, w - 16, lab["font-size"], _bold(lab), lab.get("max-lines"), lab.get("overflow") or "wrap",
                                 lab.get("font"))
     sl = []

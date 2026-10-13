@@ -149,7 +149,7 @@ def _drawn_scene(spec, kind):
     """The scene a diagram spec draws as, for its receipt (None if it can't be read as one)."""
     from .inputs.v1 import from_v1
     from .scene import check
-    from .scene.patch import compact
+    from .scene.ids import compact
     scene, errors, _ = check(from_v1({k: v for k, v in spec.items() if k not in ("_warnings", "_errors")}, kind))
     return None if errors else compact(scene.to_dict())
 

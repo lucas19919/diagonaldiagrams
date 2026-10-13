@@ -19,7 +19,7 @@ without a word. The others still apply.
 import copy
 import re
 
-from .ids import EdgeIds
+from .ids import compact  # noqa: F401 (compact is part of the patch API)
 from .normalize import check
 
 OPS = ("pin", "order", "style", "text", "add", "remove", "move-to-group")
@@ -224,15 +224,3 @@ def apply(scene, ops):
 
 def _issue(path, msg, fix):
     return {"code": "patch-conflict", "msg": msg, "fix": fix, "path": path}
-
-
-def compact(d):
-    """A scene dict without the edge ids its edges would be given anyway (ids.py), for writing a
-    spec back the way a person would write it."""
-    name = EdgeIds()
-    for e in d.get("edges") or []:
-        gen = name.generated(e.get("from"), e.get("to"), e.get("label"))
-        name(e.get("from"), e.get("to"), e.get("label"), e.get("id"))
-        if e.get("id") == gen:
-            e.pop("id")
-    return d

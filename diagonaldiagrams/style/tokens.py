@@ -18,6 +18,14 @@ PRESETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "presets")  #
 THEME_NAMES = ("editorial", "ink", "print")
 V1_KEYS = ("paper", "ink", "muted", "soft", "rule", "accent", "accent_tint", "link", "card")
 _SHEETS = {}
+_NAMES = []
+
+
+def bundled():
+    """The names of the stylesheets that ship: themes and presets. Listed once."""
+    if not _NAMES:
+        _NAMES.append(frozenset(f[:-5] for d in (HERE, PRESETS) for f in os.listdir(d) if f.endswith(".json")))
+    return _NAMES[0]
 
 
 def sheet(name):

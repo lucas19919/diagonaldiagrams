@@ -2,7 +2,6 @@
 import json, sys
 from .errors import SpecError
 from ._draw import _FA_ICONS
-from ._yaml import HAS_YAML, yaml
 
 
 # ---------- Mermaid input ----------
@@ -385,6 +384,12 @@ def _mermaid_spec(text):
     return spec
 
 
+def _yaml():
+    """(PyYAML is installed, the module): imported only for a YAML file, as it takes 30 ms to load."""
+    from ._yaml import HAS_YAML, yaml
+    return HAS_YAML, yaml
+
+
 def load_spec(path, kind=None):
     """The spec in a file: JSON, YAML or Mermaid. A v2 scene ("version": 2) comes back as the v1
     spec the renderer for `kind`, or for the scene's preset, draws."""
@@ -394,8 +399,8 @@ def load_spec(path, kind=None):
         return _mermaid_spec(txt)
     if path.endswith(".json"):
         spec = json.loads(txt)
-    elif HAS_YAML and path.endswith((".yaml", ".yml")):
-        spec = yaml.safe_load(txt)
+    elif path.endswith((".yaml", ".yml")) and _yaml()[0]:
+        spec = _yaml()[1].safe_load(txt)
     else:
         # minimal fallback: JSON in .yaml also works
         try:

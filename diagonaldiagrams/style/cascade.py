@@ -17,7 +17,7 @@ Results are cached per element.
 from ..errors import SpecError
 from . import parse
 from .select import Selector
-from .tokens import sheet as bundled_sheet
+from .tokens import bundled, sheet as bundled_sheet
 
 INHERITED = {"font-family", "font-size", "font-weight", "font-style", "color", "letter-spacing", "line-height",
              "text-transform", "text-align"}
@@ -40,6 +40,17 @@ def _em(raw):
     return isinstance(raw, str) and raw.strip().endswith("em") and not raw.strip().endswith("rem")
 
 
+_SELECTORS = {}  # selector text -> Selector: parsed once, never changed after
+_BUNDLED_RULES = {}  # (bundled sheet name, the tokens) -> its declarations read: the same every render
+
+
+def _selector(text):
+    sel = _SELECTORS.get(text)
+    if sel is None:
+        sel = _SELECTORS[text] = Selector(text)
+    return sel
+
+
 class _Rule:
     __slots__ = ("selector", "decls", "rank", "where")
 
@@ -60,18 +71,30 @@ class Cascade:
             if s.get("policy"):
                 self.tokens.update(s.get("tokens") or {})
         self.rules = []
+        tokens_key = None
         for k, s in enumerate(self.sheets):
             layer = len(self.sheets) + 1 if s.get("policy") else k  # the element's own style ranks len(sheets)
-            for order, (text, decls) in enumerate((s.get("rules") or {}).items()):
-                where = f"stylesheet '{s.get('name', k)}', rule '{text}'"
-                try:
-                    sel = Selector(text)
-                except SpecError as e:
-                    raise SpecError(f"{where}: {e.msg}", e.fix, e.code) from None
-                if not isinstance(decls, dict):
-                    raise SpecError(f"{where}: the declarations should be an object", 'write {"stroke": "accent"}', "bad-style")
-                self.rules.append(_Rule(sel, self._read(decls, where), (layer, sel.specificity, order), where))
+            shipped = bundled_sheet(s["name"]) is s if s.get("name") in bundled() else False
+            if shipped and tokens_key is None:
+                tokens_key = repr(sorted(self.tokens.items()))
+            read = _BUNDLED_RULES.get((s["name"], tokens_key)) if shipped else None
+            if read is None:
+                read = []
+                for text, decls in (s.get("rules") or {}).items():
+                    where = f"stylesheet '{s.get('name', k)}', rule '{text}'"
+                    try:
+                        sel = _selector(text)
+                    except SpecError as e:
+                        raise SpecError(f"{where}: {e.msg}", e.fix, e.code) from None
+                    if not isinstance(decls, dict):
+                        raise SpecError(f"{where}: the declarations should be an object", 'write {"stroke": "accent"}', "bad-style")
+                    read.append((sel, self._read(decls, where), where))
+                if shipped:
+                    _BUNDLED_RULES[(s["name"], tokens_key)] = read
+            for order, (sel, decls, where) in enumerate(read):
+                self.rules.append(_Rule(sel, decls, (layer, sel.specificity, order), where))
         self.rules.sort(key=lambda r: r.rank)
+        self._index = {}  # (pseudo-element, element type) -> the rules that could match, in rank order
         self._cache = {}
         self._origins = {}  # (view, pseudo) -> {property: the layer (sheet index) that set it}
         self._sources = {}  # (view, pseudo) -> {property: "stylesheet 'brand', rule 'node.db'"}
@@ -125,8 +148,8 @@ class Cascade:
                                      (id(view.parent), None) if view.parent is not None else None, {})
         source = {p: src_from[p] for p in out if p in src_from}
         decls = []
-        for rule in self.rules:
-            if rule.selector.pseudo_element == pseudo and rule.selector.matches(view):
+        for rule in self._candidates(pseudo, view.type):
+            if rule.selector.matches(view):
                 decls.append((rule.rank, rule.decls, rule.where))
         if pseudo is None and view.style:
             where = f"the style of '{view.id}'"
@@ -155,6 +178,15 @@ class Cascade:
         self._sources[key] = source
         return out
 
+    def _candidates(self, pseudo, type_):
+        """The rules for this pseudo-element whose last step could pick an element of this type."""
+        key = (pseudo, type_)
+        rules = self._index.get(key)
+        if rules is None:
+            rules = self._index[key] = [r for r in self.rules if r.selector.pseudo_element == pseudo
+                                        and r.selector.steps[-1][1].type in (None, "*", type_)]
+        return rules
+
     def source(self, view, pseudo, prop):
         """Which stylesheet and rule set a property for this element, for messages, or None."""
         self.computed(view, pseudo)
@@ -166,12 +198,10 @@ class Cascade:
         is a bundled sheet's. Overrides only count above it. Worked out once."""
         if self._defaults_at is not None:
             return self._defaults_at
-        from .tokens import HERE, PRESETS
-        import os
         last = -1
+        names = bundled()
         for k, s in enumerate(self.sheets):
-            name = s.get("name") if isinstance(s, dict) else None
-            if name and (os.path.isfile(os.path.join(HERE, f"{name}.json")) or os.path.isfile(os.path.join(PRESETS, f"{name}.json"))):
+            if isinstance(s, dict) and s.get("name") in names:
                 last = k
         self._defaults_at = last
         return last

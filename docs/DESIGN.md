@@ -969,6 +969,14 @@ CI fails on a 2× regression against the stored baseline and reports smaller cha
 
 A checkout needs care. Importing an uncached module compiles it more slowly than running the same file as a script: about 2 s versus about 0.4 s for today's `graph.py`. Compile time also grows faster than file size: the first half of `graph.py` compiles in 0.38 s, the whole file in 1.5 s. So the split must keep modules small and imports lazy, and `python -m compileall diagonaldiagrams` removes the cost entirely (PLAN P1 exit).
 
+**As built (P3):** styles are worked out once per render, not once per layout draft.
+- **Per render:** the `Styler` keeps each element's painting values, the legend entries and the readable-text colors for the whole render.
+- **Across renders:** the cascade keeps the bundled sheets' parsed selectors and declarations, keyed by the token values.
+- **By value:** text wrapping (`text.measure.wrap`) and box text layout (`box_text`) are cached, each bounded at 8,192 entries for long-running servers.
+- **Lazy imports:** PyYAML loads only for YAML files, the SVG sanitizer only for inline SVG, and a box's per-side border geometry only when a style declares a side.
+
+`bench/metrics/p3.md` has the side-by-side numbers.
+
 ## 17. Testing
 
 - **CLI contract:** today's `tests_smoke.py` cases, moved to `tests/cli/`, run against the installed command and the `graph.py` shim. They are the compatibility gate.

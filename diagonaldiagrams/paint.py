@@ -108,10 +108,20 @@ class Element:
         return head + ">" + _text(self.text or "") + "".join(c.svg() for c in self.children) + f"</{self.tag}>"
 
 
+_ATTR_NAMES = {}  # stroke_width -> stroke-width, worked out once per name
+
+
+def _attr_name(k):
+    name = _ATTR_NAMES.get(k)
+    if name is None:
+        name = _ATTR_NAMES[k] = k.rstrip("_").replace("_", "-")
+    return name
+
+
 def el(tag, text=None, owner="", role="", children=None, a11y=None, attach=None, **attrs):
     """An Element; attribute names are written with dashes (stroke_width -> stroke-width), and a
     trailing underscore is dropped (in_ -> in, for names Python keeps to itself)."""
-    return Element(tag, {k.rstrip("_").replace("_", "-"): v for k, v in attrs.items()}, text, children or [], owner, role,
+    return Element(tag, {_ATTR_NAMES.get(k) or _attr_name(k): v for k, v in attrs.items()}, text, children or [], owner, role,
                    a11y=a11y, attach=attach)
 
 
@@ -256,7 +266,7 @@ def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editoria
     out += deco.decorate(out[1], out[0], st, lambda fill: el(out[1].tag, owner=own, role="node.pattern",
                                                          **{k: v for k, v in out[1].attrs.items()
                                                             if k in ("x", "y", "width", "height", "rx", "d")}, fill=fill))
-    out += _sides(out[1], deco.rect_sides(x, y, w, h, rx), st, shape, own)
+    out += _sides(out[1], lambda: deco.rect_sides(x, y, w, h, rx), st, shape, own)
     if tag:
         tw = max(28, len(tag) * 7)
         tg = st["tag"]
@@ -292,7 +302,7 @@ def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None):
               stroke_width=st.get("stroke-width"), data_node=nid, data_label=plain(name) if nid is not None else None,
               data_cx=cx if nid is not None else None, data_cy=cy if nid is not None else None)]
     out += deco.decorate(out[1], out[0], st, lambda fill: el("polygon", owner=own, role="node.pattern", points=pts, fill=fill))
-    out += _sides(out[1], deco.diamond_sides(cx, cy, w, h), st, "diamond", own)
+    out += _sides(out[1], lambda: deco.diamond_sides(cx, cy, w, h), st, "diamond", own)
     lines, lab_box = diamond_text(name, st)
     y0 = cy + lab_box["font-size"] / 3 - lab_box["pitch"] / 2 * (len(lines) - 1)
     lab = dict(st["label"], **{"font-size": lab_box["font-size"]})
@@ -328,13 +338,13 @@ def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner="", st=None, 
 
 
 
-def _sides(shape_el, sides_d, st, shape, owner):
+def _sides(shape_el, geometry, st, shape, owner):
     """Border sides (DESIGN 5.5): when a style sets any border-*, the outline is drawn side by side and
-    the shape itself keeps only its fill."""
+    the shape itself keeps only its fill. geometry() gives each side's path, worked out only then."""
     sides = deco.declared(st.get("computed") or {}, shape)
     if not sides:
         return []
-    out = deco.borders(sides_d, sides, shape_el.attrs.get("stroke"), st.get("stroke-width"), st["paper"], owner)
+    out = deco.borders(geometry(), sides, shape_el.attrs.get("stroke"), st.get("stroke-width"), st["paper"], owner)
     shape_el.attrs["stroke"] = "none"
     shape_el.attrs["stroke-width"] = None
     return out
@@ -458,7 +468,9 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
            el("line", owner=tid, role="table.rule", x1=x, y1=y + 36, x2=x + w, y2=y + 36, stroke=t["rule"], stroke_width=1),
            el("text", transformed(tbl.get("name", tid), st["label"]), owner=tid, role="table.name", x=x + 12, y=y + 23,
               font_size=st["label"]["font-size"], font_weight=st["label"].get("font-weight"),
-              font_family=st["label"]["font-family"], fill=st["label"]["color"], data_role="table")]
+              font_family=st["label"]["font-family"], fill=st["label"]["color"], data_role="table",
+              data_color_from=st["label"].get("color-from"), data_size_from=st["label"].get("font-size-from"),
+              data_font_fallback=st["label"].get("font-fallback"))]
     paper = el("rect", owner=tid, role="node.underlay", x=x, y=y, width=w, height=h, rx=rx, fill=st.get("paper") or t["paper"])
     decor = deco.decorate(out[0], paper, st, lambda fill: el("rect", owner=tid, role="node.pattern", x=x, y=y, width=w,
                                                             height=h, rx=rx, fill=fill))
@@ -467,7 +479,7 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
         out.insert(0, paper)
         card = 1
     after = card + 3  # the card, its header band, and the rule under the header
-    out[after:after] = decor + _sides(out[card], deco.rect_sides(x, y, w, h, rx), st, "table", tid)
+    out[after:after] = decor + _sides(out[card], lambda: deco.rect_sides(x, y, w, h, rx), st, "table", tid)
     tag = tbl.get("tag", "")
     if tag:
         tw = max(32, len(tag) * 7 + 8)

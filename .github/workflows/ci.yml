@@ -26,6 +26,8 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Unit tests
         run: python -m unittest discover tests/unit
+      - name: Style demos (the P3 exit suite)
+        run: python -m unittest discover tests/style
       - name: Smoke tests
         run: python tests_smoke.py
 

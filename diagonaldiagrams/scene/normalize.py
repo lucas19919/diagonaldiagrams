@@ -8,7 +8,6 @@ check(raw) returns (scene or None, errors, warnings). normalize(raw) returns (sc
 raises SpecError when there is an error.
 """
 from ..errors import SpecError
-from ..sanitize import sanitize
 from .ids import EdgeIds
 from .model import KEYS, Edge, Group, Node, Scene
 
@@ -183,6 +182,7 @@ def check(raw):
             node.name = node.id
         if isinstance(node.content, dict) and "svg" in node.content:  # raw SVG: an allowlist, nothing else (D8)
             try:
+                from ..sanitize import sanitize  # only for inline svg: it loads ElementTree
                 clean, removed = sanitize(node.content["svg"])
             except SpecError as e:
                 rep.error(e.code, e.msg, e.fix, f"{path}.content.svg")

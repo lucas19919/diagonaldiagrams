@@ -49,9 +49,9 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 
 | Metric | Baseline | Latest | Target | Expected to move in |
 | --- | --- | --- | --- | --- |
-| CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | after P2: 157 ms from bytecode, 234 ms recompiling (P1: 148–164 / 215–222). Dropping `dataclasses` took 25 ms back out of what P2's new modules added | ≤ 150 ms | P1, P2 |
-| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws | after P2: 3.8 s, 225 redraws. Each draft is now audited in memory, but the more thorough audit (B12) costs about 1 ms more per draft; P1b's tree measured side by side is 10–20% faster. P2's 1 s goal moves to P4 | ≤ 100 ms, 0 redraws | P2, P4 |
-| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws | after P2: 0.66 s, 89 redraws | ≤ 50 ms | P4 |
+| CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | after P3: 152 ms from bytecode, 270 ms recompiling, against P2's tree measured alongside at 160 / 235 ms. Loading PyYAML only for YAML files took 30 ms out; P3's style and text modules add about 35 ms of compiling (P2: 157 / 234 ms; dropping `dataclasses` took 25 ms back out) | ≤ 150 ms | P1, P2 |
+| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws | after P3: 225 redraws, about 10% slower than P2's tree measured side by side (3.9 against 3.6 s). Each draft paints and audits the style's attributes. After P2: 3.8 s; the more thorough audit (B12) costs about 1 ms more per draft. P2's 1 s goal moves to P4 | ≤ 100 ms, 0 redraws | P2, P4 |
+| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws | after P3: 89 redraws, 10% slower than P2's tree side by side (688 against 625 ms). After P2: 0.66 s | ≤ 50 ms | P4 |
 | 40-step flow canvas | 1180 × 3952, aspect 0.30 (a tall strip) |  | within 25% of the target aspect | P4 |
 | MCP tool call | a subprocess per call that recompiles the script (about 0.4–0.5 s) | after P2: in-process; a warm render call takes 7 ms (bar) to 34 ms (arch with its repair loop), validation and audit included | ≤ 100 ms in-process (met) | P2 |
 | Largest module | 10,012 lines | after P1: 2,800 (`charts/kinds.py`) | ≤ 800 lines | P1, P8 |
@@ -60,7 +60,7 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | Inline font settings in drawing code (`font-size=`/`font-family=` occurrences) | 342 | after P2: 310 | 0 | P3, P6, P8 |
 | `SystemExit` / `sys.exit` inside engine code | 85 | after P2: 0 outside the CLI (met) | 0 outside the CLI | P2 |
 | Hidden side channels (function attributes) | 4 | after P1: 0 | 0 | P1 |
-| Styling surface | 9 colors + 3 corner styles |  | the property set in DESIGN 5.4 | P3 |
+| Styling surface | 9 colors + 3 corner styles | after P3: DESIGN 5.4's 52 properties with CSS selectors, the cascade, per-side borders, decorations, data encodings and legends, fonts from files, and a brand policy | the property set in DESIGN 5.4 | P3 |
 | Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
 | Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) | after P2: 2. The B12 audit now sees an arrow through a circle in `case-state-order`, which was always there | 0, once the swim and state presets land | P8 |
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
@@ -303,7 +303,24 @@ Deviations:
 
 **Goal:** the agent can set any font, color, border side, corner, shadow or data-driven style through stylesheets and selectors, on every type that paints through the display list.
 
-**Status (2026-10-13):** in progress on branch `p3-style`.
+**Status (2026-10-13):** done on branch `p3-style`; version 0.7.0, metrics in `bench/metrics/p3.md`.
+
+Exit:
+- **The style demo suite** (`tests/style/test_demos.py`) passes. All seven demos render on flow, arch, seq and schema from a stylesheet alone, with no per-type code, and pass the audit. The low-contrast demo is caught and its rule named on all four.
+- **Default figures:** byte-identical to P2 except two intended kinds of change, both reviewed. Seven legend sentences now drop parts the figure doesn't have, or name the print theme's real colors. Two chart figures gained `truncated` warnings.
+- **The site:** the gallery's 9 figures re-render and pass their audit, and the playground wheel is rebuilt at 0.7.0. The Pyodide check runs in CI; running it here would need an npm download.
+
+Deviations:
+- **Default text measuring:** the default font stack keeps the built-in width estimate, so default figures are the same on every machine. Named fonts are measured from their files. The bundled metric tables (Inter, Selawik, Roboto, Liberation Sans) wait on downloading those fonts. Receipts don't record font hashes yet, and kerning is not applied.
+- **Theme legibility:** the default themes fall short of the legibility checks (B25), so `contrast` and `min-size` judge stylesheet-set values only.
+- **Not built:** inset shadows and `sketch`. Sequence lifelines and schema column rows still use theme constants.
+- **Version:** 0.6.0 was never cut at P1's close, so 0.7.0 is the first version bump since 0.5.0. `plugin.json` and `server.json` say 0.7.0 too.
+- **Speed:** measured side by side with P2's tree, because this machine's speed swings by up to 2×.
+  - A CLI call from bytecode is a little faster than at P2: 152 against 160 ms.
+  - Reading styles costs 1–3 ms per render.
+  - The repair-loop flows are about 10% slower, because each draft paints and audits the style's attributes. P4 removes the drafts.
+  - The first P3 build was 2× slower on gen-flow-20, because it re-derived every style on every draft. DESIGN 16 lists the caches that fixed it.
+
 - **P3.1:** `editorial`, `ink` and `print` are token stylesheets in `style/themes/` that extend `core.json` (type sizes, spacing, strokes, palettes). The flat theme dicts the renderers read are built from them, so the goldens are unchanged. `--theme-file` takes v1 keys (`accent_tint` or `accent-tint`) or a stylesheet's `tokens`. B14 and B15 are fixed.
 - **P3.2:** `style/parse.py` reads every value form in DESIGN 5.3 (colors, tokens, `var()`, `mix()`, lengths, `border`/`border-<side>`, `border-radius`, `padding`, `box-shadow`, `font`, `linear-gradient`). It also holds the DESIGN 5.4 property table. Unknown properties and values are `bad-style` errors with a did-you-mean.
 - **P3.3:** `style/select.py` parses DESIGN 5.2's selectors, with CSS specificity, and matches them against element views. Positions count among siblings of the same type, like `:first-of-type`. `style/cascade.py` resolves sheets in DESIGN 5.1's order:

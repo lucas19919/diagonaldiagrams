@@ -37,3 +37,15 @@ def edge_ids(edges, label="label"):
     name = EdgeIds()
     return [name(e.get("from"), e.get("to"), e.get(label), e.get("id")) if isinstance(e, dict) else None
             for e in edges]
+
+
+def compact(d):
+    """A scene dict without the edge ids its edges would be given anyway (ids.py), for writing a
+    spec back the way a person would write it."""
+    name = EdgeIds()
+    for e in d.get("edges") or []:
+        gen = name.generated(e.get("from"), e.get("to"), e.get("label"))
+        name(e.get("from"), e.get("to"), e.get("label"), e.get("id"))
+        if e.get("id") == gen:
+            e.pop("id")
+    return d
