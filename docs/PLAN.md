@@ -64,7 +64,7 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
 | Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) |  | 0, once the swim preset lands | P8 |
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
-| Known bugs (table below) | 24 |  | 0 | P1b–P8 |
+| Known bugs (table below) | 24 | after P1b: 15 open | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
 | Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
 | Human edits that survive regeneration | none survive (edits are pixels) |  | 100% or a reported conflict | P10 |
@@ -190,6 +190,11 @@ Import layers, lowest first: `_theme`, `_text` → `_draw` → `audit` → `diag
 ## P1b. Known-bug fixes
 
 **Goal:** fix the bugs the inventory found that don't need the new core. Each fix is its own PR with its golden diffs reviewed.
+
+**Status (2026-10-13):** done on branch `p1b-bugs`. All nine fixes landed in one commit; there were no golden diffs to review per fix.
+- Each bug has a check in `tests_smoke.py` (`known_bugs()`). All ten checks (B2 has two) failed before the fixes and pass after them.
+- All 115 golden figures are unchanged. B6 keeps the old 260 px minimum row height, so only schemas whose tables already overlapped move.
+- B2 also adds `--size`, `--label`, `--parent`, `--val`, `--a`, `--b`, `--lo` and `--hi` to `validate`, so an agent can check what it will render.
 
 | # | Bug | Fix |
 | --- | --- | --- |

@@ -132,6 +132,47 @@ _JSON_NEED = {
 
 _EXPLICIT_ROLE = {"x": "x", "y": "y", "group": "group"}
 
+# The flags that name each role's column, in the order the renderer in charts/kinds.py reads them.
+_ROLE_FLAGS = {
+    "bubble": {"x": ("x",), "y": ("y",), "size": ("size",)},
+    "beeswarm": {"cat": ("x", "label"), "val": ("val", "y")},
+    "step": {"x": ("x",), "y": ("y",)},
+    "slope": {"cat": ("label", "x"), "a": ("a",), "b": ("b",)},
+    "bump": {"x": ("x",), "name": ("label",), "rank": ("y", "val")},
+    "ridgeline": {"group": ("group",), "val": ("val", "y")},
+    "stack": {"cat": ("x", "label"), "group": ("group",), "val": ("val", "y")},
+    "dumbbell": {"cat": ("label", "x"), "a": ("a", "lo"), "b": ("b", "hi")},
+    "waterfall": {"cat": ("x", "label"), "val": ("val", "y")},
+    "histogram": {"val": ("val", "y", "x")},
+    "box": {"group": ("group", "x"), "val": ("val", "y")},
+    "violin": {"group": ("group", "x"), "val": ("val", "y")},
+    "strip": {"group": ("group", "x"), "val": ("val", "y")},
+    "pie": {"cat": ("label", "x"), "val": ("val", "y")},
+    "donut": {"cat": ("label", "x"), "val": ("val", "y")},
+    "waffle": {"cat": ("label", "x"), "val": ("val", "y")},
+    "funnel": {"cat": ("label", "x"), "val": ("val", "y")},
+    "treemap": {"name": ("label",), "val": ("val", "y")},
+    "icicle": {"name": ("label",), "val": ("val", "y")},
+    "sunburst": {"name": ("label",), "val": ("val", "y")},
+    "heatmap": {"x": ("x",), "y": ("y",), "val": ("val",)},
+    "calendar": {"date": ("x",), "val": ("val", "y")},
+    "radar": {"axis": ("x", "label"), "series": ("group",), "val": ("val", "y")},
+    "polar": {"cat": ("label", "x"), "val": ("val", "y")},
+    "candle": {"x": ("x",)},
+    "status": {"row": ("y", "label"), "col": ("x",), "state": ("group", "val")},
+    "forest": {"cat": ("label", "x"), "est": ("val", "y"), "lo": ("lo",), "hi": ("hi",)},
+    "qq": {"val": ("val", "y", "x")},
+    "volcano": {"x": ("x",), "y": ("y",)},
+    "sankey": {"src": ("x", "label"), "dst": ("y",), "val": ("val",)},
+    "stream": {"x": ("x",), "group": ("group",), "val": ("val", "y")},
+    "combo": {"x": ("x",), "bar": ("a", "val"), "line": ("b", "y")},
+    "quadrant": {"x": ("x",), "y": ("y",)},
+    "contour": {"x": ("x",), "y": ("y",), "z": ("val",)},
+    "heatgeo": {"lat": ("y",), "lon": ("x",), "val": ("val",)},
+    "od": {"lon": ("x",), "lat": ("y",), "lon2": ("a",), "lat2": ("b",)},
+    "cluster": {"lat": ("y",), "lon": ("x",)},
+}
+
 
 def _validate_math_spec(spec, errors, warnings):
     try:
@@ -201,15 +242,10 @@ def _validate_chart(kind, target, args, errors, warnings):
         _vissue(errors, warnings, "E", "no header row", "add a header")
         return
     roles = _CSV_NEED.get(kind, ())
-    explicit = {"x": getattr(args, "x", None), "y": getattr(args, "y", None), "group": getattr(args, "group", None)}
-    # map a couple of CLI flags onto the roles this type actually uses
-    role_flag = {}
-    if "x" in roles:
-        role_flag["x"] = explicit["x"]
-    if "y" in roles:
-        role_flag["y"] = explicit["y"]
-    if "group" in roles:
-        role_flag["group"] = explicit["group"]
+    flags = _ROLE_FLAGS.get(kind, {})
+    # each role's column comes from the first of its flags that is set, as in the renderer
+    role_flag = {role: next((getattr(args, f, None) for f in flags.get(role, ()) if getattr(args, f, None)), None)
+                 for role in roles}
     fake = [{c: "" for c in cols}]
     for role in roles:
         if not _col(fake, role_flag.get(role), role):

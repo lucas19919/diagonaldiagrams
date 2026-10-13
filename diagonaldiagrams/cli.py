@@ -72,7 +72,8 @@ def _prevalidate(a):
     elif a.cmd == "geo":
         errors, warnings = _validate_target(a.src, "geo", a.lon, a.lat)
     elif a.cmd == "chart" and a.kind in _CHART_BLURB:
-        errors, warnings = _validate_target(a.src, a.kind, a.x, a.y, a.group, unbounded=a.no_budget)
+        roles = {f: getattr(a, f, None) for f in ("size", "label", "parent", "val", "a", "b", "lo", "hi")}
+        errors, warnings = _validate_target(a.src, a.kind, a.x, a.y, a.group, unbounded=a.no_budget, roles=roles)
     else:
         return []
     if errors:
@@ -209,7 +210,7 @@ def main():
     _render_parsers = {}
     for name in ("flow", "arch", "seq", "schema", "mermaid"):
         p = sub.add_parser(name)
-        p.add_argument("spec", nargs="?", default=None, help="spec file path, inline text, or '-' for stdin")
+        p.add_argument("spec", nargs="?", default=None, help="spec file path, or '-' for stdin (inline text: -s)")
         p.add_argument("-s", "--string", "--spec-text", dest="spec_text", default=None, help="inline spec or Mermaid string")
         p.add_argument("-o", required=True)
         p.add_argument("--corners", default="editorial", choices=["sharp", "rounded", "editorial"])
@@ -331,6 +332,8 @@ def main():
     p = sub.add_parser("validate", help="check spec/csv BEFORE render; JSON report, exit 1 on error")
     p.add_argument("target"); p.add_argument("--x", default=None); p.add_argument("--y", default=None)
     p.add_argument("--group", default=None); p.add_argument("--facet", default=None)
+    for flag in ("--size", "--label", "--parent", "--val", "--a", "--b", "--lo", "--hi"):
+        p.add_argument(flag, default=None, help="a chart type's column, as in chart KIND")
     _vtypes = sorted(set(["scatter", "bar", "line", "geo", "flow", "arch", "seq", "schema", "mermaid"]) | set(_CHART_BLURB))
     p.add_argument("--type", default="scatter", choices=_vtypes,
                    help="shape to check. A chart type uses the same name as chart KIND")

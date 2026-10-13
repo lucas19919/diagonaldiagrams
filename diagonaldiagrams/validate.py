@@ -14,16 +14,21 @@ _validate_math_spec = lazy("diagonaldiagrams.charts.render", "_validate_math_spe
 def do_validate(args):
     vtype = getattr(args, "type", None) or "scatter"
     kind = vtype if vtype in ("flow", "arch", "seq", "schema") else None  # a diagram spec of that kind
-    errors, warnings = _validate_target(args.target, vtype, args.x, args.y, args.group, args.facet, kind=kind)
+    roles = {f: getattr(args, f, None) for f in ("size", "label", "parent", "val", "a", "b", "lo", "hi")}
+    errors, warnings = _validate_target(args.target, vtype, args.x, args.y, args.group, args.facet, kind=kind,
+                                        roles=roles)
     ok = not errors
     print(json.dumps({"ok": ok, "errors": errors, "warnings": warnings}, indent=2))
     raise SystemExit(0 if ok else 1)
 
 
-def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=None, kind=None, unbounded=False):
-    """Every check `validate` runs, as (errors, warnings). Render calls it before drawing."""
+def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=None, kind=None, unbounded=False,
+                     roles=None):
+    """Every check `validate` runs, as (errors, warnings). Render calls it before drawing.
+    roles: the other column flags a chart type reads (size, label, parent, val, a, b, lo, hi)."""
     from types import SimpleNamespace
-    args = SimpleNamespace(target=target, type=vtype, x=x, y=y, group=group, facet=facet, no_budget=unbounded)
+    args = SimpleNamespace(target=target, type=vtype, x=x, y=y, group=group, facet=facet, no_budget=unbounded,
+                           **(roles or {}))
     errors, warnings = [], []
     if vtype in ("terrain", "print"):
         _validate_chart(vtype, target, args, errors, warnings)
@@ -192,9 +197,12 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
         for nid, deg in outdeg.items():
             if shapes.get(nid) == "diamond" and deg > 3:
                 _vissue(errors, warnings, "E", f"diamond '{nid}' has {deg} exits", "nest diamonds")
-            for e in edges:
-                if shapes.get(e.get("from")) == "diamond" and not e.get("label"):
-                    warnings.append({"msg": f"unlabeled exit from diamond '{e.get('from')}'", "fix": "label Yes/No or condition"})
+        unlabeled = []
+        for e in edges:
+            if shapes.get(e.get("from")) == "diamond" and not e.get("label") and e.get("from") not in unlabeled:
+                unlabeled.append(e.get("from"))
+        for nid in unlabeled:
+            warnings.append({"msg": f"unlabeled exit from diamond '{nid}'", "fix": "label Yes/No or condition"})
 
 
 def _numok(v):

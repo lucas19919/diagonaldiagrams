@@ -143,6 +143,9 @@ def _mm_flow(lines, title):
                 name = _mm_text(name.replace(fa.group(0), ""))
                 if _FA_ICONS.get(fa.group(1)):
                     n["icon"] = _FA_ICONS[fa.group(1)]
+                elif not any(f"fa-{fa.group(1)};" in w["msg"] for w in warnings):
+                    warnings.append({"msg": f"line {ln}: no built-in icon for fa-{fa.group(1)}; drawn without one",
+                                     "fix": "use one of: " + ", ".join(sorted(_FA_ICONS))})
             n["name"] = name or nid
         if shape and shape != "rect":
             n["shape"] = shape
@@ -313,9 +316,9 @@ def _mm_er(lines, title):
             if line.startswith("}"):
                 cur = None
                 continue
-            parts = line.split()
+            parts = line.split('"', 1)[0].split()  # a quoted comment is not part of the keys
             if len(parts) >= 2:
-                keys = " ".join(parts[2:]).upper()
+                keys = set(re.split(r"[\s,]+", " ".join(parts[2:]).upper()))
                 col = {"name": parts[1], "type": parts[0]}
                 if "PK" in keys:
                     col["pk"] = True

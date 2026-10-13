@@ -615,7 +615,7 @@ def render_seq(spec, corners="editorial", theme=None):
     for aid, (cx, a) in pos.items():
         bw, bh = 140, 52
         bx, by = cx - bw / 2, top
-        parts.append(node_box(t, bx, by, bw, bh, a["name"], a.get("sub", ""), a.get("tag", ""), a.get("focal", False), corners, aid))
+        parts.append(node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""), a.get("focal", False), corners, aid))
     if _notes:
         rail = []
         for nt in _notes:
@@ -666,6 +666,16 @@ def _render_schema_once(spec, corners="editorial", theme=None):
     widest = max((_pill_w(str(r.get("label", "")).upper()) for r in relations if r.get("label")), default=0)
     col_gap, row_gap = min(170, max(70, widest + 36)), 60
     max_cols = 3 if len(tables) >= 3 else max(1, len(tables))
+    # a row is as tall as its tallest table, so a long table never runs into the row below
+    tallest = {}
+    for i, tbl in enumerate(tables):
+        if not ("x" in tbl and "y" in tbl):
+            r = i // max_cols
+            tallest[r] = max(tallest.get(r, 0), 44 + len(tbl.get("columns", [])) * row_h + 12)
+    row_top, acc = {}, base_y
+    for r in range(max(tallest, default=-1) + 1):
+        row_top[r] = acc
+        acc += max(260, tallest.get(r, 0)) + row_gap
     table_boxes = {}
     for i, tbl in enumerate(tables):
         cols = tbl.get("columns", [])
@@ -676,7 +686,7 @@ def _render_schema_once(spec, corners="editorial", theme=None):
             grid_c = i % max_cols
             grid_r = i // max_cols
             x = 60 + grid_c * (tbl_w + col_gap)
-            y = base_y + grid_r * (260 + row_gap)
+            y = row_top[grid_r]
         col_y_map = {}
         for c_idx, c in enumerate(cols):
             col_y_map[c["name"]] = y + 44 + c_idx * row_h + row_h / 2

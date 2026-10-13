@@ -329,6 +329,7 @@ def main():
 
     charts()
     agent_loop()
+    known_bugs()
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed" + (f": {FAIL}" if FAIL else ""))
     raise SystemExit(1 if FAIL else 0)
@@ -841,6 +842,70 @@ def agent_loop():
         plugin_v = json.load(f)["version"]
     rc, out = run("--version")
     check("plugin.json version matches graph.py", plugin_v in out, f"{plugin_v} vs {out.strip()}")
+
+
+def _dump(name, obj):
+    path = os.path.join(WORK, name)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f)
+    return path
+
+
+def known_bugs():
+    """docs/PLAN.md P1b: one check per bug found while inventorying the engine."""
+    print("== known bugs (P1b) ==")
+    seq = _dump("b1.json", {"actors": [{"id": "api"}, {"id": "db", "name": "Database"}],
+                            "messages": [{"from": "api", "to": "db", "label": "query"}]})
+    rc, out = run("seq", seq, "-o", os.path.join(WORK, "b1.svg"))
+    check("B1 a seq actor without a name is drawn with its id", rc == 0 and '"ok": true' in out, out[-200:])
+
+    csv_path = os.path.join(WORK, "b2.csv")
+    with open(csv_path, "w", encoding="utf-8") as f:
+        f.write("px,py,mass\n1,2,3\n2,3,5\n3,1,2\n")
+    rc, out = run("chart", "bubble", csv_path, "--x", "px", "--y", "py", "--size", "mass", "-o", os.path.join(WORK, "b2.svg"))
+    check("B2 chart validation accepts the --size the renderer reads", rc == 0, out[-200:])
+    rc, out = run("validate", csv_path, "--type", "bubble", "--x", "px", "--y", "py", "--size", "mass")
+    check("B2 validate takes every chart role flag", rc == 0, out[-200:])
+
+    flow = _dump("b3.json", {"nodes": [{"id": "s", "name": "Start"}, {"id": "d", "name": "OK?", "shape": "diamond"},
+                                       {"id": "a", "name": "A"}, {"id": "b", "name": "B"}, {"id": "e", "name": "End"}],
+                             "edges": [{"from": "s", "to": "d"}, {"from": "d", "to": "a"}, {"from": "d", "to": "b"},
+                                       {"from": "a", "to": "e"}, {"from": "b", "to": "e"}]})
+    rc, out = run("validate", flow, "--type", "flow")
+    n = out.count("unlabeled exit from diamond 'd'")
+    check("B3 one warning per diamond with unlabeled exits", n == 1, f"{n} warnings")
+
+    budgets = {}
+    for kind in ("arch", "schema", "line"):
+        rc, out = run("describe", kind)
+        budgets[kind] = json.loads(out).get("budgets", {}) if rc == 0 else {}
+    stale = [k for k, b in (("arch", "layers"), ("schema", "relations"), ("line", "points_per_series")) if b in budgets[k]]
+    check("B4 describe lists only budgets the validator checks", not stale, str(stale))
+
+    rc, out = run("flow", "--help")
+    check("B5 help does not offer inline text as the spec argument", rc == 0 and "inline text," not in out, out[-200:])
+
+    tall = [{"id": f"t{i}", "name": f"table_{i}", "columns": [{"name": f"c{j}", "type": "int"} for j in range(14)]}
+            for i in range(6)]
+    schema = _dump("b6.json", {"title": "Wide tables", "tables": tall, "relations": [], "budget": False})
+    rc, out = run("schema", schema, "-o", os.path.join(WORK, "b6.svg"))
+    check("B6 a row of tall tables leaves room for the next row", rc == 0 and '"ok": true' in out, out[-300:])
+
+    er = os.path.join(WORK, "b7.mmd")
+    with open(er, "w", encoding="utf-8") as f:
+        f.write('erDiagram\n    USER {\n        int id PK\n        string email "PK of the old system"\n    }\n')
+    rc, out = run("mermaid", er, "-o", os.path.join(WORK, "b7.svg"))
+    pk = open(os.path.join(WORK, "b7.svg"), encoding="utf-8").read().count(">PK</text>") if rc == 0 else -1
+    check("B7 a key word inside an ER comment is not a key", pk == 1, f"{pk} PK badges")
+
+    rc, out = run("mermaid", "-s", "flowchart TD; A[fa:fa-rocket Launch] --> B[Done]", "-o", os.path.join(WORK, "b8.svg"))
+    check("B8 an unknown fa: icon is reported, not dropped silently", rc == 0 and "fa-rocket" in out, out[-300:])
+
+    rs = mcp(['{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18"}}',
+              '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'])
+    tools = {t["name"]: t for r in rs if r.get("id") == 2 for t in r["result"]["tools"]}
+    enum = tools.get("export", {}).get("inputSchema", {}).get("properties", {}).get("to", {}).get("enum", [])
+    check("B9 MCP export offers drawio and excalidraw", {"drawio", "excalidraw"} <= set(enum), str(enum))
 
 
 if __name__ == "__main__":

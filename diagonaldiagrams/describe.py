@@ -62,7 +62,7 @@ DESCRIBE = {
         "rules": ["blue=HTTP/API, dashed=async, coral=focal", "tech sublabels in mono, names in sans",
                   "a wide layer spreads the canvas so boxes do not overlap",
                   "set budget false to draw past 9 nodes and 12 edges; focal stays at 2"],
-        "budgets": {"nodes": 9, "edges": 12, "layers": 6, "over": "a warning, not an error; one view per C4 level, or budget false hides it"},
+        "budgets": {"nodes": 9, "edges": 12, "over": "a warning, not an error; one view per C4 level, or budget false hides it"},
     },
     "seq": {
         "input": "JSON spec {title, sub, actors[], messages[]}",
@@ -80,7 +80,7 @@ DESCRIBE = {
                   "columns": [{"name": "col", "type": "data_type", "pk": "bool", "fk": "bool", "unique": "bool"}]},
         "relation": {"from": "id", "from_col": "col", "to": "id", "to_col": "col", "label": "1:N|1:1|M:N", "focal": "bool"},
         "rules": ["PK coral badge, FK blue badge, columns in mono, types muted", "orthogonal elbow routing", "max 6 tables per view"],
-        "budgets": {"tables": 6, "relations": 10, "columns_per_table": 12, "over": "a warning, not an error; split by bounded context, or budget false hides it"},
+        "budgets": {"tables": 6, "columns_per_table": 12, "over": "a warning, not an error; split by bounded context, or budget false hides it"},
         "example": '{"title":"Users & Teams","tables":[{"id":"u","name":"users","columns":[{"name":"id","type":"uuid","pk":true}]}],"relations":[]}',
     },
     "bar": {
@@ -105,7 +105,7 @@ DESCRIBE = {
                     "--grid/--no-grid": "tick rules, on by default",
                     "--markers/--no-markers": "point dots, on by default",
                     "--highlight": "x value or group, repeatable, drawn larger in accent"},
-        "budgets": {"series": 6, "points_per_series": 200, "over": "downsample or facet"},
+        "budgets": {"series": 6, "rows": 400, "over": "a warning, not an error; a series past 600 points is thinned for drawing"},
         "rules": ["non-negative data floors at 0", "Okabe-Ito series colors", "area fill only on a single series"],
         "example": "diagonaldiagrams line examples/line_throughput.csv --x timestamp --y rps --group service -o out/line.html",
     },

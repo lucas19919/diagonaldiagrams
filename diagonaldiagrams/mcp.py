@@ -37,7 +37,7 @@ def do_mcp(args):
          "inputSchema": {"type": "object", "required": ["path"], "properties": {"path": {"type": "string"}}}},
         {"name": "export", "description": "Write png, pdf, or svg from a rendered figure's receipt.",
          "inputSchema": {"type": "object", "required": ["path"],
-                         "properties": {"path": {"type": "string"}, "to": {"type": "string", "enum": ["png", "pdf", "svg"]},
+                         "properties": {"path": {"type": "string"}, "to": {"type": "string", "enum": ["png", "pdf", "svg", "drawio", "excalidraw"]},
                                         "layout": {"type": "string"}, "out": {"type": "string"}}}},
         {"name": "infer", "description": "Propose a scatter spec from a CSV.",
          "inputSchema": {"type": "object", "properties": {"data": {"type": "string"}, "path": {"type": "string"}}}},
