@@ -304,6 +304,7 @@ Deviations:
 
 **Status (2026-10-13):** in progress on branch `p3-style`.
 - **P3.1:** `editorial`, `ink` and `print` are token stylesheets in `style/themes/` that extend `core.json` (type sizes, spacing, strokes, palettes). The flat theme dicts the renderers read are built from them, so the goldens are unchanged. `--theme-file` takes v1 keys (`accent_tint` or `accent-tint`) or a stylesheet's `tokens`. B14 and B15 are fixed.
+- **P3.2:** `style/parse.py` reads every value form in DESIGN 5.3 (colors, tokens, `var()`, `mix()`, lengths, `border`/`border-<side>`, `border-radius`, `padding`, `box-shadow`, `font`, `linear-gradient`). It also holds the DESIGN 5.4 property table. Unknown properties and values are `bad-style` errors with a did-you-mean.
 
 | Task | Size | Work |
 | --- | --- | --- |
