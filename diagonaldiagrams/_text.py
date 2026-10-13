@@ -86,8 +86,21 @@ _NARROW = set("iljI.,:;'|!()[]{}`ftr ")
 _WIDE = set("mwMW@%")
 
 
+_WIDTHS = {}  # (text, size, bold) -> width: the repair loops measure the same labels hundreds of times
+
+
 def _text_w(s, fs, bold=False):
     """Width estimate for a system sans. No font metrics in the stdlib, so it errs a little wide."""
+    key = (s, fs, bold)
+    w = _WIDTHS.get(key)
+    if w is None:
+        if len(_WIDTHS) > 50000:
+            _WIDTHS.clear()
+        w = _WIDTHS[key] = _measure(s, fs, bold)
+    return w
+
+
+def _measure(s, fs, bold):
     w = 0.0
     for ch in s:
         if ch in _NARROW:

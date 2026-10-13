@@ -182,6 +182,9 @@ def translucent(el, st):
     return op(el.get("fill-opacity")) < 1 or op(st.get("opacity")) < 1 or op(el.get("opacity")) < 1
 
 
+_INLINE = {k: re.compile(rf"(?:^|;)\s*{k}\s*:\s*([^;]+)") for k in KEEP}  # one property in a style="..." attribute
+
+
 def svg_import(root, width, height):
     """The display list of a parsed SVG (an ElementTree root) with a width x height canvas."""
     dl = DisplayList(width, height)
@@ -195,11 +198,12 @@ def svg_import(root, width, height):
         st = dict(st, **{k: el.get(k) for k in KEEP if el.get(k) is not None})
         if css:
             st.update(css_for(css, el, tag))  # stylesheet rules beat presentation attributes
-        style = el.get("style") or ""
-        for k in KEEP:
-            hit = re.search(rf"(?:^|;)\s*{k}\s*:\s*([^;]+)", style)
-            if hit:
-                st[k] = hit.group(1).strip()
+        style = el.get("style")
+        if style:  # most elements have none; the regexes are what this walk spends most time on
+            for k, pat in _INLINE.items():
+                hit = pat.search(style)
+                if hit:
+                    st[k] = hit.group(1).strip()
         if st.get("display") == "none" or st.get("visibility") == "hidden" or num(st.get("opacity", 1), 1) <= 0:
             return
         if el.get("transform"):

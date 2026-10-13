@@ -149,19 +149,27 @@ def shared_runs(v, issues):
     # that forks: nobody can tell where each goes.
     runs = v.runs
     shared = set()
-    for i in range(len(runs)):
-        for j in range(i + 1, len(runs)):
-            ka, da, ca, la, ha = runs[i]
-            kb, db, cb, lb, hb = runs[j]
-            sa, ea = v.arrows[ka].ends
-            sb, eb = v.arrows[kb].ends
-            joint = math.hypot(sa[0] - sb[0], sa[1] - sb[1]) < 3 or math.hypot(ea[0] - eb[0], ea[1] - eb[1]) < 3
-            if ka != kb and not joint and da == db and abs(ca - cb) < 2 and min(ha, hb) - max(la, lb) > -12 and (ka, kb) not in shared:
-                shared.add((ka, kb))
-                mid = (max(la, lb) + min(ha, hb)) / 2
-                where = [round(mid), round(ca)] if da == "h" else [round(ca), round(mid)]
-                issues.append({"code": "shared", "msg": f"two arrows run on one line at {where}",
-                               "fix": "reorder the row or move one node so the arrows take separate paths", "at": where})
+    # only runs in the same direction within 2px of each other can share a line: find those pairs
+    # through a sort, then look at them in the order a full pairwise scan would
+    order = sorted(range(len(runs)), key=lambda k: (runs[k][1], runs[k][2]))
+    pairs = []
+    for x, i in enumerate(order):
+        for j in order[x + 1:]:
+            if runs[j][1] != runs[i][1] or runs[j][2] - runs[i][2] >= 2:
+                break
+            pairs.append((min(i, j), max(i, j)))
+    for i, j in sorted(pairs):
+        ka, da, ca, la, ha = runs[i]
+        kb, db, cb, lb, hb = runs[j]
+        sa, ea = v.arrows[ka].ends
+        sb, eb = v.arrows[kb].ends
+        joint = math.hypot(sa[0] - sb[0], sa[1] - sb[1]) < 3 or math.hypot(ea[0] - eb[0], ea[1] - eb[1]) < 3
+        if ka != kb and not joint and da == db and abs(ca - cb) < 2 and min(ha, hb) - max(la, lb) > -12 and (ka, kb) not in shared:
+            shared.add((ka, kb))
+            mid = (max(la, lb) + min(ha, hb)) / 2
+            where = [round(mid), round(ca)] if da == "h" else [round(ca), round(mid)]
+            issues.append({"code": "shared", "msg": f"two arrows run on one line at {where}",
+                           "fix": "reorder the row or move one node so the arrows take separate paths", "at": where})
 
 
 @check("labels on decision outlines", "collide")

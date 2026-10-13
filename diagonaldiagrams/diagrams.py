@@ -285,7 +285,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None):
                 rail.append((cx + 80, cy, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top))
     dr.add(*paint.legend_line(t, W, H - 48, H - 32, "box = step, diamond = decision, rounded = start or end"))
-    return dr.svg(), W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
+    return dr, W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
 
 
 def render_flow(spec, corners="editorial", auto=False, theme=None):
@@ -293,12 +293,12 @@ def render_flow(spec, corners="editorial", auto=False, theme=None):
     another lane and draw again. A node with its own lane is never moved. A move must lower
     the layout cost (problems, crossings, arrow length), not just the problem count."""
     def draw(sp):
-        svg, w, h, placed = _render_flow_once(sp, corners, auto, theme)
-        out, found, c = _layout_cost((svg, w, h))
+        dr, w, h, placed = _render_flow_once(sp, corners, auto, theme)
+        out, found, c = _layout_cost((dr, w, h))
         return out, placed, found, c
     out, pos, bad, cost = draw(spec)
     if not bad:
-        return out
+        return _as_svg(out)
     work = json.loads(json.dumps(spec))
     free = {n["id"] for n in work.get("nodes", []) if "lane" not in n}
     # one move fixes one spot or a few, so a big flow with many problems gets more moves
@@ -328,7 +328,7 @@ def render_flow(spec, corners="editorial", auto=False, theme=None):
         free.discard(nid)
         if not bad:
             break
-    return out
+    return _as_svg(out)
 
 
 def render_arch(spec, corners="editorial", theme=None):
@@ -338,7 +338,7 @@ def render_arch(spec, corners="editorial", theme=None):
     arrow length breaks ties, so one fix is never bought with a tangle of new crossings."""
     out, bad, cost = _layout_cost(_render_arch_once(spec, corners, theme))
     if not bad or not isinstance(spec.get("nodes"), list):
-        return out
+        return _as_svg(out)
     work = json.loads(json.dumps(spec))
     for _ in range(6):
         improved = False
@@ -356,18 +356,22 @@ def render_arch(spec, corners="editorial", theme=None):
                         work, out, bad, cost, improved = trial, o, found, c, True
         if not improved:
             break
-    return out
+    return _as_svg(out)
 
 
 def _layout_cost(out):
-    """(drawing, audit problems, cost) for the layout repair loops. The drawing comes from
-    paint.Drawing, which always writes well-formed SVG, so a parse error is a bug and is raised
-    rather than scored as a layout with no problems."""
-    import xml.etree.ElementTree as ET
+    """(draft, audit problems, cost) for the layout repair loops. A draft is (Drawing, W, H): the
+    audit reads the drawing's element tree, so no draft is written out as SVG and parsed back
+    (D5). _as_svg() writes the one that wins."""
     stats = {"crossings": 0, "wire": 0.0}
-    found = _svg_geometry(ET.fromstring(out[0]), out[1], out[2], stats)
+    found = _svg_geometry(out[0].etree(), out[1], out[2], stats)
     bad = [i for i in found if i["code"] in ("through", "strike", "overlap", "collide", "shared", "intrude")]
     return out, bad, 4 * len(bad) + stats["crossings"] + stats["wire"] / 400.0
+
+
+def _as_svg(out):
+    """A draft from the repair loops as the (svg, W, H) the callers take."""
+    return (out[0].svg(),) + tuple(out[1:])
 
 
 def _gap_tracks(ports, room=None, net_by_source=False):
@@ -536,7 +540,7 @@ def _render_arch_once(spec, corners="editorial", theme=None):
                 rail.append((x + 80, y, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top))
     dr.add(*paint.legend_line(t, W, H - 48, H - 32, "blue = HTTP call, dashed = sent in the background, coral = highlighted"))
-    return dr.svg(), W, H
+    return dr, W, H
 
 
 def render_seq(spec, corners="editorial", theme=None):
@@ -632,7 +636,7 @@ def render_schema(spec, corners="editorial", theme=None):
     out, bad, cost = _layout_cost(_render_schema_once(spec, corners, theme))
     tables = spec.get("tables") if isinstance(spec, dict) else None
     if not bad or not isinstance(tables, list) or any("x" in tb for tb in tables if isinstance(tb, dict)):
-        return out
+        return _as_svg(out)
     work = json.loads(json.dumps(spec))
     for _ in range(4):
         improved = False
@@ -646,7 +650,7 @@ def render_schema(spec, corners="editorial", theme=None):
                     work, out, bad, cost, improved = trial, o, found, c, True
         if not improved or not bad:
             break
-    return out
+    return _as_svg(out)
 
 
 def _render_schema_once(spec, corners="editorial", theme=None):
@@ -741,4 +745,4 @@ def _render_schema_once(spec, corners="editorial", theme=None):
                 rail.append((b["x"] + b["w"], b["y"] + 18, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, 110))
     dr.add(*paint.legend_line(t, W, H - 38, H - 24, "PK = primary key, FK = foreign key, blue = relation, coral = highlighted"))
-    return dr.svg(), W, H
+    return dr, W, H

@@ -56,13 +56,21 @@ class Element:
     def __repr__(self):
         return f"Element({self.tag!r}, owner={self.owner!r}, role={self.role!r})"
 
+    def values(self):
+        """Attribute values as the SVG text will hold them (numbers canonical, not yet escaped)."""
+        return {k: (fmt(v) if isinstance(v, (int, float)) else (_numbers(v) if k in GEOMETRY else str(v)))
+                for k, v in self.attrs.items() if v is not None}
+
+    def etree(self):
+        """This element as an ElementTree element, equal to what parsing svg() would give."""
+        import xml.etree.ElementTree as ET
+        node = ET.Element(self.tag, self.values())
+        node.text = self.text or None
+        node.extend(c.etree() for c in self.children)
+        return node
+
     def svg(self):
-        parts = []
-        for k, v in self.attrs.items():
-            if v is None:
-                continue
-            v = fmt(v) if isinstance(v, (int, float)) else (_numbers(v) if k in GEOMETRY else v)
-            parts.append(f' {k}="{_attr(v)}"')
+        parts = [f' {k}="{_attr(v)}"' for k, v in self.values().items()]
         head = f"<{self.tag}{''.join(parts)}"
         if self.text is None and not self.children:
             return head + "/>"
@@ -108,6 +116,16 @@ class Drawing:
 
     def insert(self, index, elements):
         self.items[index:index] = list(elements)
+
+    def etree(self):
+        """The drawing as an element tree, for the audit (D5: nothing re-parses its own SVG). It holds
+        what svg() would write, after the projection stage."""
+        import xml.etree.ElementTree as ET
+        root = ET.Element("svg", {"viewBox": f"0 0 {fmt(self.width)} {fmt(self.height)}", "width": fmt(self.width)})
+        ET.SubElement(root, "title").text = self.title or None
+        ET.SubElement(root, "desc").text = self.desc or None
+        root.extend(e.etree() for e in project(self.items, self.projection))
+        return root
 
     def svg(self):
         head = (f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {fmt(self.width)} {fmt(self.height)}" '
