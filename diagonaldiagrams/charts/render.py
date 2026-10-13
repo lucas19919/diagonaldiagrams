@@ -74,7 +74,7 @@ def render_chart(kind, path, title="", subtitle="", source="", theme=None, x=Non
     """Draw one taxonomy chart. Aliases call flow, arch, seq, or geo. terrain and print refuse."""
     kind = str(kind or "").strip().lower()
     if kind not in _CHART_BLURB:
-        raise SystemExit(f"unknown chart type '{kind}'. Run: py graph.py describe")
+        raise SystemExit(f"unknown chart type '{kind}'. Run: diagonaldiagrams describe")
     if kind == "terrain":
         raise SystemExit("terrain is not drawn. A DEM raster is outside this library. Use contour for a z grid.")
     if kind == "print":

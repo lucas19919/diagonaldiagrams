@@ -26,12 +26,18 @@ def do_sync(args):
     synced, failed = [], []
     for item in rep.get("stale_domains", []):
         spec = item.get("diagram_spec", "")
-        m = _re.match(r"py graph\.py extract (\w+) (\S+) -o (\S+)", item.get("remediation_cmd", ""))
-        if not spec or not m:
+        argv = item.get("remediation_argv") or []
+        m = _re.match(r"(?:py graph\.py|diagonaldiagrams) extract (\w+) (\S+) -o (\S+)", item.get("remediation_cmd", ""))
+        if len(argv) == 5 and argv[0] == "extract" and argv[3] == "-o":
+            kind, src = argv[1], argv[2]
+        elif m:
+            kind, src, _ = m.groups()
+        else:
+            kind = src = None
+        if not spec or not kind:
             failed.append({"spec": spec or item.get("domain", "?"),
                            "reason": "heuristic-only finding: add a --map mapping for machine remediation"})
             continue
-        kind, src, _ = m.groups()
         p1 = _sp.run(me + ["extract", kind, os.path.join(path, src),
                            "-o", os.path.join(path, spec)], capture_output=True, text=True, env=me_env)
         if p1.returncode:
@@ -125,9 +131,9 @@ def do_monitor(args):
     schema_triggers = [f for f in schema_triggers if f not in covered]
     api_triggers = [f for f in api_triggers if f not in covered]
     if schema_triggers and not any("schema" in d.lower() for d in diagram_files):
-        stale.append({"domain": "database", "changed_files": schema_triggers, "remediation": "py graph.py extract schema <model_file> -o docs/schema.graph.json"})
+        stale.append({"domain": "database", "changed_files": schema_triggers, "remediation": "diagonaldiagrams extract schema <model_file> -o docs/schema.graph.json"})
     if api_triggers and not any("route" in d.lower() or "arch" in d.lower() for d in diagram_files):
-        stale.append({"domain": "architecture_api", "changed_files": api_triggers, "remediation": "py graph.py extract routes <route_file> -o docs/arch.graph.json"})
+        stale.append({"domain": "architecture_api", "changed_files": api_triggers, "remediation": "diagonaldiagrams extract routes <route_file> -o docs/arch.graph.json"})
     if getattr(args, "map", None):
         # mapping-driven semantic check: extract code, diff against the spec.
         # No semantic difference => no drift (kills heuristic false positives).
@@ -158,22 +164,22 @@ def do_monitor(args):
                     specs.append(json.loads(r.stdout))
                 except json.JSONDecodeError:
                     pass
-            remedy = f"py graph.py extract {kind} {hits[0]} -o {spec_rel}"
+            remedy = f"diagonaldiagrams extract {kind} {hits[0]} -o {spec_rel}"
+            fix = {"remediation_cmd": remedy, "remediation_argv": ["extract", kind, hits[0], "-o", spec_rel]}
             if not specs:
                 stale.append({"domain": domain, "changed_files": hits, "diagram_spec": spec_rel,
-                              "diff_summary": "extractor produced no spec (unverifiable)",
-                              "remediation_cmd": remedy})
+                              "diff_summary": "extractor produced no spec (unverifiable)", **fix})
                 continue
             spec_path = os.path.join(path, spec_rel)
             if not os.path.exists(spec_path):
                 stale.append({"domain": domain, "changed_files": hits, "diagram_spec": spec_rel,
-                              "diff_summary": "diagram spec missing", "remediation_cmd": remedy})
+                              "diff_summary": "diagram spec missing", **fix})
                 continue
             with open(spec_path, encoding="utf-8") as f:
                 diff = _spec_diff(json.load(f), _merge_specs(specs, kind), kind)
             if diff:
                 stale.append({"domain": domain, "changed_files": hits, "diagram_spec": spec_rel,
-                              "diff_summary": diff, "remediation_cmd": remedy})
+                              "diff_summary": diff, **fix})
     drift_detected = bool(stale)
     report = {
         "ok": not drift_detected,

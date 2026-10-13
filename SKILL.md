@@ -1,14 +1,15 @@
 # graph — agent skill
 
-Graphing library for agents. `graph.py` is Python 3, standard library only.
+Graphing library for agents: the `diagonaldiagrams` package, Python 3, standard library only.
+Run `diagonaldiagrams` once installed; from a checkout, `py graph.py` takes the same arguments.
 Install with the `diagonaldiagrams-install` skill, then draw with the commands below.
 Same spec, same SVG.
 
 ## The loop
 
 ```
-py graph.py <type> SPEC.json|DATA.csv [flags] -o out/x.svg
-py graph.py mermaid - -o out/x.svg <<'EOF'      # or -s TEXT; the text is saved as out/x.spec.mmd
+diagonaldiagrams <type> SPEC.json|DATA.csv [flags] -o out/x.svg
+diagonaldiagrams mermaid - -o out/x.svg <<'EOF'      # or -s TEXT; the text is saved as out/x.spec.mmd
 flowchart TD
   A[Client] --> B[Server]
 EOF
@@ -25,41 +26,41 @@ the receipt. `validate` and `audit` also run alone; `audit` reads any SVG.
 
 ```bash
 # data → journal scatter (groups + error bars + facets)
-py graph.py infer exp.csv
-py graph.py scatter exp.csv --x dose --y expr --yerr sd --group tissue --facet cohort \
+diagonaldiagrams infer exp.csv
+diagonaldiagrams scatter exp.csv --x dose --y expr --yerr sd --group tissue --facet cohort \
   --title 'Dose response' --subtitle 'One-sentence finding.' \
   --xlabel Dose --xunit mg --ylabel Expression --yunit 'log2 counts' \
   --source 'lab notebook 2026-10' -o out/exp.html
 
 # data → bar / line
-py graph.py bar lat.csv --cat service --val p99 --unit ms --sort desc -o out/bar.html
-py graph.py line tput.csv --x ts --y rps --group service -o out/line.html
+diagonaldiagrams bar lat.csv --cat service --val p99 --unit ms --sort desc -o out/bar.html
+diagonaldiagrams line tput.csv --x ts --y rps --group service -o out/line.html
 
 # logic → decision flowchart (PAP/DIN 66001 shapes; auto-layout default)
-py graph.py validate flow.json && py graph.py flow flow.json --corners sharp -o out/f.html
+diagonaldiagrams validate flow.json && diagonaldiagrams flow flow.json --corners sharp -o out/f.html
 # --auto forces longest-path layering even when ranks are present (barycenter uncrossing)
 
 # runtime → sequence (lifelines, sync/async/reply)
-py graph.py validate seq.json && py graph.py seq seq.json -o out/seq.html
+diagonaldiagrams validate seq.json && diagonaldiagrams seq seq.json -o out/seq.html
 
 # database → schema (tables, PK/FK, relations)
-py graph.py validate schema.json && py graph.py schema schema.json -o out/schema.html
+diagonaldiagrams validate schema.json && diagonaldiagrams schema schema.json -o out/schema.html
 
 # places → point map (CSV lat/lon, or GeoJSON points and polygons) on a built-in coastline. Not map tiles.
-py graph.py geo cities.csv --lat lat --lon lon --label city --val people_m -o out/geo.html
+diagonaldiagrams geo cities.csv --lat lat --lon lon --label city --val people_m -o out/geo.html
 
 # codebase → architecture view (one C4 level per render)
-py graph.py arch containers.json -o out/arch.html
+diagonaldiagrams arch containers.json -o out/arch.html
 
 # math → 2D curves from an equation. describe math prints the language.
-py graph.py validate math.json --type math
-py graph.py chart math math.json -o out/math.html
+diagonaldiagrams validate math.json --type math
+diagonaldiagrams chart math math.json -o out/math.html
 
 # the rest of the taxonomy. describe prints the columns or the JSON shape.
-py graph.py describe sankey
-py graph.py chart sankey flows.csv -o out/sankey.html
-py graph.py chart gantt plan.json -o out/gantt.html
-py graph.py chart choropleth regions.geojson -o out/regions.html
+diagonaldiagrams describe sankey
+diagonaldiagrams chart sankey flows.csv -o out/sankey.html
+diagonaldiagrams chart gantt plan.json -o out/gantt.html
+diagonaldiagrams chart choropleth regions.geojson -o out/regions.html
 ```
 
 ## Hard budgets (validate enforces, audit double-checks)
@@ -89,14 +90,14 @@ A flow or architecture spec may set `"budget": false` to lift the node and edge 
 
 ## MCP
 
-`py graph.py mcp` serves the same loop over stdio as six tools: describe, render,
+`diagonaldiagrams mcp` serves the same loop over stdio as six tools: describe, render,
 validate, audit, export, infer. `render` takes `spec` (JSON object) or `data` (CSV
 text) inline plus `options` (the CLI flags), so one call draws and audits a figure.
 
-`py graph.py doc DOC.md --out-dir assets [--check]` compiles fenced
+`diagonaldiagrams doc DOC.md --out-dir assets [--check]` compiles fenced
 ```graph:<type> blocks to SVGs (+ `--check` for CI).
-`py graph.py extract schema|routes SRC -o spec.json` reverse-extracts specs from
+`diagonaldiagrams extract schema|routes SRC -o spec.json` reverse-extracts specs from
 SQL DDL / Prisma / Python ORM (SQLAlchemy, Django, SQLModel) / FastAPI-Flask routes.
-`py graph.py monitor --map graph.monitor.json [--ci]` flags drift;
-`py graph.py sync --map graph.monitor.json [--docs ARCH.md] [--commit]` is the
+`diagonaldiagrams monitor --map graph.monitor.json [--ci]` flags drift;
+`diagonaldiagrams sync --map graph.monitor.json [--docs ARCH.md] [--commit]` is the
 auto-fix bot (extract → validate → doc → audit → local commit, never pushes).

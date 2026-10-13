@@ -220,7 +220,7 @@ def do_export(args):
             base = base[: -len(ext)]
     rcpt = base + ".graph.json"
     if not os.path.exists(rcpt):
-        sys.exit(f"no receipt {rcpt} — re-render with: py graph.py scatter ... -o {base}.html")
+        sys.exit(f"no receipt {rcpt} — re-render with: diagonaldiagrams scatter ... -o {base}.html")
     with open(rcpt, encoding="utf-8") as f:
         r = _receipt_inputs(json.load(f), rcpt)
     missing = [r[k] for k in _RECEIPT_PATHS if isinstance(r.get(k), str) and not os.path.exists(r[k])]

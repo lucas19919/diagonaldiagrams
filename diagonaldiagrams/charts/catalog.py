@@ -96,9 +96,9 @@ def _chart_meta():
     for name, text in _CHART_BLURB.items():
         out[name] = {
             "input": text,
-            "writes": f"py graph.py chart {name} SRC -o OUT.svg",
+            "writes": f"diagonaldiagrams chart {name} SRC -o OUT.svg",
             "rules": ["title and subtitle are drawn on the figure",
                       "JSON specs may set budget false to lift a count cap"],
-            "example": f"py graph.py chart {name} SRC -o out/{name}.html",
+            "example": f"diagonaldiagrams chart {name} SRC -o out/{name}.html",
         }
     return out

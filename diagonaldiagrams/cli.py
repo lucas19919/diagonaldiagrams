@@ -296,7 +296,7 @@ def main():
     p.add_argument("--note-at", action="append", default=[], help="callout anchor: x,y")
     p.add_argument("-o", required=True)
     _chart_flags(p)
-    p = sub.add_parser("chart", help="draw one taxonomy type: py graph.py chart KIND SRC -o OUT.svg")
+    p = sub.add_parser("chart", help="draw one taxonomy type: diagonaldiagrams chart KIND SRC -o OUT.svg")
     p.add_argument("kind")
     p.add_argument("src")
     p.add_argument("-o", required=True)

@@ -298,7 +298,7 @@ def do_infer(args):
            "xlabel": nums[0], "xunit": "", "ylabel": nums[1], "yunit": "",
            "group": group, "yerr": err, "facet": facet, "source": os.path.basename(args.target),
            "groups_found": {k: v for k, v in cats.items()},
-           "render": f"py graph.py scatter {args.target} --x {nums[0]} --y {nums[1]}"
+           "render": f"diagonaldiagrams scatter {args.target} --x {nums[0]} --y {nums[1]}"
                      + (f" --group {group}" if group else "") + (f" --yerr {err}" if err else "")
                      + (f" --facet {facet}" if facet else "") + " -o out/inferred.html",
            "next": "edit title/subtitle/units, then validate + render"}

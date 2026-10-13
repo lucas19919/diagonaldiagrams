@@ -7,7 +7,7 @@ from .charts.catalog import _chart_meta
 DESCRIBE = {
     "scatter": {
         "input": "CSV with header row. Two numeric columns minimum.",
-        "writes": "py graph.py scatter DATA.csv --x X --y Y -o OUT.svg  (+ OUT.html and the OUT.graph.json receipt beside it)",
+        "writes": "diagonaldiagrams scatter DATA.csv --x X --y Y -o OUT.svg  (+ OUT.html and the OUT.graph.json receipt beside it)",
         "required": ["--x", "--y"],
         "options": {"--title": "finding, not description", "--subtitle": "one sentence takeaway",
                     "--figure": "Fig. number", "--xlabel/--xunit/--ylabel/--yunit": "axis + unit in parens",
@@ -22,11 +22,11 @@ DESCRIBE = {
         "rules": ["non-negative data never shows a negative axis", "domain includes error bars",
                   "ticks are nice numbers aligned to grid",
                   "title and subtitle are drawn on the figure; the HTML page and the .svg are the same drawing"],
-        "example": "py graph.py scatter examples/scatter_groups.csv --x dose --y expr --yerr expr_err --group tissue --facet cohort --xlabel Dose --xunit mg --ylabel Expression --yunit 'log2 counts' -o out/s.html",
+        "example": "diagonaldiagrams scatter examples/scatter_groups.csv --x dose --y expr --yerr expr_err --group tissue --facet cohort --xlabel Dose --xunit mg --ylabel Expression --yunit 'log2 counts' -o out/s.html",
     },
     "mermaid": {
         "input": "Mermaid text (.mmd): flowchart/graph, sequenceDiagram, or erDiagram",
-        "writes": "py graph.py mermaid DIAGRAM.mmd -o OUT.svg   (flow, seq, or schema; checked and audited like a JSON spec)",
+        "writes": "diagonaldiagrams mermaid DIAGRAM.mmd -o OUT.svg   (flow, seq, or schema; checked and audited like a JSON spec)",
         "flowchart": {
             "nodes": "A[step]  A(step)  A([start or end])  A((start or end))  A{decision?}  A[(store)]",
             "arrows": "A --> B   A -->|label| B   A -- label --> B   A -.-> B (dashed)   A ==> B (focal)   A & B --> C",
@@ -42,7 +42,7 @@ DESCRIBE = {
     "icons": {"use": 'set "icon" on a flow or arch node', "names": sorted(ICONS)},
     "flow": {
         "input": "JSON spec {title, sub, nodes[], edges[], groups[]}",
-        "writes": "py graph.py flow SPEC.json -o OUT.svg",
+        "writes": "diagonaldiagrams flow SPEC.json -o OUT.svg",
         "node": {"id": "unique", "shape": "oval=start/end | rect=step | diamond=decision | dot=merge",
                  "name": "2-4 words", "tag": "STEP|START|END", "sub": "mono sublabel", "rank": "row, 0 at the top (default: automatic)",
                  "lane": "-1 left|0 center|1 right (default 0)", "focal": "bool, max 2 per diagram"},
@@ -55,7 +55,7 @@ DESCRIBE = {
     },
     "arch": {
         "input": "JSON spec {title, sub, nodes[], edges[]}",
-        "writes": "py graph.py arch SPEC.json -o OUT.svg",
+        "writes": "diagonaldiagrams arch SPEC.json -o OUT.svg",
         "node": {"id": "unique", "layer": "row int (default 0)", "name": "service", "sub": "Lang:port e.g. Go:8080",
                  "tag": "UI|API|SVC|STORE", "focal": "bool, max 2"},
         "edge": {"from": "id", "to": "id", "label": "VERB", "proto": "https=blue arrow", "async": "dashed bool", "focal": "bool"},
@@ -66,7 +66,7 @@ DESCRIBE = {
     },
     "seq": {
         "input": "JSON spec {title, sub, actors[], messages[]}",
-        "writes": "py graph.py seq SPEC.json -o OUT.svg",
+        "writes": "diagonaldiagrams seq SPEC.json -o OUT.svg",
         "actor": {"id": "unique", "name": "label", "sub": "tech/mono sub", "tag": "USER|UI|GATEWAY|SVC|STORE", "focal": "bool, max 2"},
         "message": {"from": "id", "to": "id", "label": "Call name/payload", "proto": "https/grpc", "reply": "bool dashed", "async": "bool dashed", "focal": "bool"},
         "rules": ["solid=sync, dashed=reply/async, blue=http, coral=focal", "top-down sequence order", "max 6 lifelines"],
@@ -75,7 +75,7 @@ DESCRIBE = {
     },
     "schema": {
         "input": "JSON spec {title, sub, tables[], relations[]}",
-        "writes": "py graph.py schema SPEC.json -o OUT.svg",
+        "writes": "diagonaldiagrams schema SPEC.json -o OUT.svg",
         "table": {"id": "unique", "name": "table_name", "tag": "AUTH|CORE|AUDIT", "focal": "bool, max 2",
                   "columns": [{"name": "col", "type": "data_type", "pk": "bool", "fk": "bool", "unique": "bool"}]},
         "relation": {"from": "id", "from_col": "col", "to": "id", "to_col": "col", "label": "1:N|1:1|M:N", "focal": "bool"},
@@ -85,7 +85,7 @@ DESCRIBE = {
     },
     "bar": {
         "input": "CSV with header row. One categorical column and one numeric column.",
-        "writes": "py graph.py bar DATA.csv --cat CAT --val VAL -o OUT.svg",
+        "writes": "diagonaldiagrams bar DATA.csv --cat CAT --val VAL -o OUT.svg",
         "options": {"--cat": "category column", "--val": "numeric value column", "--group": "subgroup column",
                     "--sort": "none|asc|desc", "--orientation": "v|h", "--unit": "unit string",
                     "--title/--subtitle": "drawn on the figure",
@@ -94,11 +94,11 @@ DESCRIBE = {
                     "--highlight": "category or group, repeatable, drawn in accent"},
         "budgets": {"bars": 24, "categories": 12, "over": "sort top-N + other"},
         "rules": ["bar charts must start at zero", "value labels sit on the bars", "gridlines follow the ticks"],
-        "example": "py graph.py bar examples/bar_latency.csv --cat service --val p99_latency_ms --unit ms -o out/bar.html",
+        "example": "diagonaldiagrams bar examples/bar_latency.csv --cat service --val p99_latency_ms --unit ms -o out/bar.html",
     },
     "line": {
         "input": "CSV with header row. Continuous/temporal X column and numeric Y column.",
-        "writes": "py graph.py line DATA.csv --x X --y Y -o OUT.svg",
+        "writes": "diagonaldiagrams line DATA.csv --x X --y Y -o OUT.svg",
         "options": {"--x": "x column (numeric or timestamp)", "--y": "y column (numeric)", "--group": "series column",
                     "--xlabel/--xunit/--ylabel/--yunit": "axis labels",
                     "--title/--subtitle": "drawn on the figure",
@@ -107,11 +107,11 @@ DESCRIBE = {
                     "--highlight": "x value or group, repeatable, drawn larger in accent"},
         "budgets": {"series": 6, "points_per_series": 200, "over": "downsample or facet"},
         "rules": ["non-negative data floors at 0", "Okabe-Ito series colors", "area fill only on a single series"],
-        "example": "py graph.py line examples/line_throughput.csv --x timestamp --y rps --group service -o out/line.html",
+        "example": "diagonaldiagrams line examples/line_throughput.csv --x timestamp --y rps --group service -o out/line.html",
     },
     "geo": {
         "input": "CSV with lat/lon columns, or a GeoJSON FeatureCollection of Points and Polygons.",
-        "writes": "py graph.py geo DATA.csv --lat lat --lon lon --label name --val pop -o OUT.svg",
+        "writes": "diagonaldiagrams geo DATA.csv --lat lat --lon lon --label name --val pop -o OUT.svg",
         "options": {"--lat/--lon": "column names (guessed from lat/lon/lng when omitted)",
                     "--label": "place name", "--val": "numeric size",
                     "--title/--subtitle": "drawn on the figure", "--source": "footer provenance",
@@ -122,38 +122,38 @@ DESCRIBE = {
         "rules": ["Web Mercator figure with a built-in coastline, not a tiled basemap",
                   "GeoJSON polygons are drawn on top of the coastline",
                   "graticule, kilometre scale bar, north arrow", "dot size follows --val"],
-        "example": "py graph.py geo examples/geo_cities.csv --lat lat --lon lon --label city --val people_m -o out/geo.html",
+        "example": "diagonaldiagrams geo examples/geo_cities.csv --lat lat --lon lon --label city --val people_m -o out/geo.html",
     },
     "doc": {
         "input": "Markdown document containing ```graph:<type> fenced blocks.",
-        "writes": "py graph.py doc DOC.md [--out-dir assets] [--check]",
+        "writes": "diagonaldiagrams doc DOC.md [--out-dir assets] [--check]",
         "behavior": "Parses and compiles embedded diagram specs into standalone SVGs in assets/, updates doc links",
     },
     "monitor": {
         "input": "Repository working tree or git history.",
-        "writes": "py graph.py monitor [--base <ref>] [--ci] [--map graph.monitor.json]",
+        "writes": "diagonaldiagrams monitor [--base <ref>] [--ci] [--map graph.monitor.json]",
         "behavior": "Scans code changes for data models, routes, and migrations without corresponding diagram updates; outputs JSON drift report. With --map, extracts each changed file and semantically diffs against its spec (no diff = no drift, even if files changed).",
         "map_format": '{"mappings": [{"code": "models/*.py", "spec": "docs/schema.graph.json", "kind": "schema", "domain": "database"}]}',
     },
     "extract": {
         "input": "Code source file (.sql DDL, Python ORM model, FastAPI routes).",
-        "writes": "py graph.py extract schema|routes SOURCE_FILE -o SPEC.json",
+        "writes": "diagonaldiagrams extract schema|routes SOURCE_FILE -o SPEC.json",
         "behavior": "Reverse-extracts architecture or database schema diagram specs directly from source code using AST/token parsing",
     },
     "export": {
         "input": "Receipt OUT.graph.json written beside every render.",
-        "writes": "py graph.py export OUT --to png|pdf|svg [--layout figure|wide|slide|social] [--width 1600] [-o FILE]",
+        "writes": "diagonaldiagrams export OUT --to png|pdf|svg [--layout figure|wide|slide|social] [--width 1600] [-o FILE]",
         "rules": ["svg works everywhere, zero deps (re-render from receipt)",
                   "layouts figure/wide/slide/social apply to scatter; other types export single layout",
                   "png and pdf use cairosvg when it imports, otherwise headless Edge or Chrome",
                   "the HTML page has Export PNG, which saves the figure from the browser"],
         "budgets": {"png_width_default": 1600},
-        "example": "py graph.py export out/scatter --to svg --layout social",
+        "example": "diagonaldiagrams export out/scatter --to svg --layout social",
     },
     "sync": {
         "input": "Same inputs as monitor (--path, --base, --map).",
-        "writes": "py graph.py sync --map graph.monitor.json [--docs ARCH.md] [--commit]",
-        "behavior": "Auto-fix bot: for each mapping-backed drift entry runs extract -o spec, validates, recompiles --docs, audits emitted SVGs. Default touches only the working tree; --commit creates a LOCAL commit (never pushes). Exit 1 if anything is left undone. Heartbeat: cron `0 6 * * * cd repo && py graph.py sync --map graph.monitor.json --commit`, Windows Task Scheduler, or an Antigravity cron//goal task.",
+        "writes": "diagonaldiagrams sync --map graph.monitor.json [--docs ARCH.md] [--commit]",
+        "behavior": "Auto-fix bot: for each mapping-backed drift entry runs extract -o spec, validates, recompiles --docs, audits emitted SVGs. Default touches only the working tree; --commit creates a LOCAL commit (never pushes). Exit 1 if anything is left undone. Heartbeat: cron `0 6 * * * cd repo && diagonaldiagrams sync --map graph.monitor.json --commit`, Windows Task Scheduler, or an Antigravity cron//goal task.",
     },
 }
 
