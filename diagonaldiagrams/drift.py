@@ -1,5 +1,6 @@
 """monitor and sync: notice when code and its diagrams drift apart, and fix it."""
 import json, os, sys
+from .errors import SpecError
 from ._proc import _self_cmd
 from ._lazy import lazy
 
@@ -22,7 +23,7 @@ def do_sync(args):
     try:
         rep = json.loads(r.stdout)
     except json.JSONDecodeError:
-        sys.exit(f"sync: monitor produced no report:\n{r.stdout}\n{r.stderr}")
+        raise SpecError(f"sync: monitor produced no report:\n{r.stdout}\n{r.stderr}")
     synced, failed = [], []
     for item in rep.get("stale_domains", []):
         spec = item.get("diagram_spec", "")
@@ -82,7 +83,7 @@ def do_sync(args):
             committed = c2.returncode == 0 and c3.returncode == 0
     out = {"ok": not failed, "synced": synced, "failed": failed, "committed": committed}
     print(json.dumps(out, indent=2))
-    raise SystemExit(0 if not failed else 1)
+    return 0 if not failed else 1
 
 
 def do_monitor(args):
@@ -143,7 +144,7 @@ def do_monitor(args):
             with open(args.map, encoding="utf-8") as f:
                 mappings = json.load(f).get("mappings", [])
         except (FileNotFoundError, json.JSONDecodeError) as e:
-            sys.exit(f"bad --map file: {e}")
+            raise SpecError(f"bad --map file: {e}")
         for mp in mappings:
             pat, spec_rel = mp.get("code", ""), mp.get("spec", "")
             kind = mp.get("kind", "schema")
@@ -190,4 +191,4 @@ def do_monitor(args):
     }
     print(json.dumps(report, indent=2))
     if args.ci and drift_detected:
-        raise SystemExit(1)
+        return 1

@@ -1,5 +1,6 @@
 """Themes, palettes and the font stack."""
 import json, sys
+from .errors import SpecError
 
 
 THEME = {
@@ -34,10 +35,10 @@ def get_theme(name=None, path=None):
             with open(path, encoding="utf-8") as f:
                 custom = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError) as e:
-            sys.exit(f"bad --theme-file: {e}")
+            raise SpecError(f"bad --theme-file: {e}")
         unknown = sorted(set(custom) - set(t))
         if unknown:
-            sys.exit(f"--theme-file unknown keys {unknown}; known: {sorted(t)}")
+            raise SpecError(f"--theme-file unknown keys {unknown}; known: {sorted(t)}")
         t.update(custom)
         if not name:
             name = "custom"

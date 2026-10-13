@@ -1,5 +1,6 @@
 """render_chart: dispatch, aliases, and validation for `chart <kind>`."""
 import json
+from ..errors import SpecError
 from .._issues import _vissue
 from .._theme import THEME
 from ..charts._base import _col, _load_input
@@ -74,11 +75,11 @@ def render_chart(kind, path, title="", subtitle="", source="", theme=None, x=Non
     """Draw one taxonomy chart. Aliases call flow, arch, seq, or geo. terrain and print refuse."""
     kind = str(kind or "").strip().lower()
     if kind not in _CHART_BLURB:
-        raise SystemExit(f"unknown chart type '{kind}'. Run: diagonaldiagrams describe")
+        raise SpecError(f"unknown chart type '{kind}'. Run: diagonaldiagrams describe")
     if kind == "terrain":
-        raise SystemExit("terrain is not drawn. A DEM raster is outside this library. Use contour for a z grid.")
+        raise SpecError("terrain is not drawn. A DEM raster is outside this library. Use contour for a z grid.")
     if kind == "print":
-        raise SystemExit("print is not a separate drawing. Use geo, then export --to pdf.")
+        raise SpecError("print is not a separate drawing. Use geo, then export --to pdf.")
     t = theme or THEME
     if kind in CHART_ALIAS:
         return _render_alias(kind, path, title, subtitle, source, t, x, y, label, val, grid, markers, highlights)
@@ -86,7 +87,7 @@ def render_chart(kind, path, title="", subtitle="", source="", theme=None, x=Non
         try:
             spec, rows = _math_from_text(path), []
         except (OSError, ValueError) as exc:
-            raise SystemExit(str(exc))
+            raise SpecError(str(exc))
     else:
         spec, rows = _load_input(path)
     if isinstance(spec, dict):
@@ -98,7 +99,7 @@ def render_chart(kind, path, title="", subtitle="", source="", theme=None, x=Non
            "size": size, "label": label, "parent": parent, "val": val, "a": a, "b": b, "lo": lo, "hi": hi,
            "grid": grid, "markers": markers, "highlights": highlights or [], "unbounded": unbounded, "spec": spec}
     if spec is None and not rows:
-        raise SystemExit(f"{path}: no rows")
+        raise SpecError(f"{path}: no rows")
     return _CHART_FN[kind](spec, rows, opt)
 
 

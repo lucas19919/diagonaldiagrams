@@ -457,7 +457,7 @@ def _svg_geometry(root, W, H, stats=None):
 def do_audit(args):
     rep = _audit_file(args.target)
     print(json.dumps(rep, indent=2))
-    raise SystemExit(0 if rep["ok"] else 1)
+    return 0 if rep["ok"] else 1
 
 
 def _audit_file(p):

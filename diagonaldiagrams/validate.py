@@ -19,7 +19,7 @@ def do_validate(args):
                                         roles=roles)
     ok = not errors
     print(json.dumps({"ok": ok, "errors": errors, "warnings": warnings}, indent=2))
-    raise SystemExit(0 if ok else 1)
+    return 0 if ok else 1
 
 
 def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=None, kind=None, unbounded=False,
@@ -296,7 +296,7 @@ def do_infer(args):
     err = next((c for c in cols if any(k in c.lower() for k in ("err", "sd", "_sd", "ci", "sem")) and c in numeric), None)
     nums = [c for c in numeric if c != err]
     if len(nums) < 2:
-        print(json.dumps({"ok": False, "fix": "need 2 numeric columns", "columns": cols})); raise SystemExit(1)
+        print(json.dumps({"ok": False, "fix": "need 2 numeric columns", "columns": cols})); return 1
     ck = list(cats)
     group = ck[0] if ck and len(cats[ck[0]]) <= 8 else None
     facet = next((c for c in ck[1:] if len(cats[c]) <= 4), None)

@@ -1,5 +1,6 @@
 """export: redraw from a receipt as PNG, PDF, SVG, draw.io or Excalidraw."""
 import html, json, os, sys
+from .errors import SpecError
 from ._output import LAYOUTS, _RECEIPT_PATHS, _receipt_inputs
 from ._text import _text_w
 from ._theme import get_theme
@@ -220,12 +221,12 @@ def do_export(args):
             base = base[: -len(ext)]
     rcpt = base + ".graph.json"
     if not os.path.exists(rcpt):
-        sys.exit(f"no receipt {rcpt} — re-render with: diagonaldiagrams scatter ... -o {base}.html")
+        raise SpecError(f"no receipt {rcpt} — re-render with: diagonaldiagrams scatter ... -o {base}.html")
     with open(rcpt, encoding="utf-8") as f:
         r = _receipt_inputs(json.load(f), rcpt)
     missing = [r[k] for k in _RECEIPT_PATHS if isinstance(r.get(k), str) and not os.path.exists(r[k])]
     if missing:
-        sys.exit(f"export: the input {missing[0]} named in {rcpt} is gone. Render again from the spec.")
+        raise SpecError(f"export: the input {missing[0]} named in {rcpt} is gone. Render again from the spec.")
     cmd, lay = r.get("cmd", "scatter"), LAYOUTS[args.layout]
     theme = get_theme(args.theme or r.get("theme") or "editorial", args.theme_file)
     note = ""
@@ -284,7 +285,7 @@ def do_export(args):
             highlights=r.get("highlights") or None, unbounded=r.get("budget") is False)
         unit, dest, note = "items", args.o or f"{base}.{args.to}", " (chart: single layout)"
     else:
-        sys.exit(f"unknown receipt cmd '{cmd}'")
+        raise SpecError(f"unknown receipt cmd '{cmd}'")
     if args.to == "svg":
         with open(dest, "w", encoding="utf-8") as f:
             f.write(svg)
@@ -293,13 +294,13 @@ def do_export(args):
     if args.to in ("drawio", "excalidraw"):
         model = _svg_model(svg)
         if not model["nodes"]:
-            sys.exit(f"{args.to} export covers flow and arch diagrams (and Mermaid flowcharts); this figure is a {cmd}")
+            raise SpecError(f"{args.to} export covers flow and arch diagrams (and Mermaid flowcharts); this figure is a {cmd}")
         with open(dest, "w", encoding="utf-8") as f:
             f.write(_to_drawio(model, r.get("title") or "") if args.to == "drawio" else _to_excalidraw(model))
         print(f"wrote {dest} ({len(model['nodes'])} boxes, {len(model['edges'])} arrows, {len(model['frames'])} frames)")
         return
     how, why = _raster_svg(svg, dest, args.to, args.width)
     if not how:
-        sys.exit(f"{args.to} export failed: {why}. "
+        raise SpecError(f"{args.to} export failed: {why}. "
                  "--to svg needs nothing, and the HTML page has an Export PNG button.")
     print(f"wrote {dest} via {how} ({n} {unit}{note})")

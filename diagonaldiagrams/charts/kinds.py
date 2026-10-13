@@ -1,4 +1,5 @@
 """The `chart <kind>` renderers."""
+from ..errors import SpecError
 from .._draw import arrow_label, axis_ticks, fmt_tick, markers, nice_ticks
 from .._text import esc
 from .._theme import FONT, _hit, series_palette
@@ -21,7 +22,7 @@ def _c_bubble(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not pts:
-        raise SystemExit("bubble needs numeric x, y, and size")
+        raise SpecError("bubble needs numeric x, y, and size")
     _cap(None, len(pts), 400, "points", opt["unbounded"])
     names = _ordered(str(r.get(gc) or "") for r, *_ in pts) if gc else [""]
     _cap(None, len(names), 8, "groups", opt["unbounded"])
@@ -100,7 +101,7 @@ def _c_step(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not series:
-        raise SystemExit("step needs numeric x and y")
+        raise SpecError("step needs numeric x and y")
     names = _ordered(series)
     _cap(None, len(names), 6, "series", opt["unbounded"])
     pal = series_palette(opt["t"])
@@ -132,7 +133,7 @@ def _c_slope(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not items:
-        raise SystemExit("slope needs cat, a, and b")
+        raise SpecError("slope needs cat, a, and b")
     _cap(None, len(items), 16, "lines", opt["unbounded"])
     vals = [v for _, a, b in items for v in (a, b)]
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, max(280, 36 + len(items) * 8), ox=120, right=130)
@@ -180,7 +181,7 @@ def _c_bump(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not series:
-        raise SystemExit("bump needs x, name, and rank")
+        raise SpecError("bump needs x, name, and rank")
     _cap(None, len(series), 8, "names", opt["unbounded"])
     ranks = [p[1] for pts in series.values() for p in pts]
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, 300, bottom=72)
@@ -266,7 +267,7 @@ def _c_stack(spec, rows, opt):
             groups.append(grp)
         cell[(cat, grp)] = cell.get((cat, grp), 0) + val
     if not cats:
-        raise SystemExit("stack needs cat, group, and val")
+        raise SpecError("stack needs cat, group, and val")
     _cap(None, len(cats), 12, "categories", opt["unbounded"])
     _cap(None, len(groups), 8, "groups", opt["unbounded"])
     totals = []
@@ -326,7 +327,7 @@ def _c_dumbbell(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not items:
-        raise SystemExit("dumbbell needs cat, a, and b")
+        raise SpecError("dumbbell needs cat, a, and b")
     _cap(None, len(items), 16, "rows", opt["unbounded"])
     vals = [v for _, a, b in items for v in (a, b)]
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, max(240, len(items) * 32), ox=130, right=36)
@@ -364,7 +365,7 @@ def _c_waterfall(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not items:
-        raise SystemExit("waterfall needs cat and val")
+        raise SpecError("waterfall needs cat and val")
     _cap(None, len(items), 16, "steps", opt["unbounded"])
     running = 0.0
     spans = []
@@ -628,7 +629,7 @@ def _shares(rows, cat, val):
             continue
     items = [(n, v) for n, v in items if v > 0]
     if not items:
-        raise SystemExit("need a positive value")
+        raise SpecError("need a positive value")
     return items
 
 
@@ -712,14 +713,14 @@ def _csv_tree(rows, opt):
         nodes.append({"name": name, "parent": str(r.get(parent) or "") if parent else "", "val": val})
     roots = _tree_index(nodes)
     if not roots:
-        raise SystemExit("tree needs a name column")
+        raise SpecError("tree needs a name column")
     return roots
 
 
 def _c_treemap(spec, rows, opt):
     roots = _csv_tree(rows, opt) if spec is None else _tree_from(spec.get("nodes") or [])
     if not roots:
-        raise SystemExit("treemap needs nodes")
+        raise SpecError("treemap needs nodes")
     n = sum(1 for _ in _walk_tree(roots))
     _cap(spec, n, 40, "nodes", opt["unbounded"])
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, 360, ox=36, right=36)
@@ -873,7 +874,7 @@ def _c_heatmap(spec, rows, opt):
             ys.append(y)
         cell[(x, y)] = v
     if not xs or not ys:
-        raise SystemExit("heatmap needs x, y, and val")
+        raise SpecError("heatmap needs x, y, and val")
     _cap(None, len(xs) * len(ys), 400, "cells", opt["unbounded"])
     vals = list(cell.values())
     lo, hi = min(vals), max(vals)
@@ -912,7 +913,7 @@ def _c_calendar(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not pts:
-        raise SystemExit("calendar needs dates and values")
+        raise SpecError("calendar needs dates and values")
     pts.sort()
     end = pts[-1][0]
     start = end - datetime.timedelta(weeks=59)
@@ -956,7 +957,7 @@ def _c_radar(spec, rows, opt):
             series.append(name)
         cell[(axis, name)] = val
     if len(axes) < 3:
-        raise SystemExit("radar needs at least 3 axes")
+        raise SpecError("radar needs at least 3 axes")
     _cap(None, len(axes), 8, "axes", opt["unbounded"])
     _cap(None, len(series), 4, "series", opt["unbounded"])
     vals = list(cell.values())
@@ -1007,7 +1008,7 @@ def _c_polar(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not items:
-        raise SystemExit("polar needs cat and val")
+        raise SpecError("polar needs cat and val")
     _cap(None, len(items), 24, "slices", opt["unbounded"])
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, 380, ox=36, right=36)
     cx, cy = W / 2, oy + ph / 2
@@ -1074,7 +1075,7 @@ def _c_forest(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not items:
-        raise SystemExit("forest needs cat, est, lo, and hi")
+        raise SpecError("forest needs cat, est, lo, and hi")
     _cap(None, len(items), 20, "rows", opt["unbounded"])
     vals = [v for _, e, lo, hi in items for v in (e, lo, hi)]
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, max(220, len(items) * 28), ox=140)
@@ -1138,7 +1139,7 @@ def _c_volcano(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not pts:
-        raise SystemExit("volcano needs numeric x and y")
+        raise SpecError("volcano needs numeric x and y")
     _cap(None, len(pts), 400, "points", opt["unbounded"])
     plotted = []
     as_p = max(p[2] for p in pts) <= 1
@@ -1173,7 +1174,7 @@ def _c_candle(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not items:
-        raise SystemExit("candle needs x, open, high, low, close")
+        raise SpecError("candle needs x, open, high, low, close")
     _cap(None, len(items), 80, "candles", opt["unbounded"])
     vals = [v for it in items for v in it[2:4]]
     rotate = len(items) > 8
@@ -1278,7 +1279,7 @@ def _c_sankey(spec, rows, opt):
             continue
         links.append((str(r.get(c["src"]) or ""), str(r.get(c["dst"]) or ""), val))
     if not links:
-        raise SystemExit("sankey needs src, dst, and val")
+        raise SpecError("sankey needs src, dst, and val")
     _cap(None, len(links), 40, "links", opt["unbounded"])
     out_w, in_w = {}, {}
     for s, d, v in links:
@@ -1416,7 +1417,7 @@ def _c_stream(spec, rows, opt):
             groups.append(g)
         cell[(x, g)] = cell.get((x, g), 0) + max(0.0, v)
     if len(xs) < 2 or not groups:
-        raise SystemExit("stream needs at least two x values and a group")
+        raise SpecError("stream needs at least two x values and a group")
     _cap(None, len(groups), 8, "groups", opt["unbounded"])
     totals = [sum(cell.get((x, g), 0) for g in groups) for x in xs]
     peak = max(totals) or 1
@@ -1498,7 +1499,7 @@ def _c_combo(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not items:
-        raise SystemExit("combo needs x, bar, and line")
+        raise SpecError("combo needs x, bar, and line")
     _cap(None, len(items), 24, "points", opt["unbounded"])
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, 300, right=72, bottom=76)
     bars = [b for _, b, _ in items]
@@ -1556,7 +1557,7 @@ def _c_quadrant(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if not pts:
-        raise SystemExit("quadrant needs numeric x and y")
+        raise SpecError("quadrant needs numeric x and y")
     _cap(None, len(pts), 40, "points", opt["unbounded"])
     xs = [p[1] for p in pts]
     ys = [p[2] for p in pts]
@@ -1622,7 +1623,7 @@ def _c_contour(spec, rows, opt):
         except (TypeError, ValueError):
             continue
     if len(pts) < 4:
-        raise SystemExit("contour needs at least 4 x, y, z rows")
+        raise SpecError("contour needs at least 4 x, y, z rows")
     _cap(None, len(pts), 400, "points", opt["unbounded"])
     xs = [p[0] for p in pts]
     ys = [p[1] for p in pts]
@@ -1661,7 +1662,7 @@ def _c_contour(spec, rows, opt):
 
 def _json(spec):
     if not isinstance(spec, dict):
-        raise SystemExit("this chart reads a JSON spec")
+        raise SpecError("this chart reads a JSON spec")
     return spec
 
 
@@ -1716,7 +1717,7 @@ def _c_force(spec, rows, opt, colored=False):
     _cap(spec, len(nodes), 40, "nodes", unbounded)
     _cap(spec, len(edges), 80, "edges", unbounded)
     if len(nodes) < 1:
-        raise SystemExit("need at least one node")
+        raise SpecError("need at least one node")
     hh = _hh(opt["title"], opt["sub"])
     W, top, height = 760, hh + 20, 420
     H = top + height + 40
@@ -1759,7 +1760,7 @@ def _c_radial(spec, rows, opt):
     unbounded = _open_budget(spec, opt["unbounded"])
     _cap(spec, len(nodes), 24, "nodes", unbounded)
     if not nodes:
-        raise SystemExit("radial needs nodes")
+        raise SpecError("radial needs nodes")
     adj = defaultdict(list)
     deg = defaultdict(int)
     for e in edges:
@@ -1813,7 +1814,7 @@ def _draw_hierarchy(opt, roots, org=False, edge_labels=False):
     cap = 12 if org else 24
     _cap(opt.get("spec"), n, cap, "nodes", opt["unbounded"])
     if not roots:
-        raise SystemExit("need a parent tree")
+        raise SpecError("need a parent tree")
     pos, leaves = _leaf_pos(roots)
     pitch = 180 if org else 120
     gap = 100 if org else 84
@@ -2021,7 +2022,7 @@ def _c_deploy(spec, rows, opt):
     zones = spec.get("zones") or []
     _cap(spec, len(zones), 3, "zones", _open_budget(spec, opt["unbounded"]))
     if not zones:
-        raise SystemExit("deploy needs zones")
+        raise SpecError("deploy needs zones")
     tall = max(len(z.get("nodes") or []) for z in zones)
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, max(220, 70 + tall * 64), ox=28, right=28, bottom=40)
     zw = pw / len(zones)
@@ -2044,7 +2045,7 @@ def _c_layers(spec, rows, opt):
     layers = spec.get("layers") or []
     _cap(spec, len(layers), 8, "layers", _open_budget(spec, opt["unbounded"]))
     if not layers:
-        raise SystemExit("layers needs a layers list")
+        raise SpecError("layers needs a layers list")
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, max(200, len(layers) * 58), ox=28, right=28, bottom=36)
     band = ph / len(layers)
     for i, layer in enumerate(layers):
@@ -2142,7 +2143,7 @@ def _c_er(spec, rows, opt):
     rels = spec.get("relations") or []
     _cap(spec, len(ents), 8, "entities", _open_budget(spec, opt["unbounded"]))
     if not ents:
-        raise SystemExit("er needs entities")
+        raise SpecError("er needs entities")
     cols = 2 if len(ents) > 3 else len(ents)
     rows_n = (len(ents) + cols - 1) // cols
     hh = _hh(opt["title"], opt["sub"])
@@ -2185,7 +2186,7 @@ def _c_wardley(spec, rows, opt):
     nodes, edges = _with_ids(spec.get("nodes") or []), spec.get("edges") or []
     _cap(spec, len(nodes), 12, "components", _open_budget(spec, opt["unbounded"]))
     if not nodes:
-        raise SystemExit("wardley needs nodes with visibility and evolution")
+        raise SpecError("wardley needs nodes with visibility and evolution")
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, 360, ox=70, bottom=64)
     parts.append(f'<rect x="{ox}" y="{oy}" width="{pw}" height="{ph}" fill="{t["card"]}" stroke="{t["rule"]}"/>')
     for frac, lab in ((0.25, "Custom"), (0.5, "Product"), (0.75, "")):
@@ -2225,7 +2226,7 @@ def _c_swim(spec, rows, opt):
     edges = spec.get("edges") or []
     _cap(spec, len(nodes), 12, "nodes", _open_budget(spec, opt["unbounded"]))
     if not lanes:
-        raise SystemExit("swim needs lanes")
+        raise SpecError("swim needs lanes")
     hh = _hh(opt["title"], opt["sub"])
     lane_h = 110
     W, H = 860, int(hh + 36 + len(lanes) * lane_h + 40)
@@ -2259,7 +2260,7 @@ def _c_state(spec, rows, opt):
     nodes, edges = _with_ids(spec.get("nodes") or []), spec.get("edges") or []
     _cap(spec, len(nodes), 8, "states", _open_budget(spec, opt["unbounded"]))
     if not nodes:
-        raise SystemExit("state needs nodes")
+        raise SpecError("state needs nodes")
     hh = _hh(opt["title"], opt["sub"])
     W = max(760, 140 + len(nodes) * 140)
     H = hh + 280
@@ -2301,7 +2302,7 @@ def _c_bpmn(spec, rows, opt):
     nodes, edges = _with_ids(spec.get("nodes") or []), spec.get("edges") or []
     _cap(spec, len(nodes), 12, "nodes", _open_budget(spec, opt["unbounded"]))
     if not nodes:
-        raise SystemExit("bpmn needs nodes")
+        raise SpecError("bpmn needs nodes")
     rank = _layers_of(nodes, edges)
     from collections import defaultdict
     layers = defaultdict(list)
@@ -2359,7 +2360,7 @@ def _c_fishbone(spec, rows, opt):
     ribs = spec.get("ribs") or []
     _cap(spec, len(ribs), 6, "ribs", _open_budget(spec, opt["unbounded"]))
     if not ribs:
-        raise SystemExit("fishbone needs ribs")
+        raise SpecError("fishbone needs ribs")
     problem = spec.get("problem") or opt["title"] or "Problem"
     W, H = 860, 460
     parts, _ = _fig_open(opt["t"], opt["title"], opt["sub"], W, H)
@@ -2394,7 +2395,7 @@ def _c_flywheel(spec, rows, opt):
     nodes = spec.get("nodes") or []
     _cap(spec, len(nodes), 8, "steps", _open_budget(spec, opt["unbounded"]))
     if len(nodes) < 2:
-        raise SystemExit("flywheel needs at least two nodes")
+        raise SpecError("flywheel needs at least two nodes")
     hh = _hh(opt["title"], opt["sub"])
     W, H = 760, hh + 460
     parts, _ = _fig_open(opt["t"], opt["title"], opt["sub"], W, H)
@@ -2424,7 +2425,7 @@ def _c_kanban(spec, rows, opt):
     spec = _json(spec)
     cols = spec.get("columns") or []
     if not cols:
-        raise SystemExit("kanban needs columns")
+        raise SpecError("kanban needs columns")
     _cap(spec, len(cols), 6, "columns", _open_budget(spec, opt["unbounded"]))
     tall = max(len(c.get("cards") or []) for c in cols)
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, max(220, 40 + tall * 58), ox=24, right=24, bottom=36)
@@ -2448,7 +2449,7 @@ def _c_gantt(spec, rows, opt):
     spec = _json(spec)
     tasks = spec.get("tasks") or []
     if not tasks:
-        raise SystemExit("gantt needs tasks")
+        raise SpecError("gantt needs tasks")
     _cap(spec, len(tasks), 16, "tasks", _open_budget(spec, opt["unbounded"]))
     parsed = []
     dated = False
@@ -2490,7 +2491,7 @@ def _c_timeline(spec, rows, opt):
     spec = _json(spec)
     events = spec.get("events") or []
     if not events:
-        raise SystemExit("timeline needs events")
+        raise SpecError("timeline needs events")
     _cap(spec, len(events), 12, "events", _open_budget(spec, opt["unbounded"]))
     parsed = []
     for ev in events:
@@ -2517,7 +2518,7 @@ def _c_journey(spec, rows, opt):
     spec = _json(spec)
     stages = spec.get("stages") or []
     if not stages:
-        raise SystemExit("journey needs stages")
+        raise SpecError("journey needs stages")
     _cap(spec, len(stages), 8, "stages", _open_budget(spec, opt["unbounded"]))
     parts, t, W, H, ox, oy, pw, ph = _begin(opt, 260, ox=50, right=40, bottom=64)
     scores = [max(0, min(5, float(s.get("score") or 0))) for s in stages]
@@ -2550,7 +2551,7 @@ def _c_story(spec, rows, opt):
     backbone = spec.get("backbone") or []
     releases = spec.get("releases") or []
     if not backbone and not releases:
-        raise SystemExit("story needs a backbone or releases")
+        raise SpecError("story needs a backbone or releases")
     hh = _hh(opt["title"], opt["sub"])
     W = max(760, 80 + max(len(backbone), 1) * 140)
     H = int(hh + 80 + max(len(releases), 1) * 70 + 40)
@@ -2581,7 +2582,7 @@ def _c_venn(spec, rows, opt):
     spec = _json(spec)
     sets = spec.get("sets") or []
     if len(sets) not in (2, 3):
-        raise SystemExit("venn needs 2 or 3 sets")
+        raise SpecError("venn needs 2 or 3 sets")
     overlap = spec.get("overlap")
     hh = _hh(opt["title"], opt["sub"])
     W, H = 760, hh + 420
@@ -2639,7 +2640,7 @@ def _polys_from(spec, opt):
                 polys.append((pts, val, str(props.get("name") or "")))
                 samples.extend(pts)
     if not samples:
-        raise SystemExit("choropleth needs GeoJSON polygons")
+        raise SpecError("choropleth needs GeoJSON polygons")
     return polys, samples
 
 
@@ -2691,7 +2692,7 @@ def _c_heatgeo(spec, rows, opt):
         if -90 <= lat <= 90 and -180 <= lon <= 180:
             pts.append((lon, lat, val))
     if not pts:
-        raise SystemExit("heatgeo needs lat, lon, and val")
+        raise SpecError("heatgeo needs lat, lon, and val")
     _cap(None, len(pts), 400, "points", opt["unbounded"])
     ctx = _map_stage(opt["t"], opt["title"], opt["sub"], [(p[0], p[1]) for p in pts])
     nx = ny = 14
@@ -2742,7 +2743,7 @@ def _c_od(spec, rows, opt):
         samples.append((lon, lat))
         samples.append((lon2, lat2))
     if not arcs:
-        raise SystemExit("od needs lon, lat, lon2, lat2")
+        raise SpecError("od needs lon, lat, lon2, lat2")
     _cap(None, len(arcs), 40, "arcs", opt["unbounded"])
     ctx = _map_stage(opt["t"], opt["title"], opt["sub"], samples)
     ctx["parts"].append(markers(opt["t"]))
@@ -2773,7 +2774,7 @@ def _c_cluster(spec, rows, opt):
         if -90 <= lat <= 90 and -180 <= lon <= 180:
             pts.append((lon, lat))
     if not pts:
-        raise SystemExit("cluster needs lat and lon")
+        raise SpecError("cluster needs lat and lon")
     _cap(None, len(pts), 400, "points", opt["unbounded"])
     ctx = _map_stage(opt["t"], opt["title"], opt["sub"], pts)
     span = max(ctx["maxlon"] - ctx["minlon"], ctx["maxlat"] - ctx["minlat"]) or 1

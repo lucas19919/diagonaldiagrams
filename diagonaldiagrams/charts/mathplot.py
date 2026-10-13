@@ -1,4 +1,5 @@
 """chart math: the equation language, sampling and plotting."""
+from ..errors import SpecError
 from .._draw import fmt_tick, nice_ticks
 from .._text import _text_w, esc
 from .._theme import FONT, _hit, series_palette
@@ -689,19 +690,19 @@ def _c_math(spec, rows, opt):
     try:
         curves = [_math_compile_item(item) for item in _math_items(spec)]
     except ValueError as exc:
-        raise SystemExit(str(exc))
+        raise SpecError(str(exc))
     _cap(spec, len(curves), 8, "equations", opt["unbounded"])
     if sum(1 for c in curves if c.get("focal")) > 2:
-        raise SystemExit("focal on >2 equations. Keep one or two.")
+        raise SpecError("focal on >2 equations. Keep one or two.")
     samples = int(spec.get("samples") or 360)
     xmin = spec.get("xmin", -10)
     xmax = spec.get("xmax", 10)
     try:
         xmin, xmax = float(xmin), float(xmax)
     except (TypeError, ValueError):
-        raise SystemExit("xmin and xmax must be numbers")
+        raise SpecError("xmin and xmax must be numbers")
     if xmax <= xmin:
-        raise SystemExit("xmax must be greater than xmin")
+        raise SpecError("xmax must be greater than xmin")
     probe = []
     y_probe_lo = float(spec["ymin"]) if spec.get("ymin") is not None else xmin
     y_probe_hi = float(spec["ymax"]) if spec.get("ymax") is not None else xmax
@@ -718,7 +719,7 @@ def _c_math(spec, rows, opt):
     else:
         ymin, ymax = float(spec["ymin"]), float(spec["ymax"])
     if ymax <= ymin:
-        raise SystemExit("ymax must be greater than ymin")
+        raise SpecError("ymax must be greater than ymin")
     auto_equal = any(c["kind"] in ("implicit", "region", "parametric", "point") for c in curves)
     equal = spec["equal"] if "equal" in spec else auto_equal
     legend = len(curves) > 1

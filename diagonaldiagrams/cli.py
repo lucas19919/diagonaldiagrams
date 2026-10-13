@@ -1,5 +1,6 @@
 """The command line: arguments, the one-line JSON verdict, and the layout outline."""
 import argparse, html, json, os, sys
+from .errors import SpecError
 from . import __version__
 from ._issues import _SPEC_KEYS
 from ._output import LAYOUTS, save_receipt, write_out
@@ -52,6 +53,12 @@ def _cli_notes(args, kind):
         else:
             out.append({"at": at, "text": text})
     return out or None
+
+
+def _exit_with(code):
+    """Command handlers return their exit code; only the command line ends the process."""
+    if code:
+        raise SystemExit(code)
 
 
 def _report(obj, code):
@@ -342,36 +349,37 @@ def main():
     p = sub.add_parser("audit", help="check rendered svg/html AFTER render; geometry+taste gate as JSON")
     p.add_argument("target")
     p = sub.add_parser("mcp", help="MCP server over stdio (describe/validate/infer/audit/scatter/diagram/bar/line)")
+    p.add_argument("--isolate", action="store_true", help="run each tool call in its own process (180 s limit)")
     a = ap.parse_args()
     if a.cmd == "mcp":
-        do_mcp(a)
+        _exit_with(do_mcp(a))
         return
     if a.cmd == "export":
-        do_export(a)
+        _exit_with(do_export(a))
         return
     if a.cmd == "describe":
-        do_describe(a)
+        _exit_with(do_describe(a))
         return
     if a.cmd == "validate":
-        do_validate(a)
+        _exit_with(do_validate(a))
         return
     if a.cmd == "infer":
-        do_infer(a)
+        _exit_with(do_infer(a))
         return
     if a.cmd == "audit":
-        do_audit(a)
+        _exit_with(do_audit(a))
         return
     if a.cmd == "doc":
-        do_doc(a)
+        _exit_with(do_doc(a))
         return
     if a.cmd == "monitor":
-        do_monitor(a)
+        _exit_with(do_monitor(a))
         return
     if a.cmd == "sync":
-        do_sync(a)
+        _exit_with(do_sync(a))
         return
     if a.cmd == "extract":
-        do_extract(a)
+        _exit_with(do_extract(a))
         return
     if a.cmd in ("flow", "arch", "seq", "schema", "mermaid"):
         _spec_to_file(a)
@@ -509,6 +517,9 @@ def cli():
         main()
     except (SystemExit, KeyboardInterrupt):
         raise
+    except SpecError as e:  # the input cannot be drawn as given: say why, as sys.exit(msg) did
+        sys.stderr.write(f"{e.msg}\n")
+        raise SystemExit(1)
     except json.JSONDecodeError as e:
         _report({"ok": False, "errors": [{"msg": f"bad JSON at {_json_where(e)}",
                                           "fix": "strict JSON: double quotes, no trailing commas, no comments"}]}, 1)

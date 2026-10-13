@@ -1,5 +1,6 @@
 """doc: compile fenced graph blocks in Markdown into SVGs."""
 import json, os, sys
+from .errors import SpecError
 from ._yaml import HAS_YAML, yaml
 from ._lazy import lazy
 
@@ -30,7 +31,7 @@ def do_doc(args):
     import re, hashlib
     target = args.target
     if not os.path.exists(target):
-        sys.exit(f"doc target not found: {target}")
+        raise SpecError(f"doc target not found: {target}")
     with open(target, encoding="utf-8") as f:
         content = f.read()
     pattern = re.compile(r"```(?:graph|graph-spec):([a-zA-Z0-9_-]+)(?:[ \t]+([^\n]*))?\n([\s\S]*?)```")
@@ -103,4 +104,4 @@ def do_doc(args):
         print(f"doc: figure links synced in {target}")
     print(f"doc: processed {count} diagrams ({errs} errors)")
     if errs > 0:
-        raise SystemExit(1)
+        return 1

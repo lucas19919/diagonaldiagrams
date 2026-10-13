@@ -1,5 +1,6 @@
 """What the `chart <kind>` renderers share: metadata, column roles, axes, legends, boxes."""
 import csv, json
+from ..errors import SpecError
 from .._draw import _tail, arrow_label, assign_ports, figure_heading, fmt_tick, markers, route_edge
 from .._text import esc
 from .._theme import FONT
@@ -18,7 +19,7 @@ def _pick(rows, explicit, aliases):
     cols = list(rows[0].keys()) if rows else []
     if explicit:
         if explicit not in cols:
-            raise SystemExit(f"column '{explicit}' not in {cols}")
+            raise SpecError(f"column '{explicit}' not in {cols}")
         return explicit
     low = {c.lower(): c for c in cols}
     for alias in aliases:
@@ -35,7 +36,7 @@ def _cap(spec, n, cap, what, unbounded=False):
     if unbounded or (isinstance(spec, dict) and spec.get("budget") is False):
         return
     if n > cap:
-        raise SystemExit(f"{n} {what} > {cap}. Split the figure, or set budget false.")
+        raise SpecError(f"{n} {what} > {cap}. Split the figure, or set budget false.")
 
 
 def _fig_open(t, title, sub, W, H):
@@ -342,7 +343,7 @@ def _need(rows, pairs):
         if not col:
             missing.append(role)
     if missing:
-        raise SystemExit("need a column for " + ", ".join(missing))
+        raise SpecError("need a column for " + ", ".join(missing))
     return found
 
 
@@ -354,7 +355,7 @@ def _floats(rows, col):
         except (TypeError, ValueError, KeyError):
             continue
     if not out:
-        raise SystemExit(f"column '{col}' has no numbers")
+        raise SpecError(f"column '{col}' has no numbers")
     return out
 
 
@@ -524,7 +525,7 @@ def _when(text):
     except (TypeError, ValueError):
         d = _parse_date(text)
         if d is None:
-            raise SystemExit(f"cannot read a date or number from '{text}'")
+            raise SpecError(f"cannot read a date or number from '{text}'")
         return d.toordinal(), True
 
 

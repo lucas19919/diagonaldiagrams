@@ -93,7 +93,9 @@ def count_all():
         "inline_font_settings": sum(v["inline_font_settings"] for v in per.values()),
         "side_channels": len(channels),
         "side_channel_names": channels,
-        "system_exits": sum(v["system_exits"] for v in per.values()),
+        # the command line may end the process; nothing else should (DESIGN D11). In the
+        # single-file graph.py there was no separate CLI module, so every exit counted.
+        "system_exits": sum(v["system_exits"] for k, v in per.items() if not k.endswith("diagonaldiagrams/cli.py")),
     }
 
 
@@ -106,7 +108,7 @@ def markdown(c):
         ("Truncation calls (`_short`, `_wrap`)", c["truncation_calls"]),
         ("Inline font settings", c["inline_font_settings"]),
         ("Function-attribute side channels", f'{c["side_channels"]} ({", ".join(c["side_channel_names"])})'),
-        ("`SystemExit` / `sys.exit` in engine code", c["system_exits"]),
+        ("`SystemExit` / `sys.exit` outside the CLI", c["system_exits"]),
     ]
     return "| Count | Value |\n| --- | --- |\n" + "\n".join(f"| {k} | {v} |" for k, v in rows)
 

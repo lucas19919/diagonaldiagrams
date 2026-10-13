@@ -1,5 +1,6 @@
 """bar, line and scatter."""
 import csv
+from .errors import SpecError
 from ._draw import (
     axis_ticks, bar_path, corner_rx, figure_heading, fmt_tick, fmt_value, nice_ticks, render_pincallout,
 )
@@ -35,7 +36,7 @@ def render_scatter(spec_path, xcol, ycol, title, subtitle, figure, xlabel, xunit
             except ValueError:
                 continue
     if not rows:
-        raise SystemExit(f"{spec_path}: no numeric data in {xc}/{yc}")
+        raise SpecError(f"{spec_path}: no numeric data in {xc}/{yc}")
     facets = sorted({d.get("f", "") for d in rows})
     multi = len(facets) > 1 or len(facets) == 1 and facetcol is not None
     groups = sorted({d.get("g", "") for d in rows if d.get("g")})
@@ -215,7 +216,7 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
             except (ValueError, KeyError, TypeError):
                 continue
     if not rows:
-        raise SystemExit(f"{spec_path}: no valid data in {cc}/{vc}")
+        raise SpecError(f"{spec_path}: no valid data in {cc}/{vc}")
     if sort == "asc":
         rows.sort(key=lambda d: d["val"])
     elif sort == "desc":
@@ -440,7 +441,7 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
             except (ValueError, KeyError, TypeError):
                 continue
     if not rows:
-        raise SystemExit(f"{spec_path}: no valid data in {xc}/{yc}")
+        raise SpecError(f"{spec_path}: no valid data in {xc}/{yc}")
     groups = sorted({d.get("g", "default") for d in rows})
     _pal = series_palette(t, highlights)
     palette = _assign_colors(groups, _pal, highlights)

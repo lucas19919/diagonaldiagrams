@@ -1,5 +1,6 @@
 """Point maps on the built-in coastline, and the map helpers the geo charts share."""
 import csv, functools, json
+from .errors import SpecError
 from ._draw import figure_heading
 from ._text import esc
 from ._theme import MONO, SANS, THEME, _hit
@@ -108,7 +109,7 @@ def _load_geo(path, latcol, loncol, labelcol, valcol):
             lc = pick(latcol, ("lat", "latitude", "y"))
             nc = pick(loncol, ("lon", "lng", "long", "longitude", "x"))
             if not lc or not nc:
-                raise SystemExit(f"{path}: need lat/lon columns, got {cols}")
+                raise SpecError(f"{path}: need lat/lon columns, got {cols}")
             lb = pick(labelcol, ("name", "city", "label"))
             vc = pick(valcol, ("value", "val", "pop", "weight"))
             for row in r:
@@ -164,7 +165,7 @@ def render_geo(spec_path, latcol=None, loncol=None, labelcol=None, valcol=None,
             if len(c) >= 2:
                 samples.append((c[0], c[1]))
     if len(samples) < 1:
-        raise SystemExit(f"{spec_path}: no coordinates")
+        raise SpecError(f"{spec_path}: no coordinates")
     lons = [s[0] for s in samples]
     lats = [s[1] for s in samples]
     minlon, maxlon = min(lons), max(lons)

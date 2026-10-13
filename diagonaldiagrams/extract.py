@@ -1,5 +1,6 @@
 """extract: specs from SQL DDL, Prisma, Python ORMs and web routes."""
 import json, os, sys
+from .errors import SpecError
 
 
 def _split_ddl(body):
@@ -24,7 +25,7 @@ def do_extract(args):
     import re, ast
     src = args.source
     if not os.path.exists(src):
-        sys.exit(f"source file not found: {src}")
+        raise SpecError(f"source file not found: {src}")
     with open(src, encoding="utf-8") as f:
         code = f.read()
     if args.o:
@@ -166,7 +167,7 @@ def do_extract(args):
                         if cols:
                             tables.append({"id": tname, "name": node.name, "columns": cols[:10]})
             except Exception as e:
-                sys.exit(f"AST parse failed: {e}")
+                raise SpecError(f"AST parse failed: {e}")
         for rel in relations:  # back-mark FK columns so badges render
             for tbl in tables:
                 if tbl["id"] == rel["to"]:

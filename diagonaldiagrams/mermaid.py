@@ -1,5 +1,6 @@
 """Mermaid input (flowchart, sequenceDiagram, erDiagram) and load_spec."""
 import json, sys
+from .errors import SpecError
 from ._draw import _FA_ICONS
 from ._yaml import HAS_YAML, yaml
 
@@ -397,4 +398,4 @@ def load_spec(path):
     try:
         return json.loads(txt)
     except Exception:
-        sys.exit(f"{path}: need PyYAML for YAML (pip install pyyaml) or use JSON")
+        raise SpecError(f"{path}: need PyYAML for YAML (pip install pyyaml) or use JSON")
