@@ -129,7 +129,7 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
             isinstance(el, dict) and "style" in el for k in ("nodes", "edges", "actors", "messages", "tables", "relations")
             for el in spec.get(k) or [])):
         from .style.styler import check_styles
-        errors.extend(check_styles(spec))
+        errors.extend(check_styles(spec, kind))
     if "actors" in spec or "messages" in spec:
         actors, messages = spec.get("actors", []), spec.get("messages", [])
         a_ids = [a.get("id") for a in actors]

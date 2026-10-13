@@ -27,6 +27,8 @@ def _path_points(d):
     pts = []
     for cmd, a, b, c, e in re.findall(r"([MLQ])\s*([-\d.]+),([-\d.]+)(?:\s+([-\d.]+),([-\d.]+))?", d or ""):
         pts.append((float(c), float(e)) if cmd == "Q" and c else (float(a), float(b)))
+    for x, y in re.findall(r"A[-\d.]+,[-\d.]+ [01. -]+? ([-\d.]+),([-\d.]+)", d or ""):  # an arc's end
+        pts.append((float(x), float(y)))
     return pts
 
 
@@ -53,6 +55,12 @@ def read_figure(svg):
                 x, y, w, h = (_num(get(k)) for k in ("x", "y", "width", "height"))
                 fig["nodes"][nid] = {"id": nid, "label": label, "x": x, "y": y, "w": w, "h": h,
                                      "shape": "oval" if _num(get("rx")) >= 20 else "rect", "stroke": get("stroke")}
+            elif tag == "path":  # a box with a radius per corner
+                pts = _path_points(get("d"))
+                if pts:
+                    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+                    fig["nodes"][nid] = {"id": nid, "label": label, "x": min(xs), "y": min(ys), "w": max(xs) - min(xs),
+                                         "h": max(ys) - min(ys), "shape": "rect", "stroke": get("stroke")}
             elif tag == "polygon":
                 v = [float(p) for p in re.findall(r"-?\d*\.?\d+", get("points") or "")]
                 xs, ys = v[0::2], v[1::2]

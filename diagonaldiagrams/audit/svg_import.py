@@ -246,6 +246,11 @@ def svg_import(root, width, height):
                                     for end in ("from", "to")}
                 _read_a11y(arrow, el)
         box, item = None, None
+        if tag == "path" and not marked and el.get("data-node") is not None:  # a box with a radius per corner
+            real = [apply(m, q) for q in path_pts(el.get("d")) if q is not None]
+            if real:
+                box = (min(p[0] for p in real), min(p[1] for p in real), max(p[0] for p in real), max(p[1] for p in real))
+                item = Item("shape", box=box, tag=tag, node=el.get("data-node"))
         if tag == "rect":
             x, y, w, h = (num(el.get(k)) for k in ("x", "y", "width", "height"))
             box = xbox(m, x, y, x + w, y + h)

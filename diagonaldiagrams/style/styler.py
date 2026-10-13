@@ -29,10 +29,13 @@ def spec_sheets(style):
             if isinstance(s, dict) else s for k, s in enumerate(sheets)]
 
 
-def check_styles(spec):
+def check_styles(spec, kind=None):
     """Problems with a spec's stylesheets and element styles, as validate's {"msg", "fix"} errors,
-    so a typo in a rule is reported with the spec's other errors instead of at draw time."""
+    so a typo in a rule, or a border on a side a shape doesn't have, is reported with the spec's
+    other errors instead of at draw time."""
+    from ..deco import declared
     from ..errors import SpecError
+    from ..inputs.v1 import KINDS, detect
     if not isinstance(spec, dict):
         return []
     try:
@@ -47,6 +50,18 @@ def check_styles(spec):
                     cascade._read(el["style"], f"the style of '{el.get('id', el.get('from', '?'))}'")
                 except SpecError as e:
                     out.append({"msg": e.msg, "fix": e.fix})
+    if out:
+        return out
+    kind = kind if kind in KINDS else detect(spec)
+    try:
+        sty = Styler(spec, kind)
+        for key in ("nodes", "actors", "tables"):
+            for el in spec.get(key) or []:
+                if isinstance(el, dict) and "id" in el:
+                    shape = "table" if key == "tables" else el.get("shape", "rect")
+                    declared(sty.node(el["id"])["computed"], shape)
+    except SpecError as e:
+        out.append({"msg": e.msg, "fix": e.fix})
     return out
 
 

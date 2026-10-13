@@ -315,6 +315,22 @@ Shapes expose their outline split into named sides. A rectangle has `top`, `righ
 
 Other decorations (shadow, glow, gradient, hatch, sketch) are painters that take the outline and the computed style and return display-list items. They work on every shape.
 
+As built in P3.4 (`deco.py`):
+- **Sides:** rect, oval and table shapes have top, right, bottom and left. A diamond has top-left, top-right, bottom-right and bottom-left, and also answers to the generic sides, each naming two of its edges, so `node { border-top: ... }` reads on every shape.
+- **Painting sides:** once any `border-*` is set, the outline is drawn side by side:
+  - a declared side with its own width, style (solid, dashed, dotted, double) and color;
+  - the rest with the shape's stroke;
+  - a `none` side not at all.
+  `validate` reports a side the shape doesn't have.
+- **Radii:** `border-radius` takes 1 to 4 values. Unequal corners draw the box as a path, which the outline, exports and audit still read as the node.
+- **Decorations:**
+  - a `linear-gradient` fill;
+  - outer `box-shadow` (inset shadows are not drawn yet);
+  - `glow`;
+  - `pattern` (hatch, dots, grid);
+  - `opacity`.
+  Each definition is content-hashed and moved into the figure's single `<defs>`. `sketch` is not built yet.
+
 ### 5.6 Tokens and themes
 
 Tokens are named values. The existing 9 theme keys stay and are joined by type, spacing and palette tokens:

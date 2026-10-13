@@ -23,6 +23,7 @@ also carries attach: the node and port at each end, written as data-from-port an
 import re
 
 from ._draw import ICONS, _box_lines, _diamond_lines, _frame_box, _label_box, _pill_w, corner_rx
+from . import deco
 from .registry import Registry
 from ._text import _text_w, _wrap
 from ._theme import FONT, MONO, SANS, SERIF
@@ -107,8 +108,9 @@ class Element:
 
 
 def el(tag, text=None, owner="", role="", children=None, a11y=None, attach=None, **attrs):
-    """An Element; attribute names are written with dashes (stroke_width -> stroke-width)."""
-    return Element(tag, {k.replace("_", "-"): v for k, v in attrs.items()}, text, children or [], owner, role,
+    """An Element; attribute names are written with dashes (stroke_width -> stroke-width), and a
+    trailing underscore is dropped (in_ -> in, for names Python keeps to itself)."""
+    return Element(tag, {k.rstrip("_").replace("_", "-"): v for k, v in attrs.items()}, text, children or [], owner, role,
                    a11y=a11y, attach=attach)
 
 
@@ -142,6 +144,22 @@ class Drawing:
         self.width, self.height, self.title, self.desc = width, height, title, desc
         self.items, self.projection, self.kind = list(items or []), projection, kind
 
+    def _items(self):
+        """The elements to write: after the projection stage, with the definitions decorations
+        brought (gradients, filters, patterns) moved into the figure's <defs>, once each."""
+        items = project(self.items, self.projection)
+        holders = [e for e in items if e.role == "deco.defs"]
+        defs = next((e for e in items if e.role == "figure.defs"), None)
+        if not holders or defs is None:
+            return items  # no figure <defs>: they stay inline, which SVG allows
+        known = {c.attrs.get("id") for c in defs.children}
+        for h in holders:
+            for c in h.children:
+                if c.attrs.get("id") not in known:
+                    defs.children.append(c)
+                    known.add(c.attrs.get("id"))
+        return [e for e in items if e.role != "deco.defs"]
+
     def _root(self):
         role = (f'role="graphics-document" aria-roledescription="{_attr(self.kind)}"' if self.kind else 'role="img"')
         return role
@@ -159,14 +177,14 @@ class Drawing:
         root = ET.Element("svg", {"viewBox": f"0 0 {fmt(self.width)} {fmt(self.height)}", "width": fmt(self.width)})
         ET.SubElement(root, "title").text = self.title or None
         ET.SubElement(root, "desc").text = self.desc or None
-        root.extend(e.etree(bool(self.kind)) for e in project(self.items, self.projection))
+        root.extend(e.etree(bool(self.kind)) for e in self._items())
         return root
 
     def svg(self):
         head = (f'<svg xmlns="http://www.w3.org/2000/svg" {self._root()} viewBox="0 0 {fmt(self.width)} {fmt(self.height)}" '
                 f'width="{fmt(self.width)}">')
         lines = [head, f"<title>{_text(self.title)}</title>", f"<desc>{_text(self.desc)}</desc>"]
-        lines += [e.svg(bool(self.kind)) for e in project(self.items, self.projection)]
+        lines += [e.svg(bool(self.kind)) for e in self._items()]
         lines.append("</svg>")
         return "\n".join(lines)
 
@@ -205,17 +223,30 @@ def heading(t, title, subtitle, x=28):
 
 
 def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editorial", nid=None, icon=None, rx=None,
-             st=None):
+             st=None, shape="rect"):
     """A node: paper underlay, the box, an optional tag pill and icon, then the wrapped name and sub.
     st is the node's computed style (style.Styler.node); without it, the theme's v1 look."""
     st = st or legacy_node_style(t, focal, corners)
     stroke = st["stroke"]
+    radii = st.get("radii") if rx is None else rx
     rx = st["radius"] if rx is None else rx
     cx = x + w / 2
     own = nid or ""
-    out = [el("rect", owner=own, role="node.underlay", x=x, y=y, width=w, height=h, rx=rx, fill=st["paper"]),
-           el("rect", owner=own, role="node.shape", x=x, y=y, width=w, height=h, rx=rx, fill=st["fill"], stroke=stroke,
-              stroke_width=st.get("stroke-width"), data_node=nid, data_label=name if nid is not None else None)]
+    if radii is not None and deco.uniform(radii) is None:  # a radius per corner: the box is a path
+        d = deco.rounded_rect(x, y, w, h, radii)
+        out = [el("path", owner=own, role="node.underlay", d=d, fill=st["paper"]),
+               el("path", owner=own, role="node.shape", d=d, fill=st["fill"], stroke=stroke,
+                  stroke_width=st.get("stroke-width"), data_node=nid, data_label=name if nid is not None else None)]
+        rx = radii
+    else:
+        out = [el("rect", owner=own, role="node.underlay", x=x, y=y, width=w, height=h, rx=rx, fill=st["paper"]),
+               el("rect", owner=own, role="node.shape", x=x, y=y, width=w, height=h, rx=rx, fill=st["fill"],
+                  stroke=stroke, stroke_width=st.get("stroke-width"), data_node=nid,
+                  data_label=name if nid is not None else None)]
+    out += deco.decorate(out[1], out[0], st, lambda fill: el(out[1].tag, owner=own, role="node.pattern",
+                                                         **{k: v for k, v in out[1].attrs.items()
+                                                            if k in ("x", "y", "width", "height", "rx", "d")}, fill=fill))
+    out += _sides(out[1], deco.rect_sides(x, y, w, h, rx), st, shape, own)
     if tag:
         tw = max(28, len(tag) * 7)
         tg = st["tag"]
@@ -248,6 +279,8 @@ def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None):
            el("polygon", owner=own, role="node.shape", points=pts, fill=st["fill"], stroke=st["stroke"],
               stroke_width=st.get("stroke-width"), data_node=nid, data_label=name if nid is not None else None,
               data_cx=cx if nid is not None else None, data_cy=cy if nid is not None else None)]
+    out += deco.decorate(out[1], out[0], st, lambda fill: el("polygon", owner=own, role="node.pattern", points=pts, fill=fill))
+    out += _sides(out[1], deco.diamond_sides(cx, cy, w, h), st, "diamond", own)
     lines = _diamond_lines(name)
     y0 = cy + 4 - 7.5 * (len(lines) - 1)
     lab = st["label"]
@@ -280,6 +313,18 @@ def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner="", st=None, 
             el("text", text, owner=owner, role="edge.label", x=x0 + w / 2, y=y0 + 12, font_size=st["font-size"],
                font_family=st["font-family"], font_weight=st.get("font-weight"), fill=st["color"], text_anchor="middle")]
 
+
+
+def _sides(shape_el, sides_d, st, shape, owner):
+    """Border sides (DESIGN 5.5): when a style sets any border-*, the outline is drawn side by side and
+    the shape itself keeps only its fill."""
+    sides = deco.declared(st.get("computed") or {}, shape)
+    if not sides:
+        return []
+    out = deco.borders(sides_d, sides, shape_el.attrs.get("stroke"), st.get("stroke-width"), st["paper"], owner)
+    shape_el.attrs["stroke"] = "none"
+    shape_el.attrs["stroke-width"] = None
+    return out
 
 
 def legacy_node_style(t, focal=False, corners="editorial"):
@@ -333,14 +378,15 @@ def node_name(n, nid=None):
 
 
 @SHAPES.add("rect")
-def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None, kind="box", st=None):
+def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None, kind="box", st=None, shape="rect"):
     return named(node_box(t, cx - w / 2, cy - h / 2, w, h, n["name"], n.get("sub", ""), n.get("tag", ""),
-                          n.get("focal", False), corners, nid, n.get("icon"), rx=rx, st=st), kind, node_name(n, nid))
+                          n.get("focal", False), corners, nid, n.get("icon"), rx=rx, st=st, shape=shape), kind,
+                 node_name(n, nid))
 
 
 @SHAPES.add("oval")
 def _oval(t, nid, n, cx, cy, w, h, corners="editorial", st=None):
-    return _rect(t, nid, n, cx, cy, w, h, corners, rx=None if st else 20, kind="start or end", st=st)
+    return _rect(t, nid, n, cx, cy, w, h, corners, rx=None if st else 20, kind="start or end", st=st, shape="oval")
 
 
 @SHAPES.add("diamond")
@@ -375,6 +421,15 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
            el("text", transformed(tbl.get("name", tid), st["label"]), owner=tid, role="table.name", x=x + 12, y=y + 23,
               font_size=st["label"]["font-size"], font_weight=st["label"].get("font-weight"),
               font_family=st["label"]["font-family"], fill=st["label"]["color"], data_role="table")]
+    paper = el("rect", owner=tid, role="node.underlay", x=x, y=y, width=w, height=h, rx=rx, fill=st.get("paper") or t["paper"])
+    decor = deco.decorate(out[0], paper, st, lambda fill: el("rect", owner=tid, role="node.pattern", x=x, y=y, width=w,
+                                                            height=h, rx=rx, fill=fill))
+    card = 0
+    if paper.attrs.get("filter"):  # a shadow needs something under the card to cast it
+        out.insert(0, paper)
+        card = 1
+    after = card + 3  # the card, its header band, and the rule under the header
+    out[after:after] = decor + _sides(out[card], deco.rect_sides(x, y, w, h, rx), st, "table", tid)
     tag = tbl.get("tag", "")
     if tag:
         tw = max(32, len(tag) * 7 + 8)

@@ -318,6 +318,7 @@ Deviations:
   - A stroke color outside the four default arrowheads gets a marker of its own.
   - `validate` checks a spec's stylesheets and element styles.
   - Goldens are byte-identical. Still constants: group frames, headings, legend, notes, lifelines and table columns (next).
+- **P3.4:** named sides with per-side borders, per-corner radius, gradients, shadows, glow, patterns and opacity, on rect, oval, diamond and table shapes (DESIGN 5.5). Checked by eye in headless renders and by `tests/unit/test_deco.py`. Inset shadows and `sketch` are left for later.
 
 | Task | Size | Work |
 | --- | --- | --- |

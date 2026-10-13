@@ -60,7 +60,9 @@ SIDES = ("top", "right", "bottom", "left")
 _BOX = {"shape": "word", "width": "length", "height": "length", "min-width": "length", "max-width": "length",
         "padding": "padding", "fill": "paint", "background": "paint", "stroke": "paint", "stroke-width": "length",
         "border": "border", "border-top": "border", "border-right": "border", "border-bottom": "border",
-        "border-left": "border", "border-style": ("solid", "dashed", "dotted", "double", "none"),
+        "border-left": "border", "border-top-left": "border", "border-top-right": "border",
+        "border-bottom-right": "border", "border-bottom-left": "border",  # a diamond's sides (DESIGN 5.5)
+        "border-style": ("solid", "dashed", "dotted", "double", "none"),
         "border-radius": "radius", "box-shadow": "shadow", "opacity": "number", "glow": "glow",
         "pattern": ("hatch", "dots", "grid", "none"), "sketch": "bool"}
 _TEXT = {"font": "font", "font-family": "family", "font-size": "length", "font-weight": "weight",

@@ -9,7 +9,7 @@ PKG = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 # today's names for DESIGN 15's layers: scene, style (_theme), text (_text), geom, and the display list
 CORE = ["scene", "scene.model", "scene.normalize", "scene.ids", "scene.patch", "geom", "_text", "_theme",
-        "displaylist", "errors", "sanitize", "style", "style.tokens", "style.parse", "style.select", "style.cascade"]
+        "displaylist", "errors", "sanitize", "deco", "style", "style.tokens", "style.parse", "style.select", "style.cascade"]
 # emit (_output, export, apply write files), cli, mcp, api, and the process plumbing
 FORBIDDEN = {"cli", "mcp", "api", "apply", "export", "_output", "_proc", "__main__"}
 
