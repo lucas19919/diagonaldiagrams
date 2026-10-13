@@ -164,8 +164,8 @@ def to_v1(scene):
         warn.append(_not_drawn(f"{len(others)} constraint(s)", "constraints"))
         spec["constraints"] = others
     for el in [*nodes, *scene.edges, *scene.groups]:
-        if el.style or el.classes or getattr(el, "pin", None) and kind != "schema":
-            warn.append(_not_drawn(f"the style, class or pin of '{el.id}'", f"{type(el).__name__.lower()}s.{el.id}"))
+        if el.style or el.classes or (getattr(el, "pin", None) or getattr(el, "content", None)) and kind != "schema":
+            warn.append(_not_drawn(f"the style, class, pin or content of '{el.id}'", f"{type(el).__name__.lower()}s.{el.id}"))
             break
     if kind in ("flow", "arch"):
         spec["nodes"] = [_v1_node(n, kind) for n in nodes]

@@ -193,6 +193,13 @@ A dashboard is the root container with `"layout": "grid"` and charts or diagrams
 
 This is the lowest level of control (section 20.3).
 
+As built in P2.18, `sanitize.py` keeps an allowlist rather than blocking known-bad parts:
+- **Elements:** drawing elements only (`g`, `path`, shapes, `text`, gradients, `clipPath`, `mask`, `pattern`, `marker`, `use`, ...). No `script`, `foreignObject`, `a`, `image`, `iframe` or `style`.
+- **Attributes:** presentation and geometry attributes only, never `on*` handlers.
+- **References:** `href` and `url(...)` may point only within the fragment (`#id`). Any `javascript:`, `data:`, `expression(` or `@import` value is removed.
+- **Refused outright:** a DOCTYPE or entity declaration, markup that is not well-formed, and anything over 200,000 characters or 5,000 elements.
+- **Reporting:** normalize stores the cleaned markup and names what it removed in an `svg-sanitized` warning. Drawing content inside a node comes with the container layouts (P4); until then it is a `not-drawn` warning.
+
 ### 4.6 Constraints
 
 Constraints guide layouts that understand them. A layout that cannot honor one reports an issue with code `constraint` instead of ignoring it.

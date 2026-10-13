@@ -8,6 +8,7 @@ check(raw) returns (scene or None, errors, warnings). normalize(raw) returns (sc
 raises SpecError when there is an error.
 """
 from ..errors import SpecError
+from ..sanitize import sanitize
 from .ids import EdgeIds
 from .model import KEYS, Edge, Group, Node, Scene
 
@@ -180,6 +181,17 @@ def check(raw):
         node = _build(Node, known, extra)
         if "name" not in known:
             node.name = node.id
+        if isinstance(node.content, dict) and "svg" in node.content:  # raw SVG: an allowlist, nothing else (D8)
+            try:
+                clean, removed = sanitize(node.content["svg"])
+            except SpecError as e:
+                rep.error(e.code, e.msg, e.fix, f"{path}.content.svg")
+            else:
+                node.content = dict(node.content, svg=clean)
+                if removed:
+                    rep.warn("svg-sanitized", f"{path}.content.svg had {len(removed)} unsafe part(s), removed: "
+                             + "; ".join(removed[:5]) + (" ..." if len(removed) > 5 else ""),
+                             "draw with plain shapes and local references (#id) only", f"{path}.content.svg")
         if node.pin is not None and not (
                 "x" in node.pin and "y" in node.pin and set(node.pin) <= {"x", "y", "z"}
                 and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in node.pin.values())):
