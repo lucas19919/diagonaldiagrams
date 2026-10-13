@@ -32,6 +32,7 @@ class Item:
         ("bold", False),            # text: weight 600 or more
         ("color_from", None),       # text: the stylesheet rule that chose its color, when one did
         ("size_from", None),        # text: the rule that chose its size
+        ("font_fallback", None),    # text: a named font that wasn't found, so it was measured by estimate
         ("fill", None),             # shape: (color, opacity), what text over it is read against
     )
     NAMES = frozenset(name for name, _ in FIELDS)

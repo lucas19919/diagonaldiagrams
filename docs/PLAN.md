@@ -340,6 +340,13 @@ Deviations:
   - Nothing is cut by default (B16 for these four types). `overflow: shrink` steps down to 9 px; `ellipsis` cuts at `max-lines`.
   - `**bold**`, `_italic_` and `` `mono` `` draw as tspans, while names, labels and outlines keep the plain text.
   - A new `truncated` warning flags any cut text, including two chart figures whose labels the charts still shorten.
+- **P3.5 (part 1):** `text/fonts.py` reads TrueType, OpenType/CFF, collections and WOFF 1 with `struct`: cmap formats 4 and 12, hmtx, head, hhea, OS/2 (weight, italic, cap height, fsType) and name.
+  - **Lookup:** installed fonts are indexed by family in the user cache directory (366 fonts here, 1.9 s once, instant after). `find` resolves a CSS family list by weight and style, with files a stylesheet names under `"fonts"` first.
+  - **Measuring:** a named font that is found measures its text. `--font` takes a family or a font file. A named font that isn't installed raises `font-fallback`.
+  - **Deviations:**
+    - The default stack (`system-ui, ...`) keeps the built-in estimate rather than "the widest of the bundled metrics", so default figures stay the same on every machine.
+    - The bundled metrics need Inter, Selawik, Roboto and Liberation Sans, which aren't on this machine; downloading them needs your go-ahead.
+    - Receipts don't record the font hash yet. Kerning is not applied.
 
 | Task | Size | Work |
 | --- | --- | --- |

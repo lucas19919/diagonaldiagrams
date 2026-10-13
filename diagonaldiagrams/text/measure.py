@@ -16,14 +16,48 @@ MIN_SIZE = 9.0
 NO_LIMIT = 10 ** 6
 
 
-def width(text, size, bold=False, kind=""):
-    """A run's width: bold runs as bold, mono runs at a fixed 0.6 em per character."""
+def width(text, size, bold=False, kind="", font=None):
+    """A run's width: from the font's own advances when one was found, else the built-in estimate
+    (bold runs as bold, mono runs at a fixed 0.6 em per character). A bold run in a regular font is
+    measured 6% wider, as the estimate does."""
+    if font is not None and kind != "m":
+        w = font.width(text, size)
+        return w * 1.06 if kind == "b" and font.weight < 600 else w
     if kind == "m":
         return 0.6 * size * len(text)
     return _text_w(text, size, bold or kind == "b")
 
 
-def _wrap_runs(text, max_w, size, bold):
+def _wrap_measured(text, max_w, size, font, limit):
+    """Greedy wrapping by a font's advances, as _wrap_px does by the estimate: a word too wide for a
+    line is split with a hyphen; past limit lines the last ends in "..."."""
+    words, lines, cur = str(text or "").split(), [], ""
+    for wd in words:
+        while font.width(wd, size) > max_w and len(wd) > 1:
+            cut = max(1, int(len(wd) * max_w / font.width(wd, size)) - 1)
+            if cur:
+                lines.append(cur)
+                cur = ""
+            lines.append(wd[:cut] + "-")
+            wd = wd[cut:]
+        trial = (cur + " " + wd).strip()
+        if cur and font.width(trial, size) > max_w:
+            lines.append(cur)
+            cur = wd
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    if len(lines) > limit:
+        lines = lines[:limit]
+        last = lines[-1]
+        while last and font.width(last + "...", size) > max_w:
+            last = last[:-1]
+        lines[-1] = last.rstrip() + "..."
+    return lines or [""]
+
+
+def _wrap_runs(text, max_w, size, bold, font=None):
     """Lines of (text, kind) runs, breaking between words; a word too wide for a line stays whole."""
     words = []  # (word, kind, whether a space comes before it)
     spaced = False
@@ -36,9 +70,9 @@ def _wrap_runs(text, max_w, size, bold):
                 spaced = True
         spaced = spaced or piece.endswith(" ")
     lines, cur, cur_w = [], [], 0.0
-    space = width(" ", size, bold)
+    space = width(" ", size, bold, font=font)
     for wd, kind, before in words:
-        w = width(wd, size, bold, kind)
+        w = width(wd, size, bold, kind, font)
         gap = space if (cur and before) else 0.0
         if cur and cur_w + gap + w > max_w:
             lines.append(cur)
@@ -63,16 +97,19 @@ def _merge(line):
     return out
 
 
-def wrap(text, max_w, size, bold=False, max_lines=None, overflow="wrap"):
-    """(lines, size): each line a list of (text, kind) runs, and the size the text ends up at."""
+def wrap(text, max_w, size, bold=False, max_lines=None, overflow="wrap", font=None):
+    """(lines, size): each line a list of (text, kind) runs, and the size the text ends up at. With a
+    font, widths are its own advances; without, the built-in estimate."""
     def lay(sz, limit):
         if markup.has_markup(text):
-            lines = _wrap_runs(text, max_w, sz, bold)
+            lines = _wrap_runs(text, max_w, sz, bold, font)
             if len(lines) > limit:
                 lines = lines[:limit]
                 last = lines[-1]
                 lines[-1] = last[:-1] + [(last[-1][0].rstrip() + "...", last[-1][1])]
             return lines
+        if font is not None:
+            return [[(line, "")] for line in _wrap_measured(text, max_w, sz, font, limit)]
         return [[(line, "")] for line in _wrap_px(text, max_w, sz, bold, limit)]
 
     if overflow == "ellipsis":

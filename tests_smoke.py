@@ -1098,6 +1098,19 @@ def style_checks():
     rc, out = run("describe", "style")
     check("describe style lists properties, selectors and tokens",
           rc == 0 and '"border-top"' in out and '":focal"' in out and '"accent-tint"' in out, out[:200])
+    # fonts: a font file measured from its own widths; a named font that isn't installed warns
+    sys.path.insert(0, os.path.join(HERE, "tests", "unit"))
+    from test_fonts import make_font
+    font = os.path.join(WORK, "wide.ttf")
+    with open(font, "wb") as f:
+        f.write(make_font({c: 700 for c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ :-"}, family="Wide Test"))
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "font-file.svg"), "--font", font)
+    body = open(os.path.join(WORK, "font-file.svg"), encoding="utf-8").read() if rc == 0 else ""
+    check("--font FILE draws in that family and measures with it", "font-family=\"'Wide Test', sans-serif\"" in body,
+          out[-200:])
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "font-missing.svg"), "--font",
+                  "Nowhere Grotesk 9000, sans-serif")
+    check("a named font that isn't installed is a font-fallback warning", rc == 0 and '"font-fallback"' in out, out[-200:])
 
 if __name__ == "__main__":
     main()

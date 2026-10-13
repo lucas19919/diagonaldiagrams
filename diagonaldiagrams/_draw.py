@@ -394,10 +394,12 @@ def box_text(name, sub="", w=BOX_W, st=None):
     from .text.measure import line_height, wrap
     lab = dict(BOX_LABEL, **{k: v for k, v in ((st or {}).get("label") or {}).items() if v is not None})
     sb = dict(BOX_SUB, **{k: v for k, v in ((st or {}).get("sub") or {}).items() if v is not None})
-    nl, lab["font-size"] = wrap(name, w - 16, lab["font-size"], _bold(lab), lab.get("max-lines"), lab.get("overflow") or "wrap")
+    nl, lab["font-size"] = wrap(name, w - 16, lab["font-size"], _bold(lab), lab.get("max-lines"), lab.get("overflow") or "wrap",
+                                lab.get("font"))
     sl = []
     if sub:
-        sl, sb["font-size"] = wrap(sub, w - 16, sb["font-size"], _bold(sb), sb.get("max-lines"), sb.get("overflow") or "wrap")
+        sl, sb["font-size"] = wrap(sub, w - 16, sb["font-size"], _bold(sb), sb.get("max-lines"), sb.get("overflow") or "wrap",
+                                   sb.get("font"))
     lab["pitch"] = line_height(lab, 1.25)
     sb["pitch"] = line_height(sb, 4 / 3)
     return nl, sl, lab, sb
@@ -450,7 +452,7 @@ def diamond_text(name, st=None):
     from .text.measure import line_height, wrap
     lab = dict(BOX_LABEL, **{k: v for k, v in ((st or {}).get("label") or {}).items() if v is not None})
     lines, lab["font-size"] = wrap(name, 100, lab["font-size"], _bold(lab), lab.get("max-lines"),
-                                   lab.get("overflow") or "wrap")
+                                   lab.get("overflow") or "wrap", lab.get("font"))
     lab["pitch"] = line_height(lab, 1.25)
     return lines, lab
 

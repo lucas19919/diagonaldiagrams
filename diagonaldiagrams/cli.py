@@ -69,9 +69,23 @@ def _cli_sheets(a):
         except (OSError, ValueError) as e:
             _report({"ok": False, "stage": "validate", "errors": [{
                 "msg": f"--style {path} can't be read: {e}", "fix": "pass a JSON stylesheet: {\"tokens\": {...}, \"rules\": {...}}"}]}, 1)
-        sheets.append(dict(sheet, name=sheet.get("name") or os.path.basename(path)) if isinstance(sheet, dict) else sheet)
+        if isinstance(sheet, dict):
+            here = os.path.dirname(os.path.abspath(path))  # a sheet's font files are found beside it
+            fonts = {fam: f if os.path.isabs(f) else os.path.join(here, f) for fam, f in (sheet.get("fonts") or {}).items()}
+            sheet = dict(sheet, name=sheet.get("name") or os.path.basename(path), fonts=fonts)
+        sheets.append(sheet)
     if getattr(a, "font", None):
-        sheets.append({"name": "--font", "tokens": {"font": a.font}})
+        if os.path.isfile(a.font):  # a font file: its own family name, measured from the file
+            from .text.fonts import FontError, describe
+            try:
+                family = describe(a.font)["family"]
+            except (OSError, FontError, ValueError) as e:
+                _report({"ok": False, "stage": "validate", "errors": [{
+                    "msg": f"--font {a.font} can't be read as a font: {e}", "fix": "pass a .ttf, .otf, .ttc or .woff file, or a family name"}]}, 1)
+            sheets.append({"name": "--font", "tokens": {"font": f"'{family}', sans-serif"},
+                           "fonts": {family: os.path.abspath(a.font)}})
+        else:
+            sheets.append({"name": "--font", "tokens": {"font": a.font}})
     if sheets:
         try:
             Cascade(["editorial", *sheets])
@@ -249,7 +263,8 @@ def main():
         p.add_argument("--outline", action="store_true", help="add the structured outline to the verdict")
         p.add_argument("--style", action="append", default=[], metavar="FILE",
                        help="a stylesheet (JSON: tokens and rules); repeat it, later files win")
-        p.add_argument("--font", default=None, help="the font family for the figure's text (the font token)")
+        p.add_argument("--font", default=None,
+                       help="the font for the figure's text: a family name, or a .ttf/.otf/.ttc/.woff file to measure with")
         _render_parsers[name] = p
     _render_parsers["flow"].add_argument("--auto", action="store_true",
                                          help="force longest-path layering (default when no ranks given)")

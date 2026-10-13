@@ -370,7 +370,7 @@ def text_el(text, st, owner, role, x, y, anchor="middle"):
     return el("text", text, owner=owner, role=role, x=x, y=y, font_size=st["font-size"], font_weight=st.get("font-weight"),
               font_family=st["font-family"], font_style=st.get("font-style"), letter_spacing=st.get("letter-spacing"),
               fill=st["color"], text_anchor=anchor, data_color_from=st.get("color-from"),
-              data_size_from=st.get("font-size-from"))
+              data_size_from=st.get("font-size-from"), data_font_fallback=st.get("font-fallback"))
 
 
 def add_markers(defs, colors):

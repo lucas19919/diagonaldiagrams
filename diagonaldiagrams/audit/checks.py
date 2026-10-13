@@ -10,7 +10,7 @@ from ..geom import center, inside, near_pairs, overlap, path_crosses
 from ..registry import Registry
 
 CHECKS = Registry("check")  # name -> function(view, issues), with the codes it reports; run in order
-WARNINGS = {"newline", "min-size", "colors", "truncated"}  # codes that warn; every other code is an error
+WARNINGS = {"newline", "min-size", "colors", "truncated", "font-fallback"}  # codes that warn; others are errors
 
 
 def check(name, *codes):
@@ -254,6 +254,20 @@ def min_size(v, issues):
         if t.size_from and t.size < 9:
             issues.append({"code": "min-size", "msg": f"'{t.text[:24]}' is {t.size:g} px, under 9 px; the size comes from "
                                                        f"{t.size_from}", "fix": "use 9 px or more", "at": [round(t.box[0]), round(t.box[1])]})
+
+
+@check("fonts found", "font-fallback")
+def font_fallback(v, issues):
+    # One warning per font a stylesheet named that this machine doesn't have.
+    seen = set()
+    for t in v.texts:
+        if t.font_fallback and t.font_fallback not in seen:
+            seen.add(t.font_fallback)
+            issues.append({"code": "font-fallback",
+                           "msg": f"the font '{t.font_fallback}' isn't installed here, so text was measured by the built-in "
+                                  "estimate and may not fit where it is shown",
+                           "fix": "install it, or name its file in the stylesheet's \"fonts\" or with --font PATH",
+                           "at": [round(t.box[0]), round(t.box[1])]})
 
 
 @check("cut text", "truncated")

@@ -98,6 +98,10 @@ class Styler:
         self._generic = {k: View(k, parent=self.views["figure"]) for k in ("node", "edge", "group")}
         self.markers = {self.token(t): mid for t, mid in MARKERS}
         self.extra_markers = {}  # color -> id, for strokes no default marker matches
+        self._fonts = {}
+        self.font_files = {}  # family -> font file, from the stylesheets' "fonts"
+        for s in self.cascade.sheets:
+            self.font_files.update(s.get("fonts") or {})
         self._scales = {}
         self.scales = {}  # (type, property, field) -> Scale: the encodings drawn, for the legend
         self.rule_legends = {}  # legend text -> the look it names, from rules with "legend"
@@ -120,6 +124,9 @@ class Styler:
     def _text(self, v, pseudo, background=None):
         c = self._encoded(v, self.cascade.computed(v, pseudo))
         out = {k: css(c.get(k)) for k in TEXT}
+        out["font"], missing = self._font(out)
+        if missing:
+            out["font-fallback"] = missing
         if background is not None and c.get("color") is not None and \
                 self.cascade.origin(v, pseudo, "color") <= self.preset_layer:
             out["color"] = self._readable(c["color"], background)
@@ -140,6 +147,21 @@ class Styler:
             return css(fg)
         best = max((color(self.token("ink")), paper), key=lambda c: contrast(c, bg, paper))
         return best.css
+
+    def _font(self, text_style):
+        """(the font file measuring this text, or None; a named family that wasn't found, or None)."""
+        from ..text.fonts import FontError, find
+        weight = str(text_style.get("font-weight") or "400")
+        weight = 700 if weight == "bold" else int(weight) if weight.isdigit() else 400
+        italic = text_style.get("font-style") in ("italic", "oblique")
+        key = (text_style.get("font-family"), weight, italic)
+        if key not in self._fonts:
+            try:
+                self._fonts[key] = find(text_style.get("font-family"), weight, italic, self.font_files)
+            except FontError as e:
+                from ..errors import SpecError
+                raise SpecError(str(e), "check the path in the stylesheet's \"fonts\"", "bad-font") from None
+        return self._fonts[key]
 
     def _encoded(self, v, c):
         """Computed values with any {field, scale} read against this element's data (DESIGN 5.7),

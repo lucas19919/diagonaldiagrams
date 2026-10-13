@@ -394,6 +394,10 @@ Shaping is an extension point (`shaper`, section 11.1):
 - **Default system stack** (`system-ui, ...`): measured as the widest of the bundled metrics. Text then fits whichever font the viewer actually has.
 - **Determinism:** if a named font isn't found, the engine falls back to bundled metrics and issues a `font-fallback` warning. The receipt records the metrics used (family plus file hash).
 
+As built in P3.5 (part 1):
+- **Lookup:** a font family list is resolved left to right. A name a stylesheet maps to a file in its `"fonts"` comes first, then installed fonts by family, weight and style. A generic first family (`system-ui`, `sans-serif`, `serif`, `monospace`) stops the lookup: the default stack keeps the built-in estimate, so figures don't depend on the machine.
+- **Fallback:** a named font that isn't found marks its text with `data-font-fallback`, and the audit warns once per font.
+
 ### 6.2 Layout of text
 
 - Wrap at word boundaries. Break inside a word only if one word is wider than the box.
