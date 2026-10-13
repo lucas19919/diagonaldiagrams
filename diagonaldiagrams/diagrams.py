@@ -287,11 +287,11 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     return dr, W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
 
 
-def render_flow(spec, corners="editorial", auto=False, theme=None):
+def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=()):
     """Draw a flow. If an arrow runs through a box, move a node the spec left free to
     another lane and draw again. A node with its own lane is never moved. A move must lower
     the layout cost (problems, crossings, arrow length), not just the problem count."""
-    sty = Styler(spec, "flow", theme or THEME, corners)  # styles don't depend on the lanes the loop moves
+    sty = Styler(spec, "flow", theme or THEME, corners, sheets)  # styles don't depend on the lanes the loop moves
 
     def draw(sp):
         dr, w, h, placed = _render_flow_once(sp, corners, auto, theme, sty)
@@ -332,12 +332,12 @@ def render_flow(spec, corners="editorial", auto=False, theme=None):
     return _as_svg(out)
 
 
-def render_arch(spec, corners="editorial", theme=None):
+def render_arch(spec, corners="editorial", theme=None, sheets=()):
     """Draw an architecture view. If the audit finds a problem (an arrow through a box, two
     arrows on one line, a label collision), try other orders within each row (layers never
     change). Keep the order with the lowest cost: a problem counts as four crossings, and
     arrow length breaks ties, so one fix is never bought with a tangle of new crossings."""
-    sty = Styler(spec, "arch", theme or THEME, corners)  # shared by the drafts: they only reorder rows
+    sty = Styler(spec, "arch", theme or THEME, corners, sheets)  # shared by the drafts: they only reorder rows
     out, bad, cost = _layout_cost(_render_arch_once(spec, corners, theme, sty))
     if not bad or not isinstance(spec.get("nodes"), list):
         return _as_svg(out)
@@ -567,9 +567,9 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     return dr, W, H
 
 
-def render_seq(spec, corners="editorial", theme=None):
+def render_seq(spec, corners="editorial", theme=None, sheets=()):
     t = theme or THEME
-    sty = Styler(spec, "seq", t, corners)
+    sty = Styler(spec, "seq", t, corners, sheets)
     actors = spec.get("actors", [])
     messages = spec.get("messages", [])
     n_act = max(1, len(actors))
@@ -663,10 +663,10 @@ def render_seq(spec, corners="editorial", theme=None):
     return dr.svg(), W, H
 
 
-def render_schema(spec, corners="editorial", theme=None):
+def render_schema(spec, corners="editorial", theme=None, sheets=()):
     """Draw tables and relations. If the audit finds a problem, try other table orders and keep
     the one with the lowest layout cost (problems, crossings, length), as render_arch does."""
-    sty = Styler(spec, "schema", theme or THEME, corners)  # shared by the drafts: they only reorder tables
+    sty = Styler(spec, "schema", theme or THEME, corners, sheets)  # shared by the drafts: they only reorder tables
     out, bad, cost = _layout_cost(_render_schema_once(spec, corners, theme, sty))
     tables = spec.get("tables") if isinstance(spec, dict) else None
     if not bad or not isinstance(tables, list) or any("x" in tb for tb in tables if isinstance(tb, dict)):

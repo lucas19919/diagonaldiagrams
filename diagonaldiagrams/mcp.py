@@ -19,7 +19,9 @@ def do_mcp(args):
            "data": {"type": "string", "description": "CSV text, inline"},
            "path": {"type": "string", "description": "or a spec/CSV file on disk"}}
     opts = {"type": "object", "description": 'CLI flags without dashes, e.g. {"x": "month", "y": "signups", '
-                                             '"group": "product", "title": "...", "highlight": ["Atlas"]}. describe lists them.'}
+                                             '"group": "product", "title": "...", "highlight": ["Atlas"]}. describe lists them. '
+                                             'Diagrams also take "style": a stylesheet object (or a list of them) and '
+                                             '"font": "Inter"; describe style lists properties and selectors.'}
     TOOLS = [
         {"name": "describe", "description": "The spec shape, flags, and budgets for one figure type. No type: the list of types.",
          "inputSchema": {"type": "object", "properties": {"type": {"type": "string"}}}},

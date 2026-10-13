@@ -258,10 +258,11 @@ def do_export(args):
         else:
             spec = load_spec(r["spec"], cmd)
         fn = {"flow": render_flow, "arch": render_arch, "seq": render_seq, "schema": render_schema}[cmd]
+        sheets = r.get("styles") or ()
         if cmd == "flow":
-            svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme)
+            svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme, sheets)
         else:
-            svg, _, _ = fn(spec, r.get("corners", "editorial"), theme)
+            svg, _, _ = fn(spec, r.get("corners", "editorial"), theme, sheets)
         key = {"flow": "nodes", "arch": "nodes", "seq": "actors", "schema": "tables"}[cmd]
         n = len(spec.get(key, []))
         unit, dest, note = "items", args.o or f"{base}.{args.to}", " (diagram: single layout)"

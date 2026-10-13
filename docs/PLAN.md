@@ -319,6 +319,12 @@ Deviations:
   - `validate` checks a spec's stylesheets and element styles.
   - Goldens are byte-identical. Still constants: group frames, headings, legend, notes, lifelines and table columns (next).
 - **P3.4:** named sides with per-side borders, per-corner radius, gradients, shadows, glow, patterns and opacity, on rect, oval, diamond and table shapes (DESIGN 5.5). Checked by eye in headless renders and by `tests/unit/test_deco.py`. Inset shadows and `sketch` are left for later.
+- **P3.10 (part 1):**
+  - `--style FILE` (repeatable) and `--font FAMILY` on flow, arch, seq and schema. A bad stylesheet stops with validate's JSON.
+  - MCP and API `options.style` takes a stylesheet object or a list; it is written beside the output and passed as `--style`.
+  - Receipts keep the stylesheets' content, and export redraws with them.
+  - `describe style` is generated from the property table, selector grammar and tokens.
+  - Still to do: diagrams drawing `--caption` and `--figure` (B17).
 
 | Task | Size | Work |
 | --- | --- | --- |

@@ -56,7 +56,32 @@ def _cli_notes(args, kind):
     return out or None
 
 
-def _receipt(a, theme, payload, notes=None, scene=None):
+def _cli_sheets(a):
+    """--style files and --font, as stylesheets after the spec's own. A file that can't be read, or
+    a rule with a mistake in it, stops here with validate's JSON, before anything is drawn."""
+    from .errors import SpecError
+    from .style.cascade import Cascade
+    sheets = []
+    for path in getattr(a, "style", None) or []:
+        try:
+            with open(path, encoding="utf-8") as f:
+                sheet = json.load(f)
+        except (OSError, ValueError) as e:
+            _report({"ok": False, "stage": "validate", "errors": [{
+                "msg": f"--style {path} can't be read: {e}", "fix": "pass a JSON stylesheet: {\"tokens\": {...}, \"rules\": {...}}"}]}, 1)
+        sheets.append(dict(sheet, name=sheet.get("name") or os.path.basename(path)) if isinstance(sheet, dict) else sheet)
+    if getattr(a, "font", None):
+        sheets.append({"name": "--font", "tokens": {"font": a.font}})
+    if sheets:
+        try:
+            Cascade(["editorial", *sheets])
+        except SpecError as e:
+            _report({"ok": False, "stage": "validate", "errors": [{"msg": e.msg, "fix": e.fix}],
+                     "next": "fix the stylesheet and run the same command again; nothing was drawn"}, 1)
+    return sheets
+
+
+def _receipt(a, theme, payload, notes=None, scene=None, sheets=None):
     """Receipt v2 (P2.10): what export needs to draw the same figure again. On top of v1's fields:
     the theme keys --theme-file changed, the caption, chart notes, whether the audit ran, and for a
     diagram the scene that was drawn, so export doesn't depend on the spec file staying as it was."""
@@ -73,6 +98,8 @@ def _receipt(a, theme, payload, notes=None, scene=None):
         out["audit"] = False
     if scene is not None:
         out["scene"] = scene
+    if sheets:
+        out["styles"] = sheets  # their content: export redraws with them even if the files move
     return out
 
 
@@ -220,6 +247,9 @@ def main():
         p.add_argument("--theme-file", default=None, help="JSON with theme key overrides")
         p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
         p.add_argument("--outline", action="store_true", help="add the structured outline to the verdict")
+        p.add_argument("--style", action="append", default=[], metavar="FILE",
+                       help="a stylesheet (JSON: tokens and rules); repeat it, later files win")
+        p.add_argument("--font", default=None, help="the font family for the figure's text (the font token)")
         _render_parsers[name] = p
     _render_parsers["flow"].add_argument("--auto", action="store_true",
                                          help="force longest-path layering (default when no ranks given)")
@@ -402,26 +432,28 @@ def main():
         a.cmd = kind
     pre = _prevalidate(a)
     if a.cmd in ("flow", "arch", "seq", "schema"):
+        sheets = _cli_sheets(a)
         spec = load_spec(a.spec, a.cmd)
         theme = _cli_theme(a)
         if a.cmd == "flow":
-            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme)
+            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "arch":
-            svg, _, _ = render_arch(spec, a.corners, theme)
+            svg, _, _ = render_arch(spec, a.corners, theme, sheets)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "seq":
-            svg, _, _ = render_seq(spec, a.corners, theme)
+            svg, _, _ = render_seq(spec, a.corners, theme, sheets)
             item_cnt = len(spec.get("actors", []))
         elif a.cmd == "schema":
-            svg, _, _ = render_schema(spec, a.corners, theme)
+            svg, _, _ = render_schema(spec, a.corners, theme, sheets)
             item_cnt = len(spec.get("tables", []))
         o, s = write_out(svg, a.cmd, spec.get("title", a.cmd), spec.get("sub", ""),
                          f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
                          caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",
                          source="Self-contained HTML + SVG.", corners=a.corners, theme=theme)
         save_receipt(o, _receipt(a, theme, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
-                                            "auto": bool(getattr(a, "auto", False))}, scene=_drawn_scene(spec, a.cmd)))
+                                            "auto": bool(getattr(a, "auto", False))}, scene=_drawn_scene(spec, a.cmd),
+                                 sheets=sheets))
         _finish(a, o, s, item_cnt, "items", pre)
     elif a.cmd == "bar":
         theme = _cli_theme(a)

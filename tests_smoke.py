@@ -1081,6 +1081,23 @@ def style_checks():
     rc, out = run("validate", spec)
     check("a typo in a style rule is a validate error with a did-you-mean", rc == 1 and "did you mean 'accent'" in out,
           out[-200:])
+    brand = os.path.join(WORK, "brand.json")
+    with open(brand, "w", encoding="utf-8") as f:
+        json.dump({"tokens": {"accent": "#7c3aed"}, "rules": {"node": {"border-top": "3px solid accent"}}}, f)
+    tops = {}
+    for kind, name in (("flow", "flow_decision"), ("arch", "checkout_platform"), ("seq", "seq_checkout"),
+                       ("schema", "schema_ecommerce")):
+        svg = os.path.join(WORK, f"brand-{kind}.svg")
+        rc, out = run(kind, f"examples/{name}.json", "-o", svg, "--style", brand, "--font", "Georgia, serif")
+        body = open(svg, encoding="utf-8").read() if rc == 0 else ""
+        tops[kind] = body.count('stroke="#7c3aed" stroke-width="3"') > 0 and 'font-family="Georgia, serif"' in body
+    check("--style and --font restyle flow, arch, seq and schema alike", all(tops.values()), str(tops))
+    rc, out = run("export", os.path.join(WORK, "brand-flow.svg"), "--to", "svg", "-o", os.path.join(WORK, "brand-export.svg"))
+    same = rc == 0 and open(os.path.join(WORK, "brand-flow.svg"), encoding="utf-8").read() ==         open(os.path.join(WORK, "brand-export.svg"), encoding="utf-8").read()
+    check("export redraws a styled figure from its receipt", same, out[-200:])
+    rc, out = run("describe", "style")
+    check("describe style lists properties, selectors and tokens",
+          rc == 0 and '"border-top"' in out and '":focal"' in out and '"accent-tint"' in out, out[:200])
 
 if __name__ == "__main__":
     main()

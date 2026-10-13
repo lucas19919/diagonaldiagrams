@@ -125,8 +125,29 @@ def tool_argv(name, a):
             out = os.path.splitext(out)[0] + ".html" if out else "diagonaldiagrams-out.html"
         target = source(a, out)
         head = [kind] if (kind in DIAGRAMS or kind in OWN or kind == "mermaid") else ["chart", kind]
-        return head + [target, "-o", out] + flags(a.get("options"))
+        return head + [target, "-o", out] + flags(_style_files(a.get("options"), out))
     raise ValueError(f"unknown tool {name}")
+
+
+def _style_files(options, out):
+    """An inline `style` option (a stylesheet object, or a list of them) written beside the output, so
+    the command line gets the --style files it reads. Paths pass through."""
+    options = dict(options or {})
+    style = options.get("style")
+    if style is None or isinstance(style, str):
+        return options
+    paths = []
+    for k, sheet in enumerate(style if isinstance(style, list) else [style]):
+        if isinstance(sheet, str):
+            paths.append(sheet)
+            continue
+        dest = os.path.splitext(out)[0] + (f".style{k + 1}.json" if isinstance(style, list) else ".style.json")
+        os.makedirs(os.path.dirname(os.path.abspath(dest)), exist_ok=True)
+        with open(dest, "w", encoding="utf-8") as f:
+            json.dump(sheet, f, indent=1)
+        paths.append(dest)
+    options["style"] = paths
+    return options
 
 
 def render(kind, spec=None, data=None, path=None, out="diagonaldiagrams-out.html", scene=None, **options):

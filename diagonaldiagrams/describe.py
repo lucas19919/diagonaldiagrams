@@ -161,5 +161,50 @@ DESCRIBE = {
 DESCRIBE.update(_chart_meta())
 
 
+DESCRIBE["style"] = None  # built on request: it reads the style package, which most commands never load
+
+
+def describe_style():
+    """The style system, from the code that reads it, so this never drifts from what it accepts."""
+    from .style import parse, select
+    from .style.tokens import tokens
+
+    def kind(k):
+        return "|".join(k) if isinstance(k, tuple) else k
+    return {
+        "use": "--style FILE (repeatable; later files win) and --font FAMILY on flow, arch, seq and schema; a spec's "
+               "\"style\" (one stylesheet or a list); an element's own \"style\"; options.style in MCP and the API",
+        "sheet": {"name": "brand", "extends": ["editorial | ink | print"], "tokens": {"accent": "#7c3aed"},
+                  "rules": {"SELECTOR": {"PROPERTY": "VALUE"}}},
+        "cascade": "theme < preset < spec style < --style files < element style < policy; within one sheet the more "
+                   "specific selector wins, then the later rule; text properties inherit",
+        "selectors": "TYPE #id .class [attr] [attr=v] [attr!=v] [attr^=v] [attr>n] [attr<n] (fields, then data), "
+                     "A B (descendant), A > B (child), :pseudo-class, ::pseudo-element",
+        "types": list(select.TYPES),
+        "pseudo_classes": [":" + p for p in select.PSEUDO_CLASSES],
+        "pseudo_elements": ["::" + p for p in select.PSEUDO_ELEMENTS],
+        "properties": {name: kind(k) for name, k in sorted(parse.PROPERTIES.items())},
+        "values": {"color": "#rgb #rrggbb #rrggbbaa rgb() rgba() hsl() CSS names transparent tokens var(--token) "
+                            "mix(a, b, 30%)",
+                   "length": "a number (px), 12px, or 1.5em (of the element's font size), or a size token",
+                   "border": "WIDTH STYLE COLOR in any order (solid dashed dotted double none), or none",
+                   "padding, border-radius": "1 to 4 lengths, in CSS order",
+                   "box-shadow": "X Y [BLUR [SPREAD]] COLOR [inset], comma-separated, or none",
+                   "paint": "a color, or linear-gradient(ANGLE | to SIDE, COLOR [STOP%], ...)",
+                   "encoding": "{\"field\": \"p99\", \"scale\": {...}}: the value comes from each element's data"},
+        "sides": {"rect, oval, table": ["top", "right", "bottom", "left"],
+                  "diamond": ["top-left", "top-right", "bottom-right", "bottom-left", "(top, right, bottom, left: two edges each)"]},
+        "tokens": sorted(k for k, v in tokens("editorial").items() if not isinstance(v, list)),
+        "palettes": sorted(k for k, v in tokens("editorial").items() if isinstance(v, list)),
+        "example": {"rules": {"node": {"border-top": "3px solid accent"},
+                              "node[team=pay]": {"border-left": "4px solid #e11d48"},
+                              "edge.critical": {"stroke": "accent", "stroke-width": 2.5},
+                              "edge::label": {"text-transform": "none"}}},
+    }
+
+
 def do_describe(args):
+    if args.type == "style":
+        print(json.dumps(describe_style(), indent=2))
+        return 0
     print(json.dumps(DESCRIBE[args.type], indent=2) if args.type else json.dumps({"types": sorted(DESCRIBE)}, indent=2))
