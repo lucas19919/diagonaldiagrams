@@ -57,11 +57,23 @@ def _cli_notes(args, kind):
 
 
 def _cli_sheets(a):
-    """--style files and --font, as stylesheets after the spec's own. A file that can't be read, or
-    a rule with a mistake in it, stops here with validate's JSON, before anything is drawn."""
+    """The project config's sheets, then --style files and --font, then the config's locked policy:
+    the stylesheets after the spec's own. A file that can't be read, or a rule with a mistake in it,
+    stops here with validate's JSON, before anything is drawn."""
     from .errors import SpecError
     from .style.cascade import Cascade
-    sheets = []
+    from . import config
+    try:
+        cfg = config.load(a.spec if a.spec and os.path.exists(a.spec) else None)
+    except SpecError as e:
+        _report({"ok": False, "stage": "validate", "errors": [{"msg": e.msg, "fix": e.fix}]}, 1)
+    a._config = cfg
+    for key in ("theme", "corners"):  # the config's defaults, where the flag was left at its own
+        if cfg.defaults.get(key) and getattr(a, key, None) == "editorial":
+            setattr(a, key, cfg.defaults[key])
+    sheets = list(cfg.sheets)
+    if cfg.font_files:
+        sheets.append({"name": "the config's fonts", "fonts": dict(cfg.font_files)})
     for path in getattr(a, "style", None) or []:
         try:
             with open(path, encoding="utf-8") as f:
@@ -86,6 +98,7 @@ def _cli_sheets(a):
                            "fonts": {family: os.path.abspath(a.font)}})
         else:
             sheets.append({"name": "--font", "tokens": {"font": a.font}})
+    sheets += [dict(p, policy=True) for p in cfg.policies]
     if sheets:
         try:
             Cascade(["editorial", *sheets])
@@ -93,6 +106,19 @@ def _cli_sheets(a):
             _report({"ok": False, "stage": "validate", "errors": [{"msg": e.msg, "fix": e.fix}],
                      "next": "fix the stylesheet and run the same command again; nothing was drawn"}, 1)
     return sheets
+
+
+def _brand_check(a, spec, theme, sheets):
+    """The brand policy (DESIGN 22.4): an override of a locked value, or a color or font the config
+    doesn't allow, stops the render with each one named."""
+    cfg = getattr(a, "_config", None)
+    if cfg is None or not (cfg.policies or cfg.palette is not None or cfg.fonts is not None):
+        return
+    from .style.styler import Styler
+    issues = Styler(spec, a.cmd, theme, a.corners, sheets).off_brand(cfg.palette, cfg.fonts)
+    if issues:
+        _report({"ok": False, "stage": "validate", "errors": issues,
+                 "next": "the project's brand policy (diagonaldiagrams.toml) decides these; nothing was drawn"}, 1)
 
 
 def _receipt(a, theme, payload, notes=None, scene=None, sheets=None):
@@ -459,6 +485,7 @@ def main():
             if getattr(a, key, None):
                 spec[key] = getattr(a, key)
         theme = _cli_theme(a)
+        _brand_check(a, spec, theme, sheets)
         embed = getattr(a, "embed_fonts", False)
         if a.cmd == "flow":
             svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed)

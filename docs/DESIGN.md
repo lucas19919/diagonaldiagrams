@@ -1204,6 +1204,15 @@ As built in P2.17, for flow, arch, seq and schema (the diagrams that paint throu
 
 The `off-brand` check reports deviations.
 
+As built in P3.12:
+- **Finding the config:** `diagonaldiagrams.toml` is found by walking up from the spec. `DIAGONALDIAGRAMS_ORG_CONFIG` names the organization's file, which applies on top.
+- **Policy:** the policy sheet is a cascade layer above everything, element styles included, and its tokens win.
+- **What `off-brand` judges:** values a stylesheet or element chose, not the theme or preset defaults, whose tokens the policy controls. It reports three things:
+  - a declaration that a policy rule overrides with a different value;
+  - a color outside `[palette] allowed` (tokens may be listed by name);
+  - a first font family outside `[fonts] allowed`.
+- **Where it runs:** `validate` and render both run it, so a violation stops before anything is drawn.
+
 Font embedding respects the font's embedding permissions (the OS/2 `fsType` field). A restricted font is referenced, not embedded, with a warning.
 
 ### 22.5 Localization

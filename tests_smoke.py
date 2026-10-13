@@ -1125,6 +1125,30 @@ def style_checks():
     check("a font whose license forbids embedding is referenced, with a warning",
           rc == 0 and '"font-embed"' in out and "@font-face" not in open(os.path.join(WORK, "locked.svg"), encoding="utf-8").read(),
           out[-200:])
+    # P3.12: a project's diagonaldiagrams.toml brings house styles and a locked brand policy
+    proj = os.path.join(WORK, "brandproj")
+    os.makedirs(os.path.join(proj, "brand"), exist_ok=True)
+    with open(os.path.join(proj, "diagonaldiagrams.toml"), "w", encoding="utf-8") as f:
+        f.write('[style]\nsheets = ["brand/house.json"]\npolicy = "brand/policy.json"\n[defaults]\ncorners = "sharp"\n')
+    with open(os.path.join(proj, "brand", "house.json"), "w", encoding="utf-8") as f:
+        json.dump({"rules": {"node": {"border-top": "3px solid accent"}}}, f)
+    with open(os.path.join(proj, "brand", "policy.json"), "w", encoding="utf-8") as f:
+        json.dump({"name": "policy", "tokens": {"accent": "#7c3aed"}, "rules": {"node": {"stroke": "ink"}}}, f)
+    good = os.path.join(proj, "good.json")
+    shutil.copy(os.path.join(HERE, "examples", "flow_decision.json"), good)
+    rc, out = run("flow", good, "-o", os.path.join(proj, "good.svg"))
+    body = open(os.path.join(proj, "good.svg"), encoding="utf-8").read() if rc == 0 else ""
+    check("the project config's house sheet, policy tokens and defaults apply",
+          'stroke="#7c3aed" stroke-width="3"' in body and 'data-node="tests" data-label' in body and ' rx="0" ' in body, out[-200:])
+    bad = os.path.join(proj, "bad.json")
+    with open(bad, "w", encoding="utf-8") as f:
+        d = json.load(open(good, encoding="utf-8"))
+        d["style"] = {"name": "agent", "rules": {"#fix": {"stroke": "#e11d48"}}}
+        json.dump(d, f)
+    rc, out = run("flow", bad, "-o", os.path.join(proj, "bad.svg"))
+    check("overriding the brand policy is an off-brand error naming the rule",
+          rc == 1 and '"off-brand"' in out and "rule '#fix' sets stroke" in out, out[-300:])
+
     # B17: diagrams draw --figure above the title and --caption under the figure, and export keeps them
     cap = os.path.join(WORK, "b17.svg")
     rc, out = run("seq", "examples/seq_checkout.json", "-o", cap, "--figure", "Fig. 4", "--caption", "Retries are idempotent.")

@@ -359,6 +359,11 @@ Deviations:
   - The built-in `basic` shaper measures Latin, Greek, Cyrillic, Hebrew and CJK as they are, and leaves right-to-left text in logical order for the browser's bidi.
   - It recognizes scripts that need contextual shaping (Arabic, Indic, Thai, Khmer, Myanmar, Tibetan, ...). Text in them is marked, and the audit warns `shaping` once per script.
   - A registered shaper (the HarfBuzz one, P13) takes over without core edits.
+- **P3.12:** `config.py` reads a project's `diagonaldiagrams.toml`, found by walking up from the spec. An organization file named by `DIAGONALDIAGRAMS_ORG_CONFIG` applies on top and can only narrow what is allowed. The file sets:
+  - `[style] sheets`, applied to every figure, and `[style] policy`, a locked sheet at the top of the cascade whose tokens win too;
+  - `[palette] allowed` and `[fonts] allowed`;
+  - font files, and `[defaults]` theme and corners.
+  An override of a locked value, or a stylesheet's color or font outside what is allowed, is an `off-brand` error naming the rule, from both `validate` and render. `[toolkits]` and `[icons]` are accepted for P5 and P8.
 
 | Task | Size | Work |
 | --- | --- | --- |

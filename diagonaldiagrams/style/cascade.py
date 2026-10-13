@@ -75,6 +75,9 @@ class Cascade:
         self._cache = {}
         self._origins = {}  # (view, pseudo) -> {property: the layer (sheet index) that set it}
         self._sources = {}  # (view, pseudo) -> {property: "stylesheet 'brand', rule 'node.db'"}
+        self.policy_layer = len(self.sheets) + 1
+        self._defaults_at = None
+        self.attempts = {}  # (rule, property) -> what tried to override the policy: the off-brand check (22.4)
 
     def _add(self, s, seen):
         """A sheet and, before it, the bundled sheets it extends."""
@@ -135,10 +138,17 @@ class Cascade:
                 if p == "font-size":
                     out[p] = val if val is not None else parse.length(raw, out.get("font-size", 16.0))
                     origin[p], source[p] = rank[0], where
+        below = {}  # property -> (value, rule) set under the policy, to catch overrides it locks
         for rank, ds, where in decls:
             for p, raw, val in ds:
                 if p != "font-size":
                     out[p] = val if val is not None else parse.value(p, raw, self.tokens, out.get("font-size"))
+                    if rank[0] == self.policy_layer and p in below and below[p][0] != out[p]:
+                        self.attempts.setdefault((below[p][1], p), {
+                            "element": view.id or view.type, "pseudo": pseudo, "property": p, "rule": below[p][1],
+                            "policy": where})
+                    elif rank[0] < self.policy_layer and rank[0] > self.defaults_layer:
+                        below[p] = (out[p], where)
                     origin[p], source[p] = rank[0], where
         self._cache[key] = out
         self._origins[key] = origin
@@ -149,6 +159,22 @@ class Cascade:
         """Which stylesheet and rule set a property for this element, for messages, or None."""
         self.computed(view, pseudo)
         return self._sources[(id(view), pseudo)].get(prop)
+
+    @property
+    def defaults_layer(self):
+        """The last sheet that is part of the defaults (theme, toolkits, presets): the ones whose name
+        is a bundled sheet's. Overrides only count above it. Worked out once."""
+        if self._defaults_at is not None:
+            return self._defaults_at
+        from .tokens import HERE, PRESETS
+        import os
+        last = -1
+        for k, s in enumerate(self.sheets):
+            name = s.get("name") if isinstance(s, dict) else None
+            if name and (os.path.isfile(os.path.join(HERE, f"{name}.json")) or os.path.isfile(os.path.join(PRESETS, f"{name}.json"))):
+                last = k
+        self._defaults_at = last
+        return last
 
     def origin(self, view, pseudo, prop):
         """The layer that set a property for this element: the sheet's index in self.sheets, the

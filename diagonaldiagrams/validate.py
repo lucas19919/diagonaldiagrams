@@ -112,7 +112,29 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
             _validate_math_spec(spec, errors, warnings)
         else:
             _validate_spec_dict(spec, errors, warnings, kind)
+            if not errors and isinstance(spec, dict):
+                errors.extend(_brand(args.target, spec, kind))
     return errors, warnings
+
+
+def _brand(target, spec, kind):
+    """The project's brand policy (diagonaldiagrams.toml, DESIGN 22.4) checked the way render checks it."""
+    from . import config
+    from .errors import SpecError
+    from .inputs.v1 import KINDS, detect
+    try:
+        cfg = config.load(target)
+    except SpecError as e:
+        return [{"msg": e.msg, "fix": e.fix}]
+    if not (cfg.policies or cfg.palette is not None or cfg.fonts is not None):
+        return []
+    from .style.styler import Styler
+    sheets = list(cfg.sheets) + ([{"name": "the config's fonts", "fonts": cfg.font_files}] if cfg.font_files else [])
+    sheets += [dict(p, policy=True) for p in cfg.policies]
+    try:
+        return Styler(spec, kind if kind in KINDS else detect(spec), sheets=sheets).off_brand(cfg.palette, cfg.fonts)
+    except SpecError as e:
+        return [{"msg": e.msg, "fix": e.fix}]
 
 
 def _json_where(e):

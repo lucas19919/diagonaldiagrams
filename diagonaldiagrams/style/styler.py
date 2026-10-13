@@ -163,6 +163,51 @@ class Styler:
                 raise SpecError(str(e), "check the path in the stylesheet's \"fonts\"", "bad-font") from None
         return self._fonts[key]
 
+    def off_brand(self, palette=None, fonts=None):
+        """What breaks the brand policy (DESIGN 22.4): every rule or element style that tries to override
+        a value the policy locks, and every color or font a stylesheet chose outside what the config
+        allows. Values the theme and presets set are not judged: the policy controls their tokens."""
+        from .parse import Color, color
+        texts = ("label", "sub", "tag", "title", "header", "caption", "eyebrow")
+        views = [self.views["figure"], *self.views["groups"].values(), *self.views["nodes"].values(),
+                 *self.views["edges"].values()]
+        allowed = None
+        if palette is not None:
+            allowed = []
+            for c in palette:
+                try:
+                    allowed.append(color(c, self.cascade.tokens))
+                except Exception:
+                    pass
+        issues, seen = [], set()
+        for v in views:
+            for pseudo in (None,) + texts:
+                c = self.cascade.computed(v, pseudo)
+                for prop, val in c.items():
+                    layer = self.cascade.origin(v, pseudo, prop)
+                    if layer <= self.preset_layer or layer == self.cascade.policy_layer:
+                        continue
+                    where = self.cascade.source(v, pseudo, prop)
+                    values = [val] if isinstance(val, Color) else \
+                        [val.get("color")] if isinstance(val, dict) and isinstance(val.get("color"), Color) else []
+                    for cv in values:
+                        if allowed is not None and cv.a > 0 and not any(cv == a for a in allowed) and (where, cv.css) not in seen:
+                            seen.add((where, cv.css))
+                            issues.append({"code": "off-brand", "msg": f"{where} uses {cv.css} for {prop}, which is not in "
+                                                                       "the allowed palette",
+                                           "fix": "use one of the palette's colors or tokens"})
+                    if prop == "font-family" and fonts is not None:
+                        first = str(val).split(",")[0].strip().strip("'\"").lower()
+                        if first not in fonts and (where, first) not in seen:
+                            seen.add((where, first))
+                            issues.append({"code": "off-brand", "msg": f"{where} uses the font '{first}', which is not "
+                                                                       "an allowed font",
+                                           "fix": f"use one of: {', '.join(sorted(fonts))}"})
+        for a in self.cascade.attempts.values():
+            issues.append({"code": "off-brand", "msg": f"{a['rule']} sets {a['property']}, which {a['policy']} locks",
+                           "fix": "drop the declaration: the brand policy decides it"})
+        return issues
+
     def used_fonts(self):
         """The font files that measured some text, one per file."""
         seen = {}
