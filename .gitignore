@@ -17,6 +17,7 @@ venv.bak/
 build/
 dist/
 wheels/
+!docs/wheels/
 *.egg-info/
 .eggs/
 *.egg
@@ -30,6 +31,9 @@ htmlcov/
 
 # Rendered output
 out/
+
+# Node, for tests/pyodide_smoke.mjs
+node_modules/
 
 # Git worktrees
 .worktrees/

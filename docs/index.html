@@ -282,9 +282,10 @@ async function boot() {
     s.src = "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js";
     await new Promise((ok, bad) => { s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
     py = await loadPyodide();
-    py.FS.writeFile("/graph.py", await (await fetch("graph.py")).text());
+    const {wheel} = await (await fetch("wheels/latest.json")).json();
+    py.unpackArchive(await (await fetch("wheels/" + wheel)).arrayBuffer(), "wheel");
     py.FS.mkdirTree("/out");
-    py.runPython("import sys; sys.path.insert(0, '/'); import graph");
+    py.runPython("from diagonaldiagrams.cli import cli");
     $("status").textContent = "";
     $("go").disabled = false;
     $("go").textContent = "Draw";
@@ -310,7 +311,7 @@ if os.path.exists("/out/fig.svg"):
     os.remove("/out/fig.svg")
 try:
     with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
-        graph.cli()
+        cli()
 except SystemExit:
     pass
 buf.getvalue()
