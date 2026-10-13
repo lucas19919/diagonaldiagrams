@@ -54,7 +54,13 @@ def count_file(path):
         "side_channels": set(),
         "system_exits": 0,
     }
+    # a module's own `if __name__ == "__main__":` block is its script entry point, not engine code
+    script = {id(x) for b in tree.body
+              if isinstance(b, ast.If) and isinstance(b.test, ast.Compare)
+              and getattr(b.test.left, "id", "") == "__name__" for x in ast.walk(b)}
     for n in ast.walk(tree):
+        if id(n) in script:
+            continue
         if isinstance(n, ast.Call):
             f = n.func
             name = f.id if isinstance(f, ast.Name) else (f.attr if isinstance(f, ast.Attribute) else "")

@@ -18,6 +18,10 @@ NEED = {"M": 2, "L": 2, "H": 1, "V": 1, "C": 6, "S": 4, "Q": 4, "T": 2, "A": 7}
 
 def num(v, d=0.0):
     try:
+        return float(v)  # most values are plain numbers
+    except (TypeError, ValueError):
+        pass
+    try:
         return float(str(v).replace("px", "").replace(",", " ").split()[0])
     except (TypeError, ValueError, IndexError):
         return d
@@ -203,15 +207,18 @@ def svg_import(root, width, height):
         tag = str(el.tag).split("}")[-1]
         if tag in SKIP:
             return
-        st = dict(st, **{k: el.get(k) for k in KEEP if el.get(k) is not None})
-        if css:
-            st.update(css_for(css, el, tag))  # stylesheet rules beat presentation attributes
+        own = [(k, v) for k in KEEP if (v := el.get(k)) is not None]
         style = el.get("style")
-        if style:  # most elements have none; the regexes are what this walk spends most time on
-            for k, pat in _INLINE.items():
-                hit = pat.search(style)
-                if hit:
-                    st[k] = hit.group(1).strip()
+        if own or css or style:  # the inherited style is shared until an element changes it
+            st = dict(st)
+            st.update(own)
+            if css:
+                st.update(css_for(css, el, tag))  # stylesheet rules beat presentation attributes
+            if style:  # most elements have none; the regexes are what this walk spends most time on
+                for k, pat in _INLINE.items():
+                    hit = pat.search(style)
+                    if hit:
+                        st[k] = hit.group(1).strip()
         if st.get("display") == "none" or st.get("visibility") == "hidden" or num(st.get("opacity", 1), 1) <= 0:
             return
         if el.get("transform"):

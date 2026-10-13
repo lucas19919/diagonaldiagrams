@@ -8,7 +8,8 @@ the same checks see exactly what was drawn.
 
 class Item:
     """One painted thing as the checks see it. Item(kind, **fields); unset fields take the defaults
-    below. Plain slots rather than a dataclass: importing dataclasses costs 25-40 ms per process."""
+    below, which live on the class, so making an item stores only what it sets (the audit makes
+    tens of thousands per figure). Not a dataclass: importing dataclasses costs 25-40 ms."""
     FIELDS = (
         ("z", 0),                   # paint order among texts, arrows and obstacle shapes
         ("box", None),              # (x0, y0, x1, y1), absolute
@@ -28,18 +29,22 @@ class Item:
         ("a11y", None),             # a part a reader navigates: {"name", "kind", "order"} (DESIGN 22.3)
         ("attach", None),           # arrow: {"from": {"node", "port"}, "to": {...}} when the SVG says
     )
-    __slots__ = ("kind",) + tuple(name for name, _ in FIELDS)
+    NAMES = frozenset(name for name, _ in FIELDS)
 
     def __init__(self, kind, **fields):
         self.kind = kind  # "text", "shape" or "arrow"
-        for name, default in self.FIELDS:
-            setattr(self, name, fields.pop(name, default))
         if fields:
-            raise TypeError(f"Item has no field {next(iter(fields))!r}")
+            if not fields.keys() <= self.NAMES:
+                raise TypeError(f"Item has no field {sorted(fields.keys() - self.NAMES)[0]!r}")
+            self.__dict__.update(fields)
 
     def __repr__(self):
         shown = ", ".join(f"{n}={getattr(self, n)!r}" for n, d in self.FIELDS if getattr(self, n) != d)
         return f"Item({self.kind!r}{', ' + shown if shown else ''})"
+
+
+for _name, _default in Item.FIELDS:  # the defaults, on the class
+    setattr(Item, _name, _default)
 
 
 class DisplayList:

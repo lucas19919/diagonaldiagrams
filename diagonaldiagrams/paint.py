@@ -33,6 +33,8 @@ GEOMETRY = ("d", "points", "transform", "viewBox")  # strings whose numbers are 
 
 def fmt(v):
     """A number as SVG text: at most two decimals, no trailing zeros, no "-0"."""
+    if type(v) is int:  # the common case, and what the general path would give
+        return str(v)
     if isinstance(v, bool) or not isinstance(v, (int, float)):
         return str(v)
     s = f"{v:.2f}".rstrip("0").rstrip(".")
