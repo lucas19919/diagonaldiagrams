@@ -265,6 +265,8 @@ def main():
         p.add_argument("--outline", action="store_true", help="add the structured outline to the verdict")
         p.add_argument("--style", action="append", default=[], metavar="FILE",
                        help="a stylesheet (JSON: tokens and rules); repeat it, later files win")
+        p.add_argument("--embed-fonts", action="store_true",
+                       help="embed the named fonts the figure measured with (whole files: large-font warns past 200 KB)")
         p.add_argument("--caption", default=None, help="a caption drawn under the figure")
         p.add_argument("--figure", default=None, help='the figure label drawn above the title, e.g. "Fig. 3"')
         p.add_argument("--font", default=None,
@@ -457,17 +459,18 @@ def main():
             if getattr(a, key, None):
                 spec[key] = getattr(a, key)
         theme = _cli_theme(a)
+        embed = getattr(a, "embed_fonts", False)
         if a.cmd == "flow":
-            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets)
+            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "arch":
-            svg, _, _ = render_arch(spec, a.corners, theme, sheets)
+            svg, _, _ = render_arch(spec, a.corners, theme, sheets, embed)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "seq":
-            svg, _, _ = render_seq(spec, a.corners, theme, sheets)
+            svg, _, _ = render_seq(spec, a.corners, theme, sheets, embed)
             item_cnt = len(spec.get("actors", []))
         elif a.cmd == "schema":
-            svg, _, _ = render_schema(spec, a.corners, theme, sheets)
+            svg, _, _ = render_schema(spec, a.corners, theme, sheets, embed)
             item_cnt = len(spec.get("tables", []))
         o, s = write_out(svg, a.cmd, spec.get("title", a.cmd), spec.get("sub", ""),
                          f"{a.cmd} · {os.path.basename(a.spec)}", a.o,

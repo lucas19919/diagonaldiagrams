@@ -77,5 +77,15 @@ def _audit_file(p):
             break
     for it in _svg_geometry(root, W, H):
         (warnings if it["code"] in WARNINGS else errors).append(it)
+    for m in re.finditer(r"url\(data:font/[\w+.-]+;base64,([A-Za-z0-9+/=]+)\)", raw):
+        size = len(m.group(1)) * 3 // 4
+        if size > 200_000:
+            warnings.append({"code": "large-font", "msg": f"an embedded font adds {size // 1024} KB to the file",
+                             "fix": "embed only where the font isn't installed, or wait for subsetting (P8.4)"})
+    restricted = re.search(r'data-font-restricted="([^"]+)"', raw)
+    if restricted:
+        warnings.append({"code": "font-embed", "msg": f"{restricted.group(1)}: the font's license forbids embedding, "
+                                                       "so it is only referenced and viewers without it see another font",
+                         "fix": "use a font that allows embedding, or install it where the figure is viewed"})
     return {"ok": not errors, "errors": errors, "warnings": warnings,
             "stats": {"texts": len(texts), "points": circles, "canvas": [W, H]}}

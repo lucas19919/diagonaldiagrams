@@ -1111,6 +1111,20 @@ def style_checks():
     rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "font-missing.svg"), "--font",
                   "Nowhere Grotesk 9000, sans-serif")
     check("a named font that isn't installed is a font-fallback warning", rc == 0 and '"font-fallback"' in out, out[-200:])
+    # P3.5b: --embed-fonts puts the measured font in the file; a font that forbids embedding is only referenced
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "embed.svg"), "--font", font, "--embed-fonts")
+    body = open(os.path.join(WORK, "embed.svg"), encoding="utf-8").read() if rc == 0 else ""
+    check("--embed-fonts embeds the font the figure measured with",
+          "@font-face { font-family: 'Wide Test'" in body and "base64," in body, out[-200:])
+    locked = os.path.join(WORK, "locked.ttf")
+    with open(locked, "wb") as f:
+        f.write(make_font({c: 600 for c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ?:-"}, family="Locked Test",
+                          fstype=2))
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "locked.svg"), "--font", locked,
+                  "--embed-fonts")
+    check("a font whose license forbids embedding is referenced, with a warning",
+          rc == 0 and '"font-embed"' in out and "@font-face" not in open(os.path.join(WORK, "locked.svg"), encoding="utf-8").read(),
+          out[-200:])
     # B17: diagrams draw --figure above the title and --caption under the figure, and export keeps them
     cap = os.path.join(WORK, "b17.svg")
     rc, out = run("seq", "examples/seq_checkout.json", "-o", cap, "--figure", "Fig. 4", "--caption", "Retries are idempotent.")

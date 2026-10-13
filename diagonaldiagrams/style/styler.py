@@ -163,6 +163,36 @@ class Styler:
                 raise SpecError(str(e), "check the path in the stylesheet's \"fonts\"", "bad-font") from None
         return self._fonts[key]
 
+    def used_fonts(self):
+        """The font files that measured some text, one per file."""
+        seen = {}
+        for font, _ in self._fonts.values():
+            if font is not None:
+                seen.setdefault((font.path, font.index), font)
+        return list(seen.values())
+
+    def embed(self, asked=False):
+        """(an SVG <style> element embedding the fonts used, or None; families that forbid embedding).
+        asked is --embed-fonts; the figure's font-embed property asks too. Each font file goes in whole
+        (subsetting comes in P8.4), so a big one costs file size: the audit's large-font warns."""
+        if not (asked or self.cascade.computed(self.views["figure"]).get("font-embed")):
+            return None, []
+        import base64
+        from ..paint import el
+        faces, refused = [], []
+        for font in self.used_fonts():
+            if not font.embeddable():
+                refused.append(font.family)
+                continue
+            with open(font.path, "rb") as f:
+                data = base64.b64encode(f.read()).decode("ascii")
+            kind = {".otf": "font/otf", ".woff": "font/woff"}.get(font.path[-4:].lower(), "font/ttf")
+            faces.append(f"@font-face {{ font-family: '{font.family}'; font-weight: {font.weight}; "
+                         f"font-style: {'italic' if font.italic else 'normal'}; src: url(data:{kind};base64,{data}); }}")
+        if not faces:
+            return None, refused
+        return el("style", "\n".join(faces), role="figure.fonts"), refused
+
     def _encoded(self, v, c):
         """Computed values with any {field, scale} read against this element's data (DESIGN 5.7),
         and its legend text noted."""

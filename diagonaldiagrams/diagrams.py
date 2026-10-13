@@ -294,7 +294,7 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     return dr, W, H, {nid: (cx, cy) for nid, (cx, cy, _n) in pos.items()}
 
 
-def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=()):
+def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False):
     """Draw a flow. If an arrow runs through a box, move a node the spec left free to
     another lane and draw again. A node with its own lane is never moved. A move must lower
     the layout cost (problems, crossings, arrow length), not just the problem count."""
@@ -306,7 +306,7 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=()):
         return out, placed, found, c
     out, pos, bad, cost = draw(spec)
     if not bad:
-        return _as_svg(out)
+        return _as_svg(out, sty, embed)
     work = json.loads(json.dumps(spec))
     free = {n["id"] for n in work.get("nodes", []) if "lane" not in n}
     # one move fixes one spot or a few, so a big flow with many problems gets more moves
@@ -336,10 +336,10 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=()):
         free.discard(nid)
         if not bad:
             break
-    return _as_svg(out)
+    return _as_svg(out, sty, embed)
 
 
-def render_arch(spec, corners="editorial", theme=None, sheets=()):
+def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False):
     """Draw an architecture view. If the audit finds a problem (an arrow through a box, two
     arrows on one line, a label collision), try other orders within each row (layers never
     change). Keep the order with the lowest cost: a problem counts as four crossings, and
@@ -347,7 +347,7 @@ def render_arch(spec, corners="editorial", theme=None, sheets=()):
     sty = Styler(spec, "arch", theme or THEME, corners, sheets)  # shared by the drafts: they only reorder rows
     out, bad, cost = _layout_cost(_render_arch_once(spec, corners, theme, sty))
     if not bad or not isinstance(spec.get("nodes"), list):
-        return _as_svg(out)
+        return _as_svg(out, sty, embed)
     work = json.loads(json.dumps(spec))
     for _ in range(6):
         improved = False
@@ -365,7 +365,7 @@ def render_arch(spec, corners="editorial", theme=None, sheets=()):
                         work, out, bad, cost, improved = trial, o, found, c, True
         if not improved:
             break
-    return _as_svg(out)
+    return _as_svg(out, sty, embed)
 
 
 def _layout_cost(out):
@@ -428,8 +428,20 @@ def _first(items, test):
     return next((x for x in items if test(x)), None)
 
 
-def _as_svg(out):
-    """A draft from the repair loops as the (svg, W, H) the callers take."""
+def _fonts(dr, sty, embed):
+    """--embed-fonts: the fonts the figure measured with, embedded in a <style>. A font whose license
+    forbids embedding is only referenced, and its family is marked for the audit's warning."""
+    style, refused = sty.embed(embed)
+    if style is not None:
+        dr.insert(1, [style])
+    if refused:
+        dr.items[0].attrs["data-font-restricted"] = ", ".join(refused)
+
+
+def _as_svg(out, sty=None, embed=False):
+    """A draft from the repair loops as the (svg, W, H) the callers take, its fonts embedded if asked."""
+    if sty is not None:
+        _fonts(out[0], sty, embed)
     return (out[0].svg(),) + tuple(out[1:])
 
 
@@ -617,7 +629,7 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     return dr, W, H
 
 
-def render_seq(spec, corners="editorial", theme=None, sheets=()):
+def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
     t = theme or THEME
     sty = Styler(spec, "seq", t, corners, sheets)
     actors = spec.get("actors", [])
@@ -725,17 +737,18 @@ def render_seq(spec, corners="editorial", theme=None, sheets=()):
         (any(m.get("reply") or m.get("async") for m in messages), "dashed = reply or event"),
         (http is not None, f"{paint.color_word(sty.edge(mids[http])['stroke'])} = HTTP" if http is not None else ""),
         (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
+    _fonts(dr, sty, embed)
     return dr.svg(), W, H
 
 
-def render_schema(spec, corners="editorial", theme=None, sheets=()):
+def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False):
     """Draw tables and relations. If the audit finds a problem, try other table orders and keep
     the one with the lowest layout cost (problems, crossings, length), as render_arch does."""
     sty = Styler(spec, "schema", theme or THEME, corners, sheets)  # shared by the drafts: they only reorder tables
     out, bad, cost = _layout_cost(_render_schema_once(spec, corners, theme, sty))
     tables = spec.get("tables") if isinstance(spec, dict) else None
     if not bad or not isinstance(tables, list) or any("x" in tb for tb in tables if isinstance(tb, dict)):
-        return _as_svg(out)
+        return _as_svg(out, sty, embed)
     work = json.loads(json.dumps(spec))
     for _ in range(4):
         improved = False
@@ -749,7 +762,7 @@ def render_schema(spec, corners="editorial", theme=None, sheets=()):
                     work, out, bad, cost, improved = trial, o, found, c, True
         if not improved or not bad:
             break
-    return _as_svg(out)
+    return _as_svg(out, sty, embed)
 
 
 def _render_schema_once(spec, corners="editorial", theme=None, styler=None):

@@ -352,6 +352,9 @@ Deviations:
     - The default stack (`system-ui, ...`) keeps the built-in estimate rather than "the widest of the bundled metrics", so default figures stay the same on every machine.
     - The bundled metrics need Inter, Selawik, Roboto and Liberation Sans, which aren't on this machine; downloading them needs your go-ahead.
     - Receipts don't record the font hash yet. Kerning is not applied.
+- **P3.5b:** `--embed-fonts` and the figure's `font-embed: true` embed each named font the figure measured with, as a whole file in an `@font-face`.
+  - A font whose OS/2 fsType forbids embedding is only referenced, with a `font-embed` warning.
+  - An embedded font past 200 KB gets `large-font`. Subsetting is P8.4.
 
 | Task | Size | Work |
 | --- | --- | --- |

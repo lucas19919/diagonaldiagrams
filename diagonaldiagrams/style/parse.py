@@ -77,7 +77,8 @@ _EDGE = {"stroke-dasharray": "dasharray",
          "router": "word", "corner-radius": "length", "bundle": "bool"}
 _ICON = {"icon": "word", "icon-position": ("left", "right", "top", "bottom", "top-left", "top-right"),
          "icon-color": "color", "icon-size": "length"}
-_FIGURE = {"title-align": ("start", "middle", "end", "left", "center", "right"),
+_FIGURE = {"font-embed": "bool",  # embed the named fonts the figure uses (P3.5b)
+           "title-align": ("start", "middle", "end", "left", "center", "right"),
            "legend-position": ("bottom", "top", "right", "left", "none")}
 PROPERTIES = {**_BOX, **_TEXT, **_EDGE, **_ICON, **_FIGURE, "legend": "text"}
 
