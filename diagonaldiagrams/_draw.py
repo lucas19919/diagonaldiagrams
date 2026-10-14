@@ -510,27 +510,10 @@ def _label_box(mx, ay, text, vertical=False, flip=False):
 
 
 def _place_label(mx, my, vertical, text, pts, avoid, soft=()):
-    """The first spot along the route where the label's pill clears everything. Tries the
-    default, then each segment's middle, on both sides and both orientations. If none is
-    clear: never on a hard obstacle (a box or a label), then the fewest soft ones (other arrows)."""
-    cands = [(mx, my, vertical, False), (mx, my, vertical, True)]
-    for at in (0.5, 0.3, 0.7):  # each segment's middle first, then either side of it
-        for (px, py), (qx, qy) in zip(pts or [], (pts or [])[1:]):
-            seg_v = abs(qy - py) > abs(qx - px)
-            for v in (seg_v, not seg_v):
-                for flip in (False, True):
-                    cands.append((px + (qx - px) * at, py + (qy - py) * at, v, flip))
+    """The first spot along the route where the label's pill clears everything (route.labels)."""
+    from .route.labels import place_label
+    return place_label(mx, my, vertical, text, pts, avoid, soft)
 
-    def hits(b, boxes):
-        return sum(1 for a in boxes if b[0] < a[2] + 2 and a[0] - 2 < b[2] and b[1] < a[3] + 2 and a[1] - 2 < b[3])
-    scored = []
-    for k, c in enumerate(cands):
-        b = _label_box(c[0], c[1], text, c[2], c[3])
-        cost = (hits(b, avoid), hits(b, soft), k)
-        if cost[:2] == (0, 0):
-            return c
-        scored.append((cost, c))
-    return min(scored)[1]
 
 
 def nice_ticks(vmin, vmax, n=5):

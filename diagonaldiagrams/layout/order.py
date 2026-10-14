@@ -94,12 +94,15 @@ def _level_children(L, layer):
 def _sort_layer(L, r, pos, nbrs):
     """Sorts layer r by the barycenter of each item's neighbors (nbrs: up or down) at positions pos."""
     layer = L.layers[r]
+    if len(layer) <= 1:
+        return
     kids = _level_children(L, layer)
     here = {v: k for k, v in enumerate(layer)}
     ports = {}
-    for it in layer:
-        if it in L.attach:
-            ports.setdefault(L.attach[it], []).append(it)
+    if L.attach:
+        for it in layer:
+            if it in L.attach:
+                ports.setdefault(L.attach[it], []).append(it)
 
     def solve(g):
         """(ordered items of group g with its borders, barycenter sum, neighbor count)."""
@@ -132,20 +135,26 @@ def _sort_layer(L, r, pos, nbrs):
             else:
                 items, s, n = solve(x)
                 entries.append({"items": items, "sum": s, "n": n, "at": here[items[0]], "hint": None, "group": x})
-        for e in entries:
-            e["bc"] = e["sum"] / e["n"] if e["n"] else None
-        _constrain(entries, L)
-        sortable = sorted((e for e in entries if e["bc"] is not None), key=lambda e: (e["bc"], e["at"]))
-        fixed = sorted((e for e in entries if e["bc"] is None), key=lambda e: e["at"])
-        out = list(sortable)
-        rank_of = {id(e): k for k, e in enumerate(sorted(entries, key=lambda e: e["at"]))}
-        for e in fixed:  # an item with no neighbors keeps its place among its level
-            out.insert(min(rank_of[id(e)], len(out)), e)
-        _repair(out, L)
-        flat = [it for e in out for it in e["items"]]
+        if len(entries) <= 1:
+            flat = [it for e in entries for it in e["items"]]
+        else:
+            for e in entries:
+                e["bc"] = e["sum"] / e["n"] if e["n"] else None
+            _constrain(entries, L)
+            sortable = sorted((e for e in entries if e["bc"] is not None), key=lambda e: (e["bc"], e["at"]))
+            fixed = [e for e in entries if e["bc"] is None]
+            if not fixed:
+                out = sortable
+            else:
+                out = list(sortable)
+                rank_of = {id(e): k for k, e in enumerate(entries)}
+                for e in fixed:  # an item with no neighbors keeps its place among its level
+                    out.insert(min(rank_of[id(e)], len(out)), e)
+            _repair(out, L)
+            flat = [it for e in out for it in e["items"]]
         if g is not None:
-            lb = next(it for it in layer if L.kind[it] == "left" and L.owner[it] == g)
-            rb = next(it for it in layer if L.kind[it] == "right" and L.owner[it] == g)
+            lb = ("L", g, r) if ("L", g, r) in L.kind else next(it for it in layer if L.kind[it] == "left" and L.owner[it] == g)
+            rb = ("R", g, r) if ("R", g, r) in L.kind else next(it for it in layer if L.kind[it] == "right" and L.owner[it] == g)
             flat = [lb] + flat + [rb]
         return flat, sum(e["sum"] for e in entries), sum(e["n"] for e in entries)
 
@@ -180,15 +189,35 @@ def _repair(out, L):
 def _transpose(L, r, frozen):
     """Swaps neighbors in layer r (same level, both plain items) when that crosses less."""
     layer = L.layers[r]
+    if len(layer) < 2:
+        return False
+    swappable = False
+    for k in range(len(layer) - 1):
+        a, b = layer[k], layer[k + 1]
+        if (L.kind[a] in ("node", "dummy") and L.kind[b] in ("node", "dummy") and L.owner[a] == L.owner[b]
+                and a not in frozen and b not in frozen
+                and not (L.hint.get(a) is not None and L.hint.get(b) is not None)):
+            swappable = True
+            break
+    if not swappable:
+        return False
     up_pos = {v: k for k, v in enumerate(L.layers[r - 1])} if r > 0 else {}
     dn_pos = {v: k for k, v in enumerate(L.layers[r + 1])} if r + 1 < len(L.layers) else {}
+    up_nbrs = {it: [up_pos[x] for x in L.up[it] if x in up_pos] for it in layer}
+    dn_nbrs = {it: [dn_pos[x] for x in L.down[it] if x in dn_pos] for it in layer}
 
     def c(a, b):
         n = 0
-        for pos, nb in ((up_pos, L.up), (dn_pos, L.down)):
-            pa = [pos[x] for x in nb[a] if x in pos]
-            pb = [pos[x] for x in nb[b] if x in pos]
-            n += sum(1 for x in pa for y in pb if x > y)
+        pa, pb = up_nbrs[a], up_nbrs[b]
+        for x in pa:
+            for y in pb:
+                if x > y:
+                    n += 1
+        pa, pb = dn_nbrs[a], dn_nbrs[b]
+        for x in pa:
+            for y in pb:
+                if x > y:
+                    n += 1
         return n
     improved = False
     for k in range(len(layer) - 1):
@@ -240,10 +269,21 @@ def order(L, iterations=24, patience=4, flips=True):
 def _flip_ports(L, best_c, most=30):
     """A port on one side of its node, with the arrow's dummies following, can cross less than the
     sweeps found: try each port on the other side, re-sweep briefly, keep what crosses less."""
+    chain_of = {}
+    for it in L.kind:
+        if isinstance(it, tuple) and len(it) == 3:
+            chain_of.setdefault(it[1], []).append(it)
     for pt in list(L.attach)[:most]:
         if best_c == 0:
             break
-        if not _chain_crosses(L, pt[1]):  # its arrow crosses nothing: no side can do better
+        eid = pt[1]
+        mine_list = chain_of.get(eid, [])
+        if not mine_list:
+            continue
+        mine = set(mine_list)
+        chain_layers = [L.layer_of[it] for it in mine_list]
+        lo, hi = min(chain_layers), max(chain_layers)
+        if not _chain_crosses(L, eid, mine, lo, hi):  # its arrow crosses nothing: no side can do better
             continue
         saved = [list(x) for x in L.layers]
         layer = L.layers[L.layer_of[pt]]
@@ -253,7 +293,21 @@ def _flip_ports(L, best_c, most=30):
         k = layer.index(nid)
         layer.insert(k if side_left else k + 1, pt)
         L.held[pt] = side_left
-        c = order(L, iterations=4, patience=2, flips=False)
+        frozen = {it for it, h in L.hint.items() if h is not None} | set(L.attach.values()) | set(L.attach)
+        for i in range(4):
+            if i % 2 == 0:
+                for r in range(lo + 1, hi + 1):
+                    _sort_layer(L, r, {v: k for k, v in enumerate(L.layers[r - 1])}, L.up)
+            else:
+                for r in range(hi - 1, lo - 1, -1):
+                    _sort_layer(L, r, {v: k for k, v in enumerate(L.layers[r + 1])}, L.down)
+            for _ in range(2):
+                if not any([_transpose(L, r, frozen) for r in range(lo, hi + 1)]):
+                    break
+        aff = range(max(0, lo - 1), min(len(L.layers) - 1, hi + 1))
+        old_cross = sum(_count(saved[r], saved[r + 1], L.down) for r in aff)
+        new_cross = sum(_count(L.layers[r], L.layers[r + 1], L.down) for r in aff)
+        c = best_c - old_cross + new_cross
         if c < best_c:
             best_c = c
         else:
@@ -262,10 +316,13 @@ def _flip_ports(L, best_c, most=30):
     return best_c
 
 
-def _chain_crosses(L, eid):
+def _chain_crosses(L, eid, mine=None, lo=0, hi=None):
     """Whether any segment of arrow eid's chain (its ports and dummies) crosses another segment."""
-    mine = {it for it in L.kind if isinstance(it, tuple) and len(it) == 3 and it[1] == eid}
-    for r in range(len(L.layers) - 1):
+    if mine is None:
+        mine = {it for it in L.kind if isinstance(it, tuple) and len(it) == 3 and it[1] == eid}
+    if hi is None:
+        hi = len(L.layers) - 1
+    for r in range(max(0, lo - 1), min(len(L.layers) - 1, hi + 1)):
         upper, lower = L.layers[r], L.layers[r + 1]
         if not any(it in mine for it in upper) and not any(it in mine for it in lower):
             continue

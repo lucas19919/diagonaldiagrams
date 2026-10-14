@@ -1,6 +1,6 @@
 {
   "name": "diagonaldiagrams",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Charts and diagrams for agents. One command checks the spec, draws an SVG, and audits the layout for collisions.",
   "author": {
     "name": "Lucas Reimers",

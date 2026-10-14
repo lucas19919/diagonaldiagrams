@@ -148,5 +148,149 @@ class Layered(unittest.TestCase):
         self.assertFalse(self.check(nodes, edges, aspect=4 / 3).wrapped)
 
 
+class ContainerProtocol(unittest.TestCase):
+    def test_measure_and_place_tree(self):
+        from diagonaldiagrams.layout import Container, measure_tree, place_tree
+        root = Container("root", layout="row")
+        c1 = Container("c1", layout="column")
+        c1.add({"id": "n1", "w": 100, "h": 50})
+        c1.add({"id": "n2", "w": 100, "h": 50})
+        c2 = {"id": "n3", "w": 120, "h": 80}
+        root.add(c1)
+        root.add(c2)
+        size = measure_tree(None, root)
+        self.assertGreater(size.w, 200)
+        self.assertGreater(size.h, 80)
+        p = place_tree(None, root)
+        self.assertIn("n1", p.pos)
+        self.assertIn("n2", p.pos)
+        self.assertIn("n3", p.pos)
+        # n1 should be above n2 in column c1
+        self.assertLess(p.pos["n1"][1], p.pos["n2"][1])
+        # c1 should be left of n3 in row root
+        self.assertLess(p.pos["n1"][0], p.pos["n3"][0])
+
+    def test_node_svg_content_resizes_node(self):
+        from diagonaldiagrams.layout import Container, measure_tree
+        node = {"id": "n1", "w": 40, "h": 40, "content": {"svg": "<g></g>", "viewBox": "0 0 100 80"}}
+        root = Container("root", layout="stack")
+        root.add(node)
+        measure_tree(None, root)
+        self.assertGreaterEqual(node["w"], 100)
+        self.assertGreaterEqual(node["h"], 80)
+
+
+class OtherKernels(unittest.TestCase):
+    def test_grid_layout(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        grid = get_layout("grid")
+        c = Container("c", layout=grid)
+        for i in range(6):
+            c.add({"id": f"n{i}", "w": 100, "h": 50})
+        s = grid.measure(None, c)
+        p = grid.place(None, c, (0, 0, s.w, s.h))
+        self.assertEqual(len(p.pos), 6)
+
+    def test_tree_layout(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        tree = get_layout("tree")
+        c = Container("c", layout=tree, edges=[{"from": "root", "to": "c1"}, {"from": "root", "to": "c2"}])
+        c.add({"id": "root", "w": 100, "h": 50})
+        c.add({"id": "c1", "w": 80, "h": 40})
+        c.add({"id": "c2", "w": 80, "h": 40})
+        s = tree.measure(None, c)
+        p = tree.place(None, c, (0, 0, s.w, s.h))
+        self.assertLess(p.pos["root"][1], p.pos["c1"][1])
+        self.assertLess(p.pos["c1"][0], p.pos["c2"][0])
+
+    def test_radial_layout(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        rad = get_layout("radial")
+        c = Container("c", layout=rad)
+        c.add({"id": "hub", "w": 60, "h": 60})
+        for i in range(4):
+            c.add({"id": f"s{i}", "w": 40, "h": 40})
+        s = rad.measure(None, c)
+        p = rad.place(None, c, (0, 0, s.w, s.h))
+        self.assertEqual(len(p.pos), 5)
+        # Hub should be at center
+        hx, hy = p.pos["hub"]
+        self.assertAlmostEqual(hx, s.w / 2.0, delta=1.0)
+        self.assertAlmostEqual(hy, s.h / 2.0, delta=1.0)
+
+    def test_force_layout(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        force = get_layout("force")
+        c = Container("c", layout=force, edges=[{"from": "a", "to": "b"}, {"from": "b", "to": "c"}])
+        c.add({"id": "a", "w": 80, "h": 40})
+        c.add({"id": "b", "w": 80, "h": 40})
+        c.add({"id": "c", "w": 80, "h": 40})
+        s = force.measure(None, c)
+        p = force.place(None, c, (0, 0, s.w, s.h))
+        self.assertEqual(len(p.pos), 3)
+
+    def test_manual_layout_detects_overlap(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        man = get_layout("manual")
+        c = Container("c", layout=man)
+        c.add({"id": "a", "w": 100, "h": 50, "pin": {"x": 50, "y": 50}})
+        c.add({"id": "b", "w": 100, "h": 50, "pin": {"x": 60, "y": 50}})
+        s = man.measure(None, c)
+        p = man.place(None, c, (0, 0, s.w, s.h))
+        self.assertTrue(any(iss.get("code") == "overlap" for iss in p.issues))
+
+    def test_sequence_layout(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        seq = get_layout("sequence")
+        c = Container("c", layout=seq, edges=[{"id": "m1", "from": "client", "to": "server"}])
+        c.add({"id": "client", "name": "Client"})
+        c.add({"id": "server", "name": "Server"})
+        s = seq.measure(None, c)
+        p = seq.place(None, c, (0, 0, s.w, s.h))
+        self.assertIn("client", p.pos)
+        self.assertIn("server", p.pos)
+        self.assertIn("m1", p.routes)
+        self.assertLess(p.pos["client"][0], p.pos["server"][0])
+
+    def test_table_layout(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        tbl = get_layout("table")
+        c = Container("c", layout=tbl, edges=[{"id": "r1", "from": "users", "to": "orders"}])
+        c.add({"id": "users", "columns": ["id", "email"]})
+        c.add({"id": "orders", "columns": ["id", "user_id", "total"]})
+        s = tbl.measure(None, c)
+        p = tbl.place(None, c, (0, 0, s.w, s.h))
+        self.assertIn("users.id:e", p.ports)
+        self.assertIn("r1", p.routes)
+
+    def test_timeaxis_layout(self):
+        from diagonaldiagrams.layout import Container, get_layout
+        ta = get_layout("timeaxis")
+        c = Container("c", layout=ta)
+        c.add({"id": "task1", "lane": 0, "data": {"start": 0, "end": 100}})
+        c.add({"id": "task2", "lane": 1, "data": {"start": 50, "end": 150}})
+        s = ta.measure(None, c)
+        p = ta.place(None, c, (0, 0, s.w, s.h))
+        self.assertLess(p.pos["task1"][1], p.pos["task2"][1])
+        self.assertLess(p.pos["task1"][0], p.pos["task2"][0])
+
+
+class LabelsModule(unittest.TestCase):
+    def test_longest_segment_and_place_label(self):
+        from diagonaldiagrams.route import LabelPlacer, label_box, longest_segment, place_label
+        pts = [(0, 0), (0, 100), (200, 100)]
+        mx, my, vert = longest_segment(pts)
+        self.assertEqual((mx, my, vert), (100.0, 100, False))
+        lx, ly, v, flip = place_label(mx, my, vert, "status", pts, avoid=[])
+        box = label_box(lx, ly, "status", v, flip)
+        self.assertGreater(box[2], box[0])
+        self.assertGreater(box[3], box[1])
+
+        placer = LabelPlacer()
+        lx2, ly2, v2, flip2 = placer.place("status", pts)
+        self.assertEqual(len(placer.placed), 1)
+
+
 if __name__ == "__main__":
     unittest.main()
+

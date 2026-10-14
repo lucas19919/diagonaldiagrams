@@ -90,6 +90,22 @@ jobs:
       - name: v1 spec to scene and back draws the same
         run: python scripts/scene_roundtrip.py --fuzz 40
 
+  fuzz:
+    # 200 scenes across 5-200 nodes; strict audit gate (PLAN P4.7).
+    name: fuzz (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Strict fuzz harness
+        run: python tests/fuzz/run.py --n 200 --seed 5000 --strict
+
   metrics:
     # A report, not a gate: CI hardware differs from the machine that recorded the baseline.
     runs-on: ubuntu-latest

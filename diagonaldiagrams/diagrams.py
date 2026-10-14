@@ -199,25 +199,10 @@ def _aspect(spec):
 
 def _longest(pts, frames=()):
     """A label's first spot: the middle of the longest stretch of the route that no frame border
-    crosses, and whether that stretch runs up and down."""
-    best, mx, my, vert = -1.0, pts[0][0], pts[0][1], False
-    for (px, py), (qx, qy) in zip(pts, pts[1:]):
-        v = abs(qy - py) > abs(qx - px)
-        a, b = (py, qy) if v else (px, qx)
-        lo, hi = min(a, b), max(a, b)
-        cuts = [lo, hi]
-        for x0, y0, x1, y1 in frames:  # where the segment crosses a frame's border
-            if v and x0 < px < x1:
-                cuts += [y for y in (y0, y1) if lo < y < hi]
-            elif not v and y0 < py < y1:
-                cuts += [x for x in (x0, x1) if lo < x < hi]
-        cuts.sort()
-        for c0, c1 in zip(cuts, cuts[1:]):
-            if c1 - c0 > best:
-                best = c1 - c0
-                m = (c0 + c1) / 2.0
-                mx, my, vert = (px, m, True) if v else (m, py, False)
-    return mx, my, vert
+    crosses, and whether that stretch runs up and down (route.labels)."""
+    from .route.labels import longest_segment
+    return longest_segment(pts, frames)
+
 
 
 def _edge_name(pos, e, label=None):

@@ -18,6 +18,7 @@ arrows within a layer run straight between neighbors or over the top. Groups are
 their members and nothing else (B20).
 """
 from . import bk, channels, order as ordering
+from .base import Layout, Placement, Size, register
 from .order import Layering
 from .rank import back_edges, ranks
 
@@ -195,17 +196,16 @@ def layout(nodes, edges, groups=(), options=None):
     res.crossings = ordering.order(L)
 
     # 4. across: separations, then Brandes-Köpf
+    flat_room = o.get("flat_room") or {}
     width = {}
     loop_nodes = {e["from"] for e in loops}
     for it in L.kind:
         k = L.kind[it]
         if k == "node":
-            extra = 2 * o["loop"] if it in loop_nodes else 0.0
+            extra = (2 * o["loop"] + 2 * flat_room.get((it, it), 0.0)) if it in loop_nodes else 0.0
             width[it] = info[it]["w"] + extra
         else:
             width[it] = 0.0
-
-    flat_room = o.get("flat_room") or {}
 
     def gap(a, b):
         ka, kb = L.kind[a], L.kind[b]
@@ -330,8 +330,10 @@ def layout(nodes, edges, groups=(), options=None):
     boxes = [(x - info[i]["w"] / 2, y - info[i]["h"] / 2, x + info[i]["w"] / 2, y + info[i]["h"] / 2)
              for i, (x, y) in res.pos.items()]
     boxes += list(res.frames.values())
+    extra_x = [res.pos[i][0] + info[i]["w"] / 2.0 + o["loop"] + flat_room[(i, i)]
+               for i in loop_nodes if (i, i) in flat_room and i in res.pos]
     x_lo = min([b[0] for b in boxes] + [p[0] for p in pts])
-    x_hi = max([b[2] for b in boxes] + [p[0] for p in pts])
+    x_hi = max([b[2] for b in boxes] + [p[0] for p in pts] + extra_x)
     y_lo = min([b[1] for b in boxes] + [p[1] for p in pts] + [0.0])
     y_hi = max([b[3] for b in boxes] + [p[1] for p in pts] + ([] if wrapped else [H]))
 
@@ -365,6 +367,46 @@ def _turn(side, direction):
     if direction == "BT":
         return {"n": "s", "s": "n"}.get(side, side)
     return side
+
+
+class LayeredLayout(Layout):
+    """Layered layout kernel adhering to the container protocol (DESIGN 7.1)."""
+    name = "layered"
+    options = dict(DEFAULTS)
+
+    def __init__(self, options=None):
+        self.opts = dict(DEFAULTS, **(options or {}))
+
+    def measure(self, ctx, container) -> Size:
+        nodes = []
+        for c in container.children:
+            w = float(getattr(c, "w", 0) or getattr(getattr(c, "size", None), "w", 0) or 160.0)
+            h = float(getattr(c, "h", 0) or getattr(getattr(c, "size", None), "h", 0) or 56.0)
+            cid = getattr(c, "id", str(c))
+            sh = getattr(c, "shape", "rect") if hasattr(c, "shape") else "rect"
+            nodes.append({"id": cid, "w": w, "h": h, "shape": sh})
+        edges = getattr(container, "edges", [])
+        res = layout(nodes, edges, options=self.opts)
+        return Size(res.size[0], res.size[1])
+
+    def place(self, ctx, container, box) -> Placement:
+        nodes = []
+        for c in container.children:
+            w = float(getattr(c, "w", 0) or getattr(getattr(c, "size", None), "w", 0) or 160.0)
+            h = float(getattr(c, "h", 0) or getattr(getattr(c, "size", None), "h", 0) or 56.0)
+            cid = getattr(c, "id", str(c))
+            sh = getattr(c, "shape", "rect") if hasattr(c, "shape") else "rect"
+            nodes.append({"id": cid, "w": w, "h": h, "shape": sh})
+        edges = getattr(container, "edges", [])
+        res = layout(nodes, edges, options=self.opts)
+        bx, by = box[0], box[1]
+        pos = {k: (x + bx, y + by) for k, (x, y) in res.pos.items()}
+        frames = {k: (f[0] + bx, f[1] + by, f[2] + bx, f[3] + by) for k, f in res.frames.items()}
+        return Placement(pos=pos, size=res.size, routes=res.routes, frames=frames, issues=res.issues)
+
+
+register("layered", LayeredLayout)
+
 
 
 def _tbox(tf, b):

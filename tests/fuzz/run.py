@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.join(REPO, "scripts"))
 import gen  # noqa: E402
 import golden  # noqa: E402
 
-BUCKETS = [(5, 10), (11, 20), (21, 40), (41, 60)]
+BUCKETS = [(5, 10), (11, 20), (21, 40), (41, 80), (81, 140), (141, 200)]
 
 
 def scenes(n, base, kinds):
