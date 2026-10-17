@@ -93,7 +93,7 @@ def _level_children(L, layer):
 
 def _hint_start(L, r):
     """Layer r with its hinted items in hint order, frames kept whole. At each level of the frame
-    tree the entries that carry a hint (an item its own, a frame the least of its items') trade
+    tree the entries that carry a hint (an item its own, a lone frame the least of its items') trade
     places until their hints increase; the others keep theirs. Port items stay beside their nodes."""
     layer = L.layers[r]
     if not any(L.hint.get(it) is not None for it in layer):
@@ -106,14 +106,18 @@ def _hint_start(L, r):
             ports.setdefault(L.attach[it], []).append(it)
 
     def build(g):
-        entries = []
+        entries, frames = [], []
         for kind, x in kids.get(g, []):
             if kind == "item":
                 ps = ports.get(x, [])
                 entries.append(([p for p in ps if here[p] < here[x]] + [x] + [p for p in ps if here[p] > here[x]],
                                 L.hint.get(x)))
             else:
+                frames.append(len(entries))
                 entries.append(build(x))
+        if len(frames) > 1:  # sibling frames keep their own order (_constrain); hints place a lone frame only
+            for k in frames:
+                entries[k] = (entries[k][0], None)
         idx = [k for k, (_, h) in enumerate(entries) if h is not None]
         for k, e in zip(idx, sorted((entries[k] for k in idx), key=lambda e: e[1])):
             entries[k] = e
@@ -172,7 +176,7 @@ def _sort_layer(L, r, pos, nbrs):
                                 "hint": L.hint.get(x), "group": None})
             else:
                 items, s, n = solve(x)
-                hints = [L.hint[i] for i in items if L.hint.get(i) is not None]  # a frame keeps its place among hinted items
+                hints = [L.hint[i] for i in items if L.hint.get(i) is not None]  # a lone frame keeps its place among hinted items
                 entries.append({"items": items, "sum": s, "n": n, "at": here[items[0]], "hint": min(hints) if hints else None,
                                 "group": x})
         if len(entries) <= 1:
@@ -180,6 +184,10 @@ def _sort_layer(L, r, pos, nbrs):
         else:
             for e in entries:
                 e["bc"] = e["sum"] / e["n"] if e["n"] else None
+            frames = [e for e in entries if e["group"] is not None]
+            if len(frames) > 1:  # sibling frames keep their rank order, which their hints could contradict
+                for e in frames:
+                    e["hint"] = None
             _constrain(entries, L)
             sortable = sorted((e for e in entries if e["bc"] is not None), key=lambda e: (e["bc"], e["at"]))
             fixed = [e for e in entries if e["bc"] is None]

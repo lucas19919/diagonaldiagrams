@@ -231,6 +231,9 @@ class FuzzRegressions(unittest.TestCase):
     def test_a_long_label_on_a_short_back_edge_at_the_canvas_edge(self):
         self.check("flow", 414, 67)  # another label inside the loop and the canvas edge outside it
 
+    def test_lanes_inside_sibling_frames(self):
+        self.check("flow", 330, 71)  # the frames took their members' lane hints and broke their own order
+
 
 if __name__ == "__main__":
     unittest.main()
