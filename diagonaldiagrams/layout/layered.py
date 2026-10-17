@@ -269,8 +269,9 @@ def layout(nodes, edges, groups=(), options=None):
                     key = frozenset((kids[i], kids[j]))
                     spread[key] = max(spread.get(key, 0.0), info[nid]["w"] + o["node_gap"])
 
-    # a labelled arrow within a layer whose ends have frame borders between them: the room it needs
-    # goes on the middle pair of the items between, on top of their own gaps
+    # a labelled arrow within a layer whose ends have frame borders or other arrows' lines between
+    # them (a back edge's port item, a long arrow's dummy): the room it needs goes on one pair of the
+    # items between, on top of their own gaps
     extra = {}
     for (a, b), room in flat_room.items():
         if a not in L.layer_of or b not in L.layer_of or L.layer_of[a] != L.layer_of[b]:
@@ -278,13 +279,21 @@ def layout(nodes, edges, groups=(), options=None):
         layer = L.layers[L.layer_of[a]]
         i, j = sorted((layer.index(a), layer.index(b)))
         mid = layer[i:j + 1]
-        if j - i < 2 or any(L.kind[x] not in ("left", "right") for x in mid[1:-1]):
+        if j - i < 2 or any(L.kind[x] not in ("left", "right", "port", "dummy") for x in mid[1:-1]):
             continue
-        # the label sits between two borders, never across one: the widest gap alone must hold it
-        pairs = list(zip(mid, mid[1:]))
-        key = max(pairs, key=lambda xy: gap(*xy))
-        if room > gap(*key):
-            extra[key] = max(extra.get(key, 0.0), room - gap(*key))
+        # the label sits between two borders, never across one: the widest stretch between borders
+        # alone must hold it. It may cross a line: a back edge's climb stops short of the arrow on one
+        # side, so the label sits on the other, and a long arrow passes under the label's pill
+        stretches = [[]]
+        for xy in zip(mid, mid[1:]):
+            stretches[-1].append(xy)
+            if L.kind[xy[1]] in ("left", "right"):
+                stretches.append([])
+        widest = max((s for s in stretches if s), key=lambda s: sum(gap(*xy) for xy in s))
+        have = sum(gap(*xy) for xy in widest)
+        key = max(widest, key=lambda xy: gap(*xy))
+        if room > have:
+            extra[key] = max(extra.get(key, 0.0), room - have)
 
     def sep(a, b):
         return max(width[a] / 2.0 + width[b] / 2.0 + gap(a, b) + extra.get((a, b), 0.0),
@@ -882,7 +891,10 @@ class _Plan:
                     nxt = self._x(ds[0]) if ds else q[0]
                     clear = self._clear(a, x, nxt)
                     out_st = self.stub.get((eid, "out"), st)
-                    taken = [self._x(pt) for pt, n2 in self.L.attach.items() if n2 == a] + turns.get((a, s1), [])
+                    # every line through this layer (any node's back-edge port items, long arrows'
+                    # dummies) and the turns already beside this node: a turn down near one shares its line
+                    taken = [self._x(it) for it in self.L.layers[self.rank[a]] if self.L.kind[it] in ("port", "dummy")]
+                    taken += turns.get((a, s1), [])
                     spans = level.setdefault(self.rank[a], [])
                     lo, hi = min(x, nxt), max(x, nxt)
                     free = not any(n2 != a and lo - channels.NEAR < h2 and l2 - channels.NEAR < hi for l2, h2, n2 in spans)

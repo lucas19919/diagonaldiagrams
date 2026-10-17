@@ -264,19 +264,27 @@ class FuzzRegressions(unittest.TestCase):
     """Fuzz scenes that once failed the audit, drawn whole (tests/fuzz/gen.py makes the same spec
     from the same kind, seed and size)."""
 
-    def check(self, kind, seed, n):
+    def check(self, kind, seed, n, pins=None):
+        """pins: {node id: (x, y)}, pinned on the generated spec (DESIGN 4.6)."""
         import importlib.util
-        import json
-        import tempfile
-        from diagonaldiagrams import api
         here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         spec = importlib.util.spec_from_file_location("fuzz_gen", os.path.join(here, "fuzz", "gen.py"))
         gen = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(gen)
+        made = gen.make(kind, seed, n)
+        for node in made["nodes"]:
+            if node["id"] in (pins or {}):
+                node["pin"] = dict(zip("xy", pins[node["id"]]))
+        self.draw(kind, made)
+
+    def draw(self, kind, spec):
+        import json
+        import tempfile
+        from diagonaldiagrams import api
         with tempfile.TemporaryDirectory() as d:
             path = os.path.join(d, "spec.json")
             with open(path, "w", encoding="utf-8") as f:
-                json.dump(gen.make(kind, seed, n), f)
+                json.dump(spec, f)
             code, out, _ = api.run([kind, path, "-o", os.path.join(d, "out.svg")])
         self.assertEqual(code, 0, out)
 
@@ -303,6 +311,20 @@ class FuzzRegressions(unittest.TestCase):
 
     def test_lanes_inside_sibling_frames(self):
         self.check("flow", 330, 71)  # the frames took their members' lane hints and broke their own order
+
+    def test_a_label_between_neighbors_with_a_back_edges_port_between(self):
+        # the climb into the decision stood between it and Start, so the label got no room and sat on a box
+        nodes = [("n0", "Start", "oval", 0), ("n1", "Load the account 1", "rect", 1), ("n2", "Parse the upload 2", "rect", 2),
+                 ("n3", "Customer verified by the identity provider? (3)", "diamond", 0), ("n4", "End", "oval", 3)]
+        edges = [("n0", "n1", ""), ("n1", "n2", ""), ("n2", "n3", ""), ("n3", "n4", "yes"), ("n0", "n3", "publishes"),
+                 ("n2", "n0", "")]
+        self.draw("flow", {"title": "Fuzz flow 5", "budget": False,
+                           "nodes": [{"id": i, "name": t, "shape": s, "rank": r} for i, t, s, r in nodes],
+                           "edges": [dict({"from": a, "to": b}, **({"label": t} if t else {})) for a, b, t in edges]})
+
+    def test_a_decision_turning_down_beside_another_boxs_back_edge_port(self):
+        # pins put a box's climb 1 px from where the decision's side exit turned down: one line for both
+        self.check("flow", 11014, 27, pins={"n17": (965, 1279), "n13": (538, 980), "n16": (390, 1669)})
 
 
 if __name__ == "__main__":
