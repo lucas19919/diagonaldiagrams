@@ -18,7 +18,7 @@
   "Expression rises with dose in every tissue."
  ],
  "exit": 0,
- "html_sha256": "13322a86aaf07c85016eba41ff882a318d67553cb0bb75a4b8525946798aa699",
+ "html_sha256": "d498d6d6c9e78ef98ac5ba985bab5deb052aa1567ab0bddf1f7faed4e134dcbd",
  "receipt": {
   "caption": "Relationship between the two variables. Points show individual observations.",
   "cmd": "scatter",

@@ -633,8 +633,8 @@ def agent_loop():
     check("-o NAME.svg writes the SVG there and the page beside it",
           rc == 0 and head == "<svg " and os.path.exists(os.path.join(WORK, "loop-svg.html")), out[:200])
     root = ET.parse(os.path.join(WORK, "loop.svg")).getroot()
-    rx = [r.get("rx") for r in _els(root, "rect") if r.get("width") == "160"]
-    check("oval start and end are drawn round", rx.count("20") >= 4, str(rx))
+    rx = [r.get("rx") for r in _els(root, "rect") if r.get("data-node") in ("a", "c")]
+    check("oval start and end are drawn round", rx.count("20") == 2, str(rx))
 
     junk = {"list.json": "[1, 2, 3]", "nodes_str.json": '{"nodes": "abc"}', "noid.json": '{"nodes": [{"name": "A"}]}',
             "broken.json": '{"nodes": [', "seq_in_flow.json": '{"actors": [{"id": "a"}], "messages": []}'}

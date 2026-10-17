@@ -200,3 +200,54 @@ def coordinates(layers, up, down, width, sep, kind, inner, forced_up, prev=None)
     if _valid(layers, out, sep, chains):
         return out
     return smallest
+
+def _isotonic(vals, weights):
+    """Nondecreasing values closest to vals in weighted squares (pool adjacent violators)."""
+    blocks = []  # [weighted sum, weight, count]
+    for v, w in zip(vals, weights):
+        blocks.append([v * w, w, 1])
+        while len(blocks) > 1 and blocks[-2][0] / blocks[-2][1] > blocks[-1][0] / blocks[-1][1]:
+            a = blocks.pop()
+            blocks[-1] = [blocks[-1][0] + a[0], blocks[-1][1] + a[1], blocks[-1][2] + a[2]]
+    out = []
+    for total, w, n in blocks:
+        out += [total / w] * n
+    return out
+
+
+def balance(layers, up, down, kind, xs, sep):
+    """Centers each node over what it calls and each sink under what calls it, as far as its layer
+    allows (an architecture's look: a gateway over its services, not over the median one).
+
+    Bottom-up, a node with neighbors in the layer below moves to the middle of their span; top-down, a
+    node with none there moves to the middle of its neighbors above. Each layer is solved whole: the
+    positions closest to those targets that keep every separation (an isotonic regression, so nodes
+    that want one spot share it evenly). Dummies, ports and frame borders stay where they are, so long
+    arrows stay straight and frames stay rectangles. Returns new {item: x}."""
+    xs = dict(xs)
+    fixed, loose = 1e9, 1e-3
+
+    def solve(layer, nbrs, only_free):
+        if not layer:
+            return
+        offs, vals, ws, o = [], [], [], 0.0
+        for k, v in enumerate(layer):
+            if k:
+                o += sep(layer[k - 1], v)
+            offs.append(o)
+            ns = [xs[u] for u in nbrs.get(v, ()) if u in xs]
+            if kind.get(v) != "node":
+                t, w = xs[v], fixed
+            elif ns and not (only_free and down.get(v)):
+                t, w = (min(ns) + max(ns)) / 2.0, 1.0
+            else:
+                t, w = xs[v], loose
+            vals.append(t - o)
+            ws.append(w)
+        for v, y, o in zip(layer, _isotonic(vals, ws), offs):
+            xs[v] = y + o
+    for layer in reversed(layers[:-1]):
+        solve(layer, down, False)
+    for layer in layers[1:]:
+        solve(layer, up, True)
+    return xs

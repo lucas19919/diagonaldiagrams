@@ -14,7 +14,7 @@
   "Cities"
  ],
  "exit": 0,
- "html_sha256": "30b4b4b35628ed1e0006e850ed519f561a27b141951318fa71f7de16e05c095b",
+ "html_sha256": "d2d535dc6d615b36bf1d037c8aab9cd6610b953dfeae3bc0eb7e629142eaa494",
  "receipt": {
   "caption": "Locations. Dot size follows the value column when one is set.",
   "cmd": "geo",

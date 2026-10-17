@@ -12,7 +12,7 @@
   "calls_k"
  ],
  "exit": 0,
- "html_sha256": "0adf902ef640eadf0b602bd4bdc0803e36278fe2ea1e99dbb232c9069a15dfa5",
+ "html_sha256": "21ae329db7bc0c03b6252ed857a61cfcd4364df1cf88f60fe38c63b5622b4ed8",
  "receipt": {
   "caption": "Locations. Dot size follows the value column when one is set.",
   "cmd": "geo",

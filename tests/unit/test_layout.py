@@ -231,6 +231,12 @@ class FuzzRegressions(unittest.TestCase):
     def test_a_long_label_on_a_short_back_edge_at_the_canvas_edge(self):
         self.check("flow", 414, 67)  # another label inside the loop and the canvas edge outside it
 
+    def test_a_labelled_arrow_in_a_layer_across_a_passing_arrow(self):
+        self.check("arch", 20291, 20)  # no room kept for its label, so balancing the layer put it on a box
+
+    def test_another_labelled_arrow_across_passing_arrows(self):
+        self.check("arch", 20801, 100)  # the same, in a larger figure
+
     def test_lanes_inside_sibling_frames(self):
         self.check("flow", 330, 71)  # the frames took their members' lane hints and broke their own order
 

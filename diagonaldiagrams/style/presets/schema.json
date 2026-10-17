@@ -6,8 +6,8 @@
   "rules": {
     "node": {
       "fill": "card",
-      "stroke": "ink",
-      "stroke-width": 1.2
+      "stroke": "line",
+      "stroke-width": 1
     },
     "node:focal": {
       "stroke": "accent"
@@ -19,8 +19,12 @@
       "color": "ink"
     },
     "node::tag": {
-      "font-family": "font-mono",
-      "font-size": 8
+      "font-family": "font",
+      "font-size": 9,
+      "font-weight": 600,
+      "color": "muted",
+      "text-transform": "uppercase",
+      "letter-spacing": 0.7
     },
     "edge": {
       "stroke": "link",
@@ -30,8 +34,8 @@
       "stroke": "accent"
     },
     "edge::label": {
-      "font-family": "font-mono",
-      "font-size": 10,
+      "font-family": "font",
+      "font-size": 11,
       "color": "muted"
     },
     "node::header": {

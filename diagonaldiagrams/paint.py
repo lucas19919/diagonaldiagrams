@@ -22,7 +22,7 @@ also carries attach: the node and port at each end, written as data-from-port an
 """
 import re
 
-from ._draw import ICONS, _box_lines, _diamond_lines, _frame_box, _label_box, _pill_w, box_text, corner_rx, diamond_text
+from ._draw import ICONS, _bold, _box_lines, _diamond_h, _diamond_lines, _frame_box, _label_box, _pill_w, box_text, corner_rx, diamond_text
 from . import deco
 from .text.markup import plain
 from .registry import Registry
@@ -210,13 +210,16 @@ def paper(t, W, H, fill=None):
     return el("rect", role="figure.paper", width=W, height=H, fill=fill or t["paper"])
 
 
+def _head(mid, fill):
+    """An arrowhead 10 by 7, its back notched a little, its tip just past the end of the line."""
+    return el("marker", id=mid, markerWidth=10, markerHeight=7, refX=9, refY=3.5, orient="auto",
+              markerUnits="userSpaceOnUse", children=[el("polygon", points="0 0,10 3.5,0 7,2 3.5", fill=fill)])
+
+
 def marker_defs(t):
     """Arrowheads: muted, accent (focal), link (HTTP) and soft. A fixed size on any stroke."""
-    def one(mid, fill):
-        return el("marker", id=mid, markerWidth=12, markerHeight=9, refX=11, refY=4.5, orient="auto",
-                  markerUnits="userSpaceOnUse", children=[el("polygon", points="0 0,12 4.5,0 9", fill=fill)])
-    return el("defs", role="figure.defs", children=[one("a", t["muted"]), one("aa", t["accent"]),
-                                                    one("al", t["link"]), one("ar", t["soft"])])
+    return el("defs", role="figure.defs", children=[_head("a", t["muted"]), _head("aa", t["accent"]),
+                                                    _head("al", t["link"]), _head("ar", t["soft"])])
 
 
 def heading(t, title, subtitle, x=28, st=None, eyebrow=None):
@@ -242,10 +245,88 @@ def heading(t, title, subtitle, x=28, st=None, eyebrow=None):
     return out, ((y + 16) if out else 8)
 
 
+PAD_X, PAD_Y, MIN_H = 14, 10, 40  # a fitted box: room beside and above its text, and its least height
+ICON_ROOM = 22  # beside the text, on both sides, when a box has an icon in its top corner
+SNAP = 16  # fitted widths are a multiple of this, so boxes with similar names come out the same width
+
+
+def _line_w(runs, st):
+    """A line of (text, kind) runs measured in its text style."""
+    from .text.measure import width
+    return sum(width(transformed(text, st), st["font-size"], _bold(st), kind, st.get("font")) for text, kind in runs)
+
+
+def tag_w(tag, st):
+    """A tag's width: uppercase text with its letter spacing."""
+    from .text.measure import width
+    text = transformed(tag, st)
+    return width(text, st["font-size"], True, "", st.get("font")) + float(st.get("letter-spacing") or 0) * len(text)
+
+
+def tag_pitch(st):
+    return round(st["font-size"] * 1.5)
+
+
+def box_size(name, sub="", tag="", icon=None, st=None):
+    """A box fitted to its text (w, h, side padding): the name wraps at the style's max-width, then as narrow
+    as it can without taking another line, so its lines come out even. The box is as wide as its longest
+    line (or tag) plus padding, in steps of SNAP, no narrower than min-width. A word too long for max-width
+    widens the box rather than break. A style that sets width keeps it. The side padding returned is what
+    node_box needs to wrap the text the same way."""
+    c = (st or {}).get("computed") or {}
+    pad = PAD_X + (ICON_ROOM if icon in ICONS else 0)
+    hi = float(c.get("max-width") or 176)
+    lo = min(float(c.get("min-width") or 0), hi)
+    fixed = c.get("width")
+    if not fixed:
+        _, _, lab, sb = box_text(name, sub, hi, st, pad)
+        word = max([_line_w([(wd, "")], lab) for wd in plain(name).split()] +
+                   [_line_w([(wd, "")], sb) for wd in plain(sub or "").split()] + [0])
+        hi = max(hi, min(2 * hi, -(-(word + 2 * pad + 1) // SNAP) * SNAP))
+    w = float(fixed) if fixed else hi
+    nl, sl, lab, sb = box_text(name, sub, w, st, pad)
+    if not fixed:
+        room = w - 2 * pad
+        wraps = all((x.get("overflow") or "wrap") == "wrap" for x in (lab, sb))  # text cut to max-lines can't balance
+        if wraps and (len(nl) > 1 or len(sl) > 1):  # balanced lines: the narrowest room that keeps as many
+            short, room = 0, int(room)
+            while room - short > 1:
+                mid = (short + room) // 2
+                a, b, _, _ = box_text(name, sub, mid + 2 * pad, st, pad)
+                if len(a) == len(nl) and len(b) == len(sl):
+                    room = mid
+                else:
+                    short = mid
+            nl, sl, lab, sb = box_text(name, sub, room + 2 * pad, st, pad)
+        need = max([_line_w(line, lab) for line in nl] + [_line_w(line, sb) for line in sl] +
+                   ([tag_w(tag, st["tag"])] if tag else []))
+        w = max(lo, min(hi, -(-(need + 2 * pad) // SNAP) * SNAP))
+        pad = (w - room) / 2.0  # node_box wraps at w less this on each side: at room
+    block = lab["pitch"] * len(nl) + (sb["pitch"] * len(sl) + 2 if sl else 0) + (tag_pitch(st["tag"]) if tag else 0)
+    h = max(MIN_H, 2 * -(-(block + 2 * PAD_Y) // 2))
+    return w, h, pad
+
+
+DIAMOND_ROOM = 128  # where a fitted decision's question wraps
+
+
+def diamond_size(name, st=None):
+    """A decision fitted to its question (w, h, room): as tall as v1 drew it, and as wide as the
+    rhombus must be for the text block to sit inside it, in steps of SNAP, from 112 to 192."""
+    lines, lab = diamond_text(name, st, DIAMOND_ROOM)
+    h = _diamond_h(name, st, DIAMOND_ROOM)
+    a = max(_line_w(line, lab) for line in lines) / 2.0 + 6
+    b = lab["pitch"] * len(lines) / 2.0 + 3
+    half = a / max(0.2, 1 - b / (h / 2.0))
+    return max(112, min(192, -(-2 * half // SNAP) * SNAP)), h, DIAMOND_ROOM
+
+
 def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editorial", nid=None, icon=None, rx=None,
-             st=None, shape="rect"):
-    """A node: paper underlay, the box, an optional tag pill and icon, then the wrapped name and sub.
-    st is the node's computed style (style.Styler.node); without it, the theme's v1 look."""
+             st=None, shape="rect", pad=None):
+    """A node: paper underlay, the box, an optional icon in its top corner, then its text centered as one
+    block: the tag above the name in small capitals, the wrapped name, the sub. st is the node's computed
+    style (style.Styler.node); without it, the theme's v1 look. pad: the room beside the text, which sets
+    where the name wraps (box_size gives it); v1 boxes keep 8 and their tag pill in the corner."""
     st = st or legacy_node_style(t, focal, corners)
     stroke = st["stroke"]
     radii = st.get("radii") if rx is None else rx
@@ -267,6 +348,8 @@ def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editoria
                                                          **{k: v for k, v in out[1].attrs.items()
                                                             if k in ("x", "y", "width", "height", "rx", "d")}, fill=fill))
     out += _sides(out[1], lambda: deco.rect_sides(x, y, w, h, rx), st, shape, own)
+    if pad is not None:
+        return out + _box_body(x, y, w, h, name, sub, tag, icon, stroke, own, st, pad)
     if tag:
         tw = max(28, len(tag) * 7)
         tg = st["tag"]
@@ -292,8 +375,44 @@ def node_box(t, x, y, w, h, name, sub="", tag="", focal=False, corners="editoria
         out.append(runs_el(line, sb, own, "node.sub", cx,
                            round(base + lab_box["pitch"] * len(nl) + 2 + sb_box["pitch"] * i, 1)))
     return out
-def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None):
-    """A decision: paper underlay, the rhombus, and the wrapped question inside."""
+
+
+def _baseline(top, pitch, size):
+    """Where a line of text sits in its pitch: its capitals centered."""
+    return round(top + pitch / 2.0 + size * 0.36, 1)
+
+
+def _box_body(x, y, w, h, name, sub, tag, icon, stroke, own, st, pad):
+    """A fitted box's icon and text: the tag, name and sub as one block, centered both ways."""
+    out = []
+    cx = x + w / 2
+    if icon in ICONS:
+        out.append(el("path", owner=own, role="node.icon", d=ICONS[icon], transform=f"translate({x + w - 22},{y + 6})",
+                      fill="none", stroke=stroke, stroke_opacity=".75", stroke_width=1.3, stroke_linecap="round",
+                      stroke_linejoin="round"))
+    nl, sl, lab_box, sb_box = box_text(name, sub, w, st, pad)
+    tg = st["tag"]
+    tp = tag_pitch(tg) if tag else 0
+    block = tp + lab_box["pitch"] * len(nl) + (sb_box["pitch"] * len(sl) + 2 if sl else 0)
+    top = y + (h - block) / 2.0
+    if tag:
+        e = text_el(transformed(tag, tg), tg, own, "node.tag", cx, _baseline(top - 1, tp, tg["font-size"]))
+        out.append(e)
+        top += tp
+    lab = dict(st["label"], **{"font-size": lab_box["font-size"]})
+    sb = dict(st["sub"], **{"font-size": sb_box["font-size"]})
+    for i, line in enumerate(nl):
+        out.append(runs_el(line, lab, own, "node.label", cx, _baseline(top, lab_box["pitch"], lab_box["font-size"])))
+        top += lab_box["pitch"]
+    top += 2
+    for i, line in enumerate(sl):
+        out.append(runs_el(line, sb, own, "node.sub", cx, _baseline(top, sb_box["pitch"], sb_box["font-size"])))
+        top += sb_box["pitch"]
+    return out
+
+
+def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None, room=100):
+    """A decision: paper underlay, the rhombus, and the question inside, wrapped at room."""
     st = st or legacy_node_style(t, focal)
     pts = f"{cx},{cy - h / 2} {cx + w / 2},{cy} {cx},{cy + h / 2} {cx - w / 2},{cy}"
     own = nid or ""
@@ -303,7 +422,7 @@ def diamond(t, cx, cy, w, h, name, focal=False, nid=None, st=None):
               data_cx=cx if nid is not None else None, data_cy=cy if nid is not None else None)]
     out += deco.decorate(out[1], out[0], st, lambda fill: el("polygon", owner=own, role="node.pattern", points=pts, fill=fill))
     out += _sides(out[1], lambda: deco.diamond_sides(cx, cy, w, h), st, "diamond", own)
-    lines, lab_box = diamond_text(name, st)
+    lines, lab_box = diamond_text(name, st, room)
     y0 = cy + lab_box["font-size"] / 3 - lab_box["pitch"] / 2 * (len(lines) - 1)
     lab = dict(st["label"], **{"font-size": lab_box["font-size"]})
     for i, line in enumerate(lines):
@@ -325,12 +444,17 @@ def tail(x, y, side, color, owner=""):
     return el("circle", owner=owner, role="edge.tail", cx=x + vx * 7, cy=y + vy * 7, r=2.7, fill=color)
 
 
-def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner="", st=None, pill=None):
+def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner="", st=None, pill=None, w=None, gap=None):
     """A label off the shaft, on a paper pill, so it does not cut the arrow. st is the edge's
-    ::label style; text arrives already transformed (the placement measured it)."""
+    ::label style; text arrives already transformed (the placement measured it). w and gap: the pill's
+    width and its distance from the arrow (route.labels), when the label hugs its arrow; else v1's."""
     st = st or {"font-size": 10, "font-family": MONO, "color": t["muted"]}
-    x0, y0, _, _ = _label_box(mx, ay, text, vertical, flip)
-    w = _pill_w(text)
+    if w is None:
+        x0, y0, _, _ = _label_box(mx, ay, text, vertical, flip)
+        w = _pill_w(text)
+    else:
+        from .route.labels import label_box
+        x0, y0, _, _ = label_box(mx, ay, text, vertical, flip, w, gap)
     return [el("rect", owner=owner, role="edge.label.pill", x=x0, y=y0, width=w, height=16, rx=2, fill=pill or t["paper"]),
             el("text", text, owner=owner, role="edge.label", x=x0 + w / 2, y=y0 + 12, data_shaping=_shaping(text),
                font_size=st["font-size"],
@@ -406,8 +530,7 @@ def text_el(text, st, owner, role, x, y, anchor="middle"):
 def add_markers(defs, colors):
     """Arrowheads for stroke colors the default four don't cover: {color: id}, into the defs element."""
     for color, mid in colors.items():
-        defs.children.append(el("marker", id=mid, markerWidth=12, markerHeight=9, refX=11, refY=4.5, orient="auto",
-                                markerUnits="userSpaceOnUse", children=[el("polygon", points="0 0,12 4.5,0 9", fill=color)]))
+        defs.children.append(_head(mid, color))
 
 
 def named(els, kind, name, role="node.shape"):
@@ -428,7 +551,8 @@ def node_name(n, nid=None):
 @SHAPES.add("rect")
 def _rect(t, nid, n, cx, cy, w, h, corners="editorial", rx=None, kind="box", st=None, shape="rect"):
     return named(node_box(t, cx - w / 2, cy - h / 2, w, h, n["name"], n.get("sub", ""), n.get("tag", ""),
-                          n.get("focal", False), corners, nid, n.get("icon"), rx=rx, st=st, shape=shape), kind,
+                          n.get("focal", False), corners, nid, n.get("icon"), rx=rx, st=st, shape=shape,
+                          pad=n.get("_pad")), kind,
                  node_name(n, nid))
 
 
@@ -439,7 +563,8 @@ def _oval(t, nid, n, cx, cy, w, h, corners="editorial", st=None):
 
 @SHAPES.add("diamond")
 def _diamond(t, nid, n, cx, cy, w, h, corners="editorial", st=None):
-    return named(diamond(t, cx, cy, w, h, n["name"], n.get("focal", False), nid, st=st), "decision", node_name(n, nid))
+    return named(diamond(t, cx, cy, w, h, n["name"], n.get("focal", False), nid, st=st, room=n.get("_room", 100)), "decision",
+                 node_name(n, nid))
 
 
 @SHAPES.add("dot")
@@ -481,13 +606,9 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
     after = card + 3  # the card, its header band, and the rule under the header
     out[after:after] = decor + _sides(out[card], lambda: deco.rect_sides(x, y, w, h, rx), st, "table", tid)
     tag = tbl.get("tag", "")
-    if tag:
-        tw = max(32, len(tag) * 7 + 8)
-        out.append(el("rect", owner=tid, role="table.tag", x=x + w - tw - 10, y=y + 12, width=tw, height=14, rx=2, fill="none",
-                      stroke=stroke, stroke_opacity=".5", stroke_width=".8"))
-        out.append(el("text", transformed(tag, st["tag"]), owner=tid, role="table.tag", x=x + w - tw / 2 - 10, y=y + 22,
-                      font_size=st["tag"]["font-size"], font_family=st["tag"]["font-family"],
-                      fill=st["tag"].get("color") or stroke, text_anchor="middle"))
+    if tag:  # in small capitals at the header's right end
+        tg = dict(st["tag"], color=st["tag"].get("color") or t["muted"])
+        out.append(text_el(transformed(tag, tg), tg, tid, "table.tag", x + w - 12, y + 22, anchor="end"))
     for c_idx, c in enumerate(tbl.get("columns", [])):
         cy = y + 44 + c_idx * row_h
         own = f'{tid}.{c.get("name", c_idx)}'
@@ -497,17 +618,37 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
         badge_x = x + 10
         for key, color in (("pk", t["accent"]), ("fk", t["link"])):
             if c.get(key) and (key == "pk" or not c.get("pk")):
-                out.append(el("rect", owner=own, role="column.badge", x=badge_x, y=cy + 4, width=20, height=12, rx=2, fill=color,
+                out.append(el("rect", owner=own, role="column.badge", x=badge_x, y=cy + 5, width=22, height=14, rx=3, fill=color,
                               fill_opacity=".15"))
-                out.append(el("text", key.upper(), owner=own, role="column.badge", x=badge_x + 10, y=cy + 13, font_size=7,
-                              font_weight=600, font_family=MONO, fill=color, text_anchor="middle"))
+                out.append(el("text", key.upper(), owner=own, role="column.badge", x=badge_x + 11, y=cy + 15.2, font_size=9,
+                              font_weight=700, font_family=MONO, fill=readable_on_tint(color, st["fill"]),
+                              text_anchor="middle"))
                 break
-        name_x = badge_x + (25 if (c.get("pk") or c.get("fk")) else 0)
+        name_x = badge_x + (28 if (c.get("pk") or c.get("fk")) else 0)
         out.append(el("text", c["name"], owner=own, role="column.name", x=name_x, y=cy + 15, font_size=11, font_family=MONO,
                       fill=t["ink"]))
         out.append(el("text", c.get("type", ""), owner=own, role="column.type", x=x + w - 12, y=cy + 15, font_size=10,
                       font_family=MONO, fill=t["soft"], text_anchor="end"))
     return out
+
+
+def readable_on_tint(fg, card, alpha=0.15):
+    """fg, darkened or lightened until it reads at WCAG AA (4.5:1) on a badge of fg at alpha over card."""
+    import colorsys
+    from .style.parse import Color, color, contrast
+    try:
+        c, base = color(fg), color(card)
+    except Exception:
+        return fg
+    bg = Color(round(base.r + (c.r - base.r) * alpha), round(base.g + (c.g - base.g) * alpha),
+               round(base.b + (c.b - base.b) * alpha))
+    h, light, sat = colorsys.rgb_to_hls(c.r / 255, c.g / 255, c.b / 255)
+    step = -0.02 if colorsys.rgb_to_hls(bg.r / 255, bg.g / 255, bg.b / 255)[1] > 0.5 else 0.02
+    while contrast(c, bg) < 4.5 and 0.0 < light < 1.0:
+        light = min(1.0, max(0.0, light + step))
+        r, g, b = colorsys.hls_to_rgb(h, light, sat)
+        c = Color(round(r * 255), round(g * 255), round(b * 255))
+    return c.css
 
 
 def group_frames(t, groups, pos, avoid=(), style_of=None, boxes=None):

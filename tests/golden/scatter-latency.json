@@ -12,7 +12,7 @@
   "machine"
  ],
  "exit": 0,
- "html_sha256": "0d93224617192fdea48cae640075dd1355ff20daca01cf02cc335ce23bada70d",
+ "html_sha256": "e8f43cdb229fcc60888b6dea73324e12cabf03cb7caaaefdf4a81da45017851c",
  "receipt": {
   "caption": "Relationship between the two variables. Points show individual observations.",
   "cmd": "scatter",

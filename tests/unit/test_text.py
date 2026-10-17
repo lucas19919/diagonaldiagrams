@@ -52,8 +52,8 @@ class Boxes(unittest.TestCase):
     def test_a_long_name_grows_its_box(self):
         svg = render_flow({"nodes": [{"id": "a", "name": "Short"}, {"id": "b", "name": LONG}], "edges": [{"from": "a", "to": "b"}]})[0]
         h = lambda nid: float(re.search(r'height="([\d.]+)"', box(svg, nid)).group(1))  # noqa: E731
-        self.assertEqual(h("a"), 56)
-        self.assertGreater(h("b"), 56)
+        self.assertEqual(h("a"), 40)  # one line fits the least height (paint.MIN_H)
+        self.assertGreater(h("b"), 40)
         self.assertNotIn("...", svg)
 
     def test_a_bigger_font_grows_the_box_and_the_lines_follow_it(self):

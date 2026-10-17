@@ -18,7 +18,7 @@
   "Signups per month"
  ],
  "exit": 0,
- "html_sha256": "189bc4b129c55a474d83b67fc60ea902b8d90ca83fe84652c03c8ec7992eb238",
+ "html_sha256": "e9797afb98a995c41a5cbae7521c0771eb6269fa57f2284c821f464ec4e139a1",
  "receipt": {
   "caption": "Trend over time or continuous variable.",
   "cmd": "line",

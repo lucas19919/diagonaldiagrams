@@ -5,7 +5,7 @@
   "tests/golden/inputs/cases/swim-review.json"
  ],
  "exit": 1,
- "html_sha256": "237f8987fea7b5425600ed4e5a19c9e267f9bb1c34cadf7576e0e8f03379698e",
+ "html_sha256": "85f0f9ff90de341ce650c35287152da0dc15911d95c1c87e725df7c37f2d214e",
  "receipt": {
   "a": null,
   "b": null,

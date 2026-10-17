@@ -26,8 +26,8 @@
 <text x="556.5" y="388" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">1</text>
 <line x1="716.0" y1="52" x2="716.0" y2="372" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
 <text x="716.0" y="388" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">2</text>
-<line x1="397.0" y1="52" x2="397.0" y2="372" stroke="#7a8399" stroke-dasharray="4 3"/>
-<line x1="78" y1="244.0" x2="716" y2="244.0" stroke="#7a8399" stroke-dasharray="4 3"/>
+<line x1="397.0" y1="52" x2="397.0" y2="372" stroke="#636c82" stroke-dasharray="4 3"/>
+<line x1="78" y1="244.0" x2="716" y2="244.0" stroke="#636c82" stroke-dasharray="4 3"/>
 <circle cx="556.5" cy="116.0" r="4.2" fill="#2e5aa8" stroke="#ffffff" stroke-width="1"/>
 <text x="564.5" y="110.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">A</text>
 <circle cx="237.5" cy="52.0" r="4.2" fill="#2e5aa8" stroke="#ffffff" stroke-width="1"/>

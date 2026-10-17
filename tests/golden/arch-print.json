@@ -6,7 +6,7 @@
   "print"
  ],
  "exit": 0,
- "html_sha256": "a4f987dcf90444a042fa25b37efb64d62d77ad6df93db3f733368b6369907446",
+ "html_sha256": "ec11dbbe8f38b97141fff639d1ca9d4e2cc88f062a5446669188d1109a677212",
  "receipt": {
   "auto": false,
   "cmd": "arch",

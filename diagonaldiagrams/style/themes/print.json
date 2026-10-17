@@ -2,8 +2,8 @@
   "name": "print",
   "extends": ["core"],
   "tokens": {
-    "paper": "#ffffff", "ink": "#111111", "muted": "#444444", "soft": "#777777", "rule": "rgba(0,0,0,0.18)",
-    "accent": "#000000", "accent-tint": "rgba(0,0,0,0.06)", "link": "#333333", "card": "#ffffff",
+    "paper": "#ffffff", "ink": "#111111", "muted": "#444444", "soft": "#6b6b6b", "rule": "rgba(0,0,0,0.18)",
+    "accent": "#000000", "accent-tint": "rgba(0,0,0,0.06)", "link": "#333333", "card": "#ffffff", "line": "#767676",
     "shade-light": "rgba(255,255,255,0.4)", "shade-dark": "rgba(0,0,0,0.3)"
   }
 }

@@ -28,15 +28,15 @@
     },
     "group": {
       "fill": "rule",
-      "stroke": "muted",
-      "stroke-dasharray": "4 3",
-      "border-radius": 10
+      "stroke": "line",
+      "border-radius": 12
     },
     "group::title": {
       "font-size": 10,
       "font-weight": 600,
       "color": "muted",
-      "text-transform": "uppercase"
+      "text-transform": "uppercase",
+      "letter-spacing": 0.6
     },
     "figure::eyebrow": {
       "font-size": 10,

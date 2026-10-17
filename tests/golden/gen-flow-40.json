@@ -4,7 +4,7 @@
   "tests/golden/inputs/flows/flow-40.json"
  ],
  "exit": 0,
- "html_sha256": "325247783d72fb8ebfe7e92cbed9569c3d76f7e7ad59cc29480d045432525d8e",
+ "html_sha256": "566bf5a391d2e17174e4b6f03a059da9c6a3fcbfddb6385fdbbca36ac446dd91",
  "receipt": {
   "auto": false,
   "cmd": "flow",
@@ -444,7 +444,7 @@
    "row 30: Print the shipping label (37)",
    "row 31: Send the receipt (38)",
    "row 32: Done",
-   "wrapped into 3 columns: rows 1-11, rows 12-21, rows 22-32"
+   "wrapped into 2 columns: rows 1-17, rows 18-32"
   ],
   "ok": true
  }

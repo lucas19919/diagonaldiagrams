@@ -69,12 +69,13 @@ class Demos(unittest.TestCase):
             self.assertTrue(labels, kind)
             for e in labels:
                 boxed = e.get("font-weight") == "600" and e.get("text-anchor") == "middle"  # a box's name, not the title
-                if boxed and kind in ("flow", "arch"):  # inside the 144 px a box's text wraps to
-                    self.assertLessEqual(font.width(e.text, float(e.get("font-size"))), 144.5, (kind, e.text))
+                if boxed and kind in ("flow", "arch"):  # inside the 164 px a box's text wraps to (192 less 14 a side)
+                    self.assertLessEqual(font.width(e.text, float(e.get("font-size"))), 164.5, (kind, e.text))
         self.each({"name": "demo"}, "font", check, font=path)
 
     def test_2_a_brand_restyles_every_type_through_tokens(self):
-        brand = {"name": "brand", "tokens": {"ink": "#0f172a", "accent": "#7c3aed", "link": "#0e7490", "card": "#f8fafc"}}
+        brand = {"name": "brand", "tokens": {"ink": "#0f172a", "line": "#0f172a", "accent": "#7c3aed", "link": "#0e7490",
+                                             "card": "#f8fafc"}}
         self.each(brand, "brand", lambda kind, svg, v: self.assertTrue(
             'fill="#f8fafc"' in svg and 'stroke="#0f172a"' in svg, kind))
 

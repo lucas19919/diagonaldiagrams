@@ -5,7 +5,7 @@
   "tests/golden/inputs/cases/state-order.json"
  ],
  "exit": 1,
- "html_sha256": "73b55cb60ac2f0a35b8b937f32af140c433998d4e0ff019f09357a578daf30d7",
+ "html_sha256": "11d9abde02d386c786afd1ec058b352014db12ebef91740afa652b7f1884d4f4",
  "receipt": {
   "a": null,
   "b": null,

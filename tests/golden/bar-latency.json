@@ -8,7 +8,7 @@
   "p99_latency_ms"
  ],
  "exit": 0,
- "html_sha256": "37adaf8cc502a336869d80ae5269a5c039438235c85a3d14c716475319a5195e",
+ "html_sha256": "dace789b62dd6200b3131ed8065bc6f4c7d7c8c2ed18f040378e1a034fd2f45e",
  "receipt": {
   "caption": "Categorical comparison.",
   "cat": "service",

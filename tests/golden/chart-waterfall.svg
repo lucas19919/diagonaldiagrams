@@ -15,10 +15,10 @@
 <rect x="136.8" y="152.0" width="42.0" height="200.0" fill="#2e5aa8"/>
 <text x="157.8" y="148.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">10</text>
 <rect x="296.2" y="72.0" width="42.0" height="80.0" fill="#2e5aa8"/>
-<line x1="178.8" y1="152.0" x2="296.2" y2="152.0" stroke="#7a8399" stroke-dasharray="3 3"/>
+<line x1="178.8" y1="152.0" x2="296.2" y2="152.0" stroke="#636c82" stroke-dasharray="3 3"/>
 <text x="317.2" y="68.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">4</text>
 <rect x="455.8" y="72.0" width="42.0" height="40.0" fill="#eb6c36"/>
-<line x1="338.2" y1="72.0" x2="455.8" y2="72.0" stroke="#7a8399" stroke-dasharray="3 3"/>
+<line x1="338.2" y1="72.0" x2="455.8" y2="72.0" stroke="#636c82" stroke-dasharray="3 3"/>
 <text x="476.8" y="68.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">-2</text>
 <rect x="615.2" y="112.0" width="42.0" height="240.0" fill="#2d3142"/>
 <text x="636.2" y="108.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">12</text>

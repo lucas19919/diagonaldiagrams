@@ -12,19 +12,28 @@ Everything here is in the layered layout's top-to-bottom frame, before it is tur
 import math
 
 
-def _choose(heights, cuttable, width_of, target, most=8):
+def _choose(heights, cuttable, width_of, target, most=8, across=None):
     """(cuts, aspect): the layer indices after which to cut, for the column count whose aspect ratio
-    lands nearest the target. heights: per layer, the height it adds (its band and the gap above)."""
+    lands nearest the target. heights: per layer, the height it adds (its band and the gap above).
+    across: per layer, how many arrows a cut after it would carry to the next column; within a quarter
+    of a column's height of where the even cut would fall, the cut takes the layer with the fewest."""
     total = sum(heights)
     if total <= 0:
         return [], 0.0
     best = None
+    tops = [sum(heights[:r + 1]) for r in range(len(heights))]  # how far down each layer ends
     for k in range(1, min(most, len(heights)) + 1):
         cuts, acc, want = [], 0.0, total / k
         for r, h in enumerate(heights[:-1]):
             acc += h
             if len(cuts) < k - 1 and r in cuttable and acc >= want * (len(cuts) + 1) - heights[r + 1] / 2.0:
-                cuts.append(r)
+                if across:
+                    aim, lo = want * (len(cuts) + 1), cuts[-1] if cuts else -1
+                    near = [q for q in cuttable if lo < q < len(heights) - 1 and abs(tops[q] - aim) <= want / 4.0]
+                    if near:
+                        r = min(near + [r], key=lambda q: (across[q], abs(tops[q] - aim), q))
+                if not cuts or r > cuts[-1]:
+                    cuts.append(r)
         if len(cuts) != k - 1:
             continue
         bounds = [-1] + cuts + [len(heights) - 1]
@@ -72,9 +81,12 @@ def wrap(pos, rank, info, frames, span, routes, band_top, band_h, pads_below, he
         a, b = x_extent(lo, hi)
         return b - a + 2 * side
     natural = max(width_of(0, nl - 1), min_width) / (ends[-1] - start(0))
-    if natural >= target * 0.4:  # not much taller than wanted: one column reads better
+    if natural >= target * 0.5:  # at most twice as tall as wanted: one column reads better
         return False
-    cuts, _ = _choose(heights, cuttable, width_of, target)
+    across = [sum(1 for r in routes.values() if min(rank[r.nodes[0]], rank[r.nodes[1]]) <= q < max(rank[r.nodes[0]],
+                                                                                                 rank[r.nodes[1]]))
+              for q in range(nl)]
+    cuts, _ = _choose(heights, cuttable, width_of, target, across=across)
     if not cuts:
         return False
     bounds = [-1] + cuts + [nl - 1]

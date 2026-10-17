@@ -13,7 +13,7 @@
 <text x="572.0" y="288" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">1</text>
 <line x1="716.0" y1="52" x2="716.0" y2="272" stroke="rgba(45,49,66,0.12)"/>
 <text x="716.0" y="288" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle">2</text>
-<line x1="428.0" y1="52" x2="428.0" y2="272" stroke="#7a8399" stroke-dasharray="3 3"/>
+<line x1="428.0" y1="52" x2="428.0" y2="272" stroke="#636c82" stroke-dasharray="3 3"/>
 <line x1="485.6" y1="107.0" x2="716.0" y2="107.0" stroke="#2e5aa8" stroke-width="1.4"/>
 <line x1="485.6" y1="103.0" x2="485.6" y2="111.0" stroke="#2e5aa8"/>
 <line x1="716.0" y1="103.0" x2="716.0" y2="111.0" stroke="#2e5aa8"/>

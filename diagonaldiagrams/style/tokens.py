@@ -16,7 +16,7 @@ from ..errors import SpecError
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "themes")
 PRESETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "presets")  # each preset's look, as rules
 THEME_NAMES = ("editorial", "ink", "print")
-V1_KEYS = ("paper", "ink", "muted", "soft", "rule", "accent", "accent_tint", "link", "card")
+V1_KEYS = ("paper", "ink", "muted", "soft", "rule", "accent", "accent_tint", "link", "card", "line")
 _SHEETS = {}
 _NAMES = []
 
@@ -59,7 +59,7 @@ def token_name(key):
 
 
 def v1_theme(name, overrides=None):
-    """The flat theme dict the renderers read: the nine color keys, with _name."""
+    """The flat theme dict the renderers read: the ten color keys, with _name."""
     t = tokens(name)
     out = {k: t[token_name(k)] for k in V1_KEYS}
     for k, v in (overrides or {}).items():

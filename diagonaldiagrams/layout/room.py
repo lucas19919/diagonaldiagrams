@@ -14,7 +14,7 @@ lines. A figure whose labels all fit draws exactly as before.
 
 Everything here is in the layered layout's top-to-bottom frame, after wrap and before any turn.
 """
-from ..route.labels import label_box, longest_segment, place_label
+from ..route.labels import GAP, label_box, longest_segment, place_label
 
 TITLE = 20.0  # a frame's title band, which diagrams.py keeps labels out of
 FAR = 1e9
@@ -72,8 +72,8 @@ def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, marg
                 canvas = _canvas(pos, info, frames, routes, reach, extra, min_width, margin)
             avoid = fixed + placed + canvas
             mx, my, vert = longest_segment(r.points, list(frames.values()))
-            c = place_label(mx, my, vert, None, r.points, avoid, soft, w)
-            box = label_box(c[0], c[1], None, c[2], c[3], w)
+            c = place_label(mx, my, vert, None, r.points, avoid, soft, w, GAP)
+            box = label_box(c[0], c[1], None, c[2], c[3], w, GAP)
             if attempt == 2 or not _hits(box, avoid):
                 break
             if not _open(mx, my, vert, w, fixed + placed, canvas, soft, pos, info, frames, routes, placed, extra, margin):
@@ -88,7 +88,7 @@ def _open(mx, my, vert, w, solid, canvas, soft, pos, info, frames, routes, place
     narrower strip. Returns True when something moved."""
     best = None
     for flip in (False, True):
-        b = label_box(mx, my, None, vert, flip, w)
+        b = label_box(mx, my, None, vert, flip, w, GAP)
         block = _hits(b, solid)
         edge = _hits(b, canvas)
         if all(a[0] > mx for a in block + edge):  # all on the right: push them right

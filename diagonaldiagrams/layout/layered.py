@@ -44,6 +44,7 @@ DEFAULTS = {
     "loop": 22.0,          # how far a self-loop stands out
     "back": "side",        # arrows going back up: "side" loops (flow) or "ports", top to bottom (arch)
     "wrap_layers": 12,     # fewer layers than this never wrap
+    "balance": False,      # center each node over what it calls, after Brandes-Köpf (arch)
 }
 _FLIP = {"n": "w", "s": "e", "w": "n", "e": "s"}
 
@@ -258,8 +259,9 @@ def layout(nodes, edges, groups=(), options=None):
                     key = frozenset((kids[i], kids[j]))
                     spread[key] = max(spread.get(key, 0.0), info[nid]["w"] + o["node_gap"])
 
-    # a labelled arrow within a layer whose ends have frame borders between them: the room it needs
-    # goes on the middle pair of the items between, on top of their own gaps
+    # a labelled arrow within a layer whose ends have frame borders, or arrows passing the layer,
+    # between them: the room it needs goes on the middle pair of the items between, on top of their
+    # own gaps
     extra = {}
     for (a, b), room in flat_room.items():
         if a not in L.layer_of or b not in L.layer_of or L.layer_of[a] != L.layer_of[b]:
@@ -267,13 +269,21 @@ def layout(nodes, edges, groups=(), options=None):
         layer = L.layers[L.layer_of[a]]
         i, j = sorted((layer.index(a), layer.index(b)))
         mid = layer[i:j + 1]
-        if j - i < 2 or any(L.kind[x] not in ("left", "right") for x in mid[1:-1]):
+        between = {L.kind[x] for x in mid[1:-1]}
+        if j - i < 2 or "node" in between:
             continue
-        # the label sits between two borders, never across one: the widest gap alone must hold it
         pairs = list(zip(mid, mid[1:]))
-        key = max(pairs, key=lambda xy: gap(*xy))
-        if room > gap(*key):
-            extra[key] = max(extra.get(key, 0.0), room - gap(*key))
+        if between <= {"left", "right"}:
+            # the label sits between two borders, never across one: the widest gap alone must hold it
+            key = max(pairs, key=lambda xy: gap(*xy))
+            if room > gap(*key):
+                extra[key] = max(extra.get(key, 0.0), room - gap(*key))
+        elif not between & {"left", "right"}:
+            # it may sit across a passing arrow (a soft obstacle), so the whole span must hold it
+            free = sum(width[x] / 2.0 + width[y] / 2.0 + gap(x, y) for x, y in pairs) - width[a] / 2.0 - width[b] / 2.0
+            if room > free:
+                key = pairs[len(pairs) // 2]
+                extra[key] = max(extra.get(key, 0.0), room - free)
 
     def sep(a, b):
         return max(width[a] / 2.0 + width[b] / 2.0 + gap(a, b) + extra.get((a, b), 0.0),
@@ -286,6 +296,8 @@ def layout(nodes, edges, groups=(), options=None):
     prev = o.get("prev") if direction == "TB" else None  # an earlier drawing's x per node: stay near it
     xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up,
                         {k: float(v) for k, v in prev.items() if k in info} if prev else None)
+    if o.get("balance"):  # arch: each node over what it calls (bk.balance)
+        xs = bk.balance(L.layers, L.up, L.down, L.kind, xs, sep)
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
     band_h = [max((info[it]["h"] for it in layer if L.kind[it] == "node"), default=0.0) for layer in L.layers]
@@ -576,9 +588,11 @@ class _Plan:
                 key_o = (round(mo, 3), min(str(t[0]) for t in outs))
                 key_i = (round(mi, 3), min(str(t[0]) for t in ins))
                 left, right = (outs, ins) if key_o <= key_i else (ins, outs)
-                for (eid, role, _), v in zip(left, _slots(len(left), -lim, -6.0, o["slot"])):
+                # packed from the middle out, so two boxes of different widths stacked on one center
+                # put their ends at the same x and the arrows between them run straight
+                for (eid, role, _), v in zip(left, [-x for x in reversed(_inward(len(left), 12.0, lim, o["slot"]))]):
                     self.offset[(eid, role)] = v
-                for (eid, role, _), v in zip(right, _slots(len(right), 6.0, lim, o["slot"])):
+                for (eid, role, _), v in zip(right, _inward(len(right), 12.0, lim, o["slot"])):
                     self.offset[(eid, role)] = v
             else:
                 group = outs + ins
@@ -987,6 +1001,13 @@ def _clean(pts):
         else:
             k += 1
     return out
+
+
+def _inward(n, near, far, most=22.0):
+    """n positions from near outward toward far, at most `most` apart (all within [near, far])."""
+    near = min(near, far)
+    gap = most if n <= 1 else min(most, (far - near) / (n - 1))
+    return [near + i * gap for i in range(n)]
 
 
 def _slots(n, lo, hi, most=22.0):

@@ -6,6 +6,7 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 
 - **Branches.** Each phase is a branch stacked on the one before: `master` (= origin/master, 0.5.0) → `p0-baseline` → `p1-package` → `p1b-bugs` → `p2-core` → `p3-style` → `p4-layout`.
   - Three slices sit on `p4-layout`, ahead of P5, each stacked on the one before: `slice-edit-animate` (edit a diagram in its page, apply the patch, animate the change), `slice-stories` (views of one figure in one page) and `slice-edit-hardening` (keyboard editing, moves along the layout's layers, messages, regeneration). `b29-fuzz` (the B29 fixes, also on `p4-layout`) is merged into `slice-stories`. `slice-edit-hardening` is current and holds everything.
+  - `claude/hungry-sanderson-6f4623`, one commit on `slice-edit-hardening`: the default look for flow, arch, seq and schema, which fixes B25 (DESIGN 8.5; the owner approved it on 2026-10-17). It is not merged into `slice-edit-hardening` yet.
   - The six phase branches are on GitHub since 2026-10-17, as a backup; the three slices and `b29-fuzz` are local only. None is merged into `master`, and there is no PR. Anyone who installs from the README still gets 0.5.0.
   - CI runs on pushes to `master` and on PRs, so the phase branches have not run in CI yet.
 - **Version.** 0.8.0 in `diagonaldiagrams/__init__.py`, `.claude-plugin/plugin.json` and `server.json` (they must match). Nothing past 0.5.0 has been released.
@@ -43,7 +44,6 @@ Next is the owner's call: draw pins in flow and arch (a layout feature: the laye
 
 ## Decisions that wait on the owner
 
-- **B25** (P8): the default themes miss WCAG AA (editorial `soft` 3.5:1, accent text 2.9:1, 7–8 px tags). Fixing it moves every default figure. Until then, the contrast and min-size checks judge only stylesheet-set values.
 - **Downloads:** font files for bundled metrics (Inter, Selawik, Roboto, Liberation Sans) and npm for the Pyodide check.
 - **Merging, pushing, releasing:** all theirs.
 - The defaults table in PLAN ("Decisions needed") applies wherever nobody has decided.

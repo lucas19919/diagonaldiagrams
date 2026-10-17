@@ -390,19 +390,20 @@ def _bold(st):
 _BOXED = {}  # box_text's answers by value: every draft of a figure lays out the same boxes
 
 
-def box_text(name, sub="", w=BOX_W, st=None):
+def box_text(name, sub="", w=BOX_W, st=None, pad=8):
     """A box's text laid out in its computed style (P3.6): (name lines, sub lines, label style,
     sub style), each line a list of (text, kind) runs, the styles carrying the size the text ended
-    up at and its line pitch. Nothing is cut unless the style asks for overflow: ellipsis. The
-    answer is shared between calls with the same text and style: read it, don't change it."""
+    up at and its line pitch. Nothing is cut unless the style asks for overflow: ellipsis. Lines wrap
+    at w less pad on each side. The answer is shared between calls with the same text and style: read
+    it, don't change it."""
     label, subst = (st or {}).get("label") or {}, (st or {}).get("sub") or {}
     try:
-        key = (name, sub, w, tuple(label.items()), tuple(subst.items()))
+        key = (name, sub, w, pad, tuple(label.items()), tuple(subst.items()))
         hit = _BOXED.get(key)
     except TypeError:  # a style value that can't be a key: lay it out every time
         key, hit = None, None
     if hit is None:
-        hit = _box_text(name, sub, w, label, subst)
+        hit = _box_text(name, sub, w - 2 * pad, label, subst)
         if key is not None:
             if len(_BOXED) > 8192:
                 _BOXED.clear()
@@ -410,15 +411,15 @@ def box_text(name, sub="", w=BOX_W, st=None):
     return hit
 
 
-def _box_text(name, sub, w, label, subst):
+def _box_text(name, sub, room, label, subst):
     from .text.measure import line_height, wrap
     lab = dict(BOX_LABEL, **{k: v for k, v in label.items() if v is not None})
     sb = dict(BOX_SUB, **{k: v for k, v in subst.items() if v is not None})
-    nl, lab["font-size"] = wrap(name, w - 16, lab["font-size"], _bold(lab), lab.get("max-lines"), lab.get("overflow") or "wrap",
+    nl, lab["font-size"] = wrap(name, room, lab["font-size"], _bold(lab), lab.get("max-lines"), lab.get("overflow") or "wrap",
                                 lab.get("font"))
     sl = []
     if sub:
-        sl, sb["font-size"] = wrap(sub, w - 16, sb["font-size"], _bold(sb), sb.get("max-lines"), sb.get("overflow") or "wrap",
+        sl, sb["font-size"] = wrap(sub, room, sb["font-size"], _bold(sb), sb.get("max-lines"), sb.get("overflow") or "wrap",
                                    sb.get("font"))
     lab["pitch"] = line_height(lab, 1.25)
     sb["pitch"] = line_height(sb, 4 / 3)
@@ -467,11 +468,12 @@ _FA_ICONS = {"user": "user", "users": "user", "person": "user", "database": "dat
              "shield": "shield", "bolt": "bolt", "list": "queue", "inbox": "queue"}
 
 
-def diamond_text(name, st=None):
-    """A decision's question laid out in its style: (lines of runs, label style with its pitch)."""
+def diamond_text(name, st=None, room=100):
+    """A decision's question laid out in its style, wrapped at room: (lines of runs, label style with its
+    pitch)."""
     from .text.measure import line_height, wrap
     lab = dict(BOX_LABEL, **{k: v for k, v in ((st or {}).get("label") or {}).items() if v is not None})
-    lines, lab["font-size"] = wrap(name, 100, lab["font-size"], _bold(lab), lab.get("max-lines"),
+    lines, lab["font-size"] = wrap(name, room, lab["font-size"], _bold(lab), lab.get("max-lines"),
                                    lab.get("overflow") or "wrap", lab.get("font"))
     lab["pitch"] = line_height(lab, 1.25)
     return lines, lab
@@ -481,9 +483,9 @@ def _diamond_lines(name, st=None):
     return ["".join(t for t, _ in line) for line in diamond_text(name, st)[0]]
 
 
-def _diamond_h(name, st=None):
+def _diamond_h(name, st=None, room=100):
     """64 for one line, and four thirds of a line's pitch more for each line after (84, 104, ...)."""
-    lines, lab = diamond_text(name, st)
+    lines, lab = diamond_text(name, st, room)
     return round(64 * lab["font-size"] / 12) + (len(lines) - 1) * lab["pitch"] * 4 / 3
 
 

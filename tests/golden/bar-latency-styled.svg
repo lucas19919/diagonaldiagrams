@@ -3,11 +3,11 @@
 <rect width="760" height="500" fill="#ffffff"/>
 <text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Latency</text>
 <text x="36" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">p99</text>
-<text x="82" y="403.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end">0</text>
-<text x="82" y="318.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end">100</text>
-<text x="82" y="233.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end">200</text>
-<text x="82" y="148.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end">300</text>
-<text x="82" y="63.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end">400</text>
+<text x="82" y="403.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
+<text x="82" y="318.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">100</text>
+<text x="82" y="233.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">200</text>
+<text x="82" y="148.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">300</text>
+<text x="82" y="63.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">400</text>
 <line x1="90" y1="400.0" x2="712" y2="400.0" stroke="#2d3142" stroke-width="1.2"/>
 <line x1="90" y1="60" x2="90" y2="400" stroke="#2d3142" stroke-width="1.2"/>
 <path d="M128.2,400.0 L128.2,370.3 Q128.2,364.3 134.2,364.3 L170.2,364.3 Q176.2,364.3 176.2,370.3 L176.2,400.0 Z" fill="#2e5aa8" fill-opacity="0.85"><title>Auth Service: 42</title></path>
@@ -22,5 +22,5 @@
 <text x="649.8" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Analytics Ingest</text>
 <text x="401.0" y="458.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Service</text>
 <text x="22" y="230.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 22,230.0)">p99 Latency ms</text>
-<text x="36" y="486" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399">5 bars</text>
+<text x="36" y="486" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">5 bars</text>
 </svg>

@@ -5,8 +5,9 @@ draft is audited and redrawn. `engine="v1"` (`--layout-engine v1`) draws with th
 loops (legacy.py) until P8.
 """
 from . import paint
-from ._draw import _box_h, _diamond_h, _groups_of, _label_box, _pill_w, _place_label, _round_poly, _seg_boxes, corner_rx
+from ._draw import _bold, _groups_of, _round_poly, _seg_boxes, corner_rx
 from ._theme import THEME
+from .route.labels import GAP, label_box, place_label
 from .scene.ids import edge_ids
 from .style.styler import Styler
 
@@ -32,19 +33,71 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), em
         st = sty.node(n.get("id"))
         n["shape"] = st["computed"].get("shape") or n.get("shape", "rect")
         sh = n["shape"]
-        n["_h"] = 8 if sh == "dot" else (_diamond_h(n["name"], st) if sh == "diamond" else
-                                         _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=st))
-        n["_w"] = 8 if sh == "dot" else 160
+        if str(n.get("tag", "")).strip().lower() in SAID_BY_SHAPE.get(sh, ()):
+            n["tag"] = ""  # STEP on a box, END on a rounded box: the shape and the legend say it already
+        if sh == "dot":
+            n["_w"] = n["_h"] = 8
+        elif sh == "diamond":
+            n["_w"], n["_h"], n["_room"] = paint.diamond_size(n["name"], st)
+        else:
+            n["_w"], n["_h"], n["_pad"] = paint.box_size(n["name"], n.get("sub", ""), n.get("tag", ""), n.get("icon"), st)
         if auto:
             n.pop("rank", None)
         nodes.append(n)
+    _even_widths(nodes, sty)
     shapes = {n["shape"] for n in nodes}
-    dr, W, H, extra = _layered(spec, "flow", nodes, t, sty, corners, {"trunk": True, "rank_gap": 64.0, "min_width": 720 - 2 * MARGIN,
-                                                                      "prev": prev}, 720, "flow diagram", info=info)
-    _legend(dr, t, sty, W, H, extra, 48, 32, _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"),
-                                                   ("diamond" in shapes, "diamond = decision"),
-                                                   ("oval" in shapes, "rounded = start or end")), spec)
+    sentence = _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"), ("diamond" in shapes, "diamond = decision"),
+                        ("oval" in shapes, "rounded = start or end"))
+    min_w = _min_width(spec, t, sty, sentence)
+    dr, W, H, extra = _layered(spec, "flow", nodes, t, sty, corners, {"trunk": True, "rank_gap": 48.0, "min_width": min_w - 2 * MARGIN,
+                                                                      "prev": prev}, min_w, "flow diagram", info=info,
+                               legend=bool(sentence))
+    _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
     return _as_svg((dr, W, H), sty, embed)
+
+
+def _even_widths(nodes, sty, spread=4 / 3):
+    """Boxes whose fitted widths are close (the widest at most `spread` times the narrowest) all take the
+    widest, so a figure of similar names reads as a grid. Each keeps where its text wraps. A box whose
+    style sets its width keeps that width."""
+    boxes = [n for n in nodes if "_pad" in n and not sty.node(n["id"])["computed"].get("width")]
+    if len(boxes) < 2:
+        return
+    widest = max(n["_w"] for n in boxes)
+    if widest > spread * min(n["_w"] for n in boxes):
+        return
+    for n in boxes:
+        n["_pad"] = (widest - (n["_w"] - 2 * n["_pad"])) / 2.0
+        n["_w"] = widest
+
+
+# tags a flow leaves out: the box's shape, and the legend under it, already say what they say
+SAID_BY_SHAPE = {"rect": ("step", "process"), "oval": ("start", "end", "begin", "stop"), "diamond": ("decision",)}
+LEGEND_RULE, LEGEND_TEXT = 40, 22  # how far above the bottom the legend's rule and its sentence sit
+
+
+def _min_width(spec, t, sty, sentence, floor=240, rows_up_to=660):
+    """The least width of a figure: what its title, subtitle, eyebrow and legend sentence need, each on
+    one line beside the margins, and its legend's swatches on one row if that row is at most rows_up_to
+    wide. A figure is otherwise only as wide as what it draws."""
+    from .text.measure import width
+    fig = sty.figure()
+    need = floor - 2 * MARGIN
+    row = sum(w for w, _ in paint._legend_items(sty.legend_entries(), t))
+    if row <= rows_up_to:
+        need = max(need, row)
+    for text, st in ((spec.get("title"), fig["title"]), (spec.get("sub"), fig["sub"]), (spec.get("figure"), fig["eyebrow"]),
+                     (sentence, fig["legend"])):
+        if text:
+            text = paint.transformed(str(text), st)
+            need = max(need, width(text, st["font-size"], _bold(st), "", st.get("font")) * 1.04)
+    return int(need + 2 * MARGIN + 0.999)
+
+
+def _label_w(text, st):
+    """An arrow label's pill: the text as its style measures it, and 4 px either side."""
+    from .text.measure import width
+    return float(int(width(text, st["font-size"], _bold(st), "", st.get("font")) + 8.999))
 
 
 def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None, prev=None, info=None):
@@ -61,32 +114,38 @@ def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, e
         n = dict(n)
         n.setdefault("name", n.get("id", ""))
         n["shape"] = "rect"
-        n["_h"] = _box_h(n["name"], n.get("sub", ""), n.get("tag", "") or n.get("icon", ""), st=sty.node(n["id"]))
-        n["_w"] = 160
+        n["_w"], n["_h"], n["_pad"] = paint.box_size(n["name"], n.get("sub", ""), n.get("tag", ""), n.get("icon"),
+                                                     sty.node(n["id"]))
         if layered:
             n["rank"] = n.get("layer", n.get("rank", 0))
         nodes.append(n)
+    _even_widths(nodes, sty)
     edges = spec.get("edges", [])
     eids = edge_ids(edges)
-    dr, W, H, extra = _layered(spec, "arch", nodes, t, sty, corners, {"rank_gap": 100.0, "back": "ports", "min_width": 760 - 2 * MARGIN,
-                                                                      "prev": prev}, 760, "architecture diagram", info=info)
     http = _first(range(len(edges)), lambda i: str(edges[i].get("proto", "")).startswith("http"))
     focal_node = _first(nodes, lambda n: n.get("focal"))
     focal_edge = _first(range(len(edges)), lambda i: edges[i].get("focal"))
     hi = sty.node(focal_node["id"])["stroke"] if focal_node else (sty.edge(eids[focal_edge])["stroke"] if focal_edge is not None else None)
-    _legend(dr, t, sty, W, H, extra, 48, 32, _phrases(
+    sentence = _phrases(
         (http is not None, f"{paint.color_word(sty.edge(eids[http])['stroke'])} = HTTP call" if http is not None else ""),
         (any(e.get("async") for e in edges), "dashed = sent in the background"),
-        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else ""))
+    min_w = _min_width(spec, t, sty, sentence)
+    dr, W, H, extra = _layered(spec, "arch", nodes, t, sty, corners, {"rank_gap": 64.0, "back": "ports", "balance": True, "min_width": min_w - 2 * MARGIN,
+                                                                      "prev": prev}, min_w, "architecture diagram", info=info,
+                               legend=bool(sentence))
+    _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
     return _as_svg((dr, W, H), sty, embed)
 
 
 def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=None, pins=None, paint_node=None,
-             tails=True, attach=None, a11y_kind="arrow", info=None):
+             tails=True, attach=None, a11y_kind="arrow", info=None, legend=True):
     """Lays out and paints a flow, arch or schema figure, all but its legend: (Drawing, W, H, legend
     rows). edges: the spec's edges unless given; pins: {edge index: (from_at, to_at)}, ends kept at an
     offset along their sides (a schema's column rows); paint_node(nid, node, cx, cy): its elements,
-    else the node's shape; attach(edge, route): the ends' attachment for exports and the audit."""
+    else the node's shape; attach(edge, route): the ends' attachment for exports and the audit. legend: a
+    sentence goes under the figure. An arrow gets a dot where it leaves its box only when its style asks
+    (marker-start: circle)."""
     from .layout import layered
     edges = spec.get("edges", []) if edges is None else edges
     eids = edge_ids(edges)
@@ -97,10 +156,9 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     flat_room, label_w = {}, {}
     for i, e in enumerate(edges):  # a labelled arrow between neighbors in a layer needs room for its label
         if e.get("label") and e.get("from") in ids and e.get("to") in ids:
-            text = paint.transformed(e["label"], sty.edge(eids[i])["label"])
-            box = _label_box(0, 0, text)
-            flat_room[(e["from"], e["to"])] = box[2] - box[0] + 24
-            label_w[eids[i]] = box[2] - box[0]
+            ls = sty.edge(eids[i])["label"]
+            label_w[eids[i]] = _label_w(paint.transformed(e["label"], ls), ls)
+            flat_room[(e["from"], e["to"])] = label_w[eids[i]] + 24
     lnodes = []
     for n in nodes:
         d = {"id": n["id"], "w": n["_w"], "h": n["_h"], "shape": n["shape"]}
@@ -141,7 +199,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     notes = (spec.get("notes", []) or [])[:2]
     cw, ch = res.size
     W = max(min_w, int(cw + 2 * MARGIN + 0.999))
-    top = max(90, head_h + 20)
+    top = max(MARGIN, head_h + 12)
     ox, oy = (W - cw) / 2.0, float(top)
     by_id = {n["id"]: n for n in nodes}
     pos = {nid: (x + ox, y + oy, by_id[nid]) for nid, (x, y) in res.pos.items()}
@@ -153,7 +211,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     if notes:
         low = max(low, top + 14 + max(0, len(notes) - 1) * 92 + 52)
         W += 200
-    H = int(low + 84)
+    H = int(low + (64 if legend else MARGIN))
     extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", kind), spec.get("sub", spec.get("title", kind)), kind=label)
@@ -164,7 +222,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
             dr.add(*paint_node(nid, n, cx, cy))
             continue
         painter = paint.SHAPES.get(n.get("shape", "rect")) or paint.SHAPES.get("rect")  # unknown: a box, as v1 draws it
-        dr.add(*painter(t, nid, n, cx, cy, 160, n["_h"], corners, st=sty.node(nid)))
+        dr.add(*painter(t, nid, n, cx, cy, n["_w"], n["_h"], corners, st=sty.node(nid)))
     node_boxes = [(cx - n["_w"] / 2, cy - n["_h"] / 2, cx + n["_w"] / 2, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
     strips = []
     for x0, y0, x1, y1 in frames.values():  # labels sit inside or outside a frame, not on its border
@@ -188,7 +246,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
         path.attach = attach(e, r) if attach else {"from": {"node": e.get("from"), "port": r.sides[0]},
                                                      "to": {"node": e.get("to"), "port": r.sides[1]}}
         dr.add(path)
-        if tails and e.get("from") != e.get("to"):
+        if tails and e.get("from") != e.get("to") and es["computed"].get("marker-start") == "circle":
             dr.add(paint.tail(pts[0][0], pts[0][1], r.sides[0], col, eid))
         drawn.append((e, eid, es, pts, _seg_boxes(pts)))
     _more_markers(dr, sty)
@@ -196,7 +254,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                                            boxes=frames))
     # labels last, once every arrow is down: each keeps clear of boxes, frames, the labels placed and
     # the canvas edge, and of other arrows where it can
-    canvas = [(-40, 0, 0, H), (W, 0, W + 40, H), (0, -40, W, 0), (0, H - extra - 40, W, H)]
+    canvas = [(-40, 0, 0, H), (W, 0, W + 40, H), (0, -40, W, 0), (0, oy + ch + 22, W, H)]
     label_boxes = []
     for k, (e, eid, es, pts, segs) in enumerate(drawn):
         if not e.get("label"):
@@ -204,9 +262,12 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
         text = paint.transformed(e["label"], es["label"])
         mx, my, vert = _longest(pts, frames.values())
         others = [b for x in drawn for b in x[4]]  # its own arrow too: a label never sits on it
-        lx, ly, vert, flip = _place_label(mx, my, vert, text, pts, node_boxes + label_boxes + strips + canvas, others)
-        dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vert, flip=flip, owner=eid, st=es["label"], pill=es["paper"]))
-        label_boxes.append(_label_box(lx, ly, text, vert, flip))
+        w = _label_w(text, es["label"])
+        lx, ly, vert, flip = place_label(mx, my, vert, text, pts, node_boxes + label_boxes + strips + canvas, others, w, GAP)
+        box = label_box(lx, ly, text, vert, flip, w, GAP)
+        dr.add(*paint.arrow_label(t, lx, ly, text, vertical=vert, flip=flip, owner=eid, st=es["label"],
+                                  pill=_ground(box, es["paper"], frames, sty), w=w, gap=GAP))
+        label_boxes.append(box)
     if notes:
         rail = []
         for nt in notes:
@@ -216,6 +277,25 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
         dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
     _owned_opacity(dr, sty)
     return dr, W, H, extra
+
+
+def _ground(box, paper, frames, sty):
+    """The color under a label's pill: the paper, seen through every frame the pill sits in, so the pill
+    masks the arrows it crosses without showing as a patch."""
+    from .style.parse import Color, color
+    cx, cy = (box[0] + box[2]) / 2.0, (box[1] + box[3]) / 2.0
+    inside = [(g, b) for g, b in frames.items() if b[0] < cx < b[2] and b[1] < cy < b[3]]
+    if not inside:
+        return paper
+    try:
+        out = color(paper)
+        for g, _ in sorted(inside, key=lambda gb: -(gb[1][2] - gb[1][0]) * (gb[1][3] - gb[1][1])):  # outermost first
+            f = color(sty.group(g)["fill"])
+            a = f.a * 0.35  # paint.group_frames draws the fill at this opacity
+            out = Color(round(out.r + (f.r - out.r) * a), round(out.g + (f.g - out.g) * a), round(out.b + (f.b - out.b) * a))
+        return out.css
+    except Exception:
+        return paper
 
 
 def _owned_opacity(dr, sty):
@@ -346,23 +426,43 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
     _notes = (spec.get("notes", []) or [])[:2]
     head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure(), eyebrow=spec.get("figure"))
 
-    def label_w(m):
-        lbl = m.get("label") or ""
-        if m.get("proto"):
-            lbl = f"[{m['proto'].upper()}] {lbl}"
-        return _pill_w(lbl.upper())
+    mids = edge_ids(messages)
 
-    def box_h(a):  # actor boxes share one height, grown when a name, styled or long, needs it
-        nl_, sl_, lab_, sb_ = paint.box_text(a.get("name", a.get("id", "")), a.get("sub", ""), 140, sty.node(a.get("id")))
-        block = lab_["pitch"] * len(nl_) + (sb_["pitch"] * len(sl_) + 2 if sl_ else 0)
-        return (20 if a.get("tag") else 8) + block + 3
-    res = sequence.layout([{"id": a["id"], "w": 140, "h": box_h(a)} for a in actors],
-                          [{"from": m.get("from"), "to": m.get("to"), "label_w": label_w(m)} for m in messages],
-                          {"top": max(90, head_h + 16)})
-    W, H = res.size
-    W += 200 if _notes else 0
+    def text_of(m):
+        lbl = m.get("label") or ""
+        return f"[{m['proto'].upper()}] {lbl}" if m.get("proto") else lbl
+
+    def label_w(i, m):
+        return _label_w(paint.transformed(text_of(m), sty.edge(mids[i])["label"]), sty.edge(mids[i])["label"])
+
+    # actor boxes share one size: the widest and tallest any actor's text needs
+    sizes = [paint.box_size(a.get("name", a.get("id", "")), a.get("sub", ""), a.get("tag", ""), None, sty.node(a.get("id")))
+             for a in actors]
+    bw = max([s_[0] for s_ in sizes] or [140])
+    sizes = {a["id"]: paint.box_size(a.get("name", a.get("id", "")), a.get("sub", ""), a.get("tag", ""), None,
+                                     dict(sty.node(a.get("id")), computed={"width": bw})) for a in actors}
+    hs = [sizes[a["id"]][1] for a in actors]
+    http = _first(range(len(messages)), lambda i: str(messages[i].get("proto", "")).startswith("http"))
+    focal_actor = _first(actors, lambda a: a.get("focal"))
+    focal_msg = _first(range(len(messages)), lambda i: messages[i].get("focal"))
+    hi = sty.node(focal_actor["id"])["stroke"] if focal_actor else (sty.edge(mids[focal_msg])["stroke"] if focal_msg is not None else None)
+    sentence = _phrases(
+        (any(not (m.get("reply") or m.get("async")) for m in messages), "solid = call"),
+        (any(m.get("reply") or m.get("async") for m in messages), "dashed = reply or event"),
+        (http is not None, f"{paint.color_word(sty.edge(mids[http])['stroke'])} = HTTP" if http is not None else ""),
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else ""))
+    res = sequence.layout([{"id": a["id"], "w": bw, "h": h_} for a, h_ in zip(actors, hs)],
+                          [{"from": m.get("from"), "to": m.get("to"), "label_w": label_w(i, m)} for i, m in enumerate(messages)],
+                          {"top": max(MARGIN, head_h + 12), "margin": MARGIN, "pitch": bw + 48, "label_pad": 32, "box_h": MIN_ACTOR_H,
+                           "gap": 32, "step": 44, "bottom": 0})
     pos = {a["id"]: (res.x[a["id"]], a) for a in actors}
     top, bh = res.top, res.box_h
+    end = (res.y[-1] if messages else top + bh) + 24  # where the lifelines stop: just past the last message
+    reach = [pos[m["from"]][0] + LOOP_W + GAP + label_w(i, m) for i, m in enumerate(messages)
+             if m.get("from") == m.get("to") and m.get("from") in pos and m.get("label")]
+    W = max([res.size[0], _min_width(spec, t, sty, sentence)] + [int(x + MARGIN + 0.999) for x in reach])
+    H = end + (56 if sentence else MARGIN)
+    W += 200 if _notes else 0
     extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")),
@@ -370,10 +470,9 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     # Lifelines
     for aid, (cx, a) in pos.items():
-        dr.add(paint.el("line", owner=aid, role="actor.lifeline", x1=cx, y1=top + bh, x2=cx, y2=H - 50, stroke=t["rule"],
-                        stroke_width=1.2, stroke_dasharray="4,4"))
+        dr.add(paint.el("line", owner=aid, role="actor.lifeline", x1=cx, y1=top + bh, x2=cx, y2=end, stroke=t["line"],
+                        stroke_opacity=".6", stroke_width=1, stroke_dasharray="3,4"))
     # Messages
-    mids = edge_ids(messages)
     for i, m in enumerate(messages):
         f_id = m.get("from")
         t_id = m.get("to")
@@ -394,54 +493,44 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
                         + (f": {m['label']}" if m.get("label") else ""), "kind": "message"}
         if f_id == t_id:
             # Self-call loop
-            lw = 32
+            lw = LOOP_W
             dr.add(paint.el("path", owner=owner, role="message.path", a11y=said,
                             d=f"M{x1},{my} L{x1 + lw},{my} L{x1 + lw},{my + 20} L{x1 + 4},{my + 20}",
                             fill="none", stroke=col, stroke_width=es["stroke-width"] * 1.5 / 1.6,  # a loop draws a touch finer
                             **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
-                dr.add(*paint.arrow_label(t, x1 + lw + max(20, len(m["label"]) * 3.5), my + 10,
-                                          paint.transformed(m["label"], es["label"]), owner=owner, st=es["label"],
-                                          pill=es["paper"]))
+                dr.add(*paint.arrow_label(t, x1 + lw, my + 10, paint.transformed(m["label"], es["label"]), vertical=True,
+                                          owner=owner, st=es["label"], pill=es["paper"], w=label_w(i, m), gap=GAP))
         else:
             direction = 1 if x2 >= x1 else -1
-            x_from = x1 + direction * 8
-            x_to = x2 - direction * 8
+            x_from = x1 + direction * 1.5  # from the lifeline, the arrowhead's tip on the other one
+            x_to = x2 - direction * 1
             dr.add(paint.el("line", owner=owner, role="message.path", a11y=said, x1=x_from, y1=my, x2=x_to, y2=my, stroke=col,
                             stroke_width=es["stroke-width"], **{k.replace("-", "_"): v for k, v in look.items()}))
             if m.get("label"):
-                lbl = m["label"]
-                if m.get("proto"):
-                    lbl = f"[{m['proto'].upper()}] {lbl}"
-                dr.add(*paint.arrow_label(t, (x1 + x2) / 2, my, paint.transformed(lbl, es["label"]), owner=owner,
-                                          st=es["label"], pill=es["paper"]))
+                dr.add(*paint.arrow_label(t, (x1 + x2) / 2, my, paint.transformed(text_of(m), es["label"]), owner=owner,
+                                          st=es["label"], pill=es["paper"], w=label_w(i, m), gap=GAP))
     _more_markers(dr, sty)
     # Actor boxes at top
     for aid, (cx, a) in pos.items():
-        bw = 140
         bx, by = cx - bw / 2, top
         dr.add(*paint.named(paint.node_box(t, bx, by, bw, bh, a.get("name", aid), a.get("sub", ""), a.get("tag", ""),
-                                           a.get("focal", False), corners, aid, st=sty.node(aid)), "actor",
+                                           a.get("focal", False), corners, aid, st=sty.node(aid), pad=sizes[aid][2]), "actor",
                             paint.node_name(a, aid)))
     if _notes:
         rail = []
         for nt in _notes:
             if nt.get("at") in pos:
                 cx, _a = pos[nt["at"]]
-                rail.append((cx + 70, top + 26, nt["text"]))
+                rail.append((cx + bw / 2, top + bh / 2, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
-    http = _first(range(len(messages)), lambda i: str(messages[i].get("proto", "")).startswith("http"))
-    focal_actor = _first(actors, lambda a: a.get("focal"))
-    focal_msg = _first(range(len(messages)), lambda i: messages[i].get("focal"))
-    hi = sty.node(focal_actor["id"])["stroke"] if focal_actor else (sty.edge(mids[focal_msg])["stroke"] if focal_msg is not None else None)
-    _legend(dr, t, sty, W, H, extra, 38, 24, _phrases(
-        (any(not (m.get("reply") or m.get("async")) for m in messages), "solid = call"),
-        (any(m.get("reply") or m.get("async") for m in messages), "dashed = reply or event"),
-        (http is not None, f"{paint.color_word(sty.edge(mids[http])['stroke'])} = HTTP" if http is not None else ""),
-        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
+    _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
     _owned_opacity(dr, sty)
     _fonts(dr, sty, embed)
     return dr.svg(), W, H
+
+
+LOOP_W, MIN_ACTOR_H = 32, 40  # how far a self-call's loop stands out; an actor box's least height
 
 
 TABLE_W, ROW_H = 240, 24  # a table card's width and the pitch of its column rows (paint.table_card)
@@ -470,7 +559,7 @@ def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False,
     pins = {i: (rows.get(r.get("from"), {}).get(r.get("from_col")), rows.get(r.get("to"), {}).get(r.get("to_col")))
             for i, r in enumerate(relations)}
     # the gap between columns fits the widest relation label
-    widest = max((_pill_w(paint.transformed(str(r["label"]), sty.edge(rids[i])["label"]))
+    widest = max((_label_w(paint.transformed(str(r["label"]), sty.edge(rids[i])["label"]), sty.edge(rids[i])["label"])
                   for i, r in enumerate(relations) if r.get("label")), default=0)
     options = {"direction": "LR", "back": "ports", "rank_gap": float(min(170, max(70, widest + 36)))}
 
@@ -480,15 +569,18 @@ def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False,
 
     def attach(e, r):
         return {"from": {"node": e.get("from"), "port": e.get("from_col")}, "to": {"node": e.get("to"), "port": e.get("to_col")}}
-    dr, W, H, extra = _layered(spec, "schema", nodes, t, sty, corners, options, 780, "database schema", edges=relations,
-                               pins=pins, paint_node=card, tails=False, attach=attach, a11y_kind="relation", info=info)
     cols = [c for tb in tables for c in tb.get("columns", [])]
     focal_tbl = _first(tables, lambda tb: tb.get("focal"))
     focal_rel = _first(range(len(relations)), lambda i: relations[i].get("focal"))
     hi = sty.node(focal_tbl["id"])["stroke"] if focal_tbl else (sty.edge(rids[focal_rel])["stroke"] if focal_rel is not None else None)
-    _legend(dr, t, sty, W, H, extra, 38, 24, _phrases(
+    sentence = _phrases(
         (any(c.get("pk") for c in cols), "PK = primary key"),
         (any(c.get("fk") for c in cols), "FK = foreign key"),
         (bool(relations), f"{paint.color_word(sty.edge(rids[0])['stroke'])} = relation" if relations else ""),
-        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else ""))
+    min_w = _min_width(spec, t, sty, sentence)
+    dr, W, H, extra = _layered(spec, "schema", nodes, t, sty, corners, dict(options, min_width=min_w - 2 * MARGIN), min_w,
+                               "database schema", edges=relations, pins=pins, paint_node=card, tails=False, attach=attach,
+                               a11y_kind="relation", info=info, legend=bool(sentence))
+    _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
     return _as_svg((dr, W, H), sty, embed)

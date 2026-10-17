@@ -44,7 +44,7 @@ DESCRIBE = {
         "input": "JSON spec {title, sub, nodes[], edges[], groups[]}",
         "writes": "diagonaldiagrams flow SPEC.json -o OUT.svg",
         "node": {"id": "unique", "shape": "oval=start/end | rect=step | diamond=decision | dot=merge",
-                 "name": "2-4 words", "tag": "STEP|START|END", "sub": "mono sublabel", "rank": "row, 0 at the top (default: automatic)",
+                 "name": "2-4 words", "tag": "optional kind, e.g. MANUAL (not STEP/START/END: the shape says it)", "sub": "mono sublabel", "rank": "row, 0 at the top (default: automatic)",
                  "lane": "-1 left|0 center|1 right (default 0)", "focal": "bool, max 2 per diagram"},
         "edge": {"from": "id", "to": "id", "label": "ALWAYS label decision exits", "focal": "happy-path bool"},
         "rules": ["top-down; a decision's branches sit side by side, loops draw back up the outside", "diamond ≤3 exits (nest for more)", "orthogonal elbows only",

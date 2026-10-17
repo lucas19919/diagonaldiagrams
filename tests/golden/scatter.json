@@ -8,7 +8,7 @@
   "expr"
  ],
  "exit": 0,
- "html_sha256": "a655b417bf4ec7c1579457acb4d779294e85aca85cacd5b0721ac58766051409",
+ "html_sha256": "364a41625444b9437b1b81cef8434f0b855cc7467569d84c46365244ec87fe2a",
  "receipt": {
   "caption": "Relationship between the two variables. Points show individual observations.",
   "cmd": "scatter",
