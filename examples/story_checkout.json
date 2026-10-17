@@ -1,0 +1,14 @@
+{
+  "title": "Checkout platform",
+  "figure": {"type": "arch", "spec": "checkout_platform.json"},
+  "views": [
+    {"id": "platform", "title": "The platform",
+     "text": "Two apps call one gateway. Four services sit behind it, and everything downstream hangs off events."},
+    {"id": "checkout", "title": "One checkout, end to end",
+     "text": "The request goes from the web app through the gateway to Orders and Payments, then out to Stripe. Events flow to the bus in the background.",
+     "dim": "#mobile, #auth, #catalog, #redis, edge[from=mobile], edge[to=auth], edge[to=catalog], edge[to=redis]",
+     "motion": [{"trace": "web -> gw -> orders -> pay -> stripe"},
+                {"flow": "edge[async]"}],
+     "notes": "The packet follows the arrows as the layout routed them. P pauses it."}
+  ]
+}

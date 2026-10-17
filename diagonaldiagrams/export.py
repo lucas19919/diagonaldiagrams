@@ -42,8 +42,9 @@ def _browser():
     return None
 
 
-def _raster_svg(svg, dest, kind, width_hint):
+def _raster_svg(svg, dest, kind, width_hint, scale=2):
     """Write a PNG or PDF of the SVG. Cairo if it imports, otherwise Edge or Chrome headless.
+    scale is the browser's pixels per SVG unit (cairo takes width_hint as the width).
     Returns (how, why): how is "cairosvg" or "browser", or None with why it failed."""
     import re, shutil, subprocess, tempfile
     m = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg)
@@ -75,7 +76,7 @@ def _raster_svg(svg, dest, kind, width_hint):
                "--no-pdf-header-footer", f"--print-to-pdf={dest_abs}", url]
     else:
         cmd = [browser, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-               "--force-device-scale-factor=2", f"--user-data-dir={profile}",
+               f"--force-device-scale-factor={scale}", f"--user-data-dir={profile}",
                f"--window-size={w},{h}", f"--screenshot={dest_abs}", url]
     import time
     if os.path.exists(dest_abs):

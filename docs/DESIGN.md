@@ -1133,6 +1133,68 @@ A story is a list of views of one or more scenes:
 - **The page.** Arrows, Space, Page Up/Down, Home and End move; N shows the notes; `#view` or `#view/step` links open a frame; printing gives a page per frame with its camera; reduced motion turns the motion off.
 - **Not yet:** several figures in one story, `show`, per-view annotations and style rules, pages and content blocks (21.1), a presenter view with a timer, PDF export.
 
+#### 21.2.1 Motion from meaning
+
+A view can move. The agent names what moves in a few words. The engine works out the timing from the figure's structure and its drawn routes, so nobody writes keyframes.
+
+```jsonc
+{ "id": "checkout", "title": "One checkout, end to end",
+  "motion": [
+    { "trace": "web -> gw -> orders -> pay -> stripe" },
+    { "flow": "edge[async]" }
+  ] }
+```
+
+**Two verbs.**
+- `trace`: a path of box ids joined by `->`, or a list of ids. A packet leaves the first box and runs along each arrow's real route. Each arrow lights up behind it, and each box it reaches pulses. The lit path holds, then fades, and the loop starts again. A hop may run against an arrow (a reply); the packet then runs back along it.
+  - Options: `speed` (px per second, default 320), `hold` (seconds the lit path stays, default 1.2), `packet` (`dot` or `dash`), `color` (a theme token or a color, default `accent`).
+- `flow`: a selector of arrows, as in `dim`. Dots run along each arrow, in its direction, without end.
+  - Options: `speed` (px per second, default 60), `gap` (px between dots, default 24), `color` (default `link`).
+
+**Timing.**
+- A hop takes its route's length over `speed`, and at least 0.45 s. The packet eases out of a box and into the next, and rests 0.2 s in each box between hops.
+- Traces play one after another, in list order. Their total is the loop. With flows only, the loop is 3 s.
+- A flow's speed is nudged so a whole number of gaps passes in one loop. Every loop then ends where it began, so it repeats without a seam.
+- The engine resolves the block into a schedule: each arrow's route as a polyline (the drawn path's `d`, curves flattened), with its lengths, and each event's start and end. The page and the exporter only evaluate that schedule at a time t. Each evaluator is a few dozen lines, and a test holds the two equal.
+
+**Drawing.**
+- Motion draws in a layer above the figure, `<g data-motion>`: lit copies of arrows, packets, rings and dots. The figure itself is never restyled, so static renders, and every golden file, stay byte-identical.
+- Motion composes with the view's looks. Dim the rest, and the trace stands out.
+- Under reduced motion the page draws one still moment: the path lit, and no packets.
+
+**Export.**
+- Frame k of n is the view's frame SVG plus the motion layer at t = k × loop / n, with n = round(loop × fps). Frame n would be frame 0 again, so the loop is seamless.
+- Frames rasterize through the PNG export path (cairosvg, else headless Edge or Chrome), at 1× for a GIF.
+- `gif.py` writes the GIF in pure Python. The palette comes from sample frames: the most used colors exactly, the rest by median cut, and one index kept for transparency. Each frame after the first holds only the rectangle that changed, with unchanged pixels transparent, and is LZW-coded. Delays are hundredths of a second; the rounding is spread so the loop keeps its length. A NETSCAPE2.0 block loops it forever.
+- MP4 and WebM go through ffmpeg when it is on the PATH. It is never downloaded.
+- `diagonaldiagrams story STORY.json -o OUT.html --gif OUT.gif [--video OUT.mp4] [--view ID] [--fps 20]`. The verdict gives the loop, the frame count and the file size.
+
+**Checks.**
+- An unknown verb or option is an error, and its fix lists the vocabulary.
+- An unknown box id is an error with a did-you-mean.
+- A hop with no arrow between its boxes is an error. It names the hop and the arrows that leave the first box.
+- A hop with two arrows takes the first, and says so.
+- A flow selector that matches no arrows is a warning, as an empty `dim` is.
+
+**Not yet:** a camera that follows the packet; traces that overlap in time; sequences, where a trace would play the messages in order; motion in a spec without a story; a GIF of a whole story, view after view.
+
+**As built (motion prototype, 2026-10-17).** `motion.py`, `gif.py`, `web/motion.js`; demo `examples/story_checkout.json`:
+- **The demo.** A checkout traced from Web app through API gateway, Orders and Payments to Stripe, with dots on the five async arrows to and from the Event bus, and the rest dimmed. The loop is 5.54 s. The schedule takes 3.5 KB of the page.
+- **The GIF.** 111 frames at 20 fps, 1054 × 869, 387 KB. The MP4 (H.264, through ffmpeg) is 182 KB. Pillow and a plain decoder in the tests both read the GIF back: 111 frames, looping, 5.54 s in all.
+- **Time.** About 40 s on a busy desktop: raster about 15 s, PNG decoding 14 s, GIF coding 8 s. A browser launch costs 1–2 s, so frames are drawn in sheets: up to 8 frames stacked in one SVG, one raster call per sheet (14 calls, 4 at a time). One launch per frame took 4 minutes.
+- **Raster noise.** A frame drawn lower in a sheet differs from the same frame drawn alone in a few antialiased pixels along arrows (float precision far from the origin). The GIF compares frames by palette index, not RGB, so noise that does not change a pixel's color does not reach the file.
+- **Decoding.** Rows of a sheet are compared with the same rows one frame up. A row that matches is reused. The Up and Sub filters run as whole-row integer arithmetic; Average and Paeth run byte by byte.
+- **Parity.** `test_motion.py` runs `web/motion.js` in Node against `motion.at()` at 37 moments of a loop. Their shapes and numbers agree.
+- **Static figures are untouched.** All 115 golden figures match, and a story's frames are byte-identical with and without motion.
+
+**What production needs:**
+- A raster path that stays open: one browser session over DevTools, or an in-process rasterizer (resvg, cairo). Launches dominate the time.
+- A native encoder for long or large loops. Pure Python is fine at this size; a 4K loop or a minute of frames needs ffmpeg or a C coder.
+- WebM with alpha, and an APNG option, for slides and sites that want full color.
+- A camera that follows the packet. It moves every pixel, so it needs video, not GIF deltas.
+- Motion for sequences (play the messages in order), timed callouts on hops, and overlapping traces.
+- A size budget in the verdict, with advice: lower fps, a cropped camera, or a shorter hold.
+
 ### 21.3 Round-trip editing
 
 HTML output has an edit mode. Dragging, resizing, recoloring, retyping and reordering produce patches:

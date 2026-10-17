@@ -91,6 +91,12 @@ diagonaldiagrams story examples/story_platform.json -o out/story.html
 
 A view names parts of the figure with stylesheet selectors (`#agent`, `group#runtime node`, `edge[from=agent]`) and says what to do with them: `focus` points the camera at them, `dim` and `hide` set them back, `highlight` draws them in the accent, and `reveal` shows them one step at a time. Each view has a `title`, a `text` shown under the figure, and speaker `notes`. Every view keeps the figure's layout, so the page moves between views by fading looks and gliding the camera. Arrows and Space move, N shows the notes, a link to `#request/2` opens that step, and printing gives one page per step. `describe story` has the format.
 
+A view can also move. `"motion": [{"trace": "web -> gw -> orders -> pay"}, {"flow": "edge[async]"}]` sends a packet along that path, lighting each arrow behind it, and runs dots along the async arrows. The engine works out the timing from the drawn routes, so a few words replace a timeline. `--gif OUT.gif` films the view as a seamless loop (pure Python), and `--video OUT.mp4` does too when ffmpeg is on the PATH.
+
+```text
+diagonaldiagrams story examples/story_checkout.json -o out/checkout.html --gif out/checkout.gif
+```
+
 ## Measured
 
 Five ways for an agent to draw the same flowchart, at 5, 11, 20 and 40 steps, two runs each, each run a fresh Claude Sonnet agent.

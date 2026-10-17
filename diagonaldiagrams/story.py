@@ -10,7 +10,9 @@ A view draws the figure with looks of its own and points the camera at part of i
 - dim: those elements at low opacity; hide: not drawn at all;
 - highlight: in the accent color with a heavier line, and never dimmed;
 - reveal: elements shown one step at a time, at full strength; an arrow shows once both its ends do;
-- focus: the camera frames those elements.
+- focus: the camera frames those elements;
+- motion: what moves while the view shows (motion.py, DESIGN 21.2.1): a packet tracing a path,
+  dots flowing along arrows. It draws in a layer above the figure, which itself never changes.
 
 Selectors are the stylesheet's (DESIGN 5.2); a comma lists several. Looks change color and opacity
 only, so every view and reveal step (a frame) has the same layout, and moving between frames is a
@@ -27,7 +29,7 @@ DIM = 0.18          # a dimmed element's opacity
 HEAVY = 2.6         # a highlighted line's width
 PAD = 36            # around the focused elements
 MIN_FOCUS = 280     # the narrowest the camera goes, so one box doesn't fill the page
-KEYS = ("id", "title", "text", "notes", "focus", "dim", "hide", "highlight", "reveal")
+KEYS = ("id", "title", "text", "notes", "focus", "dim", "hide", "highlight", "reveal", "motion")
 KINDS = ("flow", "arch", "seq", "schema")
 LISTS = {"flow": ("nodes", "edges"), "arch": ("nodes", "edges"), "seq": ("actors", "messages"), "schema": ("tables", "relations")}
 
@@ -193,6 +195,8 @@ def read_story(path):
         seen.add(v["id"])
         if v.get("reveal") is not None and not isinstance(v["reveal"], list):
             raise SpecError(f"view '{v['id']}': reveal should be a list of selectors, one per step", 'write "reveal": ["#web", "#gw"]')
+        from .motion import read
+        read(v.get("motion"), f"view '{v['id']}'")
     return story, os.path.dirname(os.path.abspath(path))
 
 
@@ -231,10 +235,12 @@ nav button:disabled{{opacity:.35;cursor:default}}
 <div id="stage" aria-live="polite"></div>
 <div><p id="view-text"></p><aside id="notes"></aside></div>
 <nav><button type="button" id="prev" aria-label="Previous">&larr; Back</button><button type="button" id="next" aria-label="Next">Next &rarr;</button>
-<span id="count"></span><span class="hint">Arrows or Space to move &middot; N for notes</span><span id="dots"></span></nav>
+<span id="count"></span><span class="hint" id="hint">Arrows or Space to move &middot; N for notes</span><span id="dots"></span></nav>
 </div>
 <div id="print"></div>
 <script type="application/json" id="dd-story">{data}</script>
+<script>
+{motion}</script>
 <script>
 {js}</script>
 </body></html>"""
@@ -261,9 +267,10 @@ def _figure_input(story, base, out_base):
     return kind, path
 
 
-def build(story_path, out):
+def build(story_path, out, gif=None, video=None, view=None, fps=20):
     """Draws the story: its figure (OUT.figure.svg, .html and receipt, through the usual render), then
-    every frame, into OUT.html. Returns the verdict."""
+    every frame, into OUT.html. With gif or video, also films one view's motion (the first view that
+    moves, or `view`). Returns the verdict."""
     from . import api
     from ._output import FONT
     from ._theme import THEME
@@ -291,11 +298,18 @@ def build(story_path, out):
     from .diagrams import render_arch, render_flow, render_schema, render_seq
     draw = {"flow": lambda s: render_flow(s), "arch": lambda s: render_arch(s), "seq": lambda s: render_seq(s),
             "schema": lambda s: render_schema(s)}[kind]
-    drawn, size = [], None
+    from . import motion
+    drawn, size, moves = [], None, {}
     for f in plan:
         svg, W, H = draw(looked(spec, kind, f["looks"]))
         size = size or [W, H]
-        drawn.append({"view": f["view"], "step": f["step"], "steps": f["steps"], "svg": svg, "viewBox": camera(svg, f["focus"])})
+        v = story["views"][f["view"]]
+        if v.get("motion") and f["view"] not in moves:  # one schedule per view: its frames share a layout
+            where = f"view '{v['id']}'"
+            moves[f["view"]], said = motion.resolve(motion.read(v["motion"], where), spec, kind, sty, svg, where)
+            warnings += said
+        drawn.append({"view": f["view"], "step": f["step"], "steps": f["steps"], "svg": svg, "viewBox": camera(svg, f["focus"]),
+                      **({"motion": moves[f["view"]]} if moves.get(f["view"]) else {})})
     views = [{k: v.get(k) for k in ("id", "title", "text", "notes")} for v in story["views"]]
     for v in story["views"]:
         extra = [k for k in v if k not in KEYS]
@@ -306,23 +320,50 @@ def build(story_path, out):
     here = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(here, "web", "story.js"), encoding="utf-8") as fh:
         js = fh.read()
+    with open(os.path.join(here, "web", "motion.js"), encoding="utf-8") as fh:
+        motion_js = fh.read()
     from ._text import esc
     t = THEME
     page = SHELL.format(title=esc(story.get("title") or "Story"), paper=t["paper"], ink=t["ink"], muted=t["muted"],
-                        rule=t["rule"], accent=t["accent"], font=FONT, data=data, js=js)
+                        rule=t["rule"], accent=t["accent"], font=FONT, data=data, js=js, motion=motion_js)
     html = out_base + ".html"
     with open(html, "w", encoding="utf-8") as fh:
         fh.write(page)
-    return {"ok": bool(fig.get("ok")), "html": html, "frames": len(drawn),
-            "views": [{"id": v["id"], "title": v.get("title") or "", "steps": next(f["steps"] for f in drawn if f["view"] == i),
-                       "focus": bool(drawn[[f["view"] for f in drawn].index(i)]["viewBox"])} for i, v in enumerate(story["views"])],
-            "figure": {k: fig[k] for k in ("svg", "ok", "errors", "warnings", "layout") if k in fig},
-            **({"warnings": warnings} if warnings else {})}
+    verdict = {"ok": bool(fig.get("ok")), "html": html, "frames": len(drawn),
+               "views": [{"id": v["id"], "title": v.get("title") or "", "steps": next(f["steps"] for f in drawn if f["view"] == i),
+                          "focus": bool(drawn[[f["view"] for f in drawn].index(i)]["viewBox"]),
+                          **({"motion": _moves(moves[i])} if moves.get(i) else {})} for i, v in enumerate(story["views"])],
+               "figure": {k: fig[k] for k in ("svg", "ok", "errors", "warnings", "layout") if k in fig},
+               **({"warnings": warnings} if warnings else {})}
+    if gif or video:
+        verdict["film"] = _film(story, drawn, moves, view, gif, video, fps)
+    return verdict
+
+
+def _moves(s):
+    return {"loop": s["loop"], "traces": len(s["traces"]), "flows": len(s["flows"])}
+
+
+def _film(story, drawn, moves, view, gif, video, fps):
+    """One view's motion as a GIF and/or a video: the view's last frame (every reveal step shown),
+    with its camera, one loop long."""
+    from . import motion
+    ids = [v["id"] for v in story["views"]]
+    if view is not None and view not in ids:
+        raise SpecError(f"no view called '{view}'", f"the views are: {', '.join(ids)}")
+    vi = ids.index(view) if view is not None else next((i for i in range(len(ids)) if moves.get(i)), None)
+    if vi is None or not moves.get(vi):
+        raise SpecError(f"view '{ids[vi]}' has no motion" if vi is not None else "no view has motion, so there is nothing to film",
+                        'give the view "motion": [{"trace": "a -> b -> c"}]')
+    last = [f for f in drawn if f["view"] == vi][-1]
+    out = motion.film(last["svg"], moves[vi], fps=fps, gif=gif, video=video, camera=last["viewBox"])
+    return dict(out, view=ids[vi])
 
 
 def do_story(args):
     try:
-        out = build(args.story, args.o)
+        out = build(args.story, args.o, gif=getattr(args, "gif", None), video=getattr(args, "video", None),
+                    view=getattr(args, "view", None), fps=getattr(args, "fps", 20))
     except SpecError as e:
         out = {"ok": False, "stage": "story", "errors": [{"msg": e.msg, "fix": e.fix}]}
     print(json.dumps(out))
