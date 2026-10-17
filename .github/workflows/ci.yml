@@ -91,7 +91,8 @@ jobs:
         run: python scripts/scene_roundtrip.py --fuzz 40
 
   fuzz:
-    # 200 scenes across 5-200 nodes; strict audit gate (PLAN P4.7).
+    # Two fixed seed sets of 200 scenes each, 5-200 nodes; strict audit gate (PLAN P4.7). The
+    # nightly workflow (fuzz-nightly.yml) tries new seeds, which is how bugs past these get found.
     name: fuzz (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -105,6 +106,8 @@ jobs:
           python-version: "3.12"
       - name: Strict fuzz harness
         run: python tests/fuzz/run.py --n 200 --seed 5000 --strict
+      - name: Strict fuzz harness, second seed set
+        run: python tests/fuzz/run.py --n 200 --seed 20000 --strict
 
   metrics:
     # A report, not a gate: CI hardware differs from the machine that recorded the baseline.

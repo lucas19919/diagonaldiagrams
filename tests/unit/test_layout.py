@@ -291,6 +291,33 @@ class LabelsModule(unittest.TestCase):
         self.assertEqual(len(placer.placed), 1)
 
 
+class FuzzRegressions(unittest.TestCase):
+    """Fuzz scenes that once failed the audit, drawn whole (tests/fuzz/gen.py makes the same spec
+    from the same kind, seed and size)."""
+
+    def check(self, kind, seed, n):
+        import importlib.util
+        import json
+        import tempfile
+        from diagonaldiagrams import api
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        spec = importlib.util.spec_from_file_location("fuzz_gen", os.path.join(here, "fuzz", "gen.py"))
+        gen = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gen)
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "spec.json")
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(gen.make(kind, seed, n), f)
+            code, out, _ = api.run([kind, path, "-o", os.path.join(d, "out.svg")])
+        self.assertEqual(code, 0, out)
+
+    def test_two_decisions_in_a_layer_branching_toward_each_other(self):
+        self.check("flow", 20918, 43)  # their side runs met on the layer's middle line
+
+    def test_a_crowded_decision_side_on_a_wide_figure(self):
+        self.check("flow", 20246, 75)  # arrows stacked on one point of the side
+
+
 if __name__ == "__main__":
     unittest.main()
 

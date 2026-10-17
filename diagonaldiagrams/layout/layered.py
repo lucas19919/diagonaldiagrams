@@ -503,8 +503,10 @@ class _Plan:
         pout, pin = ("P", eid, "out"), ("P", eid, "in")
         s1 = self._side_port(bot, self._x(pout))
         s2 = self._side_port(top, self._x(pin))
-        self._slot(bot, s1, eid, "out", -2000.0 + abs(self._x(pout) - self._x(bot)))  # climbs: the top of the side
-        self._slot(top, s2, eid, "in", 2000.0 - abs(self._x(pin) - self._x(top)))  # arrives from below: the bottom
+        # the key says where on the side an arrow goes (ports() reads its range) and, within that, in
+        # what order; the distance is capped so a port item far out on a wide figure stays in its range
+        self._slot(bot, s1, eid, "out", -2000.0 + min(999.0, abs(self._x(pout) - self._x(bot))))  # climbs: the top of the side
+        self._slot(top, s2, eid, "in", 2000.0 - min(999.0, abs(self._x(pin) - self._x(top))))  # arrives from below: the bottom
         self.paths.append((eid, "back", bot, top, ds, (s1, s2)))
 
     def _center(self):
@@ -542,7 +544,11 @@ class _Plan:
                         self.offset[(eid, role)] = v
                     ups = [t for t in group if t[2] <= -500]
                     downs = [t for t in group if t[2] >= 500]
+                    reach = inf["h"] / 2.0 - 4.0  # still on the side
                     for seq, lo, hi in ((ups, -lim, -half - 10.0), (downs, half + 10.0, lim)):
+                        need = 8.0 * (len(seq) - 1)
+                        if inf["shape"] != "dot" and hi - lo < need:  # no room past the middle ones: further along
+                            lo, hi = (max(-reach, hi - need), hi) if hi < 0 else (lo, min(reach, lo + need))
                         for (eid, role, _), v in zip(seq, _slots(len(seq), lo, hi, o["slot"]) if seq else []):
                             self.offset[(eid, role)] = v
                 else:
@@ -758,6 +764,15 @@ class _Plan:
         self.movable = {}  # (id(run), end index) -> (edge, role, node, side): an end that is a lone port
         trunks = {}
         turns = {}  # (node, side) -> where its side exits turn down
+        # sideways runs at a layer's middle, out of a side vertex and then down: layer -> [(lo, hi,
+        # node)]. Every side exit's stub is in from the start, so a long run from another node of the
+        # layer keeps off it, whichever comes first: two runs on one line read as one arrow that forks
+        level = {}
+        for eid, kind, a, b, ds, (s1, s2) in self.paths:
+            if kind == "down" and s1 in ("w", "e"):
+                x0 = self.port(a, s1, eid, "out")[0]
+                x1 = x0 + (-1.0 if s1 == "w" else 1.0) * self.stub.get((eid, "out"), self.o["stub"])
+                level.setdefault(self.rank[a], []).append((min(x0, x1), max(x0, x1), a))
         for eid, kind, a, b, ds, (s1, s2) in self.paths:
             legs = []
             st = self.o["stub"]
@@ -788,13 +803,17 @@ class _Plan:
                     clear = self._clear(a, x, nxt)
                     out_st = self.stub.get((eid, "out"), st)
                     taken = [self._x(pt) for pt, n2 in self.L.attach.items() if n2 == a] + turns.get((a, s1), [])
-                    if clear and not any(abs(nxt - t) < channels.NEAR for t in taken):
+                    spans = level.setdefault(self.rank[a], [])
+                    lo, hi = min(x, nxt), max(x, nxt)
+                    free = not any(n2 != a and lo - channels.NEAR < h2 and l2 - channels.NEAR < hi for l2, h2, n2 in spans)
+                    if clear and free and not any(abs(nxt - t) < channels.NEAR for t in taken):
                         x = nxt
                     else:  # turn just outside, clear of the other turns beside this node
                         sign = -1.0 if s1 == "w" else 1.0
                         x = x + sign * out_st
                         while any(abs(x - t) < channels.NEAR for t in taken):
                             x += sign * self.o["track"]
+                    spans.append((min(p[0], x), max(p[0], x), a))
                     turns.setdefault((a, s1), []).append(x)
                     legs.append(("pt", x, p[1], a))
                 g = self.rank[a]
