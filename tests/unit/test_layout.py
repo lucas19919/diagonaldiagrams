@@ -222,6 +222,15 @@ class FuzzRegressions(unittest.TestCase):
     def test_three_exits_on_a_decision_side_beside_a_box(self):
         self.check("flow", 40630, 51)  # the third turned down inside the box next to the decision
 
+    def test_a_long_label_on_an_arrow_climbing_inside_a_frame(self):
+        self.check("arch", 40349, 6)  # no room inside the frame, so the label sat on its border
+
+    def test_a_label_beside_a_back_edge_climbing_past_a_column(self):
+        self.check("flow", 40124, 37)  # boxes beside the climb and the canvas edge outside it
+
+    def test_a_long_label_on_a_short_back_edge_at_the_canvas_edge(self):
+        self.check("flow", 414, 67)  # another label inside the loop and the canvas edge outside it
+
 
 if __name__ == "__main__":
     unittest.main()

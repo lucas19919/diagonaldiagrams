@@ -10,8 +10,10 @@ def pill_width(text):
     return max(40, int(len(text) * 6.4 + 12))
 
 
-def label_box(mx, ay, text, vertical=False, flip=False):
-    w = pill_width(text)
+def label_box(mx, ay, text, vertical=False, flip=False, w=None):
+    """The label's pill as (x0, y0, x1, y1); w, when given, is its width (the layout knows widths, not
+    texts)."""
+    w = pill_width(text) if w is None else w
     if vertical:
         x0 = mx - 8 - w if flip else mx + 8
         return (x0, ay - 9, x0 + w, ay + 7)
@@ -44,10 +46,11 @@ def longest_segment(pts, frames=()):
     return mx, my, vert
 
 
-def place_label(mx, my, vertical, text, pts, avoid, soft=()):
+def place_label(mx, my, vertical, text, pts, avoid, soft=(), w=None):
     """The first spot along the route where the label's pill clears everything. Tries the
     default, then each segment's middle, on both sides and both orientations. If none is
-    clear: never on a hard obstacle (a box or a label), then the fewest soft ones (other arrows)."""
+    clear: never on a hard obstacle (a box or a label), then the fewest soft ones (other arrows).
+    w: the pill's width, in place of measuring text."""
     cands = [(mx, my, vertical, False), (mx, my, vertical, True)]
     for at in (0.5, 0.3, 0.7):  # each segment's middle first, then either side of it
         for (px, py), (qx, qy) in zip(pts or [], (pts or [])[1:]):
@@ -61,7 +64,7 @@ def place_label(mx, my, vertical, text, pts, avoid, soft=()):
 
     scored = []
     for k, c in enumerate(cands):
-        b = label_box(c[0], c[1], text, c[2], c[3])
+        b = label_box(c[0], c[1], text, c[2], c[3], w)
         cost = (hits(b, avoid), hits(b, soft), k)
         if cost[:2] == (0, 0):
             return c

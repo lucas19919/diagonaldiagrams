@@ -326,6 +326,14 @@ def layout(nodes, edges, groups=(), options=None):
                        min_width=o.get("min_width", 0.0))
     res.wrapped = wrapped
 
+    # 6c. a label with no clear spot beside its arrow gets a strip of room there (room.py)
+    room_x = []
+    if o.get("labels") and direction == "TB":
+        from .room import make_room
+        reach = {i: info[i]["w"] / 2.0 + o["loop"] + flat_room[(i, i)] for i in loop_nodes if (i, i) in flat_room}
+        room_x = make_room(res.pos, info, res.frames, res.routes, o["labels"], reach, o.get("min_width", 0.0),
+                           o.get("margin", 0.0))
+
     # 7. into the canvas's frame of reference, and turned for LR, BT, RL
     pts = [p for r in res.routes.values() for p in r.points]
     boxes = [(x - info[i]["w"] / 2, y - info[i]["h"] / 2, x + info[i]["w"] / 2, y + info[i]["h"] / 2)
@@ -333,8 +341,8 @@ def layout(nodes, edges, groups=(), options=None):
     boxes += list(res.frames.values())
     extra_x = [res.pos[i][0] + info[i]["w"] / 2.0 + o["loop"] + flat_room[(i, i)]
                for i in loop_nodes if (i, i) in flat_room and i in res.pos]
-    x_lo = min([b[0] for b in boxes] + [p[0] for p in pts])
-    x_hi = max([b[2] for b in boxes] + [p[0] for p in pts] + extra_x)
+    x_lo = min([b[0] for b in boxes] + [p[0] for p in pts] + room_x)
+    x_hi = max([b[2] for b in boxes] + [p[0] for p in pts] + extra_x + room_x)
     y_lo = min([b[1] for b in boxes] + [p[1] for p in pts] + [0.0])
     y_hi = max([b[3] for b in boxes] + [p[1] for p in pts] + ([] if wrapped else [H]))
 
