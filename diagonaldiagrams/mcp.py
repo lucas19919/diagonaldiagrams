@@ -42,6 +42,16 @@ def do_mcp(args):
                                         "layout": {"type": "string"}, "out": {"type": "string"}}}},
         {"name": "infer", "description": "Propose a scatter spec from a CSV.",
          "inputSchema": {"type": "object", "properties": {"data": {"type": "string"}, "path": {"type": "string"}}}},
+        {"name": "apply", "description": "Write a patch into a spec file: the edits a person made in a figure's page "
+                                         "(Edit, then Copy patch), or your own. Render the spec to the same out path "
+                                         "again; the verdict's changed says what moved.",
+         "inputSchema": {"type": "object", "required": ["spec", "patch"],
+                         "properties": {"spec": {"type": "string", "description": "the spec file to change"},
+                                        "patch": {"description": "a list of operations (place, order, style, text, add, "
+                                                                 "remove, move-to-group), or a patch file's path"}}}},
+        {"name": "diff", "description": "What changed between two drawings of a figure (.svg or .html): JSON and sentences.",
+         "inputSchema": {"type": "object", "required": ["old", "new"],
+                         "properties": {"old": {"type": "string"}, "new": {"type": "string"}}}},
     ]
 
     def call(name, a):

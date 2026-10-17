@@ -14,9 +14,10 @@ ENGINES = ("v2", "v1")
 MARGIN = 30  # between the canvas edge and the nearest box or frame
 
 
-def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, engine=None):
+def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, engine=None, prev=None):
     """Draw a flow: steps in layers top to bottom, decisions branching sideways, loops climbing back
-    up the side. auto ranks every node, ignoring the spec's ranks."""
+    up the side. auto ranks every node, ignoring the spec's ranks. prev: {node id: x} from the drawing
+    before an edit, so the boxes the edit leaves alone stay near their places."""
     if engine == "v1":
         from .legacy import render_flow as v1
         return v1(spec, corners, auto, theme, sheets, embed)
@@ -36,15 +37,15 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), em
             n.pop("rank", None)
         nodes.append(n)
     shapes = {n["shape"] for n in nodes}
-    dr, W, H, extra = _layered(spec, "flow", nodes, t, sty, corners, {"trunk": True, "rank_gap": 64.0, "min_width": 720 - 2 * MARGIN}, 720,
-                               "flow diagram")
+    dr, W, H, extra = _layered(spec, "flow", nodes, t, sty, corners, {"trunk": True, "rank_gap": 64.0, "min_width": 720 - 2 * MARGIN,
+                                                                      "prev": prev}, 720, "flow diagram")
     _legend(dr, t, sty, W, H, extra, 48, 32, _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"),
                                                    ("diamond" in shapes, "diamond = decision"),
                                                    ("oval" in shapes, "rounded = start or end")), spec)
     return _as_svg((dr, W, H), sty, embed)
 
 
-def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None):
+def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None, prev=None):
     """Draw an architecture view: one row per layer, calls running down between rows, calls within a
     row running straight between neighbors, groups framed."""
     if engine == "v1":
@@ -65,8 +66,8 @@ def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, e
         nodes.append(n)
     edges = spec.get("edges", [])
     eids = edge_ids(edges)
-    dr, W, H, extra = _layered(spec, "arch", nodes, t, sty, corners, {"rank_gap": 100.0, "back": "ports", "min_width": 760 - 2 * MARGIN}, 760,
-                               "architecture diagram")
+    dr, W, H, extra = _layered(spec, "arch", nodes, t, sty, corners, {"rank_gap": 100.0, "back": "ports", "min_width": 760 - 2 * MARGIN,
+                                                                      "prev": prev}, 760, "architecture diagram")
     http = _first(range(len(edges)), lambda i: str(edges[i].get("proto", "")).startswith("http"))
     focal_node = _first(nodes, lambda n: n.get("focal"))
     focal_edge = _first(range(len(edges)), lambda i: edges[i].get("focal"))

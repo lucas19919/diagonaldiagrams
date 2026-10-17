@@ -61,8 +61,20 @@ The audit reads the finished SVG: labels on labels, labels too wide for their bo
 | File | Contents |
 | --- | --- |
 | `OUT.svg` | The drawing. Title and subtitle are on the figure; points and bars have hover tooltips. |
-| `OUT.html` | The same figure, plus Copy SVG, Export SVG, and Export PNG. |
+| `OUT.html` | The same figure, plus Copy SVG, Export SVG, and Export PNG. A diagram's page also has Edit. |
 | `OUT.graph.json` | The receipt. `export` redraws from it. |
+
+## Edit and draw again
+
+On a flow or architecture page, Edit lets a person rename a box, recolor it, or drag it to another place in its row or into another row. Nothing in the figure's files changes: each edit becomes a patch operation, which the page shows with Copy patch and Save patch.json.
+
+```text
+diagonaldiagrams apply deploy.json patch.json
+diagonaldiagrams flow deploy.json -o out/deploy.svg
+{"ok": true, ..., "changed": ["Renamed \"Review\" to \"Peer review\"", "Row 4 now reads Peer review | Fix", "4 other boxes shifted, 103 px on average"]}
+```
+
+`apply` writes the patch into the spec as fields and constraints, so the next generation of the spec keeps it. A drag becomes `{"op": "place", "id": "fix", "row": ["review", "fix"]}`: the box's row and its place in it, not pixels. Drawn again at the same path, the figure keeps the other boxes near their places, the verdict lists what `changed`, and the new page animates from the old drawing to the new one (Replay change shows it again; reduced motion turns it off). `diagonaldiagrams diff OLD.svg NEW.svg` prints the same list for any two drawings. MCP has `apply` and `diff` tools.
 
 `export OUT --to png|pdf|svg|drawio|excalidraw` writes other formats. draw.io and Excalidraw exports keep boxes, frames, and the routed arrows attached to their boxes, so a person can open the figure and drag things around. PNG and PDF use cairosvg if installed, else headless Edge or Chrome.
 

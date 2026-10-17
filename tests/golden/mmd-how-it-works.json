@@ -4,7 +4,7 @@
   "examples/how_it_works.mmd"
  ],
  "exit": 0,
- "html_sha256": "f9522fe648687becaeb878eeacafbb21f9178e19aa5d849122ea4be985df1186",
+ "html_sha256": "6c720a945b9d2f7724b7f433dc85b77e8b72d4f140fb2b862f99a97d1d1c741e",
  "receipt": {
   "auto": false,
   "cmd": "flow",

@@ -33,6 +33,7 @@ packages = ["diagonaldiagrams", "diagonaldiagrams.audit", "diagonaldiagrams.char
             "diagonaldiagrams.text"]
 
 [tool.setuptools.package-data]
+"diagonaldiagrams" = ["web/*.js"]
 "diagonaldiagrams.style" = ["themes/*.json", "presets/*.json"]
 
 [tool.setuptools.dynamic]

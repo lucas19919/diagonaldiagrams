@@ -1154,6 +1154,7 @@ As built in P2.16 (`scene/patch.py`):
   - the others still apply;
   - the command exits 1 when anything conflicted, and says how many operations were written.
 - **Identity.** Retexting an edge keeps its id, even though a generated id includes the label: the old id is written into the spec.
+- **`place` (added for edit mode):** `{"op": "place", "id": "x", "row": ["a", "x", "b"]}` puts a node in a row, in that order. With its row-mates in one pinned rank (arch layers, ranked flows) the node takes that rank; else the op writes `{"same-rank": row}`. The row's nodes take its order as `order` and drop their `lane`. A drag in the page writes this, never coordinates.
 - **Files.** A v2 scene is written back as a scene, without the edge ids it would get anyway. A v1 spec stays v1, and fields only a scene has keep their scene names there (`style`, `pin`, `class`, `constraints`). Today's renderers ignore those fields and report them as `not-drawn` warnings. In particular, arch's repair loop may still reorder a row an `order` patch fixed, until the layered layout reads constraints (P4).
 
 ### 21.4 Live data and semantic diff
@@ -1162,6 +1163,14 @@ As built in P2.16 (`scene/patch.py`):
 - **Provenance.** Each bound number records its source and timestamp in the receipt. The `stale-data` check flags old sources.
 - **No fetching.** The engine reads local data only (D8); the host or agent fetches.
 - **Semantic diff.** `diagonaldiagrams diff A B` lists added, removed, moved, restyled and retexted elements, as JSON and as sentences. It serves review and agent feedback.
+
+**As built (edit-and-animate slice, 2026-10-17).**
+- **Edit mode** (`web/page.js`, on flow and arch pages; seq and schema pages rename only): select a box to rename or recolor it; drag it, and the drop picks a row (the verdict's rows, middles within 30 px) and a place in it. Edits show in place and are listed as a patch; the figure's files never change.
+- **Applying.** `apply` writes the patch (21.3). The layered layout reads `same-rank` (the group is one node while ranks are worked out, as Graphviz's `rank=same` is), `order` constraints and node `order` hints. Hints now hold even when the start already crosses nothing, and a frame stays whole around its members.
+- **Drawing again.** A render to a path whose receipt names the same command and spec is an edit of that figure. The layout takes the old drawing's x per box as a hint: Brandes–Köpf's four alignments are mixed (weights in quarters, plus a shift of the whole) to sit closest to the old places. On the decision flow, a reorder moves the other boxes 7% of the canvas diagonal on average, and a move up two rows 11%; the scoreboard target is 10%.
+- **What changed.** `diff.py` matches boxes by `data-node` and arrows by `data-id`. Each old row is matched to the new row holding most of its boxes, so boxes that ride along when rows shift are "shifted", not "moved". The render verdict carries the sentences as `changed`.
+- **Animation.** The new page holds the old drawing. On load, each box starts where it was and slides to its place (650 ms); boxes that are new fade in; removed ones fade out where they were; arrows, labels and frames that differ fade in after the boxes settle. Replay change runs it again; `prefers-reduced-motion` turns it off.
+- **Not yet:** pins are not drawn (validation says so); drags in wrapped layouts can pick a row from another column; keyboard editing; views and stories (21.2); a page that applies its own patch.
 
 ### 21.5 Presenting and distribution
 

@@ -66,7 +66,7 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
 | Known bugs (table below) | 24 | after P4: B18–B23 and B26–B28 fixed, B29 found. After P3.9: 10 open (B25 found) | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
-| Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
+| Layout stability: mean node movement after a one-node edit | not measured | after the edit slice: 0.067 of the diagonal for a reorder, 0.111 for a move between rows (decision flow; `diff`'s `shifted.mean_of_diagonal`) | ≤ 10% of the canvas diagonal | P4 |
 | Human edits that survive regeneration | none survive (edits are pixels) | after P2: an edit expressed as a patch (`apply`) is written into the spec, or reported as a conflict. The edit UI that produces patches is P10 | 100% or a reported conflict | P10 |
 | Tokens and minutes for an agent to produce a 10-view story from a brief | not possible |  | measured at P9, then reduced | P9, P10 |
 | Legacy import fidelity (PPTX/VSDX shapes, connectors and text kept) | none |  | ≥ 95% of elements on the import corpus | P11 |
@@ -582,6 +582,8 @@ Left: B29; P4.1 (the container protocol and nested groups, now with P5); P4.9 (i
 - The HTML opens offline in current Chrome, Edge, Safari and Firefox.
 
 ## P10. Live documents and round-trip editing → 1.x
+
+**Status (2026-10-17):** a first slice of P10.1, P10.2, P10.4, P9.5 and P4.9 is built on branch `slice-edit-animate`, ahead of P5–P9. A person edits a flow or arch page (rename, recolor, drag), the page hands over a patch, `apply` writes it into the spec, and drawing again at the same path reports what changed and animates the old drawing into the new one. DESIGN 21.4 has the as-built notes. Layout stability on the decision flow: 7% of the canvas diagonal for a reorder, 11% for a move between rows (target 10%). Left: pins, keyboard editing, wrapped layouts, seq and schema moves, and the regeneration test in P10.2's exit.
 
 | Task | Size | Work |
 | --- | --- | --- |

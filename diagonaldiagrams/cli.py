@@ -24,6 +24,7 @@ do_extract = lazy("diagonaldiagrams.extract", "do_extract")
 render_geo = lazy("diagonaldiagrams.geo", "render_geo")
 do_mcp = lazy("diagonaldiagrams.mcp", "do_mcp")
 do_apply = lazy("diagonaldiagrams.apply", "do_apply")
+do_diff = lazy("diagonaldiagrams.diff", "do_diff")
 _mermaid_kind = lazy("diagonaldiagrams.mermaid", "_mermaid_kind")
 load_spec = lazy("diagonaldiagrams.mermaid", "load_spec")
 render_bar = lazy("diagonaldiagrams.plots", "render_bar")
@@ -200,13 +201,16 @@ def _outline(svg_path, structured=False):
     return layout_rows(fig), (outline(fig) if structured else None)
 
 
-def _finish(a, html, svg, count, unit, pre):
-    """One JSON line per render: the files, the count, and the audit verdict."""
+def _finish(a, html, svg, count, unit, pre, changed=None):
+    """One JSON line per render: the files, the count, the audit verdict, and what changed since the
+    figure was last drawn at this path, when it was."""
     rep = {"ok": True, "errors": [], "warnings": []} if getattr(a, "no_audit", False) else _audit_file(svg)
     out = {"ok": rep["ok"], "svg": svg, "html": html, "receipt": os.path.splitext(html)[0] + ".graph.json", unit: count}
     layout, structured = _outline(svg, getattr(a, "outline", False))
     if layout:
         out["layout"] = layout
+    if changed is not None:
+        out["changed"] = changed
     if structured:
         out["outline"] = structured
     if rep["errors"]:
@@ -217,6 +221,28 @@ def _finish(a, html, svg, count, unit, pre):
     if warns:
         out["warnings"] = warns
     _report(out, 0 if rep["ok"] else 1)
+
+
+def _previous_drawing(a):
+    """The SVG this figure was last drawn as at -o, or None: the files must be there and the receipt
+    must name the same command and spec, so a render over some other figure is not an edit of it."""
+    base, ext = os.path.splitext(a.o)
+    if ext.lower() not in (".html", ".htm", ".svg"):
+        base = a.o
+    try:
+        with open(base + ".graph.json", encoding="utf-8") as f:
+            r = json.load(f)
+        with open(base + ".svg", encoding="utf-8") as f:
+            old = f.read()
+    except (OSError, ValueError):
+        return None
+    spec = r.get("spec")
+    if r.get("cmd") != a.cmd or not isinstance(spec, str):
+        return None
+    if not os.path.isabs(spec):
+        spec = os.path.join(os.path.dirname(os.path.abspath(base)), spec)
+    same = os.path.normcase(os.path.abspath(spec)) == os.path.normcase(os.path.abspath(a.spec))
+    return old if same else None
 
 
 def _chart_flags(p):
@@ -251,7 +277,7 @@ def _spec_to_file(a):
 
 
 COMMANDS = ("flow", "arch", "seq", "schema", "mermaid", "bar", "line", "geo", "doc", "monitor", "sync", "extract",
-            "scatter", "chart", "export", "describe", "validate", "infer", "audit", "mcp", "apply")
+            "scatter", "chart", "export", "describe", "validate", "infer", "audit", "mcp", "apply", "diff")
 
 
 class _Skipped:
@@ -423,12 +449,15 @@ def main():
     p.add_argument("target")
     p = sub.add_parser("audit", help="check rendered svg/html AFTER render; geometry+taste gate as JSON")
     p.add_argument("target")
-    p = sub.add_parser("apply", help="write a patch (pin, order, style, text, add, remove, move-to-group) into a spec")
+    p = sub.add_parser("apply", help="write a patch (place, order, style, text, add, remove, move-to-group, pin) into a spec")
     p.add_argument("spec", help="the spec or scene to change (JSON; Mermaid or YAML with -o OUT.json)")
     p.add_argument("patch", help="a JSON list of operations, or '-' for stdin")
     p.add_argument("-o", default=None, help="write here instead of over the spec")
     p.add_argument("--type", default=None, choices=["flow", "arch", "seq", "schema"],
                    help="how to read a v1 spec (default: from its fields)")
+    p = sub.add_parser("diff", help="what changed between two drawings of a figure: JSON and sentences")
+    p.add_argument("old", help="the earlier .svg or .html")
+    p.add_argument("new", help="the later .svg or .html")
     p = sub.add_parser("mcp", help="MCP server over stdio (describe/validate/infer/audit/scatter/diagram/bar/line)")
     p.add_argument("--isolate", action="store_true", help="run each tool call in its own process (180 s limit)")
     a = ap.parse_args()
@@ -437,6 +466,9 @@ def main():
         return
     if a.cmd == "apply":
         _exit_with(do_apply(a))
+        return
+    if a.cmd == "diff":
+        _exit_with(do_diff(a))
         return
     if a.cmd == "export":
         _exit_with(do_export(a))
@@ -489,11 +521,19 @@ def main():
         theme = _cli_theme(a)
         _brand_check(a, spec, theme, sheets)
         embed = getattr(a, "embed_fonts", False)
+        old = _previous_drawing(a)
+        prev = None
+        if old is not None:  # an edit of this figure: the boxes the edit leaves alone stay near their places
+            from .diff import middles
+            try:
+                prev = {k: x for k, (x, _) in middles(old).items()}
+            except ValueError:  # an old file that is not a figure this engine drew
+                old = None
         if a.cmd == "flow":
-            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed, engine=a.engine)
+            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed, engine=a.engine, prev=prev)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "arch":
-            svg, _, _ = render_arch(spec, a.corners, theme, sheets, embed, engine=a.engine)
+            svg, _, _ = render_arch(spec, a.corners, theme, sheets, embed, engine=a.engine, prev=prev)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "seq":
             svg, _, _ = render_seq(spec, a.corners, theme, sheets, embed)
@@ -501,15 +541,20 @@ def main():
         elif a.cmd == "schema":
             svg, _, _ = render_schema(spec, a.corners, theme, sheets, embed, engine=a.engine)
             item_cnt = len(spec.get("tables", []))
+        changed = None
+        if old is not None:
+            from .diff import diff
+            changed = diff(old, svg)["sentences"]
+        page = {"kind": a.cmd, "spec": a.spec, "out": a.o, "previous": old if changed else None, "changed": changed or []}
         o, s = write_out(svg, a.cmd, spec.get("title", a.cmd), spec.get("sub", ""),
                          f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
                          caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",
-                         source="Self-contained HTML + SVG.", corners=a.corners, theme=theme)
+                         source="Self-contained HTML + SVG.", corners=a.corners, theme=theme, page=page)
         save_receipt(o, _receipt(a, theme, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
                                             "auto": bool(getattr(a, "auto", False)),
                                             **({"engine": a.engine} if a.engine != "v2" else {})}, scene=_drawn_scene(spec, a.cmd),
                                  sheets=sheets))
-        _finish(a, o, s, item_cnt, "items", pre)
+        _finish(a, o, s, item_cnt, "items", pre, changed)
     elif a.cmd == "bar":
         theme = _cli_theme(a)
         notes = _cli_notes(a, "bar")

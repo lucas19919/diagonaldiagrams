@@ -93,8 +93,20 @@ def source(a, out_path=None):
 
 
 def tool_argv(name, a):
-    """The command line for an MCP tool call (describe, render, validate, audit, export, infer)."""
+    """The command line for an MCP tool call (describe, render, validate, audit, export, infer, apply, diff)."""
     kind = str(a.get("type") or "")
+    if name == "diff":
+        return ["diff", a.get("old"), a.get("new")]
+    if name == "apply":
+        ops = a.get("patch")
+        if isinstance(ops, str):
+            return ["apply", a.get("spec"), ops]
+        if not isinstance(ops, (list, dict)) or not isinstance(a.get("spec"), str):
+            raise ValueError("apply needs spec (a path) and patch (a list of operations or a path)")
+        dest = os.path.splitext(a["spec"])[0] + ".patch.json"  # beside the spec, like an inline style
+        with open(dest, "w", encoding="utf-8") as f:
+            json.dump(ops, f, indent=1)
+        return ["apply", a["spec"], dest]
     if name == "describe":
         return ["describe"] + ([kind] if kind else [])
     if name == "audit":

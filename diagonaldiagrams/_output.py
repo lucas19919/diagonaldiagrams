@@ -73,7 +73,10 @@ svg{{display:block;max-width:100%;height:auto;margin:0 auto}}
 </body></html>"""
 
 
-def write_out(svg, kind, title, sub, eyebrow, out, caption="", cap_title="", source="", corners="editorial", theme=None):
+def write_out(svg, kind, title, sub, eyebrow, out, caption="", cap_title="", source="", corners="editorial", theme=None,
+              page=None):
+    """Writes OUT.html and OUT.svg. page: a diagram's edit mode and change animation (web/page.js),
+    {"kind", "spec", "out", "previous": the SVG before an edit or None, "changed": [sentences]}."""
     t = theme or THEME
     # -o NAME.html, NAME.svg, or NAME all give NAME.html + NAME.svg side by side
     base, ext = os.path.splitext(out)
@@ -82,6 +85,8 @@ def write_out(svg, kind, title, sub, eyebrow, out, caption="", cap_title="", sou
     out = base + ".html"
     h = HTML_SHELL.format(paper=t["paper"], ink=t["ink"], rule=t["rule"], card=t["card"],
                           font=FONT, title=esc(title), svg=svg)
+    if page is not None:
+        h = h.replace("</body></html>", _page(page) + "\n</body></html>")
     os.makedirs(os.path.dirname(os.path.abspath(out)) or ".", exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         f.write(h)
@@ -90,6 +95,15 @@ def write_out(svg, kind, title, sub, eyebrow, out, caption="", cap_title="", sou
     with open(svg_path, "w", encoding="utf-8") as f:
         f.write(svg)
     return out, svg_path
+
+
+def _page(page):
+    """The edit mode and change animation (web/page.js) and their settings, for a diagram's page."""
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web", "page.js")
+    with open(script, encoding="utf-8") as f:
+        js = f.read()
+    data = json.dumps(page, ensure_ascii=False).replace("</", "<\\/")  # stays inside its script tag
+    return f'<script type="application/json" id="dd-page">{data}</script>\n<script>\n{js}</script>'
 
 
 LAYOUTS = {

@@ -23,6 +23,8 @@ class Packaging(unittest.TestCase):
         for folder in ("themes", "presets"):
             self.assertTrue(any(f.endswith(".json") for f in os.listdir(os.path.join(style, folder))))
             self.assertIn(f'"{folder}/*.json"', self.toml)
+        self.assertTrue(os.path.isfile(os.path.join(REPO, "diagonaldiagrams", "web", "page.js")))
+        self.assertIn('"diagonaldiagrams" = ["web/*.js"]', self.toml)  # a diagram page's edit mode
 
 
 if __name__ == "__main__":

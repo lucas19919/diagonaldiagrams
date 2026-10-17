@@ -67,4 +67,19 @@ All take `--title`, `--subtitle` (state the finding), `--xlabel`, `--ylabel`, an
 `NAME.graph.json` beside it. Input given with `-` or `-s TEXT` is saved as `NAME.spec.mmd` or `NAME.spec.json`.
 `export DIR/NAME --to png|pdf|drawio|excalidraw` redraws from the receipt.
 
+## Edits from a person
+
+A flow or arch page has Edit: rename, recolor, and drag boxes. It hands the person a patch, a JSON list like
+`[{"op": "place", "id": "fix", "row": ["review", "fix"]}]`. When they give you one, write it into the spec and
+draw again at the same `-o` path:
+
+```bash
+diagonaldiagrams apply SPEC.json patch.json
+diagonaldiagrams flow SPEC.json -o out/x.svg
+```
+
+The verdict's `changed` lists what moved, so you can tell them in a sentence; their page animates the change.
+Keep their edits when you regenerate the spec: `place` writes `rank`, `order` and `same-rank`, which you should
+leave as they are. `diff OLD.svg NEW.svg` compares any two drawings.
+
 Titles state the finding. Blue is HTTP, dashed is async, coral marks at most two focal items.

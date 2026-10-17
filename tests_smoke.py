@@ -339,6 +339,7 @@ def main():
     outline_checks()
     scene_checks()
     apply_checks()
+    edit_loop_checks()
     style_checks()
     layout_checks()
 
@@ -1090,6 +1091,42 @@ def apply_checks():
     check("apply reads the patch from stdin and writes a scene back as a scene, to -o",
           p.returncode == 0 and written.get("version") == 2 and written["nodes"][0].get("name") == "User"
           and "id" not in written["edges"][0], p.stdout[-300:] + p.stderr[-200:])
+
+
+def edit_loop_checks():
+    """The edit loop: a page's patch is applied, the figure is drawn again at the same path, and the
+    verdict and the new page carry what changed since the last drawing (DESIGN 21.3, P10)."""
+    print("== edit loop ==")
+    home = os.path.join(WORK, "edit-loop")
+    shutil.rmtree(home, ignore_errors=True)
+    os.makedirs(home)
+    spec, out = os.path.join(home, "deploy.json"), os.path.join(home, "deploy.svg")
+    shutil.copy(os.path.join(HERE, "examples", "flow_decision.json"), spec)
+
+    def page():
+        with open(os.path.join(home, "deploy.html"), encoding="utf-8") as f:
+            text = f.read()
+        data = text.split('<script type="application/json" id="dd-page">', 1)[1].split("</script>", 1)[0]
+        return text, json.loads(data)
+    rc, first = run("flow", spec, "-o", out)
+    text, cfg = page()
+    check("a first drawing has no changes, and its page carries the edit mode",
+          rc == 0 and '"changed"' not in first and cfg["previous"] is None and cfg["kind"] == "flow" and "ddPage" in text, first[-200:])
+    patch = os.path.join(home, "patch.json")
+    with open(patch, "w", encoding="utf-8") as f:
+        json.dump([{"op": "place", "id": "fix", "row": ["review", "fix"]}, {"op": "text", "id": "review", "name": "Peer review"}], f)
+    rc, applied = run("apply", spec, patch)
+    rc2, again = run("flow", spec, "-o", out)
+    v = json.loads(again)
+    _, cfg = page()
+    check("drawing it again after the patch says what changed and animates from the last drawing",
+          rc == 0 and rc2 == 0 and "row 4: Peer review | Fix" in v.get("layout", [])
+          and "Row 4 now reads Peer review | Fix" in v.get("changed", []) and 'Renamed "Review" to "Peer review"' in v["changed"]
+          and (cfg["previous"] or "").startswith("<svg") and cfg["changed"] == v["changed"], applied[-200:] + again[-300:])
+    other = os.path.join(home, "other.json")
+    shutil.copy(os.path.join(HERE, "examples", "flow_cross.json"), other)
+    rc, over = run("flow", other, "-o", out)
+    check("another spec drawn at the same path is not an edit of it", rc == 0 and '"changed"' not in over, over[-200:])
 
 
 def style_checks():

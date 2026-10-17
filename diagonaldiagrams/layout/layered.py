@@ -8,8 +8,9 @@
   bottom side (left or right across): its offset along the side from the node's middle, as a
   table's column row is (schema).
 - groups: [{"id", "members": [node ids], "parent"?}].
-- options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "aspect",
-  "flat_room" and "min_width". Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
+- options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "prev" ({node
+  id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room" and
+  "min_width". Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
 
 The steps: break cycles (back_edges), rank (ranks), add a dummy wherever an arrow passes a layer and
 a left and a right border wherever a group spans one (Layering), order the layers for few crossings
@@ -282,7 +283,9 @@ def layout(nodes, edges, groups=(), options=None):
         ku, kv = L.kind[u], L.kind[v]
         lines = ("dummy", "port")
         return (ku in lines and kv in lines) or (ku in ("left", "right") and kv == ku and L.owner[u] == L.owner[v])
-    xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up)
+    prev = o.get("prev") if direction == "TB" else None  # an earlier drawing's x per node: stay near it
+    xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up,
+                        {k: float(v) for k, v in prev.items() if k in info} if prev else None)
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
     band_h = [max((info[it]["h"] for it in layer if L.kind[it] == "node"), default=0.0) for layer in L.layers]

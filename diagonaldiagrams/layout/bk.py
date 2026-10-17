@@ -7,6 +7,10 @@ to the narrowest. Group borders are forced into one block per side, so every fra
 
 If the median breaks a separation (it can, with items of different widths), the mean of the four is
 used instead: each of them is valid and the constraints are linear, so their mean is valid too.
+
+Given where items stood in an earlier drawing (prev), any weighted mean of the four is valid for the
+same reason, so the one closest to the earlier places is taken instead: an edit then moves the rest
+of the figure as little as the four allow (PLAN P4.9).
 """
 import math
 
@@ -112,11 +116,38 @@ def _valid(layers, xs, sep, chains):
     return all(abs(xs[a] - xs[b]) < 0.01 for a, b in chains)
 
 
-def coordinates(layers, up, down, width, sep, kind, inner, forced_up):
+def _nearest(vals, prev, steps=4):
+    """The weighted mean of the alignments vals that lies closest to prev, after the best shift of
+    the whole drawing; weights in 1/steps. None when fewer than two items have an earlier place."""
+    keys = [v for v in vals[0] if prev and v in prev]
+    if len(keys) < 2:
+        return None
+    best = None
+    n = len(vals)
+
+    def weights(k, left):
+        if k == n - 1:
+            yield (left,)
+            return
+        for w in range(left + 1):
+            for rest in weights(k + 1, left - w):
+                yield (w,) + rest
+    for ws in weights(0, steps):
+        xs = [sum(w * xs_[v] for w, xs_ in zip(ws, vals)) / steps for v in keys]
+        t = sum(prev[v] - x for v, x in zip(keys, xs)) / len(keys)
+        cost = sum((x + t - prev[v]) ** 2 for v, x in zip(keys, xs))
+        if best is None or cost < best[0] - 1e-6:
+            best = (cost, ws)
+    ws = best[1]
+    return {v: sum(w * xs_[v] for w, xs_ in zip(ws, vals)) / steps for v in vals[0]}
+
+
+def coordinates(layers, up, down, width, sep, kind, inner, forced_up, prev=None):
     """{item: x of its center}. layers in order; up/down: neighbors; width: item -> width; sep(a, b):
     least distance between the centers of a and b when a is directly left of b; kind: item -> kind
     ("left"/"right" mark group borders); inner(u, v): u-v is an inner segment; forced_up: item -> the
-    item above it that it must align with (group border chains)."""
+    item above it that it must align with (group border chains); prev: item -> its x in an earlier
+    drawing, in any frame (a shift of the whole drawing costs nothing)."""
     if not any(layers):
         return {}
     forced_down = {b: a for a, b in forced_up.items()}
@@ -155,6 +186,9 @@ def coordinates(layers, up, down, width, sep, kind, inner, forced_up):
     vals = list(xss.values())
     items = list(vals[0])
     chains = [(a, b) for b, a in forced_up.items()]
+    near = _nearest(vals, prev)
+    if near is not None and _valid(layers, near, sep, chains):
+        return near
     if len(vals) == 4:
         out = {}
         for v in items:
