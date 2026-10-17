@@ -4,7 +4,7 @@
   "examples/schema_ecommerce.json"
  ],
  "exit": 0,
- "html_sha256": "de57b674a109fa0cc7d0a0ca2c9d8333d37e154fd7669e4aab674233ea37b7e6",
+ "html_sha256": "83c0b9fd47474f610cddda51ae0554cf0129ec3d722da217325e5c557c2b7964",
  "receipt": {
   "auto": false,
   "cmd": "schema",
@@ -186,7 +186,10 @@
  "verdict": {
   "items": 3,
   "layout": [
-   "tables: users, orders, order_items"
+   "tables: users, orders, order_items",
+   "column 1: users",
+   "column 2: orders",
+   "column 3: order_items"
   ],
   "ok": true
  }

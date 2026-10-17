@@ -4,7 +4,7 @@
   "examples/flow_cross.json"
  ],
  "exit": 0,
- "html_sha256": "a0cc1681ea781ea307221f73063b93dbb1d0e49c8eb16cfa6af7627c010e22c7",
+ "html_sha256": "97d80f442ed4f548b0a478a984bc3c00add6131ee0fdc966efc03b3bd991e5b9",
  "receipt": {
   "auto": false,
   "cmd": "flow",

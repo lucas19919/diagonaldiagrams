@@ -8,7 +8,8 @@
  * collected as a patch operation; the engine writes the patch into the spec (apply) and draws the
  * figure again, and the new page animates from the old drawing to the new one. Moves work with the
  * mouse and the keyboard alike: a box goes into a layer at a place, which is a place patch (an
- * order patch for a sequence's actors).
+ * order patch for a sequence's actors). A sequence's messages move between steps, an order patch
+ * over the messages, and take a new label, a text patch.
  */
 (function () {
   "use strict";
@@ -77,6 +78,61 @@
 
   var nodes = group(readBoxes(svg));
 
+  // ---- a sequence's messages: each line (or self-call loop) and its label, as one piece --------------
+
+  function msgY(el) { // the step a message stands at: its line's y, or the top of a self-call's loop
+    var y = parseFloat(el.getAttribute("y1"));
+    return isNaN(y) ? el.getBBox().y : y;
+  }
+
+  function readMessages(root) {
+    var out = {}, kids = Array.prototype.slice.call(root.children);
+    kids.forEach(function (el, k) {
+      if (!el.hasAttribute("data-msg")) return;
+      var y = msgY(el), b = el.getBBox();
+      var m = {id: el.getAttribute("data-id"), label: el.getAttribute("data-msg"), line: el, parts: [el], y: y, msg: true,
+               x0: b.x, x1: b.x + b.width, start: isNaN(parseFloat(el.getAttribute("x1"))) ? b.x : parseFloat(el.getAttribute("x1"))};
+      for (var j = k + 1; j < kids.length; j++) { // its label comes next: a pill and its text, beside the line
+        var s = kids[j], sb;
+        if (s.hasAttribute("data-msg") || s.hasAttribute("data-node") || s.tagName.toLowerCase() === "g") break;
+        try { sb = s.getBBox(); } catch (e) { break; }
+        var mid = sb.y + sb.height / 2;
+        if (mid < y - 30 || mid > y + 34) break;
+        m.parts.push(s);
+      }
+      out[m.id] = m;
+    });
+    return out;
+  }
+
+  function groupMessages(msgs) {
+    Object.keys(msgs).forEach(function (id) {
+      var m = msgs[id], g = document.createElementNS(NS, "g"), line = m.line;
+      g.setAttribute("class", "dd-msg");
+      g.setAttribute("data-of", id);
+      g.setAttribute("aria-label", line.getAttribute("aria-label") || m.label);
+      line.parentNode.insertBefore(g, line);
+      var hit = document.createElementNS(NS, line.tagName.toLowerCase() === "line" ? "line" : "path"); // the drawn line is a hairline
+      ["x1", "y1", "x2", "y2", "d"].forEach(function (k) { if (line.hasAttribute(k)) hit.setAttribute(k, line.getAttribute(k)); });
+      hit.setAttribute("class", "dd-hit");
+      hit.setAttribute("aria-hidden", "true");
+      g.appendChild(hit);
+      m.parts.forEach(function (p) { g.appendChild(p); });
+      m.g = g;
+      m.dx = 0; m.dy = 0;
+    });
+    return msgs;
+  }
+
+  var msgs = cfg.kind === "seq" ? groupMessages(readMessages(svg)) : {};
+  var steps = Object.keys(msgs).sort(function (a, b) { return msgs[a].y - msgs[b].y; }); // message ids, in the order shown
+  var stepY = steps.map(function (id) { return msgs[id].y; });
+  var PIECE = ".dd-node, .dd-msg";
+  function itemOf(g) {
+    var id = g.getAttribute("data-of");
+    return g.classList.contains("dd-msg") ? msgs[id] : nodes[id];
+  }
+
   // ---- layers: which boxes share a row (or a column), in order --------------------------------------
 
   function along(n) { return across ? n.y + n.dy : n.x + n.dx; } // the position within a layer
@@ -104,9 +160,11 @@
   var bar = document.getElementById("gbar");
   var css = document.createElement("style");
   css.textContent = [
-    ".dd-on .dd-node{cursor:grab}",
-    ".dd-on .dd-node:hover{filter:drop-shadow(0 0 2px rgba(45,49,66,.45))}",
-    ".dd-node:focus{outline:none}",
+    ".dd-on .dd-node,.dd-on .dd-msg{cursor:grab}",
+    ".dd-on .dd-node:hover,.dd-on .dd-msg:hover{filter:drop-shadow(0 0 2px rgba(45,49,66,.45))}",
+    ".dd-node:focus,.dd-msg:focus{outline:none}",
+    ".dd-hit{stroke:transparent;stroke-width:14;fill:none;pointer-events:none}",
+    ".dd-on .dd-hit{pointer-events:stroke}",
     ".dd-ring{fill:none;stroke:#eb6c36;stroke-width:2;stroke-dasharray:5 3;pointer-events:none}",
     ".dd-pending{opacity:.75}",
     "#dd-panel{position:fixed;right:12px;top:52px;width:330px;max-width:calc(100vw - 24px);max-height:calc(100vh - 64px);overflow:auto;",
@@ -138,7 +196,8 @@
   var ops = []; // {op, revert}
   var editing = false, selected = null, ring = null;
   var canMove = ["flow", "arch", "schema", "seq"].indexOf(cfg.kind) >= 0;
-  var canColor = cfg.kind === "flow" || cfg.kind === "arch";
+  var canColor = canMove; // every diagram's boxes take a fill: steps, services, tables, actors
+  var seq = cfg.kind === "seq";
   var keysAlong = across ? ["ArrowUp", "ArrowDown"] : ["ArrowLeft", "ArrowRight"];
   var keysCross = across ? ["ArrowLeft", "ArrowRight"] : ["ArrowUp", "ArrowDown"];
   var layerWord = across ? "column" : "row";
@@ -147,14 +206,17 @@
   panel.id = "dd-panel";
   panel.innerHTML =
     '<h4>Edit</h4>' +
-    '<div class="dd-note">Click a box, or <kbd>Tab</kbd> to one, to rename' + (canColor ? ' or recolor' : '') + ' it.' +
-    (canMove ? ' Drag it to another place, or press <kbd>Shift</kbd>+arrows to move it' +
-               (cfg.kind === "seq" ? ' along the actors.' : ' within its ' + layerWord + ' or into the next.') : '') + '</div>' +
-    '<div class="dd-note">Arrows go to the next box; <kbd>Enter</kbd> renames' + (canColor ? '; <kbd>1</kbd>-<kbd>6</kbd> color' : '') +
+    '<div class="dd-note">Click a box, or <kbd>Tab</kbd> to one, to rename' + (canColor ? ' or recolor' : '') + ' it' +
+    (seq ? '; click a message to change its label' : '') + '.' +
+    (canMove ? (seq ? ' Drag an actor along the actors, or a message to another step; <kbd>Shift</kbd>+arrows move them too.'
+                    : ' Drag it to another place, or press <kbd>Shift</kbd>+arrows to move it within its ' + layerWord + ' or into the next.') : '') +
+    '</div>' +
+    '<div class="dd-note">Arrows go to the next box' + (seq ? ' (<kbd>Down</kbd> from an actor goes to its first message)' : '') +
+    '; <kbd>Enter</kbd> renames' + (canColor ? '; <kbd>1</kbd>-<kbd>6</kbd> color' : '') +
     '; <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes; <kbd>Esc</kbd> lets go.</div>' +
     '<div id="dd-box" style="display:none">' +
-    '  <label class="dd-note" for="dd-name">Name</label><input id="dd-name" autocomplete="off">' +
-    (canColor ? '  <div class="dd-note">Color</div><div id="dd-swatches"></div>' : '') +
+    '  <label class="dd-note" for="dd-name" id="dd-name-label">Name</label><input id="dd-name" autocomplete="off">' +
+    (canColor ? '  <div id="dd-color"><div class="dd-note">Color</div><div id="dd-swatches"></div></div>' : '') +
     '</div>' +
     '<h4>Patch <span id="dd-count"></span></h4><pre id="dd-ops">[]</pre>' +
     '<div><span id="dd-actions"></span></div>' +
@@ -217,12 +279,14 @@
     editing = on;
     document.body.classList.toggle("dd-on", editing);
     editBtn.textContent = editing ? "Done editing" : "Edit";
-    Object.keys(nodes).forEach(function (id) { // boxes take focus only while editing
-      var g = nodes[id].g;
-      if (!g) return;
-      if (editing) { g.setAttribute("tabindex", "0"); g.setAttribute("role", "button"); }
-      else { g.removeAttribute("tabindex"); g.removeAttribute("role"); }
-    });
+    // boxes take focus only while editing; messages from the arrow keys, so Tab goes from box to box
+    Object.keys(nodes).map(function (id) { return nodes[id]; }).concat(steps.map(function (id) { return msgs[id]; }))
+      .forEach(function (n) {
+        var g = n.g;
+        if (!g) return;
+        if (editing) { g.setAttribute("tabindex", n.msg ? "-1" : "0"); g.setAttribute("role", "button"); }
+        else { g.removeAttribute("tabindex"); g.removeAttribute("role"); }
+      });
     if (!editing) select(null);
   }
   editBtn.addEventListener("click", function () { setEditing(!editing); });
@@ -241,7 +305,11 @@
     n.g.appendChild(ring);
     box.style.display = "block";
     document.getElementById("dd-name").value = n.label;
-    if (canColor) swatches(n);
+    document.getElementById("dd-name-label").textContent = n.msg ? "Label" : "Name";
+    if (canColor) {
+      document.getElementById("dd-color").style.display = n.msg ? "none" : "";
+      if (!n.msg) swatches(n);
+    }
   }
 
   // the text a box shows its name in: its largest text (a wrapped name is several lines)
@@ -254,12 +322,16 @@
   function rename(n, name) {
     if (!n || !name || name === n.label) return;
     var was = n.label, texts = nameTexts(n), old = texts.map(function (t) { return [t.textContent, t.style.display]; });
-    texts.forEach(function (t, i) { if (i) t.style.display = "none"; else t.textContent = name; });
+    texts.forEach(function (t, i) {
+      if (i) t.style.display = "none";
+      else t.textContent = n.msg && was && t.textContent.indexOf(was) >= 0 ? t.textContent.replace(was, name) : name; // keeps [HTTPS]
+    });
     n.label = name;
-    record({op: "text", id: n.id, name: name, was: was}, function () {
+    var op = n.msg ? {op: "text", id: n.id, label: name, was: was} : {op: "text", id: n.id, name: name, was: was};
+    record(op, function () {
       texts.forEach(function (t, i) { t.textContent = old[i][0]; t.style.display = old[i][1]; });
       n.label = was;
-    }, "Renamed " + was + " to " + name);
+    }, (n.msg ? "Relabeled the message " : "Renamed ") + (was || "with no label") + " to " + name);
   }
   var nameInput = document.getElementById("dd-name");
   nameInput.addEventListener("change", function () { rename(selected, this.value.trim()); });
@@ -320,6 +392,25 @@
     return true;
   }
 
+  // a message moved to step k: the messages from its old step to its new one shift by one. The
+  // patch orders that stretch of messages; they take the steps they held.
+  function showSteps() {
+    steps.forEach(function (id, k) { place(msgs[id], 0, stepY[k] - msgs[id].y); });
+  }
+  function moveMsg(m, k) {
+    var from = steps.indexOf(m.id);
+    k = Math.max(0, Math.min(steps.length - 1, k));
+    if (k === from) return false;
+    var before = steps.slice();
+    steps.splice(from, 1);
+    steps.splice(k, 0, m.id);
+    showSteps();
+    record({op: "order", ids: steps.slice(Math.min(from, k), Math.max(from, k) + 1)},
+           function () { steps = before; showSteps(); },
+           "Moved the message " + (m.label || "") + " to step " + (k + 1) + " of " + steps.length);
+    return true;
+  }
+
   // the mouse: the box follows the pointer; the drop goes into the layer of the nearest box
   function toSvg(evt) {
     var p = svg.createSVGPoint();
@@ -329,9 +420,9 @@
   var drag = null;
   svg.addEventListener("pointerdown", function (evt) {
     if (!editing) return;
-    var g = evt.target.closest && evt.target.closest(".dd-node");
+    var g = evt.target.closest && evt.target.closest(PIECE);
     if (!g) { select(null); return; }
-    var n = nodes[g.getAttribute("data-of")];
+    var n = itemOf(g);
     select(n);
     if (!canMove) return;
     var p = toSvg(evt);
@@ -341,7 +432,7 @@
   });
   svg.addEventListener("pointermove", function (evt) {
     if (!drag) return;
-    var p = toSvg(evt), dx = drag.dx + p.x - drag.x0, dy = drag.dy + p.y - drag.y0;
+    var p = toSvg(evt), dx = drag.n.msg ? 0 : drag.dx + p.x - drag.x0, dy = drag.dy + p.y - drag.y0; // a message moves in time only
     if (Math.abs(p.x - drag.x0) + Math.abs(p.y - drag.y0) > 3) drag.moved = true;
     drag.n.g.setAttribute("transform", "translate(" + dx + " " + dy + ")");
   });
@@ -352,6 +443,12 @@
     n.g.focus({preventScroll: true});
     if (!d.moved) return;
     var p = toSvg(evt), dx = d.dx + p.x - d.x0, dy = d.dy + p.y - d.y0, x = n.x + dx, y = n.y + dy;
+    if (n.msg) { // the step it was dropped at: after every other message drawn above it
+      var at = n.y + dy;
+      var k = steps.filter(function (id) { return id !== n.id && msgs[id].y + msgs[id].dy < at; }).length;
+      if (!moveMsg(n, k)) place(n, d.dx, d.dy);
+      return;
+    }
     var near = null, best = Infinity;
     Object.keys(nodes).forEach(function (id) {
       var m = nodes[id];
@@ -368,7 +465,21 @@
   });
 
   // the keyboard: arrows go to the next box, Shift+arrows move the box, as the mouse does
+  function nearestActor(x) {
+    return Object.keys(nodes).map(function (id) { return nodes[id]; })
+      .sort(function (a, b) { return Math.abs(a.x - x) - Math.abs(b.x - x); })[0] || null;
+  }
   function neighbor(n, key) {
+    if (n.msg) { // up and down the steps; up from the first goes to its sender
+      var s = steps.indexOf(n.id);
+      if (key === "ArrowDown") return msgs[steps[s + 1]] || null;
+      if (key === "ArrowUp") return s > 0 ? msgs[steps[s - 1]] : nearestActor(n.start);
+      return null;
+    }
+    if (seq && key === "ArrowDown") { // the first message to or from this actor
+      var first = steps.filter(function (id) { return msgs[id].x0 - 12 <= n.x && n.x <= msgs[id].x1 + 12; })[0];
+      return first ? msgs[first] : null;
+    }
     var li = layerOf(n.id), layer = sorted(model[li]), k = layer.indexOf(n.id);
     if (keysAlong.indexOf(key) >= 0) return nodes[layer[k + (key === keysAlong[1] ? 1 : -1)]] || null;
     var step = key === keysCross[1] ? 1 : -1;
@@ -380,6 +491,10 @@
     return null;
   }
   function keyMove(n, key) {
+    if (n.msg) {
+      if (key !== "ArrowUp" && key !== "ArrowDown") return false;
+      return moveMsg(n, steps.indexOf(n.id) + (key === "ArrowDown" ? 1 : -1));
+    }
     var li = layerOf(n.id), layer = sorted(model[li]), k = layer.indexOf(n.id);
     if (keysAlong.indexOf(key) >= 0) return move(n, li, k + (key === keysAlong[1] ? 1 : -1));
     if (cfg.kind === "seq") return false; // a sequence's actors stand in one row
@@ -390,15 +505,15 @@
     return move(n, j, at);
   }
   svg.addEventListener("focusin", function (evt) {
-    var g = evt.target.closest && evt.target.closest(".dd-node");
-    if (editing && g && (!selected || selected.g !== g)) select(nodes[g.getAttribute("data-of")]);
+    var g = evt.target.closest && evt.target.closest(PIECE);
+    if (editing && g && (!selected || selected.g !== g)) select(itemOf(g));
   });
   document.addEventListener("keydown", function (e) {
     if (!editing) return;
     if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z")) { undo(); e.preventDefault(); return; }
     if (e.target === nameInput) return;
-    var focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".dd-node");
-    if (focused && (!selected || selected.g !== focused)) select(nodes[focused.getAttribute("data-of")]);
+    var focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(PIECE);
+    if (focused && (!selected || selected.g !== focused)) select(itemOf(focused));
     if (!selected) return;
     var n = selected;
     if (e.key.indexOf("Arrow") === 0) {
@@ -407,7 +522,7 @@
       e.preventDefault();
     } else if (e.key === "Enter" || e.key === "F2") {
       nameInput.focus(); nameInput.select(); e.preventDefault();
-    } else if (canColor && /^[1-6]$/.test(e.key)) {
+    } else if (canColor && !n.msg && /^[1-6]$/.test(e.key)) {
       recolor(n, SWATCHES[+e.key - 1]); e.preventDefault();
     } else if (e.key === "Escape") {
       n.g.blur(); select(null); e.preventDefault();
@@ -439,7 +554,7 @@
     document.body.appendChild(holder);
     var oldSvg = holder.querySelector("svg");
     if (!oldSvg) { holder.remove(); return; }
-    var before = readBoxes(oldSvg);
+    var before = readBoxes(oldSvg), beforeMsgs = seq ? readMessages(oldSvg) : {};
     var same = {};
     Array.prototype.forEach.call(oldSvg.children, function (el) { same[signature(el)] = true; });
     if (overlay) overlay.remove();
@@ -459,18 +574,26 @@
         n.g.style.opacity = "0";
       }
     });
-    Object.keys(before).forEach(function (id) { // boxes the edit removed: shown where they were, fading
-      if (nodes[id]) return;
-      before[id].parts.forEach(function (p) {
-        var c = p.cloneNode(true);
-        c.style.transition = "opacity 300ms ease";
-        overlay.appendChild(c);
+    steps.forEach(function (id) { // messages too: each starts at the step it held
+      var m = msgs[id], o = beforeMsgs[id];
+      m.g.style.transition = "none";
+      m.g.style.transform = o ? "translate(0px," + (o.y - m.y) + "px)" : "";
+      m.g.style.opacity = o ? "" : "0";
+    });
+    [[before, nodes], [beforeMsgs, msgs]].forEach(function (pair) { // what the edit removed: shown where it was, fading
+      Object.keys(pair[0]).forEach(function (id) {
+        if (pair[1][id]) return;
+        pair[0][id].parts.forEach(function (p) {
+          var c = p.cloneNode(true);
+          c.style.transition = "opacity 300ms ease";
+          overlay.appendChild(c);
+        });
       });
     });
     var fresh = Array.prototype.filter.call(svg.children, function (el) {
       var tag = el.tagName.toLowerCase();
       return el !== overlay && tag !== "defs" && tag !== "title" && tag !== "desc" && tag !== "style" &&
-        !(el.classList && el.classList.contains("dd-node")) && !same[signature(el)];
+        !(el.classList && (el.classList.contains("dd-node") || el.classList.contains("dd-msg"))) && !same[signature(el)];
     });
     fresh.forEach(function (el) { el.style.transition = "none"; el.style.opacity = "0"; });
     holder.remove();
@@ -482,6 +605,12 @@
         n.g.style.transition = before[id] ? slide : "opacity 400ms ease 300ms";
         n.g.style.transform = "";
         n.g.style.opacity = "";
+      });
+      steps.forEach(function (id) {
+        var m = msgs[id];
+        m.g.style.transition = beforeMsgs[id] ? slide : "opacity 400ms ease 300ms";
+        m.g.style.transform = "";
+        m.g.style.opacity = "";
       });
       Array.prototype.forEach.call(overlay.children, function (c) { c.style.opacity = "0"; });
       fresh.forEach(function (el) { el.style.transition = "opacity 400ms ease 450ms"; el.style.opacity = ""; });
@@ -498,6 +627,7 @@
   }
 
   window.ddPage = {nodes: nodes, layers: function () { return model.map(function (l) { return sorted(l); }); },
+                   messages: function () { return steps.slice(); },
                    ops: function () { return ops.map(function (o) { return o.op; }); }, animate: animate,
-                   edit: setEditing, select: function (id) { select(nodes[id] || null); }};
+                   edit: setEditing, select: function (id) { select(nodes[id] || msgs[id] || null); }};
 })();

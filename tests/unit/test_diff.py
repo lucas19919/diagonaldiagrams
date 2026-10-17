@@ -75,5 +75,25 @@ class Diff(unittest.TestCase):
         self.assertEqual(sorted(m), ["a", "b", "c", "d", "e"])
 
 
+class Messages(unittest.TestCase):
+    SEQ = {"actors": [{"id": "u", "name": "User"}, {"id": "api", "name": "API"}, {"id": "db", "name": "DB"}],
+           "messages": [{"from": "u", "to": "api", "label": "login"}, {"from": "api", "to": "db", "label": "look up"},
+                        {"from": "db", "to": "api", "label": "row"}, {"from": "api", "to": "u", "label": "token"}]}
+
+    def test_messages_moved_added_removed_and_relabeled(self):
+        new = json.loads(json.dumps(self.SEQ))
+        m = new["messages"]
+        m[1].update(id="api->db:look up", label="find the user")  # a relabel keeps the id (scene/patch.py)
+        m[0], m[1] = m[1], m[0]
+        m[3:] = [{"from": "api", "to": "u", "label": "session"}]
+        d = diff(draw(self.SEQ, "seq"), draw(new, "seq"))
+        self.assertEqual(d["sentences"], ['Added the message "session" from API to User',
+                                          'Removed the message "token" from API to User',
+                                          'Moved the message "login" from step 1 to step 2',
+                                          'The message from API to DB now reads "find the user"'])
+        self.assertEqual(d["messages"]["moved"], [{"id": "u->api:login", "step": [1, 2]}])
+        self.assertEqual(diff(draw(self.SEQ, "seq"), draw(self.SEQ, "seq"))["sentences"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

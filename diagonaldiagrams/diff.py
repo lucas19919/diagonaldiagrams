@@ -1,12 +1,13 @@
 """What changed between two drawings of one figure, matched by the ids both carry (DESIGN 21.4).
 
-    diff(old_svg, new_svg) -> {"nodes": {...}, "edges": {...}, "shifted": {...}, "sentences": [...]}
+    diff(old_svg, new_svg) -> {"nodes": {...}, "edges": {...}, "messages": {...}, "shifted": {...}, "sentences": [...]}
 
-Nodes match by data-node and edges by data-id, so the ids must be stable (D15): a render after an
-edit keeps them. Rows are the verdict's rows (outline.layout_rows): boxes whose middles sit within
-30 px of each other. A schema's layers are columns, so there they are columns, and a sequence's one
-row is its actors. Each old row is matched to the new row that holds most of its boxes, so a
-box that only rides along when rows shift is not reported as moved to another row.
+Nodes match by data-node, and edges and a sequence's messages by data-id, so the ids must be stable
+(D15): a render after an edit keeps them. Rows are the layout's layers when both drawings' pages
+give them, else boxes whose middles sit within 30 px of each other. A schema's layers are columns,
+so there they are columns, and a sequence's one row is its actors. Each old row is matched to the
+new row that holds most of its boxes, so a box that only rides along when rows shift is not
+reported as moved to another row; a message moved to another step is told from the ones it passed.
 """
 import re
 import xml.etree.ElementTree as ET
@@ -66,6 +67,15 @@ def _fills(svg):
 
 def _q(s):
     return f'"{s}"'
+
+
+def _in_order(ids, rank):
+    """The ids in the longest run (not necessarily adjacent) that keeps their old ranks' order."""
+    chain = []  # chain[i]: the longest such run ending at ids[i]
+    for i, k in enumerate(ids):
+        prev = max((chain[j] for j in range(i) if rank[ids[j]] < rank[k]), key=len, default=[])
+        chain.append(prev + [k])
+    return set(max(chain, key=len, default=[]))
 
 
 def page_layers(text):
@@ -155,6 +165,23 @@ def diff(old, new, old_layers=None, new_layers=None):
     e_added = [k for k in be if k not in ae]
     e_removed = [k for k in ae if k not in be]
     relabeled = [{"id": k, "was": ae[k]["label"], "now": be[k]["label"]} for k in be if k in ae and ae[k]["label"] != be[k]["label"]]
+    # a sequence's messages, matched by data-id: the ones outside the longest run still in their old
+    # order are the ones that moved to another step
+    am_ids, bm_ids = [m["id"] for m in a["messages"]], [m["id"] for m in b["messages"]]
+    amsg, bmsg = {m["id"]: m for m in a["messages"]}, {m["id"]: m for m in b["messages"]}
+    old_step, new_step = {k: i for i, k in enumerate(am_ids)}, {k: i for i, k in enumerate(bm_ids)}
+    kept = _in_order([k for k in bm_ids if k in amsg], old_step)
+    m_moved = [{"id": k, "step": [old_step[k] + 1, new_step[k] + 1]} for k in bm_ids if k in amsg and k not in kept]
+    m_added = [k for k in bm_ids if k not in amsg]
+    m_removed = [k for k in am_ids if k not in bmsg]
+    m_relabeled = [{"id": k, "was": amsg[k]["label"], "now": bmsg[k]["label"]} for k in bm_ids
+                   if k in amsg and amsg[k]["label"] != bmsg[k]["label"]]
+
+    def message(m):
+        return f"the message {_q(m['label'])} from {m['from']} to {m['to']}" if m["label"] else f"the message from {m['from']} to {m['to']}"
+
+    def short(m):  # a moved message: its label is enough, and its ends when it has none
+        return _q(m["label"]) if m["label"] else f"{m['from']} -> {m['to']}"
 
     def arrow(e):
         return f"{_q(name.get(e['from'], e['from']))} to {_q(name.get(e['to'], e['to']))}"
@@ -171,6 +198,10 @@ def diff(old, new, old_layers=None, new_layers=None):
     says += [f"Added an arrow from {arrow(be[k])}" for k in e_added]
     says += [f"Removed the arrow from {arrow(ae[k])}" for k in e_removed]
     says += [f"The arrow from {arrow(be[r['id']])} now reads {_q(r['now'])}" for r in relabeled]
+    says += [f"Added {message(bmsg[k])}" for k in m_added]
+    says += [f"Removed {message(amsg[k])}" for k in m_removed]
+    says += [f"Moved the message {short(bmsg[m['id']])} from step {m['step'][0]} to step {m['step'][1]}" for m in m_moved]
+    says += [f"The message from {bmsg[r['id']]['from']} to {bmsg[r['id']]['to']} now reads {_q(r['now'])}" for r in m_relabeled]
     if shifted:
         mean = sum((s["dx"] ** 2 + s["dy"] ** 2) ** 0.5 for s in shifted) / len(shifted)
         says.append(f"{len(shifted)} other box{'es' if len(shifted) > 1 else ''} shifted, {mean:.0f} px on average")
@@ -181,6 +212,7 @@ def diff(old, new, old_layers=None, new_layers=None):
         "nodes": {"added": added, "removed": removed, "renamed": renamed, "moved": moved, "reordered": reordered,
                   "recolored": recolored},
         "edges": {"added": e_added, "removed": e_removed, "relabeled": relabeled},
+        "messages": {"added": m_added, "removed": m_removed, "relabeled": m_relabeled, "moved": m_moved},
         # layout stability (PLAN scoreboard): how far the boxes the edit did not move went, against the canvas
         "shifted": {"count": len(shifted), "boxes": shifted,
                     "mean_of_diagonal": round(sum((s["dx"] ** 2 + s["dy"] ** 2) ** 0.5 for s in shifted) / len(both) / diag, 4)

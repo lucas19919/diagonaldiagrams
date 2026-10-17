@@ -129,10 +129,15 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     res = layered.layout(lnodes, ledges, [{"id": g["id"], "members": g["members"]} for g in groups],
                          dict(options, flat_room=flat_room, aspect=_aspect(spec), labels=label_w, margin=MARGIN,
                               same_rank=[s for s in same if len(s) > 1]))
-    if info is not None:  # for the page: each layer's boxes in order, and whether layers run across
+    if info is not None:  # for the page and the verdict: each layer's boxes in order, and whether layers run across
         info["layers"] = [[it for it in layer if it in ids] for layer in res.layers]
         info["layers"] = [layer for layer in info["layers"] if layer]
         info["across"] = str(options.get("direction", "TB")).upper() in ("LR", "RL")
+        if res.wrapped:  # where the columns break: a layer that starts above the one before it begins one
+            k = 0 if info["across"] else 1
+            start = [min(res.pos[i][k] for i in layer) for layer in info["layers"]]
+            breaks = [j for j in range(1, len(start)) if start[j] < start[j - 1]]
+            info["columns"] = [(lo + 1, hi) for lo, hi in zip([0] + breaks, breaks + [len(start)])]
     notes = (spec.get("notes", []) or [])[:2]
     cw, ch = res.size
     W = max(min_w, int(cw + 2 * MARGIN + 0.999))

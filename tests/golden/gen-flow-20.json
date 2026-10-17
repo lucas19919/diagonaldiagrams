@@ -4,7 +4,7 @@
   "tests/golden/inputs/flows/flow-20.json"
  ],
  "exit": 0,
- "html_sha256": "d2be274e0c668496f94590b0ef9bffb64fa2910001a0701bbbe141acd857cc61",
+ "html_sha256": "d6926f8020e2cc5829f3d313d9fc941f9b5bf81565b324306821103b4ab50668",
  "receipt": {
   "auto": false,
   "cmd": "flow",
@@ -217,12 +217,25 @@
  "verdict": {
   "items": 20,
   "layout": [
-   "row 1: Request received | Notify the warehouse (6) | Charge the card (14)",
-   "row 2: Load the customer account (1) | Check 2 passed? (decision) | Check 4 passed? (decision)",
-   "row 3: Score the fraud risk (2) | Send the receipt (8) | Validate the request (10) | Notify the warehouse (16)",
-   "row 4: Check 1 passed? (decision) | Check 3 passed? (decision) | Print the shipping label (17)",
-   "row 5: Charge the card (4) | Update the order status (9) | Score the fraud risk (12) | Send the receipt (18)",
-   "row 6: Write the ledger entry (5) | Reserve the stock (13) | Done"
+   "row 1: Request received",
+   "row 2: Load the customer account (1)",
+   "row 3: Score the fraud risk (2)",
+   "row 4: Check 1 passed? (decision)",
+   "row 5: Charge the card (4)",
+   "row 6: Write the ledger entry (5)",
+   "row 7: Notify the warehouse (6)",
+   "row 8: Check 2 passed? (decision)",
+   "row 9: Send the receipt (8) | Validate the request (10)",
+   "row 10: Check 3 passed? (decision)",
+   "row 11: Update the order status (9) | Score the fraud risk (12)",
+   "row 12: Reserve the stock (13)",
+   "row 13: Charge the card (14)",
+   "row 14: Check 4 passed? (decision)",
+   "row 15: Notify the warehouse (16)",
+   "row 16: Print the shipping label (17)",
+   "row 17: Send the receipt (18)",
+   "row 18: Done",
+   "wrapped into 3 columns: rows 1-6, rows 7-12, rows 13-18"
   ],
   "ok": true
  }

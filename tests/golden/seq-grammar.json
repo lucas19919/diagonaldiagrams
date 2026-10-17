@@ -4,7 +4,7 @@
   "examples/grammar_act.json"
  ],
  "exit": 0,
- "html_sha256": "49f37f1ccfd072188de6386aa5f5995e79fe2e58ac1b2699e12cf26839b11447",
+ "html_sha256": "4254adcc612518baa09aecbcacc54b156ef9b728a4a7dd39be32e07593fa2b64",
  "receipt": {
   "auto": false,
   "cmd": "seq",

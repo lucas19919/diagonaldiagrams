@@ -25,7 +25,9 @@ EOF
 It prints one JSON line:
 
 - `"ok": true`: done. The figure is at `svg`. `layout` lists what was drawn: each row's boxes left to
-  right and each frame's members, or a chart's axes and series. Check the content against it.
+  right and each frame's members (a long flow that wraps says which rows stand in which column), a
+  schema's columns of tables, a sequence's messages in order, or a chart's axes and series. Check the
+  content against it.
 - `"ok": false`: each error has a `fix`. Change the input and run again. Never edit the SVG.
 - `warnings`: the figure is drawn; act on one only if it matters.
 

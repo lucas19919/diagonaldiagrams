@@ -84,23 +84,60 @@ def read_figure(svg):
     return fig
 
 
-def layout_rows(fig):
+def _middle(n):
+    if n["shape"] == "diamond" and n.get("cx") is not None and n.get("cy") is not None:
+        return n["cx"], n["cy"]
+    return n["x"] + n["w"] / 2, n["y"] + n["h"] / 2
+
+
+def _layer_rows(fig, layers, across=False, columns=None):
+    """[[node ids in order], ...] of the layout's layers (left to right, or top to bottom across),
+    with a row of its own for any box the layers miss, and the line that says where a wrapped
+    figure's columns break."""
+    nodes = fig["nodes"]
+    rows = [r for r in ([i for i in layer if i in nodes] for layer in layers) if r]
+    rows += [[i] for i in nodes if not any(i in r for r in rows)]
+    k = 1 if across else 0
+    rows = [sorted(r, key=lambda i: _middle(nodes[i])[k]) for r in rows]
+    word = "column" if across else "row"
+    lines = []
+    if columns and len(columns) > 1:  # a wrapped figure: its layers stand in columns (bands, across)
+        lines.append(f"wrapped into {len(columns)} {'bands' if across else 'columns'}: " +
+                     ", ".join(f"{word}s {lo}-{hi}" if hi > lo else f"{word} {lo}" for lo, hi in columns))
+    return rows, word, lines
+
+
+def layout_rows(fig, layers=None, across=False, columns=None):
     """The compact outline every render verdict carries: chart axes and series, a sequence's
-    messages in order, or a diagram's rows of boxes left to right and each frame's members."""
+    messages in order, or a diagram's rows of boxes left to right and each frame's members.
+    layers: the layout's own layers, when the renderer gave them. Rows are then those layers (a
+    schema's columns, across), which a wrapped figure's heights don't show; columns: where a
+    wrapped figure's layers break, as [(first, last), ...] numbered from 1."""
+    def named(n):
+        return n["label"] + (" (decision)" if n["shape"] == "diamond" else "")
     if fig["roles"]:
         out = []
         for role, name in ROLES:
             vals = list(dict.fromkeys(fig["roles"].get(role, [])))
             if vals:
                 out.append(f"{name}: " + ", ".join(vals))
+        if layers and fig["nodes"]:  # a schema: its tables, then its columns of tables
+            rows, word, lines = _layer_rows(fig, layers, across, columns)
+            out += [f"{word} {k + 1}: " + " | ".join(named(fig["nodes"][i]) for i in r) for k, r in enumerate(rows)] + lines
         return out or None
     if fig["messages"]:
         return (["actors: " + " | ".join(fig["actors"])] +
                 [f"{k}. {m['from']} -> {m['to']}" + (f": {m['label']}" if m["label"] else "")
                  for k, m in enumerate(fig["messages"], 1)])
-    boxes, label = [], {}
+    label = {n["id"]: n["label"] for n in fig["nodes"].values()}
+    if layers and fig["nodes"]:
+        rows, word, lines = _layer_rows(fig, layers, across, columns)
+        out = [f"{word} {k + 1}: " + " | ".join(named(fig["nodes"][i]) for i in r) for k, r in enumerate(rows)] + lines
+        for f in fig["frames"]:
+            out.append(f"frame {f['label']}: " + ", ".join(label.get(m, m) for m in f["members"]))
+        return out
+    boxes = []
     for n in fig["nodes"].values():
-        label[n["id"]] = n["label"]
         if n["shape"] == "diamond":
             if n.get("cx") is not None and n.get("cy") is not None:
                 boxes.append((n["cy"], n["cx"], n["label"] + " (decision)"))
@@ -120,21 +157,29 @@ def layout_rows(fig):
     return out
 
 
-def outline(fig):
+def outline(fig, layers=None, across=False):
     """The structured outline (--outline): nodes with their row and position, edges with labels,
-    groups with members, sequence messages, chart axes and series. Long lists are capped."""
+    groups with members, sequence messages, chart axes and series. Long lists are capped. layers:
+    as layout_rows takes them; a node's row is then its layer (its "column", across)."""
     out = {"size": fig["size"]}
     nodes = list(fig["nodes"].values())
     if nodes and not fig["messages"]:
-        centers = sorted({round(n["y"] + n["h"] / 2) for n in nodes})
-        rows, row_of = [], {}
-        for c in centers:
-            if not rows or c - rows[-1] >= 30:
-                rows.append(c)
-            row_of[c] = len(rows)
+        word = "row"
+        if layers:
+            rows, word, _ = _layer_rows(fig, layers, across)
+            at = {i: k + 1 for k, r in enumerate(rows) for i in r}
+            row = {n["id"]: at[n["id"]] for n in nodes}
+        else:
+            centers = sorted({round(n["y"] + n["h"] / 2) for n in nodes})
+            rows, row_of = [], {}
+            for c in centers:
+                if not rows or c - rows[-1] >= 30:
+                    rows.append(c)
+                row_of[c] = len(rows)
+            row = {n["id"]: row_of[round(n["y"] + n["h"] / 2)] for n in nodes}
         group_of = {m: f["id"] for f in fig["frames"] for m in f["members"]}
         out["nodes"] = [{"id": n["id"], "name": n["label"], "shape": n["shape"],
-                         "row": row_of[round(n["y"] + n["h"] / 2)],
+                         word: row[n["id"]],
                          "x": round(n["x"] + n["w"] / 2), "y": round(n["y"] + n["h"] / 2),
                          **({"group": group_of[n["id"]]} if n["id"] in group_of else {})} for n in nodes[:CAP]]
     if fig["edges"]:

@@ -5,7 +5,7 @@ agent's edit; either way it lands in the spec as fields, constraints and style r
 the next generation of the spec.
 
     {"op": "pin",   "id": "psp", "x": 640, "y": 210}                     "z" too, in 3D
-    {"op": "order", "ids": ["auth", "api"]}
+    {"op": "order", "ids": ["auth", "api"]}                              nodes, or a sequence's messages
     {"op": "place", "id": "psp", "row": ["api", "psp", "auth"]}          a drag: its row, in order
     {"op": "style", "selector": "#psp", "set": {"fill": "#fee2e2"}}      null removes a property
     {"op": "text",  "id": "psp", "name": "Payment provider", "was": "PSP"}
@@ -62,8 +62,13 @@ def _pin(d, op):
 
 def _order(d, op):
     ids = _ids(op)
-    for i in ids:
-        _find(d, i)
+    kinds = {_find(d, i)[0] for i in ids}
+    if "edge" in kinds:
+        if kinds != {"edge"}:
+            raise _Conflict("an order names nodes or edges, not both", "order the nodes and the messages in separate operations")
+        if d.get("preset") != "seq":
+            raise _Conflict("only a sequence's messages have an order", "order nodes, or drop this operation")
+        return _order_messages(d, ids)
     cons = d.setdefault("constraints", [])
     for c in cons:
         held = c.get("order")
@@ -74,6 +79,20 @@ def _order(d, op):
                 held[slot] = i
             return
     cons.append({"order": ids})
+
+
+def _order_messages(d, ids):
+    """A sequence's messages in a new order: they take the steps they already hold, as their order
+    fields, so the messages the operation doesn't name keep theirs."""
+    edges = d["edges"]
+    if not all(isinstance(e.get("order"), int) for e in edges if str(e.get("id")) in ids):
+        steps = sorted(range(len(edges)), key=lambda k: (edges[k].get("order") is None, edges[k].get("order") or 0, k))
+        for step, k in enumerate(steps):  # messages that have no step yet get the one their place in the list gives
+            edges[k]["order"] = step
+    by_id = {str(e.get("id")): e for e in edges}
+    slots = sorted(by_id[i]["order"] for i in ids)
+    for slot, i in zip(slots, ids):
+        by_id[i]["order"] = slot
 
 
 def _place(d, op):

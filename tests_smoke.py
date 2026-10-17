@@ -1128,6 +1128,23 @@ def edit_loop_checks():
     shutil.copy(os.path.join(HERE, "examples", "flow_cross.json"), other)
     rc, over = run("flow", other, "-o", out)
     check("another spec drawn at the same path is not an edit of it", rc == 0 and '"changed"' not in over, over[-200:])
+    seq, seq_out = os.path.join(home, "seq.json"), os.path.join(home, "seq.svg")
+    shutil.copy(os.path.join(HERE, "examples", "seq_checkout.json"), seq)
+    run("seq", seq, "-o", seq_out)
+    with open(patch, "w", encoding="utf-8") as f:  # what the page writes: a message moved down two steps, relabeled, an actor colored
+        json.dump([{"op": "order", "ids": ["fe->api:POST /checkout", "api->pay:Authorize Card", "user->fe:Submit Order"]},
+                   {"op": "text", "id": "pay->db:Store Ledger TX", "label": "Write the ledger entry", "was": "Store Ledger TX"},
+                   {"op": "style", "selector": "#db", "set": {"fill": "#fff1d6"}}], f)
+    rc, applied = run("apply", seq, patch)
+    rc2, again = run("seq", seq, "-o", seq_out)
+    v = json.loads(again) if rc2 == 0 else {}
+    check("a sequence's messages move between steps and take new labels, and its actors new colors",
+          rc == 0 and v.get("layout", [])[1:4] == ["1. Web App -> API Gateway: POST /checkout",
+                                                     "2. API Gateway -> Payment Svc: Authorize Card",
+                                                     "3. Customer -> Web App: Submit Order"]
+          and v.get("changed") == ['Recolored "Postgres"', 'Moved the message "Submit Order" from step 1 to step 3',
+                                   'The message from Payment Svc to Postgres now reads "Write the ledger entry"'],
+          applied[-200:] + again[-400:])
 
 
 def story_checks():

@@ -66,7 +66,7 @@ The audit reads the finished SVG: labels on labels, labels too wide for their bo
 
 ## Edit and draw again
 
-A diagram's page has Edit. A person renames a box, recolors it (flow and arch), or moves it: within its row or into another one, a schema table into another column, a sequence's actor along the actors. Everything works from the keyboard too: Tab or the arrows go from box to box, Shift+arrows move the selected box, Enter renames, 1–6 pick a color, Ctrl+Z undoes. Nothing in the figure's files changes: each edit becomes a patch operation, which the page shows with Copy patch and Save patch.json.
+A diagram's page has Edit. A person renames a box, recolors it, or moves it: within its row or into another one, a schema table into another column, a sequence's actor along the actors. In a sequence they also drag a message to another step and change its label. Everything works from the keyboard too: Tab or the arrows go from box to box (Down from an actor goes to its messages), Shift+arrows move the selected box or message, Enter renames, 1–6 pick a color, Ctrl+Z undoes. Nothing in the figure's files changes: each edit becomes a patch operation, which the page shows with Copy patch and Save patch.json.
 
 ```text
 diagonaldiagrams apply deploy.json patch.json

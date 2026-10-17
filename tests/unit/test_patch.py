@@ -117,8 +117,8 @@ class V1Files(unittest.TestCase):
 
 
 
-def drawn_rows(kind, spec):
-    """The rows a render draws (its verdict's layout lines), for a v1 spec."""
+def drawn(kind, spec):
+    """(exit code, the verdict's layout lines) of a render of a v1 spec."""
     import json
     import tempfile
     from diagonaldiagrams import api
@@ -127,8 +127,13 @@ def drawn_rows(kind, spec):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(spec, f)
         code, out, _ = api.run([kind, path, "-o", os.path.join(d, "out.svg")])
-    verdict = json.loads(out.strip().splitlines()[-1])
-    return code, [line for line in verdict.get("layout", []) if line.startswith("row ")]
+    return code, json.loads(out.strip().splitlines()[-1]).get("layout", [])
+
+
+def drawn_rows(kind, spec):
+    """The rows a render draws (its verdict's layout lines), for a v1 spec."""
+    code, layout = drawn(kind, spec)
+    return code, [line for line in layout if line.startswith("row ")]
 
 
 def placed(v1, kind, ops):
@@ -181,6 +186,35 @@ class Place(unittest.TestCase):
                    {"op": "place", "id": "b", "row": ["b", "zz"]}, {"op": "place", "id": "a->b", "row": ["a->b", "c"]}):
             _, n, c, _ = placed(self.FLOW, "flow", [op])
             self.assertEqual((n, len(c)), (0, 1), op)
+
+
+class Messages(unittest.TestCase):
+    """A message dragged to another step in the page becomes an order over messages (DESIGN 21.3)."""
+    SEQ = {"actors": [{"id": "u", "name": "User"}, {"id": "api", "name": "API"}, {"id": "db", "name": "DB"}],
+           "messages": [{"from": "u", "to": "api", "label": "login"}, {"from": "api", "to": "db", "label": "look up"},
+                        {"from": "db", "to": "api", "label": "row"}, {"from": "api", "to": "u", "label": "token"}]}
+    IDS = ["u->api:login", "api->db:look up", "db->api:row", "api->u:token"]
+
+    def test_an_order_takes_the_steps_its_messages_held(self):
+        spec, n, c, warn = placed(self.SEQ, "seq", [{"op": "order", "ids": [self.IDS[2], self.IDS[1]]}])
+        self.assertEqual((n, c, warn), (1, [], []))
+        self.assertEqual([m["label"] for m in spec["messages"]], ["login", "row", "look up", "token"])
+        again, n, c, _ = placed(spec, "seq", [{"op": "order", "ids": [self.IDS[2], self.IDS[1]]}])
+        self.assertEqual((again, n, c), (spec, 1, []))  # a kept patch applied again changes nothing
+
+    def test_a_relabeled_message_keeps_its_id_and_moves(self):
+        spec, n, c, _ = placed(self.SEQ, "seq", [{"op": "text", "id": self.IDS[1], "label": "find the user", "was": "look up"},
+                                                 {"op": "order", "ids": [self.IDS[1], self.IDS[0]]}])
+        self.assertEqual((n, c), (2, []))
+        self.assertEqual(spec["messages"][0], {"from": "api", "to": "db", "id": "api->db:look up", "label": "find the user"})
+        code, layout = drawn("seq", spec)
+        self.assertEqual((code, layout[1:3]), (0, ["1. API -> DB: find the user", "2. User -> API: login"]))
+
+    def test_what_an_order_of_messages_cannot_be(self):
+        _, n, c, _ = placed(self.SEQ, "seq", [{"op": "order", "ids": [self.IDS[0], "u"]}])
+        self.assertEqual((n, c[0]["msg"]), (0, "order: an order names nodes or edges, not both"))
+        _, n, c, _ = placed(Place.FLOW, "flow", [{"op": "order", "ids": ["a->b", "a->c"]}])
+        self.assertEqual((n, c[0]["msg"]), (0, "order: only a sequence's messages have an order"))
 
 
 if __name__ == "__main__":

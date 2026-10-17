@@ -190,24 +190,28 @@ def _prevalidate(a):
     return warnings
 
 
-def _outline(svg_path, structured=False):
+def _outline(svg_path, structured=False, info=None):
     """The drawn layout as text (the verdict's layout rows), and with structured=True the --outline
-    object too. Lets an agent check the structure for a few dozen tokens instead of a picture."""
+    object too. Lets an agent check the structure for a few dozen tokens instead of a picture.
+    info: the layout's layers from the renderer, which the rows then follow."""
     from .outline import layout_rows, outline, read_figure
     try:
         raw = open(svg_path, encoding="utf-8").read()
         fig = read_figure(raw)
     except (OSError, SyntaxError):  # ElementTree's ParseError is a SyntaxError
         return None, None
-    return layout_rows(fig), (outline(fig) if structured else None)
+    info = info or {}
+    layers, across = info.get("layers"), bool(info.get("across"))
+    return (layout_rows(fig, layers, across, info.get("columns")),
+            (outline(fig, layers, across) if structured else None))
 
 
-def _finish(a, html, svg, count, unit, pre, changed=None):
+def _finish(a, html, svg, count, unit, pre, changed=None, info=None):
     """One JSON line per render: the files, the count, the audit verdict, and what changed since the
-    figure was last drawn at this path, when it was."""
+    figure was last drawn at this path, when it was. info: the layout's layers (_outline)."""
     rep = {"ok": True, "errors": [], "warnings": []} if getattr(a, "no_audit", False) else _audit_file(svg)
     out = {"ok": rep["ok"], "svg": svg, "html": html, "receipt": os.path.splitext(html)[0] + ".graph.json", unit: count}
-    layout, structured = _outline(svg, getattr(a, "outline", False))
+    layout, structured = _outline(svg, getattr(a, "outline", False), info)
     if layout:
         out["layout"] = layout
     if changed is not None:
@@ -579,7 +583,7 @@ def main():
                                             "auto": bool(getattr(a, "auto", False)),
                                             **({"engine": a.engine} if a.engine != "v2" else {})}, scene=_drawn_scene(spec, a.cmd),
                                  sheets=sheets))
-        _finish(a, o, s, item_cnt, "items", pre, changed)
+        _finish(a, o, s, item_cnt, "items", pre, changed, info)
     elif a.cmd == "bar":
         theme = _cli_theme(a)
         notes = _cli_notes(a, "bar")
