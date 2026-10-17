@@ -455,7 +455,11 @@ A `Placement` holds child positions (x, y, and optional z for 3D), container-loc
 - **Coordinates (`bk.py`):** Brandes–Köpf, with group borders forced into one block per side, so frames are rectangles that hold their members and nothing else (B20). A decision's branches stand beyond its side vertices.
 - **Routes (`layered.py`, `channels.py`):** an arrow leaves by a port, runs straight through its dummies, and turns in the gaps between layers. Each turn has a track of its own, assigned per gap (B21). A gap is as tall as its tracks need, so nothing is moved afterwards. Back edges either climb beside their nodes through port items (flow, B19, B23) or run from the top of the lower node to the bottom of the upper one (arch, `back: "ports"`). Two arrows that would trade columns in a gap get a dogleg.
 - **Wrap (`wrap.py`):** a layout of 12 or more layers well under the target aspect (default 4:3, or the spec's `size.aspect`) is cut between layers no frame spans. The chunks sit side by side, joined by corridors under, between and over them.
-- **No repair loop:** flow and arch draw once. The v1 path (`legacy.py`, `--layout-engine v1`) stays until P8.
+- **Pinned ends:** an edge's `from_at` and `to_at` keep its end at that offset along the side. Schema pins each relation to its column rows.
+- **Schema (`table` above):** the layered kernel run left to right (`direction: LR`, `back: "ports"`), so rows become ports on the tables' left and right sides. There is no separate `table` kernel.
+- **Sequence (`sequence.py`):** lifelines a pitch apart that fits the widest label, one step per message. Activations and fragments are not drawn yet.
+- **No repair loop:** flow, arch and schema draw once. The v1 path (`legacy.py`, `--layout-engine v1`) stays until P8; schema tables pinned with `x` and `y` still draw with it.
+- **Not built:** the other kernels in 7.2 and the container protocol of 7.1. A first version of each, added without a caller, was deleted in P4; each is built with the renderer that first uses it.
 
 ## 8. Routing, labels, painting
 

@@ -1,72 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="database schema" viewBox="0 0 1114 586" width="1114">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="database schema" viewBox="0 0 1054 446" width="1054">
 <title>Shop data model</title>
 <desc>Shop data model</desc>
-<rect width="1114" height="586" fill="#f5f5f5" aria-hidden="true"/>
+<rect width="1054" height="446" fill="#f5f5f5" aria-hidden="true"/>
 <defs><marker id="a" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#4f5d75"/></marker><marker id="aa" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#eb6c36"/></marker><marker id="al" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#7a8399"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Shop data model</text>
-<path d="M814,142 L756.5,142 Q748.5,142 748.5,150 L748.5,146 Q748.5,154 740.5,154 L683,154" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="CUSTOMER" data-to="ORDER" data-label="1:N places" data-id="CUSTOMER-&gt;ORDER:1:N places" role="graphics-symbol" aria-roledescription="relation" aria-label="CUSTOMER to ORDER: 1:N places"/>
-<rect x="710.5" y="124" width="76" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="748.5" y="136" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N PLACES</text>
-<path d="M437,154 L306,154" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="ORDER" data-to="LINE_ITEM" data-label="1:N contains" data-id="ORDER-&gt;LINE_ITEM:1:N contains" role="graphics-symbol" aria-roledescription="relation" aria-label="ORDER to LINE_ITEM: 1:N contains"/>
-<rect x="327.5" y="130" width="88" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="371.5" y="142" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N CONTAINS</text>
-<path d="M180,462 L180,154" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="PRODUCT" data-to="LINE_ITEM" data-label="1:N ordered in" data-id="PRODUCT-&gt;LINE_ITEM:1:N ordered in" role="graphics-symbol" aria-roledescription="relation" aria-label="PRODUCT to LINE_ITEM: 1:N ordered in"/>
-<rect x="129.5" y="284" width="101" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="180" y="296" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N ORDERED IN</text>
-<rect x="60" y="90" width="240" height="128" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="LINE_ITEM" data-label="LINE_ITEM" role="graphics-symbol" aria-roledescription="table" aria-label="LINE_ITEM: order_id (foreign key), product_id (foreign key), quantity"/>
-<path d="M60,126 L60,96 Q60,90 66,90 L294,90 Q300,90 300,96 L300,126 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
-<line x1="60" y1="126" x2="300" y2="126" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
-<text x="72" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">LINE_ITEM</text>
-<rect x="70" y="138" width="20" height="12" rx="2" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
-<text x="80" y="147" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
-<text x="95" y="149" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">order_id</text>
-<text x="288" y="149" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
-<line x1="66" y1="158" x2="294" y2="158" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
-<rect x="70" y="162" width="20" height="12" rx="2" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
-<text x="80" y="171" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
-<text x="95" y="173" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">product_id</text>
-<text x="288" y="173" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
-<line x1="66" y1="182" x2="294" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
-<text x="70" y="197" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">quantity</text>
-<text x="288" y="197" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">int</text>
-<rect x="437" y="90" width="240" height="128" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="ORDER" data-label="ORDER" role="graphics-symbol" aria-roledescription="table" aria-label="ORDER: id (primary key), customer_id (foreign key), total_cents"/>
-<path d="M437,126 L437,96 Q437,90 443,90 L671,90 Q677,90 677,96 L677,126 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
-<line x1="437" y1="126" x2="677" y2="126" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
-<text x="449" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">ORDER</text>
-<rect x="447" y="138" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
-<text x="457" y="147" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">PK</text>
-<text x="472" y="149" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
-<text x="665" y="149" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
-<line x1="443" y1="158" x2="671" y2="158" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
-<rect x="447" y="162" width="20" height="12" rx="2" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
-<text x="457" y="171" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
-<text x="472" y="173" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">customer_id</text>
-<text x="665" y="173" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
-<line x1="443" y1="182" x2="671" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
-<text x="447" y="197" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">total_cents</text>
-<text x="665" y="197" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">int</text>
-<rect x="814" y="90" width="240" height="104" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="CUSTOMER" data-label="CUSTOMER" role="graphics-symbol" aria-roledescription="table" aria-label="CUSTOMER: id (primary key), email"/>
-<path d="M814,126 L814,96 Q814,90 820,90 L1048,90 Q1054,90 1054,96 L1054,126 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
-<line x1="814" y1="126" x2="1054" y2="126" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
-<text x="826" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">CUSTOMER</text>
-<rect x="824" y="138" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
-<text x="834" y="147" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">PK</text>
-<text x="849" y="149" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
-<text x="1042" y="149" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
-<line x1="820" y1="158" x2="1048" y2="158" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
-<text x="824" y="173" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">email</text>
-<text x="1042" y="173" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">string</text>
-<rect x="60" y="410" width="240" height="104" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="PRODUCT" data-label="PRODUCT" role="graphics-symbol" aria-roledescription="table" aria-label="PRODUCT: id (primary key), sku"/>
-<path d="M60,446 L60,416 Q60,410 66,410 L294,410 Q300,410 300,416 L300,446 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
-<line x1="60" y1="446" x2="300" y2="446" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
-<text x="72" y="433" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">PRODUCT</text>
-<rect x="70" y="458" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
-<text x="80" y="467" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">PK</text>
-<text x="95" y="469" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
-<text x="288" y="469" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
-<line x1="66" y1="478" x2="294" y2="478" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
-<text x="70" y="493" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">sku</text>
-<text x="288" y="493" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">string</text>
-<line x1="30" y1="548" x2="1084" y2="548" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="562" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">PK = primary key, FK = foreign key, blue = relation</text>
+<rect x="30" y="102" width="240" height="104" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="CUSTOMER" data-label="CUSTOMER" role="graphics-symbol" aria-roledescription="table" aria-label="CUSTOMER: id (primary key), email"/>
+<path d="M30,138 L30,108 Q30,102 36,102 L264,102 Q270,102 270,108 L270,138 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="30" y1="138" x2="270" y2="138" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="42" y="125" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">CUSTOMER</text>
+<rect x="40" y="150" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="50" y="159" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="65" y="161" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="258" y="161" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="36" y1="170" x2="264" y2="170" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="40" y="185" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">email</text>
+<text x="258" y="185" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">string</text>
+<rect x="407" y="90" width="240" height="128" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="ORDER" data-label="ORDER" role="graphics-symbol" aria-roledescription="table" aria-label="ORDER: id (primary key), customer_id (foreign key), total_cents"/>
+<path d="M407,126 L407,96 Q407,90 413,90 L641,90 Q647,90 647,96 L647,126 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="407" y1="126" x2="647" y2="126" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="419" y="113" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">ORDER</text>
+<rect x="417" y="138" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="427" y="147" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="442" y="149" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="635" y="149" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="413" y1="158" x2="641" y2="158" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<rect x="417" y="162" width="20" height="12" rx="2" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
+<text x="427" y="171" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
+<text x="442" y="173" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">customer_id</text>
+<text x="635" y="173" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="413" y1="182" x2="641" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="417" y="197" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">total_cents</text>
+<text x="635" y="197" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">int</text>
+<rect x="784" y="168" width="240" height="128" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="LINE_ITEM" data-label="LINE_ITEM" role="graphics-symbol" aria-roledescription="table" aria-label="LINE_ITEM: order_id (foreign key), product_id (foreign key), quantity"/>
+<path d="M784,204 L784,174 Q784,168 790,168 L1018,168 Q1024,168 1024,174 L1024,204 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="784" y1="204" x2="1024" y2="204" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="796" y="191" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">LINE_ITEM</text>
+<rect x="794" y="216" width="20" height="12" rx="2" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
+<text x="804" y="225" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
+<text x="819" y="227" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">order_id</text>
+<text x="1012" y="227" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="790" y1="236" x2="1018" y2="236" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<rect x="794" y="240" width="20" height="12" rx="2" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
+<text x="804" y="249" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
+<text x="819" y="251" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">product_id</text>
+<text x="1012" y="251" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="790" y1="260" x2="1018" y2="260" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="794" y="275" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">quantity</text>
+<text x="1012" y="275" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">int</text>
+<rect x="407" y="258" width="240" height="104" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2" data-node="PRODUCT" data-label="PRODUCT" role="graphics-symbol" aria-roledescription="table" aria-label="PRODUCT: id (primary key), sku"/>
+<path d="M407,294 L407,264 Q407,258 413,258 L641,258 Q647,258 647,264 L647,294 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="407" y1="294" x2="647" y2="294" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="419" y="281" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">PRODUCT</text>
+<rect x="417" y="306" width="20" height="12" rx="2" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="427" y="315" font-size="7" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="442" y="317" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="635" y="317" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="413" y1="326" x2="641" y2="326" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="417" y="341" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">sku</text>
+<text x="635" y="341" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#7a8399" text-anchor="end" aria-hidden="true">string</text>
+<path d="M270,154 L407,154" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="CUSTOMER" data-to="ORDER" data-label="1:N places" data-id="CUSTOMER-&gt;ORDER:1:N places" role="graphics-symbol" aria-roledescription="relation" aria-label="CUSTOMER to ORDER: 1:N places"/>
+<path d="M647,166 L707.5,166 Q715.5,166 715.5,174 L715.5,213 Q715.5,221 723.5,221 L784,221" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="ORDER" data-to="LINE_ITEM" data-label="1:N contains" data-id="ORDER-&gt;LINE_ITEM:1:N contains" role="graphics-symbol" aria-roledescription="relation" aria-label="ORDER to LINE_ITEM: 1:N contains"/>
+<path d="M647,298 L707.5,298 Q715.5,298 715.5,290 L715.5,251 Q715.5,243 723.5,243 L784,243" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="PRODUCT" data-to="LINE_ITEM" data-label="1:N ordered in" data-id="PRODUCT-&gt;LINE_ITEM:1:N ordered in" role="graphics-symbol" aria-roledescription="relation" aria-label="PRODUCT to LINE_ITEM: 1:N ordered in"/>
+<rect x="300.5" y="130" width="76" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="338.5" y="142" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N places</text>
+<rect x="650.95" y="142" width="88" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="694.95" y="154" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N contains</text>
+<rect x="665" y="246.5" width="101" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="715.5" y="258.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N ordered in</text>
+<line x1="30" y1="408" x2="1024" y2="408" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="422" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">PK = primary key, FK = foreign key, blue = relation</text>
 </svg>

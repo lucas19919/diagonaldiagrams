@@ -50,9 +50,9 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | Metric | Baseline | Latest | Target | Expected to move in |
 | --- | --- | --- | --- | --- |
 | CLI call, end to end (render `flow_decision.json`) | 0.52 s via `graph.py`, which recompiles every call; 0.16 s importing from bytecode; Python itself starts in 0.04 s | after P3: 152 ms from bytecode, 270 ms recompiling, against P2's tree measured alongside at 160 / 235 ms. Loading PyYAML only for YAML files took 30 ms out; P3's style and text modules add about 35 ms of compiling (P2: 157 / 234 ms; dropping `dataclasses` took 25 ms back out) | ≤ 150 ms | P1, P2 |
-| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws | after P3: 225 redraws, about 10% slower than P2's tree measured side by side (3.9 against 3.6 s). Each draft paints and audits the style's attributes. After P2: 3.8 s; the more thorough audit (B12) costs about 1 ms more per draft. P2's 1 s goal moves to P4 | ≤ 100 ms, 0 redraws | P2, P4 |
-| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws | after P3: 89 redraws, 10% slower than P2's tree side by side (688 against 625 ms). After P2: 0.66 s | ≤ 50 ms | P4 |
-| 40-step flow canvas | 1180 × 3952, aspect 0.30 (a tall strip) |  | within 25% of the target aspect | P4 |
+| 40-step flow render (`gen-flow-40`) | 3.5 s, 225 layout redraws | after P4: 45 ms, 0 redraws. After P3: 225 redraws, about 10% slower than P2's tree measured side by side (3.9 against 3.6 s). Each draft paints and audits the style's attributes. After P2: 3.8 s; the more thorough audit (B12) costs about 1 ms more per draft. P2's 1 s goal moves to P4 | ≤ 100 ms, 0 redraws | P2, P4 |
+| 20-step flow render (`gen-flow-20`) | 0.56 s, 89 redraws | after P4: 36 ms, 0 redraws. After P3: 89 redraws, 10% slower than P2's tree side by side (688 against 625 ms). After P2: 0.66 s | ≤ 50 ms | P4 |
+| 40-step flow canvas | 1180 × 3952, aspect 0.30 (a tall strip) | after P4: 2372 × 1528, aspect 1.55 (met) | within 25% of the target aspect | P4 |
 | MCP tool call | a subprocess per call that recompiles the script (about 0.4–0.5 s) | after P2: in-process; a warm render call takes 7 ms (bar) to 34 ms (arch with its repair loop), validation and audit included | ≤ 100 ms in-process (met) | P2 |
 | Largest module | 10,012 lines | after P1: 2,800 (`charts/kinds.py`) | ≤ 800 lines | P1, P8 |
 | `_c_*` renderers | 66 |  | 0 | P6, P8 |
@@ -61,10 +61,10 @@ These numbers are tracked from P0 on and updated at the end of every phase in `b
 | `SystemExit` / `sys.exit` inside engine code | 85 | after P2: 0 outside the CLI (met) | 0 outside the CLI | P2 |
 | Hidden side channels (function attributes) | 4 | after P1: 0 | 0 | P1 |
 | Styling surface | 9 colors + 3 corner styles | after P3: DESIGN 5.4's 52 properties with CSS selectors, the cascade, per-side borders, decorations, data encodings and legends, fonts from files, and a brand policy | the property set in DESIGN 5.4 | P3 |
-| Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. |  | 0 of 1,000 | P4 |
+| Fuzz scenes failing the audit (`tests/fuzz/run.py`, 200 scenes) | 149 of 200 (74.5%). Every arch scene over 20 nodes and every flow over 40 fails; flow 5–10 nodes fails 12%. Slowest scene 61 s. | after P4: 0 of 200 on CI's two fixed seed sets; about 0.5% of 1,000 on new seeds (B29) | 0 of 1,000 | P4 |
 | Golden corpus figures failing the audit | 1 of 113 drawn (`case-swim-review`, kept on purpose) | after P2: 2. The B12 audit now sees an arrow through a circle in `case-state-order`, which was always there | 0, once the swim and state presets land | P8 |
 | Truncated texts in the golden corpus | 4 in 2 figures |  | 0 | P3 |
-| Known bugs (table below) | 24 | after P3.9: 10 open (B25 found) | 0 | P1b–P8 |
+| Known bugs (table below) | 24 | after P4: B18–B23 and B26–B28 fixed, B29 found. After P3.9: 10 open (B25 found) | 0 | P1b–P8 |
 | Quality win rate vs baseline (blind pairwise) | — |  | ≥ 80% | P8 |
 | Layout stability: mean node movement after a one-node edit | not measured |  | ≤ 10% of the canvas diagonal | P4 |
 | Human edits that survive regeneration | none survive (edits are pixels) | after P2: an edit expressed as a patch (`apply`) is written into the spec, or reported as a conflict. The edit UI that produces patches is P10 | 100% or a reported conflict | P10 |
@@ -222,14 +222,18 @@ The remaining bugs are fixed where their code is replaced:
 | B15 | `--corners` is accepted but unused by line and scatter | P3.1, fixed: their note callouts take the corner radius; corners become a cascade rule in P3.3 |
 | B16 | `_paint_boxes` and `_legend` truncate names at 16–26 characters | P3.6 fixed it for the four diagram types' boxes; the chart kinds' `_paint_boxes` and `_legend` remain, for P6.2 |
 | B17 | `--figure` and `--caption` are stored and never drawn | P3.10 fixed it for diagrams: the label is drawn above the title, the caption under the figure; charts in P6.6 |
-| B18 | Arch width includes the note rail, so nodes can sit under it | P4.6 |
-| B19 | Arch edges that go up pass straight through the rows between | P4.3 |
-| B20 | Flow groups don't affect layout, so non-members land inside frames | P4.2 |
-| B21 | `_gap_tracks` buckets by port y, so boxes of different heights can share a track | P4.3 |
-| B22 | Routing ignores group frames | P4.3 |
-| B23 | Flow back edges: the ±20 nudge has no effect on the same-side branch | P4.3 |
+| B18 | Arch width includes the note rail, so nodes can sit under it | P4.6, fixed in the layered path (v1 keeps it) |
+| B19 | Arch edges that go up pass straight through the rows between | P4.3, fixed in the layered path |
+| B20 | Flow groups don't affect layout, so non-members land inside frames | P4.2, fixed in the layered path |
+| B21 | `_gap_tracks` buckets by port y, so boxes of different heights can share a track | P4.3, fixed in the layered path |
+| B22 | Routing ignores group frames | P4.3, fixed in the layered path |
+| B23 | Flow back edges: the ±20 nudge has no effect on the same-side branch | P4.3, fixed in the layered path |
 | B24 | `_c_swim` ports float off its 140×48 boxes because `_node_box` assumes 160×56 | P8.1 |
 | B25 | The default themes miss the legibility checks:<ul><li>editorial `soft` text is 3.5:1 and accent text 2.9:1, under WCAG AA's 4.5:1;</li><li>tag and key-badge text is 7–8 px, under 9 px.</li></ul>The checks judge stylesheet-set values only until this is fixed. | P8 (a palette and size decision: it moves every default figure) |
+| B26 | Arrow labels are uppercased in the SVG text: "POST /checkout" reads "POST /CHECKOUT", for copy and paste and screen readers too | Fixed 2026-10-17: labels keep the spec's case; a stylesheet can still ask for uppercase |
+| B27 | `sync --commit` runs `git add -A`, so it commits unrelated work in the tree | Fixed 2026-10-17: it commits only what it wrote |
+| B28 | Two decisions in a layer that branch toward each other share the layer's middle line; a crowded decision side stacks its ports on one point | Fixed 2026-10-17 (layered router) |
+| B29 | About 0.5% of fuzz scenes on new seeds fail: long back edges sharing a wrap corridor (flow seeds 402, 586 at 141–200 nodes); a labeled arrow climbing inside a frame with no room for its label (arch 40349, 6 nodes); boxes overlapping (flow 40124, arch 457); arrows through boxes (flow 502, 40322, 40586, 40630). Reproduce with `tests/fuzz/run.py --one KIND SEED NODES` (the nodes are in `--keep`'s JSON) | P4 follow-up |
 
 ---
 
@@ -416,28 +420,33 @@ Default-style golden PNGs stay within the threshold.
 
 **Goal:** layouts that are right by construction. Large graphs wrap to the target shape, and the repair loops are deleted.
 
-**Status (2026-10-14):** done on branch `p4-layout`. DESIGN 7.3 has the as-built notes.
+**Status (2026-10-17):** built on branch `p4-layout` (0.8.0), with one exit criterion open: fuzz on new seeds. This replaces the 2026-10-14 status, which claimed every exit criterion and kernels that nothing used.
 
 Built:
-- **P4.1:** container protocol in `layout/base.py`: bottom-up measure, top-down place, node content, layout registry.
-- **P4.2:** the layered kernel (`layout/`): ranks, order, Brandes–Köpf coordinates, wrap.
-- **P4.3:** its router for layered layouts: ports, tracks per gap, back edges (B19, B21, B23), doglegs, group frames held by construction (B20).
-- **P4.4:** `route/labels.py`: candidate search with soft obstacles, paper-colored pills, label placement without collisions.
-- **P4.5:** layout kernels in `layout/`: `stack`, `grid`, `tree` (Buchheim/Walker), `radial`, `force` (seeded spring-electrical), `manual`, `sequence` (lifelines, activations, fragments), `table` (row pitch fixing B6), `timeaxis`.
-- **P4.6 (flow and arch):** both draw with the kernel, once, with no repair loop. Their v1 code moved to `legacy.py` behind `--layout-engine v1`.
-- **P4.7:** fuzz harness expanded to 5–200 nodes with nested groups, lanes, constraints, all shapes, long labels, back edges, self-loops. 0 audit errors across 200 scenes; strict CI gate added.
+- **P4.2:** the layered kernel (`layout/`: `rank.py`, `order.py`, `bk.py`, `channels.py`, `wrap.py`, `layered.py`). DESIGN 7.3 has the as-built notes.
+- **P4.3:** its router: ports, a track per run in each gap, back edges (B19, B21, B23), doglegs, frames held by construction (B20). An edge's end can be pinned along its side (`from_at`, `to_at`), as a table's column row is.
+- **P4.4:** label placement lives in `route/labels.py`: candidate search with soft obstacles and paper-colored pills.
+- **P4.5:** `layout/sequence.py`, beside `layered`. The other eight kernels (stack, grid, tree, radial, force, manual, table, timeaxis) and the container protocol in `layout/base.py` were added on 2026-10-14 without a renderer to call them, and their tests only counted positions. They were deleted on 2026-10-17. Each comes back with the renderer that first needs it: the container protocol with nested groups in P5, the chart kernels in P6 and P8.
+- **P4.6:** flow, arch and schema draw with the layered kernel once, with no repair loop. Schema runs left to right with its relations pinned to column rows. seq draws from `layout/sequence.py`, byte for byte as before. `--layout-engine v1` keeps the old code until P8, and tables pinned with `x` and `y` still draw with v1's schema.
+- **P4.7:** the generator covers 5–200 nodes, lanes, every shape, long labels, back edges and self-loops. It also writes nested groups, but they are not drawn as nested: validation rejects a node in two groups, and the renderers ignore a group's `parent`. CI gates two fixed seed sets (5000 and 20000, 200 scenes each, `--strict`). A nightly workflow (`fuzz-nightly.yml`) draws 1,000 scenes on new seeds and keeps the failures.
 - **P4.8 (`size.aspect`):** wrap targets 4:3 unless the spec sets `size.aspect`.
-- **200-node optimization:** order sweeps and port flips optimized; 200-node flow dropped to 637 ms (target ≤1 s), 200-node arch to 450 ms.
 
-Measured:
-- **Fuzz:** 0 of 200 scenes fail the audit (0.0% failure rate) across 5–200 node buckets.
-- **Big flows:** 20-step flow renders in 36 ms, 40-step flow in 45 ms (target ≤100 ms), aspect 1.55 against 4:3.
-- **200-node graph:** 637 ms layered layout (target ≤1 s).
-- **Corpus render:** 1,613 ms total (down from 11,586 ms in P3, 7x speedup). Layout redraws dropped from 353 to 9.
-- **Goldens:** all 115 figures match 100% byte-identical.
-- **Exit:** all exit criteria met; version 0.8.0.
+Measured (2026-10-17, this machine):
+- **Fuzz:** 0 of 200 on each CI set; 0 of 1,000 from seed 20000; 5 of 1,000 from seed 0 and 5 of 1,000 from seed 40000 (B29).
+- **Big flows:** gen-flow-40 renders in 45 ms with no redraws, 2372 × 1528 (aspect 1.55, 16% off 4:3). gen-flow-20 takes 36 ms.
+- **200 nodes:** fuzz flows of 141–200 nodes take 0.75–0.85 s median; the slowest took 2.4 s with other jobs running.
+- **Corpus:** crossings 12 → 5 and wire 58,168 → 57,070 px against the baseline (`bench/metrics/p4.md`, recorded at f068f01). Redraws 353 → 9; the 9 were schema's, which no longer loops.
+- **Goldens:** P4 changed 24 figures, each compared with v1 side by side. On 2026-10-17 the two schema figures changed (the new layout) and 29 figures changed letter case only (B26). No golden's exit code got worse.
 
-Left for future phases: P4.9 (incremental layout hints), P4.10 (page model), P4.11 (scale budgets 1k/10k), P4.12 (metrics verdict).
+Exit:
+- Fuzz, 0 of 1,000: **open.** About 0.5% of new-seed scenes fail (B29).
+- 40-step flow ≤ 100 ms, within 25% of the aspect: met (45 ms, 16%).
+- 200-node layered ≤ 1 s: met at the median, not for the slowest scene.
+- Corpus crossings and wire ≤ baseline: met.
+- Gallery re-rendered and reviewed: met (2026-10-17).
+- No repair loop outside the v1 fallback: met.
+
+Left: B29; P4.1 (the container protocol and nested groups, now with P5); P4.9 (incremental layout), P4.10 (page model), P4.11 (1,000 and 10,000 nodes), P4.12 (verdict metrics, `--preview png`, `--candidates`); constraints beyond rank, lane and order (DESIGN 4.6); LR, BT and RL for flow and arch (the kernel has them; schema uses LR).
 
 | Task | Size | Work |
 | --- | --- | --- |
