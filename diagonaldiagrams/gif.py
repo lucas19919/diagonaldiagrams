@@ -14,9 +14,11 @@ of the file. A frame that changes nothing adds its delay to the one before. NETS
 """
 import collections
 import struct
+import sys
 import zlib
 
 CLEAR = 255  # the palette index of a pixel that did not change
+_SAME = bytes([CLEAR]) + bytes(255)  # translates a zero byte of two rows' XOR to CLEAR, any other to 0
 
 
 class Frame:
@@ -151,21 +153,45 @@ def write_png(path, f):
 
 # ---- palette ---------------------------------------------------------------------------------
 
-def _pixels(row):
-    return [row[i:i + 3] for i in range(0, len(row), 3)]
+def _keys(rgb):
+    """The pixels of RGB bytes as ints, one machine word each, so counting and indexing them runs
+    in C. _key and _rgb turn one pixel's bytes into its int and back."""
+    buf = bytearray(len(rgb) // 3 * 4)
+    buf[0::4], buf[1::4], buf[2::4] = rgb[0::3], rgb[1::3], rgb[2::3]
+    return memoryview(buf).cast("I")
+
+
+def _key(rgb):
+    return int.from_bytes(bytes(rgb) + b"\x00", sys.byteorder)
+
+
+def _rgb(key):
+    return key.to_bytes(4, sys.byteorder)[:3]
 
 
 def _spans(a, b):
-    """{row: (x0, x1)}: where frame b differs from frame a, row by row (pixels, x1 inclusive)."""
+    """{row: (x0, x1)}: where frame b differs from frame a, row by row (pixels, x1 inclusive). The
+    first and last bytes that differ are found by halving: comparing two slices is cheaper than
+    turning a whole row into an integer."""
     out = {}
     for r, (ra, rb) in enumerate(zip(a.rows, b.rows)):
         if ra is rb or ra == rb:
             continue
-        x = int.from_bytes(ra, "big") ^ int.from_bytes(rb, "big")
-        n = len(ra)
-        hi = n - 1 - ((x & -x).bit_length() - 1) // 8  # the last byte that differs
-        lo = n - 1 - (x.bit_length() - 1) // 8          # the first
-        out[r] = (lo // 3, hi // 3)
+        lo, hi = 0, len(ra)  # the first byte that differs: ra[:lo] == rb[:lo], ra[:hi] != rb[:hi]
+        while hi - lo > 1:
+            mid = (lo + hi) >> 1
+            if ra[lo:mid] == rb[lo:mid]:
+                lo = mid
+            else:
+                hi = mid
+        first, hi = lo, len(ra)  # the last: ra[lo:] != rb[lo:], ra[hi:] == rb[hi:]
+        while hi - lo > 1:
+            mid = (lo + hi) >> 1
+            if ra[mid:hi] == rb[mid:hi]:
+                hi = mid
+            else:
+                lo = mid
+        out[r] = (first // 3, lo // 3)
     return out
 
 
@@ -200,15 +226,15 @@ def _median_cut(colors, slots):
 
 def palette(frames, spans):
     """(256 * 3 palette bytes, {rgb bytes: index}) for the whole loop."""
-    count = collections.Counter()
+    count = collections.Counter()  # by _keys, in the order the colors first appear (it breaks ties)
     for row, k in collections.Counter(frames[0].rows).items():
-        for px, m in collections.Counter(_pixels(row)).items():
+        for px, m in collections.Counter(_keys(row)).items():
             count[px] += m * k
     for f, sp in zip(frames[1:], spans[1:]):
         for r, (x0, x1) in sp.items():
-            count.update(_pixels(f.rows[r][3 * x0:3 * x1 + 3]))
+            count.update(_keys(f.rows[r][3 * x0:3 * x1 + 3]))
     total = sum(count.values())
-    ranked = count.most_common()
+    ranked = [(_rgb(c), m) for c, m in count.most_common()]
     exact = [c for c, m in ranked[:96] if m * 2000 >= total]
     chosen = set(exact)
     rest = [(tuple(c), m) for c, m in ranked if c not in chosen]
@@ -230,35 +256,53 @@ def _nearest(c, colors):
 # ---- LZW and the file --------------------------------------------------------------------------
 
 def lzw(data, min_size=8):
-    """GIF's LZW: variable-width codes, least significant bit first, a clear code when full."""
+    """GIF's LZW: variable-width codes, least significant bit first, a clear code when full.
+    The table maps each code's string to the code. Every prefix of a string in it is in it too, so
+    the longest match at a point is found by trying lengths 2, 4, 8, ... and then halving, not by
+    a lookup per byte. The first guess is the longest string that starts with the same byte: in a
+    long run of one byte, such as the unchanged pixels of a frame, it is usually right."""
     clear, eoi = 1 << min_size, (1 << min_size) + 1
-    out = bytearray()
-    acc, nbits, size, nxt, table = clear, min_size + 1, min_size + 1, eoi + 1, {}
-    it = iter(data)
-    prefix = next(it)
-    for k in it:
-        key = (prefix << 8) | k
-        c = table.get(key)
-        if c is not None:
-            prefix = c
-            continue
-        acc |= prefix << nbits
+    data, out = bytes(data), bytearray()
+    roots = {bytes([b]): b for b in range(clear)}
+    acc, nbits, size, nxt, table, longest = clear, min_size + 1, min_size + 1, eoi + 1, dict(roots), [1] * 256
+    i, n = 0, len(data)
+    while True:
+        m = min(longest[data[i]], n - i)
+        code = table.get(data[i:i + m])
+        if code is None:  # data[i:i + lo] is in the table and data[i:i + m] is not
+            lo, g = 1, 2
+            while g < m and data[i:i + g] in table:
+                lo, g = g, 2 * g
+            m = min(m, g)
+            while m - lo > 1:
+                mid = (lo + m) >> 1
+                if data[i:i + mid] in table:
+                    lo = mid
+                else:
+                    m = mid
+            m = lo
+            code = table[data[i:i + m]]
+        i += m
+        if i == n:
+            break
+        acc |= code << nbits
         nbits += size
         if nxt < 4096:
-            table[key] = nxt
+            table[data[i - m:i + 1]] = nxt
+            if m >= longest[data[i - m]]:
+                longest[data[i - m]] = m + 1
             nxt += 1
             if nxt > (1 << size) and size < 12:
                 size += 1
         else:
             acc |= clear << nbits
             nbits += size
-            table, nxt, size = {}, eoi + 1, min_size + 1
+            table, nxt, size, longest = dict(roots), eoi + 1, min_size + 1, [1] * 256
         while nbits >= 8:
             out.append(acc & 255)
             acc >>= 8
             nbits -= 8
-        prefix = k
-    acc |= prefix << nbits
+    acc |= code << nbits
     nbits += size
     if nxt < 4096 and nxt + 1 > (1 << size) and size < 12:  # the decoder adds one more entry first
         size += 1
@@ -280,43 +324,48 @@ def encode(frames, delays, loop=0):
     w, h = frames[0].w, frames[0].h
     spans = [None] + [_spans(a, b) for a, b in zip(frames, frames[1:])]
     pal, lookup, colors = palette(frames, spans)
+    keyed = {_key(c): i for c, i in lookup.items()}
 
-    def index(px):
-        i = lookup.get(px)
-        if i is None:
-            i = lookup[px] = _nearest(tuple(px), colors)
-        return i
+    def indices(rgb):
+        ks = _keys(rgb)
+        try:
+            return bytes(map(keyed.__getitem__, ks))
+        except KeyError:  # a color the palette did not count: the nearest it has
+            for c in set(ks) - keyed.keys():
+                keyed[c] = _nearest(tuple(_rgb(c)), colors)
+            return bytes(map(keyed.__getitem__, ks))
     images = []  # [delay, x, y, w, h, indices, transparent]
     canvas, coded = bytearray(), {}  # canvas: the palette index each pixel shows so far
     for row in frames[0].rows:
         if row not in coded:
-            coded[row] = bytes(index(px) for px in _pixels(row))
+            coded[row] = indices(row)
         canvas.extend(coded[row])
     images.append([delays[0], 0, 0, w, h, bytes(canvas), False])
     for k in range(1, len(frames)):
         rb = frames[k].rows
-        changed = {}  # row: [(x, index)], only where the shown index changes
+        changed = {}  # row: (x0, x1, indices), x0 and x1 the first and last whose shown index changes
         for r, (a, b) in spans[k].items():
-            row, at, out = rb[r], r * w, []
-            for x in range(a, b + 1):
-                i = index(row[3 * x:3 * x + 3])
-                if canvas[at + x] != i:
-                    canvas[at + x] = i
-                    out.append((x, i))
-            if out:
-                changed[r] = out
+            at = r * w
+            new, old = indices(rb[r][3 * a:3 * b + 3]), canvas[at + a:at + b + 1]
+            if new == old:
+                continue
+            canvas[at + a:at + b + 1] = new
+            n = len(new)
+            diff = (int.from_bytes(new, "big") ^ int.from_bytes(old, "big")).to_bytes(n, "big")
+            same = int.from_bytes(diff.translate(_SAME), "big")  # CLEAR where the index did not change
+            c0, c1 = n - len(diff.lstrip(b"\x00")), len(diff.rstrip(b"\x00"))
+            changed[r] = (a + c0, a + c1 - 1, (int.from_bytes(new, "big") | same).to_bytes(n, "big")[c0:c1])
         if not changed:  # nothing a viewer could see: the frame before stays up longer
             images[-1][0] += delays[k]
             continue
         y0, y1 = min(changed), max(changed)
-        x0 = min(c[0][0] for c in changed.values())
-        x1 = max(c[-1][0] for c in changed.values())
+        x0 = min(c[0] for c in changed.values())
+        x1 = max(c[1] for c in changed.values())
         bw = x1 - x0 + 1
         sub = bytearray(bytes([CLEAR]) * (bw * (y1 - y0 + 1)))
-        for r, cs in changed.items():
+        for r, (c0, c1, px) in changed.items():
             base = (r - y0) * bw - x0
-            for x, i in cs:
-                sub[base + x] = i
+            sub[base + c0:base + c1 + 1] = px
         images.append([delays[k], x0, y0, bw, y1 - y0 + 1, bytes(sub), True])
     parts = [b"GIF89a", struct.pack("<HHBBB", w, h, 0xF7, 0, 0), pal,
              b"\x21\xff\x0bNETSCAPE2.0\x03\x01" + struct.pack("<H", loop) + b"\x00"]
