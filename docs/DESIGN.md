@@ -1124,6 +1124,14 @@ A story is a list of views of one or more scenes:
 - Ids are stable and layout is incremental (D15), so in HTML the move from one view to the next animates positions and opacity.
 - Static outputs render one page per view, and one per reveal step if asked.
 
+**As built (stories slice, 2026-10-17).** `diagonaldiagrams story STORY.json -o OUT.html` (`story.py`, `web/story.js`):
+- **One figure per story** for now: `"figure": {"type", "spec"}`, drawn first through the usual render (`OUT.figure.svg`, its receipt and verdict).
+- **Views** take `focus`, `dim`, `hide`, `highlight` and `reveal` (a list, one selector per step), plus `title`, `text` and `notes`. The engine resolves each selector with the style system's matcher and warns when one matches nothing.
+- **Frames.** Each view, or each reveal step, is a frame: the figure drawn again with per-element styles (opacity, accent stroke, a heavier line). Precedence is dim, then highlight, then reveal, then hide. A reveal step shows its elements at full strength, and an arrow once both its ends show. Opacity now reaches everything an element owns (its text, badges, tail and label), not only its outline.
+- **Same layout in every frame.** Looks change color and opacity only, so frames have the same elements in the same places (a test checks this). The page moves between frames element by element: opacity, stroke, fill and line width fade with CSS transitions, and the camera (the viewBox, from `focus` plus padding) glides over 650 ms.
+- **The page.** Arrows, Space, Page Up/Down, Home and End move; N shows the notes; `#view` or `#view/step` links open a frame; printing gives a page per frame with its camera; reduced motion turns the motion off.
+- **Not yet:** several figures in one story, `show`, per-view annotations and style rules, pages and content blocks (21.1), a presenter view with a timer, PDF export.
+
 ### 21.3 Round-trip editing
 
 HTML output has an edit mode. Dragging, resizing, recoloring, retyping and reordering produce patches:

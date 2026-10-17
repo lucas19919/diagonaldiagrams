@@ -1,0 +1,21 @@
+{
+  "title": "How a request moves through the agent platform",
+  "figure": {"type": "arch", "spec": "agent_platform.json"},
+  "views": [
+    {"id": "platform", "title": "The platform",
+     "text": "Clients come in at the top, the agent runtime works in the middle, and results land in storage.",
+     "notes": "Start with the whole picture. Fifteen services in five rows."},
+    {"id": "runtime", "title": "Inside the agent runtime",
+     "text": "The agent keeps its memory beside it and calls the model directly.",
+     "focus": "group#runtime, #llm", "dim": "node:not(group#runtime node):not(#llm), edge:not([from=agent][to=memory]):not([from=agent][to=llm])",
+     "highlight": "#agent",
+     "notes": "Memory is pgvector; the model API is the one external dependency on the hot path."},
+    {"id": "request", "title": "One request, step by step",
+     "text": "A chat message reaches the gateway, the agent runs it, and asks the model.",
+     "dim": "node, edge", "reveal": ["#web", "#gw", "#agent", "#llm"],
+     "notes": "Advance once per hop."},
+    {"id": "tools", "title": "The tools it can call",
+     "focus": "group#tools", "dim": "node:not(group#tools node):not(#agent), edge:not([from=agent])",
+     "highlight": "group#tools node"}
+  ]
+}

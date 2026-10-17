@@ -49,6 +49,11 @@ def do_mcp(args):
                          "properties": {"spec": {"type": "string", "description": "the spec file to change"},
                                         "patch": {"description": "a list of operations (place, order, style, text, add, "
                                                                  "remove, move-to-group), or a patch file's path"}}}},
+        {"name": "story", "description": "Present one figure as a story: views that focus, dim, highlight and reveal "
+                                         "parts of it, in one HTML page that animates between them. story is the story "
+                                         "file's path; describe story shows its shape.",
+         "inputSchema": {"type": "object", "required": ["story", "out"],
+                         "properties": {"story": {"type": "string"}, "out": {"type": "string", "description": "the page, OUT.html"}}}},
         {"name": "diff", "description": "What changed between two drawings of a figure (.svg or .html): JSON and sentences.",
          "inputSchema": {"type": "object", "required": ["old", "new"],
                          "properties": {"old": {"type": "string"}, "new": {"type": "string"}}}},

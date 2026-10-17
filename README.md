@@ -78,6 +78,17 @@ diagonaldiagrams flow deploy.json -o out/deploy.svg
 
 `export OUT --to png|pdf|svg|drawio|excalidraw` writes other formats. draw.io and Excalidraw exports keep boxes, frames, and the routed arrows attached to their boxes, so a person can open the figure and drag things around. PNG and PDF use cairosvg if installed, else headless Edge or Chrome.
 
+## Stories
+
+One figure, several views of it, presented from one HTML page:
+
+```text
+diagonaldiagrams story examples/story_platform.json -o out/story.html
+{"ok": true, "html": "out/story.html", "frames": 7, "views": [{"id": "platform", ...}, {"id": "request", "steps": 4, ...}], ...}
+```
+
+A view names parts of the figure with stylesheet selectors (`#agent`, `group#runtime node`, `edge[from=agent]`) and says what to do with them: `focus` points the camera at them, `dim` and `hide` set them back, `highlight` draws them in the accent, and `reveal` shows them one step at a time. Each view has a `title`, a `text` shown under the figure, and speaker `notes`. Every view keeps the figure's layout, so the page moves between views by fading looks and gliding the camera. Arrows and Space move, N shows the notes, a link to `#request/2` opens that step, and printing gives one page per step. `describe story` has the format.
+
 ## Measured
 
 Five ways for an agent to draw the same flowchart, at 5, 11, 20 and 40 steps, two runs each, each run a fresh Claude Sonnet agent.

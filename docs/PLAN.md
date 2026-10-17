@@ -565,6 +565,8 @@ Left: B29; P4.1 (the container protocol and nested groups, now with P5); P4.9 (i
 
 **Goal:** the deck replacement. One scene, many views, presented from a single HTML file.
 
+**Status (2026-10-17):** a first slice of P9.4, P9.5 and P9.6 is built on branch `slice-stories` (stacked on `slice-edit-animate`), ahead of P5. `diagonaldiagrams story` presents one figure as views that focus, dim, hide, highlight and reveal, with titles, text and notes, in one offline HTML page that animates between them. DESIGN 21.2 has the as-built notes. Left: several figures per story, pages and content blocks (P9.1–P9.3), per-view annotations and styles, a presenter view, PDF (P9.7), story presets (P9.8), and the exit's 10-view story from a brief.
+
 | Task | Size | Work |
 | --- | --- | --- |
 | P9.1 Page layouts | M | `page` extension point; sizes `slide`, `A4`, `letter`, `poster`, `responsive`; page-level tokens (DESIGN 21.1). |

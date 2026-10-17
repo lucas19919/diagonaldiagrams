@@ -159,6 +159,21 @@ DESCRIBE = {
 
 
 DESCRIBE.update(_chart_meta())
+DESCRIBE["story"] = {  # the command; `chart story`, a user story map, keeps its entry under "also"
+    "input": "Story JSON: one figure and its views (DESIGN 21.2).",
+    "writes": "diagonaldiagrams story STORY.json -o OUT.html (the figure itself is drawn as OUT.figure.svg)",
+    "shape": {"title": "...", "figure": {"type": "flow|arch|seq|schema|mermaid",
+                                         "spec": "a path relative to the story file, or the spec itself"},
+              "views": [{"id": "...", "title": "...", "text": "shown under the figure", "notes": "speaker notes (N)",
+                         "focus": "selector: the camera frames it", "dim": "selector", "hide": "selector",
+                         "highlight": "selector: accent color, heavier line", "reveal": ["one selector per step"]}]},
+    "rules": ["selectors are the stylesheet's (describe style): #id, group#id node, edge[from=a][to=b], :not(...); a comma lists several",
+              "highlight undoes a dim; hide beats both; reveal shows each step at full strength, and an arrow once both its ends show",
+              "a selector that matches nothing is a warning; every view has the same layout, so the page animates looks and camera",
+              "keys: arrows, Space, Home, End; N shows the notes; a link to #view or #view/step opens it; printing gives a page per step"],
+    "example": "diagonaldiagrams story examples/story_platform.json -o out/story.html",
+    "also": {"chart story": DESCRIBE["story"]},
+}
 
 
 DESCRIBE["style"] = None  # built on request: it reads the style package, which most commands never load

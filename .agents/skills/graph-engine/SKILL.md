@@ -67,6 +67,13 @@ All take `--title`, `--subtitle` (state the finding), `--xlabel`, `--ylabel`, an
 `NAME.graph.json` beside it. Input given with `-` or `-s TEXT` is saved as `NAME.spec.mmd` or `NAME.spec.json`.
 `export DIR/NAME --to png|pdf|drawio|excalidraw` redraws from the receipt.
 
+## Stories
+
+To walk someone through a figure, write a story: the figure, then views that `focus`, `dim`, `hide`,
+`highlight` or `reveal` parts of it by selector, each with a `title`, `text` and `notes`.
+`diagonaldiagrams story STORY.json -o out/story.html` draws every view into one page that animates
+between them. `describe story` has the format; a warning means a selector matched nothing.
+
 ## Edits from a person
 
 A flow or arch page has Edit: rename, recolor, and drag boxes. It hands the person a patch, a JSON list like

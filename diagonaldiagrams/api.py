@@ -97,6 +97,8 @@ def tool_argv(name, a):
     kind = str(a.get("type") or "")
     if name == "diff":
         return ["diff", a.get("old"), a.get("new")]
+    if name == "story":
+        return ["story", a.get("story"), "-o", a.get("out")]
     if name == "apply":
         ops = a.get("patch")
         if isinstance(ops, str):

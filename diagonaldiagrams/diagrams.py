@@ -201,7 +201,33 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                 cx, cy, n = pos[nt["at"]]
                 rail.append((cx + n["_w"] / 2, cy, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
+    _owned_opacity(dr, sty)
     return dr, W, H, extra
+
+
+def _owned_opacity(dr, sty):
+    """A node's, edge's or frame's opacity reaches every part it owns (its underlay, text, badges,
+    icon, arrowhead tail, label pill), not only the outline the shape painter gives it, so a view can
+    dim or hide an element whole (story.py). An element that sets its own opacity keeps it."""
+    v = sty.views
+    memo = {}
+
+    def opacity(owner):
+        if owner not in memo:
+            c = (sty.node(owner) if owner in v["nodes"] else sty.edge(owner) if owner in v["edges"]
+                 else sty.group(owner) if owner in v["groups"] else {}).get("computed") or {}
+            o = c.get("opacity")
+            memo[owner] = o if isinstance(o, (int, float)) and not isinstance(o, bool) and o != 1 else None
+        return memo[owner]
+
+    def walk(items):
+        for e in items:
+            o = opacity(e.owner) if e.owner else None
+            if o is not None:
+                e.attrs.setdefault("opacity", o)
+            else:
+                walk(e.children)
+    walk(dr.items)
 
 
 ASPECT = 4 / 3  # a layered figure much taller than this wraps into columns (layout/wrap.py)
@@ -400,6 +426,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
         (any(m.get("reply") or m.get("async") for m in messages), "dashed = reply or event"),
         (http is not None, f"{paint.color_word(sty.edge(mids[http])['stroke'])} = HTTP" if http is not None else ""),
         (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
+    _owned_opacity(dr, sty)
     _fonts(dr, sty, embed)
     return dr.svg(), W, H
 

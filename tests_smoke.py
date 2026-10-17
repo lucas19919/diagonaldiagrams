@@ -340,6 +340,7 @@ def main():
     scene_checks()
     apply_checks()
     edit_loop_checks()
+    story_checks()
     style_checks()
     layout_checks()
 
@@ -1127,6 +1128,25 @@ def edit_loop_checks():
     shutil.copy(os.path.join(HERE, "examples", "flow_cross.json"), other)
     rc, over = run("flow", other, "-o", out)
     check("another spec drawn at the same path is not an edit of it", rc == 0 and '"changed"' not in over, over[-200:])
+
+
+def story_checks():
+    """story STORY -o OUT.html: one figure, several views, in one page (DESIGN 21.2)."""
+    print("== story ==")
+    out = os.path.join(WORK, "story", "platform.html")
+    rc, text = run("story", os.path.join(HERE, "examples", "story_platform.json"), "-o", out)
+    v = json.loads(text) if text.strip().startswith("{") else {}
+    page = open(out, encoding="utf-8").read() if os.path.isfile(out) else ""
+    check("a story draws its figure and a page with every frame",
+          rc == 0 and v.get("frames") == 7 and [x["steps"] for x in v.get("views", [])] == [1, 1, 4, 1]
+          and os.path.isfile(os.path.join(WORK, "story", "platform.figure.svg")) and 'id="dd-story"' in page
+          and "ddStory" in page, text[-300:])
+    bad = os.path.join(WORK, "story", "bad.json")
+    with open(bad, "w", encoding="utf-8") as f:
+        json.dump({"figure": {"type": "arch", "spec": os.path.join(HERE, "examples", "agent_platform.json")},
+                   "views": [{"id": "x", "dim": "#nope"}, {"id": "y", "dim": "node:hover"}]}, f)
+    rc, text = run("story", bad, "-o", os.path.join(WORK, "story", "bad.html"))
+    check("a story's bad selector is an error with a fix", rc == 1 and "view 'y' dim" in text and '"fix"' in text, text[-300:])
 
 
 def style_checks():

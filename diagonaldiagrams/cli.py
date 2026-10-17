@@ -25,6 +25,7 @@ render_geo = lazy("diagonaldiagrams.geo", "render_geo")
 do_mcp = lazy("diagonaldiagrams.mcp", "do_mcp")
 do_apply = lazy("diagonaldiagrams.apply", "do_apply")
 do_diff = lazy("diagonaldiagrams.diff", "do_diff")
+do_story = lazy("diagonaldiagrams.story", "do_story")
 _mermaid_kind = lazy("diagonaldiagrams.mermaid", "_mermaid_kind")
 load_spec = lazy("diagonaldiagrams.mermaid", "load_spec")
 render_bar = lazy("diagonaldiagrams.plots", "render_bar")
@@ -277,7 +278,7 @@ def _spec_to_file(a):
 
 
 COMMANDS = ("flow", "arch", "seq", "schema", "mermaid", "bar", "line", "geo", "doc", "monitor", "sync", "extract",
-            "scatter", "chart", "export", "describe", "validate", "infer", "audit", "mcp", "apply", "diff")
+            "scatter", "chart", "export", "describe", "validate", "infer", "audit", "mcp", "apply", "diff", "story")
 
 
 class _Skipped:
@@ -455,6 +456,9 @@ def main():
     p.add_argument("-o", default=None, help="write here instead of over the spec")
     p.add_argument("--type", default=None, choices=["flow", "arch", "seq", "schema"],
                    help="how to read a v1 spec (default: from its fields)")
+    p = sub.add_parser("story", help="one figure, several views (focus, dim, highlight, reveal), presented in one HTML page")
+    p.add_argument("story", help="the story: JSON with a figure and its views")
+    p.add_argument("-o", required=True, help="the page to write (OUT.html; the figure is drawn as OUT.figure.svg)")
     p = sub.add_parser("diff", help="what changed between two drawings of a figure: JSON and sentences")
     p.add_argument("old", help="the earlier .svg or .html")
     p.add_argument("new", help="the later .svg or .html")
@@ -469,6 +473,9 @@ def main():
         return
     if a.cmd == "diff":
         _exit_with(do_diff(a))
+        return
+    if a.cmd == "story":
+        _exit_with(do_story(a))
         return
     if a.cmd == "export":
         _exit_with(do_export(a))
