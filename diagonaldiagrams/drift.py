@@ -11,7 +11,8 @@ _spec_diff = lazy("diagonaldiagrams.extract", "_spec_diff")
 def do_sync(args):
     """Auto-fix bot (plan Mode 3): monitor -> extract -> validate -> doc ->
     audit, optionally commit. Default touches only the working tree; --commit
-    creates a local commit (never pushes). Exit 1 if anything is left undone."""
+    creates a local commit of the files sync wrote, and nothing else (never
+    pushes). Exit 1 if anything is left undone."""
     import re as _re
     import subprocess as _sp
     path = args.path or "."
@@ -73,14 +74,19 @@ def do_sync(args):
             synced.append({"spec": spec, "diff": item.get("diff_summary", ""), "audited": audited})
     committed = False
     if args.commit and synced and not failed:
-        g = _sp.run(["git", "-C", path, "status", "--porcelain"], capture_output=True, text=True)
-        if g.returncode == 0 and g.stdout.strip():
+        # only what sync wrote: the specs it extracted, the docs it compiled and their figures. Other
+        # work in the tree, staged or not, stays out of the commit.
+        wrote = [os.path.join(path, s["spec"]) for s in synced] + [f for s in synced for f in s["audited"]]
+        wrote += [d if os.path.isabs(d) else os.path.join(path, d) for d in (args.docs or [])]
+        wrote = sorted({os.path.abspath(f) for f in wrote if os.path.exists(f)})
+        c2 = _sp.run(["git", "-C", path, "add", "--", *wrote], capture_output=True, text=True)
+        staged = _sp.run(["git", "-C", path, "diff", "--cached", "--quiet", "--", *wrote], capture_output=True, text=True)
+        if wrote and c2.returncode == 0 and staged.returncode == 1:
             names = ", ".join(s["spec"] for s in synced)
-            c2 = _sp.run(["git", "-C", path, "add", "-A"], capture_output=True, text=True)
             c3 = _sp.run(["git", "-C", path, "-c", "user.email=graph-bot", "-c", "user.name=graph-sync",
-                          "commit", "-m", f"chore(docs): synchronize architecture diagrams ({names})"],
+                          "commit", "-m", f"chore(docs): synchronize architecture diagrams ({names})", "--", *wrote],
                          capture_output=True, text=True)
-            committed = c2.returncode == 0 and c3.returncode == 0
+            committed = c3.returncode == 0
     out = {"ok": not failed, "synced": synced, "failed": failed, "committed": committed}
     print(json.dumps(out, indent=2))
     return 0 if not failed else 1

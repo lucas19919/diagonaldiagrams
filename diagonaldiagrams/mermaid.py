@@ -105,6 +105,7 @@ def _mm_flow(lines, title):
     import re
     nodes, order, edges, groups, stack = {}, [], [], {}, []
     errors, warnings = [], []
+    styled = 0  # classDef, class, style, linkStyle and click lines, which are read past
     id_re = re.compile(r"[^\W][\w.]*", re.U)
     simple = re.compile(r"(<)?(-{2,}>|-{3,}|-\.+->|-\.+-|={2,}>|={3,}|-{2,}[xo]|~~~)(?:\|([^|]*)\|)?")
     texty = re.compile(r"(--|-\.|==)\s+(.+?)\s+(-{2,}>|-{3,}|\.-+>|\.-+|={2,}>|={3,}|-{2,}[xo])")
@@ -188,7 +189,10 @@ def _mm_flow(lines, title):
             if stack:
                 stack.pop()
             continue
-        if re.match(r"(classdef|class|style|linkstyle|click|direction|acctitle|accdescr)\b", low):
+        if re.match(r"(classdef|class|style|linkstyle|click)\b", low):
+            styled += 1
+            continue
+        if re.match(r"(direction|acctitle|accdescr)\b", low):
             continue
         for stmt in [p.strip() for p in line.split(";") if p.strip()]:
             before = len(errors)
@@ -248,6 +252,9 @@ def _mm_flow(lines, title):
     spec = {"title": title, "nodes": [nodes[n] for n in order], "edges": edges,
             "groups": [g for g in groups.values()]}
     spec["budget"] = False  # drawn as written: the author chose its size
+    if styled:
+        warnings.append({"msg": f"{styled} classDef, class, style, linkStyle or click line{'s are' if styled > 1 else ' is'} not drawn",
+                         "fix": "style the figure with --style FILE, a JSON stylesheet (describe style)"})
     return spec, errors, warnings
 
 

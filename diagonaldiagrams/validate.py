@@ -260,6 +260,10 @@ def _structure_ok(spec, errors, warnings, kind=None):
         return False
     lists = {"nodes": ("id", "name"), "edges": ("from", "to"), "actors": ("id",),
              "messages": ("from", "to"), "tables": ("id",), "relations": ("from", "to")}
+    main = want or have
+    if main and isinstance(spec.get(main), list) and not spec[main]:
+        warnings.append({"msg": f"'{main}' is empty, so the figure has nothing in it",
+                         "fix": f"add at least one item to '{main}' (describe {kind or 'flow'} shows one)"})
     ok = True
     for key, need in lists.items():
         if key not in spec:

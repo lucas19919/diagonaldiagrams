@@ -301,6 +301,7 @@ def main():
     import shutil as _sh
     if _sh.which("git"):
         gp = os.path.join(WORK, "gitproj")
+        _sh.rmtree(gp, ignore_errors=True)  # a repository left by an earlier run would change what sync sees
         os.makedirs(gp + "/models", exist_ok=True)
         open(gp + "/models/s.sql", "w").write("CREATE TABLE t (id UUID PRIMARY KEY);\n")
         open(gp + "/graph.monitor.json", "w").write(
@@ -314,6 +315,7 @@ def main():
         subprocess.run(["git", "-C", gp, "add", "-A"], check=True)
         subprocess.run(["git", "-C", gp, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "s"], check=True)
         open(gp + "/models/s.sql", "w").write("CREATE TABLE t (id UUID PRIMARY KEY, x INT);\n")
+        open(gp + "/notes.txt", "w").write("someone's unrelated work\n")
         rc, out = run("sync", "--path", gp, "--map", gp + "/graph.monitor.json", "--commit")
         try:
             rep = json.loads(out)
@@ -322,6 +324,10 @@ def main():
                   and "+column 'x'" in rep["synced"][0]["diff"], out[:300])
         except (json.JSONDecodeError, KeyError, IndexError):
             check("sync fixes drift+commits", False, out[:300])
+        shown = subprocess.run(["git", "-C", gp, "show", "--name-only", "--format=", "HEAD"], capture_output=True, text=True).stdout.split()
+        left = subprocess.run(["git", "-C", gp, "status", "--porcelain"], capture_output=True, text=True).stdout
+        check("sync commits only what it wrote", shown == ["docs/s.graph.json"] and "notes.txt" in left
+              and "models/s.sql" in left, f"{shown} / {left}")
         rc, out = run("monitor", "--path", gp, "--map", gp + "/graph.monitor.json", "--ci")
         check("monitor clean after sync", rc == 0 and json.loads(out)["drift"] is False, out[:200])
     else:
