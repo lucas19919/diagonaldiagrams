@@ -864,7 +864,7 @@ The v1 adapters produce a scene with a preset. Field names mostly carry over; be
 | node `rank`; a rankless node gets its list index unless no node has a rank or `--auto` is set | `rank`; layout option `ranks: "explicit-then-index"` (v1) or `"auto"` (`--auto`, and the default for v2 scenes) |
 | node `lane` (−4..4, 240 px pitch) | `lane`, honored by `layered` as a column hint |
 | node `group`; `groups[{id, name, tag, nodes \| members}]` | groups. In v1 a group only drew a frame; in v2 it is also kept contiguous, which removes today's `intrude` failures. |
-| edge `from`, `to`, `label` (drawn uppercase), `focal`, `async` | same; uppercase becomes the preset rule `edge::label { text-transform: uppercase }` |
+| edge `from`, `to`, `label` (drawn uppercase until 0.8.1), `focal`, `async` | same; labels keep the case the spec gives, and `edge::label { text-transform: uppercase }` in a stylesheet brings v1's look back |
 | legend sentence "box = step, diamond = decision, rounded = start or end" | legend from the shapes present |
 | warning: unlabeled diamond exit; error: more than 3 diamond exits | `decision-exits` check; the exit limit stays a validation error |
 

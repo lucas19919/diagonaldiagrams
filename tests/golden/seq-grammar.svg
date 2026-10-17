@@ -12,25 +12,25 @@
 <line x1="860" y1="142" x2="860" y2="570" stroke="rgba(45,49,66,0.12)" stroke-width="1.2" stroke-dasharray="4,4" aria-hidden="true"/>
 <line x1="148" y1="176" x2="312" y2="176" stroke="#2e5aa8" stroke-width="1.6" data-msg="act" data-msg-from="Caller" data-msg-to="Doors" marker-end="url(#al)" data-id="caller-&gt;doors:act" role="graphics-symbol" aria-roledescription="message" aria-label="1. Caller to Doors: act"/>
 <rect x="189" y="152" width="82" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="230" y="164" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">[HTTPS] ACT</text>
+<text x="230" y="164" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">[HTTPS] act</text>
 <line x1="328" y1="228" x2="492" y2="228" stroke="#4f5d75" stroke-width="1.6" data-msg="decide" data-msg-from="Doors" data-msg-to="Grammar" marker-end="url(#a)" data-id="doors-&gt;grammar:decide" role="graphics-symbol" aria-roledescription="message" aria-label="2. Doors to Grammar: decide"/>
 <rect x="385" y="204" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="410" y="216" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">DECIDE</text>
+<text x="410" y="216" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">decide</text>
 <line x1="492" y1="280" x2="328" y2="280" stroke="#4f5d75" stroke-width="1.6" stroke-dasharray="4,4" data-msg="commit" data-msg-from="Grammar" data-msg-to="Doors" marker-end="url(#a)" data-id="grammar-&gt;doors:commit" role="graphics-symbol" aria-roledescription="message" aria-label="3. Grammar to Doors: commit"/>
 <rect x="385" y="256" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="410" y="268" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">COMMIT</text>
+<text x="410" y="268" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">commit</text>
 <line x1="328" y1="332" x2="672" y2="332" stroke="#4f5d75" stroke-width="1.6" data-msg="effect" data-msg-from="Doors" data-msg-to="Writer" marker-end="url(#a)" data-id="doors-&gt;writer:effect" role="graphics-symbol" aria-roledescription="message" aria-label="4. Doors to Writer: effect"/>
 <rect x="475" y="308" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="500" y="320" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">EFFECT</text>
+<text x="500" y="320" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">effect</text>
 <line x1="688" y1="384" x2="852" y2="384" stroke="#4f5d75" stroke-width="1.6" data-msg="append" data-msg-from="Writer" data-msg-to="DuckDB" marker-end="url(#a)" data-id="writer-&gt;duck:append" role="graphics-symbol" aria-roledescription="message" aria-label="5. Writer to DuckDB: append"/>
 <rect x="745" y="360" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="770" y="372" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">APPEND</text>
+<text x="770" y="372" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">append</text>
 <line x1="672" y1="436" x2="328" y2="436" stroke="#4f5d75" stroke-width="1.6" stroke-dasharray="4,4" data-msg="written" data-msg-from="Writer" data-msg-to="Doors" marker-end="url(#a)" data-id="writer-&gt;doors:written" role="graphics-symbol" aria-roledescription="message" aria-label="6. Writer to Doors: written"/>
 <rect x="472" y="412" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="500" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">WRITTEN</text>
+<text x="500" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">written</text>
 <line x1="312" y1="488" x2="148" y2="488" stroke="#2e5aa8" stroke-width="1.6" stroke-dasharray="4,4" data-msg="answered" data-msg-from="Doors" data-msg-to="Caller" marker-end="url(#al)" data-id="doors-&gt;caller:answered" role="graphics-symbol" aria-roledescription="message" aria-label="7. Doors to Caller: answered"/>
 <rect x="173" y="464" width="114" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="230" y="476" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">[HTTPS] ANSWERED</text>
+<text x="230" y="476" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">[HTTPS] answered</text>
 <rect x="70" y="90" width="140" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
 <rect x="70" y="90" width="140" height="52" rx="6" fill="#ffffff" stroke="#2d3142" data-node="caller" data-label="Caller" role="graphics-symbol" aria-roledescription="actor" aria-label="Caller, bearer"/>
 <rect x="78" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>

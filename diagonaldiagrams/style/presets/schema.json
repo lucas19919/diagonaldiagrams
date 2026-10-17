@@ -32,8 +32,7 @@
     "edge::label": {
       "font-family": "font-mono",
       "font-size": 10,
-      "color": "muted",
-      "text-transform": "uppercase"
+      "color": "muted"
     },
     "node::header": {
       "fill": "rgba(45,49,66,0.06)"

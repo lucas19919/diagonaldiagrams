@@ -102,29 +102,29 @@
 <path d="M597,149 L597,191 Q597,199 589,199 L402,199 Q394,199 394,207 L394,249" fill="none" stroke="#2e5aa8" stroke-width="1.8" marker-end="url(#al)" data-from="cli" data-to="engine" data-label="serve" data-id="cli-&gt;engine:serve" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="strohmann to Engine: serve"/>
 <circle cx="597" cy="156" r="2.7" fill="#2e5aa8" aria-hidden="true"/>
 <rect x="164" y="190" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="184" y="202" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LOAD</text>
+<text x="184" y="202" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">load</text>
 <rect x="388" y="165" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="410" y="177" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">EMBED</text>
+<text x="410" y="177" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">embed</text>
 <rect x="627" y="165" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="649" y="177" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CHECK</text>
+<text x="649" y="177" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">check</text>
 <rect x="248" y="254.5" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="268" y="266.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">OPEN</text>
+<text x="268" y="266.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">open</text>
 <rect x="472" y="254.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="494" y="266.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">HOLDS</text>
+<text x="494" y="266.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">holds</text>
 <rect x="388" y="349" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="408" y="361" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ACT</text>
+<text x="408" y="361" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">act</text>
 <rect x="388" y="508" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="413" y="520" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">APPEND</text>
+<text x="413" y="520" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">append</text>
 <rect x="244" y="413.5" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="266" y="425.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">AUDIT</text>
+<text x="266" y="425.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">audit</text>
 <rect x="248" y="572.5" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="268" y="584.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">LOAD</text>
+<text x="268" y="584.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">load</text>
 <rect x="616" y="349" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="636" y="361" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">USES</text>
+<text x="636" y="361" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">uses</text>
 <rect x="616" y="508" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="644" y="520" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">GOLDENS</text>
+<text x="644" y="520" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">goldens</text>
 <rect x="473.5" y="175" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="495.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SERVE</text>
+<text x="495.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">serve</text>
 <line x1="30" y1="662" x2="730" y2="662" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
 <text x="30" y="678" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">blue = HTTP call, coral = highlighted</text>
 </svg>

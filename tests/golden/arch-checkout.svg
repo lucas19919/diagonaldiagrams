@@ -120,35 +120,35 @@
 <path d="M749,626 L749,668 Q749,676 757,676 L907,676 Q915,676 915,684 L915,726" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="analytics" data-label="ingest" data-id="bus-&gt;analytics:ingest" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Analytics: ingest"/>
 <circle cx="749" cy="633" r="2.7" fill="#4f5d75" aria-hidden="true"/>
 <rect x="238.5" y="175" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="260.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CALLS</text>
+<text x="260.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">calls</text>
 <rect x="337.5" y="175" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="359.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CALLS</text>
+<text x="359.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">calls</text>
 <rect x="180" y="334" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="205" y="346" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">VERIFY</text>
+<text x="205" y="346" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">verify</text>
 <rect x="318" y="369" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="343" y="381" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">BROWSE</text>
+<text x="343" y="381" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">browse</text>
 <rect x="433.5" y="334" width="63" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="465" y="346" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CHECKOUT</text>
+<text x="465" y="346" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">checkout</text>
 <rect x="702" y="413.5" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="727" y="425.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CHARGE</text>
+<text x="727" y="425.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">charge</text>
 <rect x="132.5" y="493" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="160.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SESSION</text>
+<text x="160.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">session</text>
 <rect x="237.5" y="493" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="259.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CACHE</text>
+<text x="259.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">cache</text>
 <rect x="538.5" y="493" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="560.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">WRITE</text>
+<text x="560.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">write</text>
 <rect x="643.5" y="493" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="668.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">PLACED</text>
+<text x="668.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">placed</text>
 <rect x="873.5" y="493" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="893.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">CARD</text>
+<text x="893.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">card</text>
 <rect x="757.5" y="493" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="785.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SETTLED</text>
+<text x="785.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">settled</text>
 <rect x="594" y="652" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="622" y="664" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">RESERVE</text>
+<text x="622" y="664" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">reserve</text>
 <rect x="735" y="687" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="757" y="699" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">EMAIL</text>
+<text x="757" y="699" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">email</text>
 <rect x="807" y="652" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="832" y="664" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">INGEST</text>
+<text x="832" y="664" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ingest</text>
 <line x1="30" y1="821" x2="1024" y2="821" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
 <text x="30" y="837" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">blue = HTTP call, dashed = sent in the background, coral = highlighted</text>
 </svg>
