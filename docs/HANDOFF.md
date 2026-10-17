@@ -4,8 +4,9 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 
 ## State of the repository
 
-- **Branches.** Each phase is a branch stacked on the one before: `master` (= origin/master, 0.5.0) → `p0-baseline` → `p1-package` → `p1b-bugs` → `p2-core` → `p3-style` → `p4-layout` (current).
-  - All six phase branches are on GitHub since 2026-10-17, as a backup. None is merged into `master`, and there is no PR. Anyone who installs from the README still gets 0.5.0.
+- **Branches.** Each phase is a branch stacked on the one before: `master` (= origin/master, 0.5.0) → `p0-baseline` → `p1-package` → `p1b-bugs` → `p2-core` → `p3-style` → `p4-layout`.
+  - Two slices sit on `p4-layout`, ahead of P5: `slice-edit-animate` (edit a diagram in its page, apply the patch, animate the change) and, stacked on it, `slice-stories` (views of one figure in one page). `b29-fuzz` (the B29 fixes, also on `p4-layout`) is merged into `slice-stories`, which is current and holds everything.
+  - The six phase branches are on GitHub since 2026-10-17, as a backup; the slices and `b29-fuzz` are local only. None is merged into `master`, and there is no PR. Anyone who installs from the README still gets 0.5.0.
   - CI runs on pushes to `master` and on PRs, so the phase branches have not run in CI yet.
 - **Version.** 0.8.0 in `diagonaldiagrams/__init__.py`, `.claude-plugin/plugin.json` and `server.json` (they must match). Nothing past 0.5.0 has been released.
 - **Rules from the owner:**
@@ -34,7 +35,11 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 
 ## What's next
 
-The owner wants animation and better editing next. That leans on P4.9 (incremental layout, so a small edit moves little), the patch format from P2.16 (`apply`), and P9 and P10 (views, stories, round-trip editing). It reorders PLAN, which puts P5 first, so get the order agreed before starting.
+The owner asked for animation and better editing ahead of P5. Two thin slices are built (PLAN's P10 and P9 statuses, DESIGN 21.2 and 21.4 as-built):
+- **Edit loop:** a flow or arch page's Edit mode hands over a patch (`place`, `text`, `style`); `apply` writes it; drawing again at the same path keeps the other boxes near their places, reports `changed`, and animates the old drawing into the new one. `diff` compares any two drawings.
+- **Stories:** `story STORY.json -o OUT.html` presents one figure as views (focus, dim, hide, highlight, reveal) in one page that animates between them.
+
+Next is the owner's call: harden editing (keyboard, wrapped layouts, seq and schema moves, the P10.2 regeneration test), widen stories (several figures, pages, annotations, PDF), or go back to P5.
 
 ## Decisions that wait on the owner
 
