@@ -1,11 +1,11 @@
 """flow, arch, seq and schema: each preset's look over the layout kernels (layout/).
 
-flow and arch place their nodes with the layered layout and draw its routes as they are: no draft is
-audited and redrawn. `engine="v1"` (`--layout-engine v1`) draws with the v1 rows and repair loops
-(legacy.py) until P8.
+flow, arch and schema place their boxes with the layered layout and draw its routes as they are: no
+draft is audited and redrawn. `engine="v1"` (`--layout-engine v1`) draws with the v1 rows and repair
+loops (legacy.py) until P8.
 """
 from . import paint
-from ._draw import _box_h, _diamond_h, _groups_of, _label_box, _pill_w, _place_label, _round_poly, _seg_boxes
+from ._draw import _box_h, _diamond_h, _groups_of, _label_box, _pill_w, _place_label, _round_poly, _seg_boxes, corner_rx
 from ._theme import THEME
 from .scene.ids import edge_ids
 from .style.styler import Styler
@@ -78,10 +78,14 @@ def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, e
     return _as_svg((dr, W, H), sty, embed)
 
 
-def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label):
-    """Lays out and paints a flow or arch figure, all but its legend: (Drawing, W, H, legend rows)."""
+def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=None, pins=None, paint_node=None,
+             tails=True, attach=None, a11y_kind="arrow"):
+    """Lays out and paints a flow, arch or schema figure, all but its legend: (Drawing, W, H, legend
+    rows). edges: the spec's edges unless given; pins: {edge index: (from_at, to_at)}, ends kept at an
+    offset along their sides (a schema's column rows); paint_node(nid, node, cx, cy): its elements,
+    else the node's shape; attach(edge, route): the ends' attachment for exports and the audit."""
     from .layout import layered
-    edges = spec.get("edges", [])
+    edges = spec.get("edges", []) if edges is None else edges
     eids = edge_ids(edges)
     ids = {n["id"] for n in nodes}
     groups = _groups_of(spec, ids)
@@ -100,8 +104,14 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label):
             if isinstance(n.get(k), (int, float)) and not isinstance(n.get(k), bool):
                 d[k] = n[k]
         lnodes.append(d)
-    ledges = [{"id": eids[i], "from": e.get("from"), "to": e.get("to")} for i, e in enumerate(edges)
-              if e.get("from") in ids and e.get("to") in ids]
+    ledges = []
+    for i, e in enumerate(edges):
+        if e.get("from") in ids and e.get("to") in ids:
+            le = {"id": eids[i], "from": e.get("from"), "to": e.get("to")}
+            for key, at in zip(("from_at", "to_at"), (pins or {}).get(i, (None, None))):
+                if at is not None:
+                    le[key] = at
+            ledges.append(le)
     res = layered.layout(lnodes, ledges, [{"id": g["id"], "members": g["members"]} for g in groups],
                          dict(options, flat_room=flat_room, aspect=_aspect(spec)))
     notes = (spec.get("notes", []) or [])[:2]
@@ -126,6 +136,9 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label):
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
     for nid, (cx, cy, n) in pos.items():
+        if paint_node:
+            dr.add(*paint_node(nid, n, cx, cy))
+            continue
         painter = paint.SHAPES.get(n.get("shape", "rect")) or paint.SHAPES.get("rect")  # unknown: a box, as v1 draws it
         dr.add(*painter(t, nid, n, cx, cy, 160, n["_h"], corners, st=sty.node(nid)))
     node_boxes = [(cx - n["_w"] / 2, cy - n["_h"] / 2, cx + n["_w"] / 2, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
@@ -147,10 +160,11 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label):
         path = paint.edge_path(d, col, mid, eid, False,
                                {"data-from": e.get("from"), "data-to": e.get("to"), "data-label": e.get("label", ""),
                                 "data-id": eid}, width=es["stroke-width"], dash=es["dasharray"])
-        path.a11y = {"name": _edge_name(pos, e), "kind": "arrow"}
-        path.attach = {"from": {"node": e.get("from"), "port": r.sides[0]}, "to": {"node": e.get("to"), "port": r.sides[1]}}
+        path.a11y = {"name": _edge_name(pos, e), "kind": a11y_kind}
+        path.attach = attach(e, r) if attach else {"from": {"node": e.get("from"), "port": r.sides[0]},
+                                                     "to": {"node": e.get("to"), "port": r.sides[1]}}
         dr.add(path)
-        if e.get("from") != e.get("to"):
+        if tails and e.get("from") != e.get("to"):
             dr.add(paint.tail(pts[0][0], pts[0][1], r.sides[0], col, eid))
         drawn.append((e, eid, es, pts, _seg_boxes(pts)))
     _more_markers(dr, sty)
@@ -273,37 +287,32 @@ def _as_svg(out, sty=None, embed=False):
 
 
 def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
+    """Draw a sequence: actors across the top, messages down their lifelines in order (layout/sequence)."""
+    from .layout import sequence
     t = theme or THEME
     sty = Styler(spec, "seq", t, corners, sheets)
     actors = spec.get("actors", [])
     messages = spec.get("messages", [])
-    n_act = max(1, len(actors))
-    margin_x = 70
     _notes = (spec.get("notes", []) or [])[:2]
     head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure(), eyebrow=spec.get("figure"))
-    longest = 48
-    for m in messages:
-        if m.get("from") == m.get("to"):
-            continue
+
+    def label_w(m):
         lbl = m.get("label") or ""
         if m.get("proto"):
             lbl = f"[{m['proto'].upper()}] {lbl}"
-        longest = max(longest, _pill_w(lbl.upper()))
-    pitch = max(180, longest + 36)
-    W = margin_x * 2 + max(0, n_act - 1) * pitch + 140 + (200 if _notes else 0)
-    pos = {}
-    for i, a in enumerate(actors):
-        cx = margin_x + 70 + i * pitch
-        pos[a["id"]] = (cx, a)
-    top = max(90, head_h + 16)
-    bh = 52  # actor boxes share one height, grown when a name, styled or long, needs it
-    for a in actors:
+        return _pill_w(lbl.upper())
+
+    def box_h(a):  # actor boxes share one height, grown when a name, styled or long, needs it
         nl_, sl_, lab_, sb_ = paint.box_text(a.get("name", a.get("id", "")), a.get("sub", ""), 140, sty.node(a.get("id")))
         block = lab_["pitch"] * len(nl_) + (sb_["pitch"] * len(sl_) + 2 if sl_ else 0)
-        bh = max(bh, (20 if a.get("tag") else 8) + block + 3)
-    msg_gap = 52
-    msg_start = top + bh + 34  # the first message's label sits clear of the actor boxes
-    H = msg_start + len(messages) * msg_gap + 80
+        return (20 if a.get("tag") else 8) + block + 3
+    res = sequence.layout([{"id": a["id"], "w": 140, "h": box_h(a)} for a in actors],
+                          [{"from": m.get("from"), "to": m.get("to"), "label_w": label_w(m)} for m in messages],
+                          {"top": max(90, head_h + 16)})
+    W, H = res.size
+    W += 200 if _notes else 0
+    pos = {a["id"]: (res.x[a["id"]], a) for a in actors}
+    top, bh = res.top, res.box_h
     extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")),
@@ -322,7 +331,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
             continue
         x1, _ = pos[f_id]
         x2, _ = pos[t_id]
-        my = msg_start + i * msg_gap
+        my = res.y[i]
         es = sty.edge(mids[i])
         col = es["stroke"]
         mid = sty.marker(col)
@@ -384,6 +393,50 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
     return dr.svg(), W, H
 
 
+TABLE_W, ROW_H = 240, 24  # a table card's width and the pitch of its column rows (paint.table_card)
+
+
 def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None):
-    from .legacy import render_schema as v1
-    return v1(spec, corners, theme, sheets, embed)
+    """Draw tables and their relations: tables in columns left to right, each relation running from
+    a column row of one table to a column row of the other, laid out once by the layered layout.
+    Tables pinned with x and y keep their places, which the v1 path draws."""
+    tables = spec.get("tables", [])
+    if engine == "v1" or any(isinstance(tb, dict) and "x" in tb and "y" in tb for tb in tables):
+        from .legacy import render_schema as v1
+        return v1(spec, corners, theme, sheets, embed)
+    t = theme or THEME
+    sty = Styler(spec, "schema", t, corners, sheets)
+    rx = corner_rx(corners)
+    nodes, rows = [], {}
+    for tb in tables:
+        cols = tb.get("columns", [])
+        h = 44 + len(cols) * ROW_H + 12
+        nodes.append({"id": tb["id"], "name": tb.get("name", tb["id"]), "shape": "rect", "_w": TABLE_W, "_h": h, "tbl": tb})
+        rows[tb["id"]] = {c["name"]: 44 + k * ROW_H + ROW_H / 2 - h / 2 for k, c in enumerate(cols)}
+    relations = spec.get("relations", [])
+    rids = edge_ids(relations)
+    pins = {i: (rows.get(r.get("from"), {}).get(r.get("from_col")), rows.get(r.get("to"), {}).get(r.get("to_col")))
+            for i, r in enumerate(relations)}
+    # the gap between columns fits the widest relation label
+    widest = max((_pill_w(paint.transformed(str(r["label"]), sty.edge(rids[i])["label"]))
+                  for i, r in enumerate(relations) if r.get("label")), default=0)
+    options = {"direction": "LR", "back": "ports", "rank_gap": float(min(170, max(70, widest + 36)))}
+
+    def card(nid, n, cx, cy):
+        return paint.table_card(t, cx - n["_w"] / 2, cy - n["_h"] / 2, n["_w"], n["_h"], rx, nid, n["tbl"], ROW_H,
+                                st=sty.table(nid))
+
+    def attach(e, r):
+        return {"from": {"node": e.get("from"), "port": e.get("from_col")}, "to": {"node": e.get("to"), "port": e.get("to_col")}}
+    dr, W, H, extra = _layered(spec, "schema", nodes, t, sty, corners, options, 780, "database schema", edges=relations,
+                               pins=pins, paint_node=card, tails=False, attach=attach, a11y_kind="relation")
+    cols = [c for tb in tables for c in tb.get("columns", [])]
+    focal_tbl = _first(tables, lambda tb: tb.get("focal"))
+    focal_rel = _first(range(len(relations)), lambda i: relations[i].get("focal"))
+    hi = sty.node(focal_tbl["id"])["stroke"] if focal_tbl else (sty.edge(rids[focal_rel])["stroke"] if focal_rel is not None else None)
+    _legend(dr, t, sty, W, H, extra, 38, 24, _phrases(
+        (any(c.get("pk") for c in cols), "PK = primary key"),
+        (any(c.get("fk") for c in cols), "FK = foreign key"),
+        (bool(relations), f"{paint.color_word(sty.edge(rids[0])['stroke'])} = relation" if relations else ""),
+        (hi is not None, f"{paint.color_word(hi)} = highlighted" if hi else "")), spec)
+    return _as_svg((dr, W, H), sty, embed)

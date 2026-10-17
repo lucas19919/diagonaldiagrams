@@ -2,7 +2,9 @@
 
     result = layout(nodes, edges, groups, options)
 
-nodes: [{"id", "w", "h", "shape"?, "rank"?, "lane"?, "order"?}]; edges: [{"id", "from", "to"}];
+nodes: [{"id", "w", "h", "shape"?, "rank"?, "lane"?, "order"?}]; edges: [{"id", "from", "to",
+"from_at"?, "to_at"?}], where from_at and to_at pin an end on the top or bottom side (left or right
+across): its offset along the side from the node's middle, as a table's column row is (schema);
 groups: [{"id", "members": [node ids], "parent"?}]. Sizes are in pixels, direction TB (top to
 bottom), LR, BT or RL.
 
@@ -18,7 +20,6 @@ arrows within a layer run straight between neighbors or over the top. Groups are
 their members and nothing else (B20).
 """
 from . import bk, channels, order as ordering
-from .base import Layout, Placement, Size, register
 from .order import Layering
 from .rank import back_edges, ranks
 
@@ -369,46 +370,6 @@ def _turn(side, direction):
     return side
 
 
-class LayeredLayout(Layout):
-    """Layered layout kernel adhering to the container protocol (DESIGN 7.1)."""
-    name = "layered"
-    options = dict(DEFAULTS)
-
-    def __init__(self, options=None):
-        self.opts = dict(DEFAULTS, **(options or {}))
-
-    def measure(self, ctx, container) -> Size:
-        nodes = []
-        for c in container.children:
-            w = float(getattr(c, "w", 0) or getattr(getattr(c, "size", None), "w", 0) or 160.0)
-            h = float(getattr(c, "h", 0) or getattr(getattr(c, "size", None), "h", 0) or 56.0)
-            cid = getattr(c, "id", str(c))
-            sh = getattr(c, "shape", "rect") if hasattr(c, "shape") else "rect"
-            nodes.append({"id": cid, "w": w, "h": h, "shape": sh})
-        edges = getattr(container, "edges", [])
-        res = layout(nodes, edges, options=self.opts)
-        return Size(res.size[0], res.size[1])
-
-    def place(self, ctx, container, box) -> Placement:
-        nodes = []
-        for c in container.children:
-            w = float(getattr(c, "w", 0) or getattr(getattr(c, "size", None), "w", 0) or 160.0)
-            h = float(getattr(c, "h", 0) or getattr(getattr(c, "size", None), "h", 0) or 56.0)
-            cid = getattr(c, "id", str(c))
-            sh = getattr(c, "shape", "rect") if hasattr(c, "shape") else "rect"
-            nodes.append({"id": cid, "w": w, "h": h, "shape": sh})
-        edges = getattr(container, "edges", [])
-        res = layout(nodes, edges, options=self.opts)
-        bx, by = box[0], box[1]
-        pos = {k: (x + bx, y + by) for k, (x, y) in res.pos.items()}
-        frames = {k: (f[0] + bx, f[1] + by, f[2] + bx, f[3] + by) for k, f in res.frames.items()}
-        return Placement(pos=pos, size=res.size, routes=res.routes, frames=frames, issues=res.issues)
-
-
-register("layered", LayeredLayout)
-
-
-
 def _tbox(tf, b):
     a, c = tf(b[0], b[1]), tf(b[2], b[3])
     return (min(a[0], c[0]), min(a[1], c[1]), max(a[0], c[0]), max(a[1], c[1]))
@@ -445,6 +406,7 @@ class _Plan:
         self.peer = {}  # (edge id, role) -> ("x", fixed x of the next point) or ("node", the other end)
         self.runs = {}  # gap -> [Run]
         self.paths = []
+        self.pins = {}  # (edge id, role) -> offset an end keeps on its side (edge from_at, to_at)
 
     def _x(self, it):
         return self.xs[it]
@@ -464,6 +426,9 @@ class _Plan:
 
     def edge(self, e, kind, top, bot, ds):
         eid = e["id"]
+        for role, key in (("out", "from_at"), ("in", "to_at")):
+            if isinstance(e.get(key), (int, float)) and not isinstance(e.get(key), bool):
+                self.pins[(eid, role)] = float(e[key])
         if kind == "flat":
             a, b = e["from"], e["to"]
             between = [it for it in self.L.layers[self.rank[a]]
@@ -597,6 +562,11 @@ class _Plan:
                 for side, dy in (("w", -3.0), ("e", 3.0)):
                     for eid, role, _ in self.slots[(nid, side)]:
                         self.offset[(eid, role)] = max(-4.0, min(4.0, self.offset.get((eid, role), 0.0) + dy))
+        for (nid, side), items in self.slots.items():  # a pinned end stays where it was put
+            if side in ("n", "s"):
+                for eid, role, _ in items:
+                    if (eid, role) in self.pins:
+                        self.offset[(eid, role)] = self.pins[(eid, role)]
 
     def _lone(self, lone):
         """A side with one arrow: in line with its next point when that falls within the side, so
@@ -736,7 +706,7 @@ class _Plan:
     def _slide(self, m, run, i, other):
         eid, role, nid, side = m
         inf = self.info[nid]
-        if inf["shape"] == "dot":
+        if inf["shape"] == "dot" or (eid, role) in self.pins:
             return False
         lim = 10.0 if inf["shape"] == "diamond" else max(0.0, (inf["w"] if side in ("n", "s") else inf["h"]) / 2.0 - 10.0)
         cx = self._x(nid)

@@ -4,7 +4,7 @@
   "examples/shop_er.mmd"
  ],
  "exit": 0,
- "html_sha256": "37c7b234c2fa05116d91df5b68d664c1e60ed8a1013285c79f1b5b0f064b7da4",
+ "html_sha256": "59d661925000699dd1b6c06d6e78eec912f5183eea0f264ef98158f49471b678",
  "receipt": {
   "auto": false,
   "cmd": "schema",
@@ -169,7 +169,7 @@
  "verdict": {
   "items": 4,
   "layout": [
-   "tables: LINE_ITEM, ORDER, CUSTOMER, PRODUCT"
+   "tables: CUSTOMER, ORDER, LINE_ITEM, PRODUCT"
   ],
   "ok": true
  }
