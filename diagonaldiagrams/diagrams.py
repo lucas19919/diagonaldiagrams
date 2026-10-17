@@ -126,9 +126,20 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                 if at is not None:
                     le[key] = at
             ledges.append(le)
-    res = layered.layout(lnodes, ledges, [{"id": g["id"], "members": g["members"]} for g in groups],
-                         dict(options, flat_room=flat_room, aspect=_aspect(spec), labels=label_w, margin=MARGIN,
-                              same_rank=[s for s in same if len(s) > 1]))
+    lgroups = [{"id": g["id"], "members": g["members"]} for g in groups]
+    opts = dict(options, flat_room=flat_room, aspect=_aspect(spec), labels=label_w, margin=MARGIN,
+                same_rank=[s for s in same if len(s) > 1])
+    pinned = _pins(nodes) if str(options.get("direction", "TB")).upper() == "TB" else {}
+    if pinned and opts.get("prev"):  # where the pins put their boxes last time says nothing about the unpinned figure
+        opts["prev"] = {k: v for k, v in opts["prev"].items() if k not in pinned}
+    res = layered.layout(lnodes, ledges, lgroups, opts)
+    top = max(90, head_h + 20)
+    pin_ox = None
+    if pinned:  # drawn again with each pinned box in its row, at its x (DESIGN 4.6)
+        orders = [c["order"] for c in cons if isinstance(c.get("order"), list)]
+        res, pin_ox, issues = _hold_pins(lnodes, ledges, lgroups, opts, res, pinned, min_w, top, same, orders)
+        if info is not None and issues:
+            info["issues"] = issues
     if info is not None:  # for the page and the verdict: each layer's boxes in order, and whether layers run across
         info["layers"] = [[it for it in layer if it in ids] for layer in res.layers]
         info["layers"] = [layer for layer in info["layers"] if layer]
@@ -140,9 +151,11 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
             info["columns"] = [(lo + 1, hi) for lo, hi in zip([0] + breaks, breaks + [len(start)])]
     notes = (spec.get("notes", []) or [])[:2]
     cw, ch = res.size
-    W = max(min_w, int(cw + 2 * MARGIN + 0.999))
-    top = max(90, head_h + 20)
-    ox, oy = (W - cw) / 2.0, float(top)
+    W, ox = _frame(cw, min_w)
+    if pin_ox is not None:  # a pinned figure stands where its pins put it
+        ox = pin_ox
+        W = max(min_w, int(ox + cw + MARGIN + 0.999))
+    oy = float(top)
     by_id = {n["id"]: n for n in nodes}
     pos = {nid: (x + ox, y + oy, by_id[nid]) for nid, (x, y) in res.pos.items()}
     frames = {g: (b[0] + ox, b[1] + oy, b[2] + ox, b[3] + oy) for g, b in res.frames.items()}
@@ -216,6 +229,121 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
         dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
     _owned_opacity(dr, sty)
     return dr, W, H, extra
+
+
+def _frame(cw, min_w):
+    """(canvas width, x of the drawing on it) for a drawing cw wide: a margin each side, centered in
+    the least width."""
+    W = max(min_w, int(cw + 2 * MARGIN + 0.999))
+    return W, (W - cw) / 2.0
+
+
+def _pins(nodes):
+    """{node id: (x, y)}: the middles the nodes are pinned at. A malformed pin is validation's to report."""
+    out = {}
+    for n in nodes:
+        p = n.get("pin")
+        if isinstance(p, dict) and all(isinstance(p.get(k), (int, float)) and not isinstance(p.get(k), bool)
+                                       for k in ("x", "y")):
+            out[n["id"]] = (float(p["x"]), float(p["y"]))
+    return out
+
+
+def _hold_pins(lnodes, ledges, lgroups, opts, res, pinned, min_w, top, same, orders):
+    """A pinned figure laid out again (DESIGN 4.6): (layout, x of the drawing on the canvas, issues).
+
+    res is the layout without pins. Each pin's y picks the nearest row (in a wrapped figure, of the
+    column its x falls in), and its x a place among that row's boxes. The second layout keeps the
+    rows where they stood, the columns where they were cut, and the other boxes near their places
+    (prev), all read before wrap, where a figure is one column. The drawing is placed so the pins
+    land on their x; when wrap or label room moved two pins apart, their targets are corrected, at
+    most twice. What still misses is an issue."""
+    from .layout import layered
+    _, ox = _frame(res.size[0], min_w)
+    at = {i: (x + ox, y + top) for i, (x, y) in res.pos.items()}  # the figure without pins, on its canvas
+    size = {d["id"]: (d["w"], d["h"]) for d in lnodes}
+    k_of = {d["id"]: k for k, d in enumerate(lnodes)}
+    rows, cols = {}, {}
+    for d in lnodes:
+        rows.setdefault(res.rank[d["id"]], []).append(d["id"])
+    for r in sorted(rows):  # a wrapped figure's columns, from where it was cut
+        cols.setdefault(sum(1 for c in res.cuts if c < r), []).append(r)
+    spans, shift = {}, {}  # per column: its boxes' reach on the canvas, and the canvas's x less the flat x
+    for k, rs in cols.items():
+        ids = [i for r in rs for i in rows[r]]
+        spans[k] = (min(at[i][0] - size[i][0] / 2 for i in ids), max(at[i][0] + size[i][0] / 2 for i in ids))
+        shift[k] = sum(at[i][0] - res.flat[i] for i in ids) / len(ids)
+    rank, home = dict(res.rank), {}
+    for p, (px, py) in pinned.items():
+        home[p] = min(cols, key=lambda k: max(0.0, spans[k][0] - px, px - spans[k][1]))
+        rank[p] = min(cols[home[p]], key=lambda r: abs(at[rows[r][0]][1] - py))
+    want = {i: pinned[i][0] if i in pinned else at[i][0] for i in at}
+    place = {}
+    for r in sorted({rank[p] for p in pinned}):  # a pinned box's row, in the order of x
+        for k, i in enumerate(sorted((i for i in rank if rank[i] == r), key=lambda i: (want[i], k_of[i]))):
+            place[i] = k
+    nodes2 = []
+    for d in lnodes:
+        d = dict(d, rank=rank[d["id"]])
+        if d["id"] in place:
+            d.pop("lane", None)
+            d["order"] = place[d["id"]]
+        nodes2.append(d)
+    # a row a pinned box left empty is dropped, so the cuts are counted again over the rows left
+    dense = {r: k for k, r in enumerate(sorted(set(rank.values())))}
+    cuts = sorted({max((dense[s] for s in dense if s <= c), default=-1) for c in res.cuts})
+    o2 = dict(opts, prev={i: x for i, x in res.flat.items() if i not in pinned}, same_rank=[], wall=MARGIN - shift[0],
+              anchor={p: x for p, (x, _) in pinned.items()}, row_y={i: res.bands[r] for i, r in rank.items()},
+              cuts=[c for c in cuts if 0 <= c < len(dense) - 1])
+    targets = {p: x - shift[home[p]] for p, (x, _) in pinned.items()}
+    for attempt in range(3):
+        out = layered.layout(nodes2, ledges, lgroups, dict(o2, pins=targets))
+        keep = [p for p in pinned if p not in out.blocked] or list(pinned)
+        ox = sum(pinned[p][0] - out.pos[p][0] for p in keep) / len(keep)
+        miss = {p: pinned[p][0] - out.pos[p][0] - ox for p in keep}
+        if attempt == 2 or all(abs(e) <= 0.5 for e in miss.values()):
+            break
+        targets = {p: x + miss.get(p, 0.0) for p, x in targets.items()}
+    edge = ox < MARGIN  # the drawing would start past the canvas's left edge: it moves right
+    ox = max(ox, float(MARGIN))
+    return out, ox, _pin_issues(out, ox, top, pinned, size, edge, same, orders)
+
+
+def _pin_issues(res, ox, top, pinned, size, edge, same, orders):
+    """The pins that miss, and the same-rank and order constraints a pin broke (DESIGN 4.6)."""
+    why = {"pin": ("another pinned box holds the room it needs", "pin them further apart, or drop one"),
+           "edge": ("the canvas's left edge is in the way", "pin it at x={x} or further right"),
+           "layout": ("nothing beside it could move", "pin it at x={x}, or drop the pin")}
+    out = []
+    for p, (px, py) in pinned.items():
+        x, y = res.pos[p][0] + ox, res.pos[p][1] + top
+        path = f"nodes.{p}.pin"
+        if abs(x - px) > 0.5:
+            msg, fix = why.get(res.blocked.get(p) or ("edge" if edge else ""),
+                               ("an arrow's label or a column needed the room", "pin it at x={x}, or drop the pin"))
+            out.append({"code": "constraint", "msg": f"'{p}' is pinned at x={_n(px)} but drawn at x={_n(x)}: {msg}",
+                        "fix": fix.format(x=_n(x)), "path": path})
+        if abs(y - py) > size[p][1] / 2.0:
+            out.append({"code": "constraint", "msg": f"'{p}' is pinned at y={_n(py)} but drawn at y={_n(y)}, on the row "
+                        "nearest its pin: the boxes of this figure stand in rows",
+                        "fix": f"pin it at y={_n(y)}, or nearer the row it should join", "path": path})
+    for grp in same:
+        p = next((i for i in grp if i in pinned), None)
+        if p is not None and len({res.rank.get(i) for i in grp}) > 1:
+            out.append({"code": "constraint", "msg": f"the same-rank constraint on {', '.join(map(str, grp))} gives way to the pin of '{p}'",
+                        "fix": "drop the pin, or the node from the constraint", "path": "constraints"})
+    for seq in orders:
+        seq = [i for i in seq if i in res.pos]
+        p = next((i for i in seq if i in pinned), None)
+        rows = [[i for i in seq if res.rank[i] == r] for r in {res.rank[i] for i in seq}]
+        if p is not None and any(sorted(row, key=lambda i: res.pos[i][0]) != row for row in rows):
+            out.append({"code": "constraint", "msg": f"the order constraint on {', '.join(map(str, seq))} gives way to the pin of '{p}'",
+                        "fix": "drop the pin, or the node from the constraint", "path": "constraints"})
+    return out
+
+
+def _n(v):
+    return f"{round(v, 1):g}"
 
 
 def _owned_opacity(dr, sty):

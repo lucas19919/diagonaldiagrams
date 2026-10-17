@@ -11,6 +11,12 @@
 - options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "prev" ({node
   id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room" and
   "min_width". Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
+- options for pinned nodes (DESIGN 4.6), read in TB only: "pins" ({node id: x} in prev's frame: the
+  node's middle stands there), "wall" (in prev's frame, the least x a box's left edge may take before
+  the first cut: the canvas's margin), "anchor" ({node id: x on the canvas}: where the renderer puts
+  the pinned nodes, which sets the canvas's edges), "row_y" ({node id: y}: its layer's middle stands
+  at least that low, as Result.bands gives it) and "cuts" (the layers to wrap after, as Result.cuts
+  gives them; [] for none).
 
 The steps: break cycles (back_edges), rank (ranks), add a dummy wherever an arrow passes a layer and
 a left and a right border wherever a group spans one (Layering), order the layers for few crossings
@@ -59,12 +65,17 @@ class Route:
 
 
 class Result:
-    __slots__ = ("pos", "size", "routes", "frames", "layers", "crossings", "issues", "rank", "wrapped")
+    __slots__ = ("pos", "size", "routes", "frames", "layers", "crossings", "issues", "rank", "wrapped", "blocked",
+                 "bands", "cuts", "flat")
 
     def __init__(self):
         self.pos, self.size, self.routes, self.frames = {}, (0.0, 0.0), {}, {}
         self.layers, self.crossings, self.issues, self.rank = [], 0, [], {}
         self.wrapped = False
+        self.blocked = {}  # pinned node -> what kept it from its x ("pin", "edge", "layout"; bk.hold)
+        self.bands = []  # each layer's middle y, before wrap and before the frame is moved to the canvas
+        self.flat = {}  # each node's x, before wrap and label room and before the frame is moved
+        self.cuts = []  # the layers wrap cut after
 
 
 def _shape(n):
@@ -286,6 +297,14 @@ def layout(nodes, edges, groups=(), options=None):
     prev = o.get("prev") if direction == "TB" else None  # an earlier drawing's x per node: stay near it
     xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up,
                         {k: float(v) for k, v in prev.items() if k in info} if prev else None)
+    # 4b. pinned nodes go to their x, pushing what stands in their way (DESIGN 4.6)
+    pins = {k: float(v) for k, v in (o.get("pins") or {}).items() if k in info} if direction == "TB" else {}
+    if pins:
+        targets, walls = _pin_targets(pins, prev or {}, xs, ids, o.get("wall"), o.get("cuts") or [], nl)
+        lines = [(u, v) for u in L.kind if L.kind[u] in ("dummy", "port")
+                 for v in L.down[u] if L.kind[v] in ("dummy", "port")]  # an arrow's items, which a push keeps in line
+        xs, res.blocked = bk.hold(L.layers, xs, sep, width, forced_up, targets, walls, lines)
+    res.flat = {i: xs[i] for i in ids}
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
     band_h = [max((info[it]["h"] for it in layer if L.kind[it] == "node"), default=0.0) for layer in L.layers]
@@ -299,6 +318,10 @@ def layout(nodes, edges, groups=(), options=None):
 
     # 6. heights: a gap is as tall as its tracks and the frames' bands around it need
     head_at, pad_at = _frame_depths(span, gparent)
+    low = {}  # a layer whose middle must stand at least this low (row_y): the gap above it grows
+    for i, v in (o.get("row_y") or {}).items():
+        if i in rank:
+            low[rank[i]] = max(low.get(rank[i], v), float(v))
     y, band_top = 0.0, []
     gap_h = {}
     for g in range(-1, nl):
@@ -309,6 +332,8 @@ def layout(nodes, edges, groups=(), options=None):
             mid = (n + 1) * o["track"] + o["stub"] if n else 0.0
         else:
             mid = max(o["rank_gap"], (n + 1) * o["track"] + 2 * o["stub"] if n else 0.0)
+        if g + 1 in low:
+            mid += max(0.0, low[g + 1] - (y + pads + mid + heads + band_h[g + 1] / 2.0))
         gap_h[g] = (pads, mid, heads)
         y += pads + mid + heads
         if g + 1 < nl:
@@ -317,6 +342,7 @@ def layout(nodes, edges, groups=(), options=None):
     H = y
     res.layers = [list(x) for x in L.layers]
     cy = {r: band_top[r] + band_h[r] / 2.0 for r in range(nl)}
+    res.bands = [cy[r] for r in range(nl)]
     track_y = {}
     for g in range(-1, nl):
         pads, mid, heads = gap_h[g]
@@ -337,23 +363,27 @@ def layout(nodes, edges, groups=(), options=None):
         res.routes[r.id] = r
 
     # 6b. a tall strip folds into columns near the target aspect (wrap.py)
-    wrapped = False
     if o.get("aspect"):
         from .wrap import wrap
         target = float(o["aspect"])
-        wrapped = wrap(res.pos, rank, info, res.frames, span, res.routes, band_top, band_h,
-                       {r: n * o["group_pad"] for r, n in pad_at.items()},
-                       {r: n * o["group_head"] for r, n in head_at.items()}, o, 1.0 / target if across else target,
-                       min_width=o.get("min_width", 0.0))
-    res.wrapped = wrapped
+        res.cuts = wrap(res.pos, rank, info, res.frames, span, res.routes, band_top, band_h,
+                        {r: n * o["group_pad"] for r, n in pad_at.items()},
+                        {r: n * o["group_head"] for r, n in head_at.items()}, o, 1.0 / target if across else target,
+                        min_width=o.get("min_width", 0.0), cuts=o.get("cuts"))
+    wrapped = res.wrapped = bool(res.cuts)
 
     # 6c. a label with no clear spot beside its arrow gets a strip of room there (room.py)
     room_x = []
     if o.get("labels") and direction == "TB":
         from .room import make_room
         reach = {i: info[i]["w"] / 2.0 + o["loop"] + flat_room[(i, i)] for i in loop_nodes if (i, i) in flat_room}
+        left = None
+        anchor = {k: float(v) for k, v in (o.get("anchor") or {}).items() if k in res.pos}
+        if anchor:  # a pinned figure's canvas begins where its pins put it, as the renderer will place it
+            keep = [p for p in anchor if p not in res.blocked] or list(anchor)
+            left = sum(res.pos[p][0] - anchor[p] for p in keep) / len(keep)
         room_x = make_room(res.pos, info, res.frames, res.routes, o["labels"], reach, o.get("min_width", 0.0),
-                           o.get("margin", 0.0))
+                           o.get("margin", 0.0), left)
 
     # 7. into the canvas's frame of reference, and turned for LR, BT, RL
     pts = [p for r in res.routes.values() for p in r.points]
@@ -389,6 +419,19 @@ def layout(nodes, edges, groups=(), options=None):
             r.points = [(W - x, y) for x, y in r.points]
             r.sides = tuple({"e": "w", "w": "e"}.get(s, s) for s in r.sides)
     return res
+
+
+def _pin_targets(pins, prev, xs, ids, wall, cuts, nl):
+    """([(node, x)], walls) for bk.hold: each pin in BK's frame. prev's frame is read off the other
+    boxes, which keep their earlier places as nearly as BK allows (one shift for them all); with no
+    earlier places at all, BK's frame is the pins' own. walls: per layer, the wall in BK's frame for
+    the layers before the first cut (wrap sets the later columns right of them), else None."""
+    seen = [float(prev[i]) - xs[i] for i in ids if i not in pins and i in prev]
+    shift = sum(seen) / len(seen) if seen else 0.0  # BK's x + shift: prev's frame
+    out = [(p, pins[p] - shift) for p in ids if p in pins]
+    first = min(cuts) if cuts else nl
+    walls = [wall - shift if wall is not None and seen and r <= first else None for r in range(nl)]
+    return out, walls
 
 
 def _turn(side, direction):

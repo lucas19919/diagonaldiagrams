@@ -158,6 +158,76 @@ class Layered(unittest.TestCase):
         self.assertFalse(self.check(nodes, edges, aspect=4 / 3).wrapped)
 
 
+class Pins(unittest.TestCase):
+    """A pinned node in the layered layout (DESIGN 4.6): held at its x, what stands in its way pushed over."""
+
+    def test_hold_pushes_what_stands_in_the_way(self):
+        from diagonaldiagrams.layout import bk
+        layers = [["a", "b", "c"], ["d"]]
+        xs = {"a": 0.0, "b": 100.0, "c": 200.0, "d": 100.0}
+        width = dict.fromkeys(xs, 60.0)
+
+        def hold(targets, walls=None):
+            return bk.hold(layers, xs, lambda u, v: 100.0, width, {}, targets, walls)
+        out, blocked = hold([("a", 150.0)])
+        self.assertEqual(([out[k] for k in "abcd"], blocked), ([150.0, 250.0, 350.0, 100.0], {}))
+        out, blocked = hold([("a", 150.0), ("c", 150.0)])  # a held first: c can't come back past it
+        self.assertEqual((out["c"], blocked), (350.0, {"c": "pin"}))
+        out, blocked = hold([("b", 30.0)], walls=[0.0, None])  # a stands past the wall, so it moves first
+        self.assertEqual(([out[k] for k in "abcd"], blocked), ([30.0, 130.0, 230.0, 100.0], {"b": "edge"}))
+
+    def test_hold_moves_a_frames_borders_and_a_straight_arrow_whole(self):
+        from diagonaldiagrams.layout import bk
+        layers = [["a", "R1"], ["R2", "b"]]
+        xs = {"a": 0.0, "R1": 50.0, "R2": 50.0, "b": 150.0}
+        out, blocked = bk.hold(layers, xs, lambda u, v: 50.0, dict.fromkeys(xs, 0.0), {"R2": "R1"}, [("a", 100.0)])
+        self.assertEqual(([out[k] for k in ("a", "R1", "R2", "b")], blocked), ([100.0, 150.0, 150.0, 200.0], {}))
+        layers = [["a", "D1"], ["b", "D2"], ["D3"]]  # D1-D2 run straight, D2-D3 jog: only D2 follows D1
+        xs = {"a": 0.0, "D1": 50.0, "b": 0.0, "D2": 50.0, "D3": 70.0}
+        out, _ = bk.hold(layers, xs, lambda u, v: 50.0, dict.fromkeys(xs, 0.0), {}, [("a", 100.0)],
+                         straight=[("D1", "D2"), ("D2", "D3")])
+        self.assertEqual([out[k] for k in ("a", "D1", "b", "D2", "D3")], [100.0, 150.0, 0.0, 150.0, 70.0])
+
+    def diamond(self):
+        nodes = [{"id": i, "w": 160, "h": 56} for i in "abcd"]
+        edges = [{"id": f"{u}{v}", "from": u, "to": v} for u, v in ("ab", "ac", "bd", "cd")]
+        return nodes, edges
+
+    def test_a_pin_holds_in_the_frame_of_the_places_before(self):
+        nodes, edges = self.diamond()
+        first = layered.layout(nodes, edges)
+        prev = {i: x + 1000.0 for i, (x, _) in first.pos.items()}  # any frame: only differences count
+        res = Layered.check(self, nodes, edges, prev=prev, pins={"c": prev["c"] + 300.0})
+        shift = sum(prev[i] - res.pos[i][0] for i in "abd") / 3  # the result's frame, read off the other boxes
+        self.assertAlmostEqual(res.pos["c"][0] + shift, prev["c"] + 300.0, places=6)
+        self.assertEqual(res.blocked, {})
+
+    def test_the_wall_keeps_a_pin_off_the_canvas_edge(self):
+        nodes, edges = self.diamond()
+        first = layered.layout(nodes, edges)
+        prev = {i: x for i, (x, _) in first.pos.items()}
+        res = Layered.check(self, nodes, edges, prev=prev, pins={"b": -500.0}, wall=30.0)
+        shift = sum(prev[i] - res.pos[i][0] for i in "ad") / 2  # not c: the wall moved it along with b
+        self.assertEqual(res.blocked, {"b": "edge"})
+        self.assertAlmostEqual(res.pos["b"][0] + shift - 80, 30.0, places=6)  # its left edge, on the wall
+
+    def test_rows_stay_where_they_stood_and_cuts_carry_over(self):
+        nodes, edges = chain(4)
+        first = layered.layout(nodes, edges)
+        res = layered.layout(nodes, edges, (), {"row_y": {"n2": first.bands[2] + 100}})
+        self.assertEqual([round(b - a, 6) for a, b in zip(first.bands, res.bands)], [0, 0, 100, 100])
+        nodes, edges = chain(30)
+        wrapped = layered.layout(nodes, edges, (), {"aspect": 4 / 3})
+        self.assertTrue(wrapped.cuts)
+        again = layered.layout(nodes, edges, (), {"aspect": 4 / 3, "cuts": wrapped.cuts})
+        self.assertEqual(again.cuts, wrapped.cuts)
+        self.assertFalse(layered.layout(nodes, edges, (), {"aspect": 4 / 3, "cuts": []}).wrapped)
+        groups = [{"id": "g", "members": [f"n{wrapped.cuts[0]}", f"n{wrapped.cuts[0] + 1}"]}]  # a frame across the cut
+        moved = layered.layout(nodes, edges, groups, {"aspect": 4 / 3, "cuts": wrapped.cuts})
+        self.assertEqual(len(moved.cuts), len(wrapped.cuts))
+        self.assertNotIn(wrapped.cuts[0], moved.cuts)
+
+
 class Sequence(unittest.TestCase):
     def test_lifelines_make_room_for_the_widest_label_and_messages_step_down(self):
         from diagonaldiagrams.layout import sequence

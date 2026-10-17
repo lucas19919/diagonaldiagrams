@@ -213,6 +213,19 @@ Constraints guide layouts that understand them. A layout that cannot honor one r
 | `{"pin": "a", "x": 0, "y": 0}` | Fixed position in the container's coordinates. |
 | `{"together": ["a", "b", "c"]}` | Kept contiguous without drawing a frame. |
 
+**As built: a node's `pin` in flow and arch (layered).** The boxes of a layered figure stand in rows, so a pin there names a row and a place in it, not a free point.
+- **Coordinates:** the box's middle, in the figure's coordinates, as `--outline` gives each node's `x` and `y`. (A v1 schema table's `x` and `y` are its top-left corner, as v1 drew them.)
+- **The row:** `y` picks the layer whose middle is nearest in the figure drawn without its pins. In a wrapped flow, it is the nearest layer of the column that `x` falls in. The pin beats the node's own `rank`, `layer`, `lane` and `order`.
+- **The place:** the row's other boxes keep their order, and the pinned box goes in where `x` falls among them. Its middle then stands at `x` exactly. What lies in its way moves over by as little as the gaps allow: boxes and arrows in its layer, a frame (which moves or widens), and an arrow that runs straight (which moves whole).
+- **The rest stays put.** The other boxes keep their places from the figure drawn without pins, as nearly as the layout allows, and no row moves up. A row moves down only when new arrows need more room above it, and a row that a pinned box leaves empty stays as blank space. A wrapped flow breaks into columns where it did. The canvas grows to the right for a pin past its edge, and a pinned figure is not centered in its least width.
+- **When a pin can't hold,** the render's verdict carries a `constraint` warning that names the node, where it was pinned and where it is drawn:
+  - the box would cross the canvas's left edge;
+  - another pinned box holds the room it needs;
+  - its middle ends up more than half its height from `y`: `y` is far from every row, or its row moved down;
+  - a `same-rank` or `order` constraint gives way to the pin.
+- **Edits.** A `place` patch drops the node's pin, so a drag in the page still moves a pinned box (21.3).
+- **Not exact points.** A box between two rows would sit on the tracks the arrows turn in, and nothing would route around it. Free placement is the `manual` layout's (7.2), with its overlap checks.
+
 ### 4.7 Annotations
 
 Annotations target elements with selectors (5.2), so they work on every type.
@@ -457,9 +470,14 @@ A `Placement` holds child positions (x, y, and optional z for 3D), container-loc
 - **Label room (`room.py`):** after the routes and wrap, each label is placed as the renderer will place it. A label with no spot clear of boxes, frame borders, earlier labels and the canvas edge gets a strip of empty space beside its first spot (what lies past the strip moves over; a frame it crosses widens), or a wider canvas. Like wrap, it moves things once, with no audit and no redraw. A figure whose labels fit draws as before.
 - **Wrap (`wrap.py`):** a layout of 12 or more layers well under the target aspect (default 4:3, or the spec's `size.aspect`) is cut between layers no frame spans. The chunks sit side by side, joined by corridors under, between and over them.
 - **Pinned ends:** an edge's `from_at` and `to_at` keep its end at that offset along the side. Schema pins each relation to its column rows.
+- **Pinned nodes (4.6; `diagrams._hold_pins`, `bk.hold`):** a figure with pins is laid out twice.
+  - The first layout leaves the pins out. It gives the rows the pins' `y` choose and the places the other boxes keep.
+  - The second fixes every rank, puts each pinned node in its row, and orders that row by `x`. It keeps the first layout's rows at least as low as they stood (`row_y`, by growing the gap above a row), its wrap cuts (`cuts`; a cut a frame now spans moves to the nearest free layer), and its x before wrap as `prev`, as when an edit draws again (21.4). Read before wrap, a wrapped figure is still one column, so the pins are mapped into that frame through their column's offset.
+  - Its Brandes–Köpf coordinates are moved once, before routing (`bk.hold`). First, whatever stands past the canvas's left margin moves right to it. Then each pinned item goes to its `x` and pushes what stands in its way, along its layer, through a frame's borders, and along an arrow that runs straight, by as little as the gaps allow. A pin already held, or the margin, stops a push. Routes, frames, wrap and label room then work from these places, so nothing is checked and moved afterwards.
+  - The renderer places the drawing so the pins land on their `x`. When wrap or label room moved two pins apart, up to two more layouts correct their targets; a pin still off is reported.
 - **Schema (`table` above):** the layered kernel run left to right (`direction: LR`, `back: "ports"`), so rows become ports on the tables' left and right sides. There is no separate `table` kernel.
 - **Sequence (`sequence.py`):** lifelines a pitch apart that fits the widest label, one step per message. Activations and fragments are not drawn yet.
-- **No repair loop:** flow, arch and schema draw once. The v1 path (`legacy.py`, `--layout-engine v1`) stays until P8; schema tables pinned with `x` and `y` still draw with it.
+- **No repair loop:** flow, arch and schema draw once (a figure with pins is laid out twice first). The v1 path (`legacy.py`, `--layout-engine v1`) stays until P8; schema tables pinned with `x` and `y` still draw with it.
 - **Not built:** the other kernels in 7.2 and the container protocol of 7.1. A first version of each, added without a caller, was deleted in P4; each is built with the renderer that first uses it.
 
 ## 8. Routing, labels, painting
@@ -1163,8 +1181,8 @@ As built in P2.16 (`scene/patch.py`):
   - the others still apply;
   - the command exits 1 when anything conflicted, and says how many operations were written.
 - **Identity.** Retexting an edge keeps its id, even though a generated id includes the label: the old id is written into the spec.
-- **`place` (added for edit mode):** `{"op": "place", "id": "x", "row": ["a", "x", "b"]}` puts a node in a row, in that order. With its row-mates in one pinned rank (arch layers, ranked flows) the node takes that rank; else the op writes `{"same-rank": row}`. The row's nodes take its order as `order` and drop their `lane`. A drag in the page writes this, never coordinates.
-- **Files.** A v2 scene is written back as a scene, without the edge ids it would get anyway. A v1 spec stays v1, and fields only a scene has keep their scene names there (`style`, `pin`, `class`, `constraints`). Today's renderers ignore those fields and report them as `not-drawn` warnings. In particular, arch's repair loop may still reorder a row an `order` patch fixed, until the layered layout reads constraints (P4).
+- **`place` (added for edit mode):** `{"op": "place", "id": "x", "row": ["a", "x", "b"]}` puts a node in a row, in that order. With its row-mates in one pinned rank (arch layers, ranked flows) the node takes that rank; else the op writes `{"same-rank": row}`. The row's nodes take its order as `order` and drop their `lane`, and the node drops its `pin`. A drag in the page writes this, never coordinates.
+- **Files.** A v2 scene is written back as a scene, without the edge ids it would get anyway. A v1 spec stays v1, and fields only a scene has keep their scene names there (`style`, `pin`, `class`, `constraints`). The renderers draw what they can of them (styles, flow and arch pins, `same-rank` and `order`) and report the rest as `not-drawn` warnings. In particular, arch's repair loop may still reorder a row an `order` patch fixed, until the layered layout reads constraints (P4).
 
 ### 21.4 Live data and semantic diff
 
@@ -1181,7 +1199,8 @@ As built in P2.16 (`scene/patch.py`):
 - **The verdict's rows** are the layout's layers, which the renderer hands to the verdict as it does to the page. A wrapped flow lists its layers in reading order and says where its columns break (`wrapped into 3 columns: rows 1-6, rows 7-12, rows 13-18`), where rows by height mixed its columns. A schema adds its columns of tables under its `tables` line. `--outline` gives each node that row, or `column` in a schema.
 - **Regeneration (P10.2).** A patch can be kept and applied again: `text` that already holds is not a conflict, and `place`, `style` and `order` rewrite what they wrote. After the spec is regenerated, each edit either shows in the new drawing or is a reported `patch-conflict` (`tests/unit/test_regeneration.py`).
 - **Animation.** The new page holds the old drawing. On load, each box, and each message of a sequence, starts where it was and slides to its place (650 ms); boxes that are new fade in; removed ones fade out where they were; arrows, labels and frames that differ fade in after the boxes settle. Replay change runs it again; `prefers-reduced-motion` turns it off.
-- **Not yet:** pins are not drawn in flow and arch (validation says so; a drag writes a `place`, never a pin); colors for messages; a page that applies its own patch.
+- **Pins (P10.1):** flow and arch draw a node's `pin` as a row and an x in it (4.6), and a `place` drops it. A pin that can't hold is a `constraint` warning in the verdict.
+- **Not yet:** a drag that writes a pin (it writes a `place`); colors for messages; a page that applies its own patch.
 
 ### 21.5 Presenting and distribution
 

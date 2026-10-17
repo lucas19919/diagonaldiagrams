@@ -111,7 +111,7 @@ class V1Files(unittest.TestCase):
                                       {"op": "pin", "id": "b", "x": 1, "y": 2}])
         _, spec, warn = to_v1(patched)
         self.assertEqual(spec["nodes"], [{"id": "a", "name": "A", "style": {"fill": "red"}}, {"id": "b", "name": "B", "pin": {"x": 1, "y": 2}}])
-        self.assertEqual([w["code"] for w in warn], ["not-drawn"])  # the pin; the style is drawn
+        self.assertEqual(warn, [])  # the style and the pin are both drawn
         again, _ = normalize(from_v1(spec, "flow"))  # read back: the patch is still there
         self.assertEqual((again.node("a").style, again.node("b").pin), ({"fill": "red"}, {"x": 1, "y": 2}))
 
@@ -186,6 +186,98 @@ class Place(unittest.TestCase):
                    {"op": "place", "id": "b", "row": ["b", "zz"]}, {"op": "place", "id": "a->b", "row": ["a->b", "c"]}):
             _, n, c, _ = placed(self.FLOW, "flow", [op])
             self.assertEqual((n, len(c)), (0, 1), op)
+
+
+def outlined(kind, spec):
+    """(exit code, verdict) of a render of a v1 spec, with its outline."""
+    import json
+    import tempfile
+    from diagonaldiagrams import api
+    with tempfile.TemporaryDirectory() as d:
+        path = os.path.join(d, "spec.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(spec, f)
+        code, out, _ = api.run([kind, path, "-o", os.path.join(d, "out.svg"), "--outline"])
+    return code, json.loads(out.strip().splitlines()[-1])
+
+
+def middles(verdict):
+    return {n["id"]: (n["x"], n["y"]) for n in verdict["outline"]["nodes"]}
+
+
+class Pins(unittest.TestCase):
+    """A pin in flow and arch is a row and an x in it (DESIGN 4.6), read in the figure's coordinates."""
+
+    def pinned(self, v1, kind, nid, dx=0, row_of=None):
+        """The spec with nid pinned dx right of where it is drawn, in row_of's row if given, and that render."""
+        code, before = outlined(kind, v1)
+        self.assertEqual(code, 0)
+        at = middles(before)
+        x, y = at[nid][0] + dx, at[row_of or nid][1]
+        spec, n, c, warn = placed(v1, kind, [{"op": "pin", "id": nid, "x": x, "y": y}])
+        self.assertEqual((n, c, warn), (1, [], []))
+        code, after = outlined(kind, spec)
+        return (x, y), code, after, at
+
+    def test_a_pin_moves_a_box_along_its_row(self):
+        pin, code, after, before = self.pinned(Place.FLOW, "flow", "c", dx=200)
+        self.assertEqual((code, after.get("warnings", [])), (0, []))
+        self.assertEqual(middles(after)["c"], pin)
+        self.assertEqual(after["layout"], ["row 1: A", "row 2: B | C", "row 3: D"])
+        self.assertEqual(middles(after)["b"], before["b"])  # the others keep their places
+
+    def test_a_pin_moves_a_box_into_another_row(self):
+        pin, code, after, _ = self.pinned(Place.FLOW, "flow", "d", dx=360, row_of="b")
+        self.assertEqual((code, after.get("warnings", [])), (0, []))
+        x, y = middles(after)["d"]
+        self.assertEqual(x, pin[0])
+        self.assertLess(abs(y - pin[1]), 28)  # on its row's middle, which B's arrow over C pushed down a track
+        self.assertEqual(after["layout"], ["row 1: A", "row 2: B | C | D"])
+
+    def test_an_arch_pin_beats_the_nodes_layer(self):
+        v1 = {"nodes": [{"id": "gw", "name": "Gateway", "layer": 0}, {"id": "auth", "name": "Auth", "layer": 0},
+                        {"id": "agent", "name": "Agent", "layer": 1}, {"id": "llm", "name": "Model", "layer": 1}],
+              "edges": [{"from": "gw", "to": "agent"}, {"from": "gw", "to": "auth"}, {"from": "agent", "to": "llm"}]}
+        pin, code, after, _ = self.pinned(v1, "arch", "auth", dx=400, row_of="agent")
+        self.assertEqual((code, after.get("warnings", [])), (0, []))
+        self.assertEqual(middles(after)["auth"], pin)
+        self.assertEqual(after["layout"], ["row 1: Gateway", "row 2: Agent | Model | Auth"])
+
+    def test_a_pin_that_cannot_hold_is_a_constraint_warning(self):
+        spec, _, _, _ = placed(Place.FLOW, "flow", [{"op": "pin", "id": "b", "x": 10, "y": 0}])
+        code, after = outlined("flow", spec)
+        self.assertEqual(code, 0)  # drawn as near as it can be, and said so
+        said = {(w["code"], w["path"], w["msg"].split(": ")[-1]) for w in after.get("warnings", [])}
+        self.assertIn(("constraint", "nodes.b.pin", "the canvas's left edge is in the way"), said)
+        self.assertIn(("constraint", "nodes.b.pin", "the boxes of this figure stand in rows"), said)
+
+    def test_a_constraint_a_pin_breaks_is_named(self):
+        v1 = {"nodes": [{"id": x, "name": x.upper()} for x in "abcd"],
+              "edges": [{"from": "a", "to": "b"}, {"from": "b", "to": "c"}, {"from": "c", "to": "d"}],
+              "constraints": [{"same-rank": ["b", "d"]}]}
+        at = middles(outlined("flow", v1)[1])
+        spec, _, _, _ = placed(v1, "flow", [{"op": "pin", "id": "d", "x": at["c"][0] + 300, "y": at["c"][1]}])
+        code, after = outlined("flow", spec)
+        self.assertEqual((code, [w["msg"] for w in after.get("warnings", [])]),
+                         (0, ["the same-rank constraint on b, d gives way to the pin of 'd'"]))
+        v1 = dict(Place.FLOW, constraints=[{"order": ["b", "c"]}])
+        at = middles(outlined("flow", v1)[1])
+        spec, _, _, _ = placed(v1, "flow", [{"op": "pin", "id": "c", "x": at["b"][0] - 100, "y": at["b"][1]}])
+        code, after = outlined("flow", spec)
+        self.assertEqual((code, [w["msg"] for w in after.get("warnings", [])]),
+                         (0, ["the order constraint on b, c gives way to the pin of 'c'"]))
+
+    def test_a_drag_drops_the_pin(self):
+        spec, _, _, _ = placed(Place.FLOW, "flow", [{"op": "pin", "id": "b", "x": 600, "y": 300}])
+        spec, n, c, _ = placed(spec, "flow", [{"op": "place", "id": "b", "row": ["c", "b"]}])
+        self.assertEqual((n, c), (1, []))
+        self.assertNotIn("pin", next(x for x in spec["nodes"] if x["id"] == "b"))
+        self.assertEqual(drawn_rows("flow", spec), (0, ["row 1: A", "row 2: C | B", "row 3: D"]))
+
+    def test_a_malformed_pin_is_refused(self):
+        spec = {"nodes": [{"id": "a", "name": "A", "pin": {"x": "left", "y": 2}}], "edges": []}
+        code, verdict = outlined("flow", spec)
+        self.assertEqual((code, [e.get("code") for e in verdict["errors"]]), (1, ["bad-value"]))
 
 
 class Messages(unittest.TestCase):
