@@ -627,8 +627,12 @@ class _Plan:
 
     def tracks(self, nl):
         """Builds every arrow's runs in the gaps and gives them tracks. Returns {gap: track count}."""
-        for _ in range(4):
+        self._legs()
+        while self.crowded and self._bottom():
             self._legs()
+        for k in range(4):
+            if k:
+                self._legs()
             if not self._separate():
                 break
         self._doglegs()
@@ -636,6 +640,39 @@ class _Plan:
         for g, runs in self.runs.items():
             out[g] = channels.assign(runs, self.o["track"])
         return out
+
+    def _bottom(self):
+        """A decision side whose exits step out so far that one turns down inside the box beside it
+        (three exits on one side, a box node_gap away): its exit with the nearest target leaves by the
+        bottom vertex instead, and the ports are spread again. Returns True when one moved."""
+        moved = False
+        for nid, side in dict.fromkeys(self.crowded):
+            exits = [t for t in self.slots.get((nid, side), ()) if t[1] == "out" and t[2] >= 1000]
+            if not exits:
+                continue
+            eid, role, key = min(exits, key=lambda t: (t[2], str(t[0])))
+            self.slots[(nid, side)].remove((eid, role, key))
+            for n, (pid, kind, a, b, ds, sides) in enumerate(self.paths):
+                if pid == eid and kind == "down" and a == nid:
+                    self._slot(nid, "s", eid, "out", self._x(ds[0]) if ds else self._x(b))
+                    self.paths[n] = (pid, kind, a, b, ds, ("s", sides[1]))
+                    break
+            moved = True
+        if moved:
+            self.offset, self.stub = {}, {}
+            self.ports()
+        return moved
+
+    def _into_box(self, nid, x0, x1):
+        """True when a sideways run from x0 to x1 at nid's middle comes within 6 px of a box of its
+        layer, or into it."""
+        lo, hi = min(x0, x1), max(x0, x1)
+        for it in self.L.layers[self.rank[nid]]:
+            if it != nid and self.L.kind[it] == "node":
+                w = self.info[it]["w"] / 2.0 + 6.0
+                if self._x(it) - w < hi and lo < self._x(it) + w:
+                    return True
+        return False
 
     def _separate(self):
         """An arrow coming down into a gap at x and another leaving it downward at the same x would
@@ -732,6 +769,7 @@ class _Plan:
         self.runs = {}
         self.passes = {}  # gap -> x of arrows that cross it straight, with no run there
         self.movable = {}  # (id(run), end index) -> (edge, role, node, side): an end that is a lone port
+        self.crowded = []  # (decision, side) whose exits turn down too close to a box beside it
         trunks = {}
         turns = {}  # (node, side) -> where its side exits turn down
         # sideways runs at a layer's middle, out of a side vertex and then down: layer -> [(lo, hi,
@@ -783,6 +821,8 @@ class _Plan:
                         x = x + sign * out_st
                         while any(abs(x - t) < channels.NEAR for t in taken):
                             x += sign * self.o["track"]
+                        if self._into_box(a, p[0], x):
+                            self.crowded.append((a, s1))
                     spans.append((min(p[0], x), max(p[0], x), a))
                     turns.setdefault((a, s1), []).append(x)
                     legs.append(("pt", x, p[1], a))

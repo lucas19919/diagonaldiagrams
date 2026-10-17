@@ -219,6 +219,9 @@ class FuzzRegressions(unittest.TestCase):
     def test_three_back_edges_passing_columns_round_in_one_gap(self):
         self.check("flow", 402, 79)  # their tracks broke a rule, so two climbs shared a line
 
+    def test_three_exits_on_a_decision_side_beside_a_box(self):
+        self.check("flow", 40630, 51)  # the third turned down inside the box next to the decision
+
 
 if __name__ == "__main__":
     unittest.main()
