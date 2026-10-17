@@ -6,6 +6,7 @@ the next generation of the spec.
 
     {"op": "pin",   "id": "psp", "x": 640, "y": 210}                     "z" too, in 3D
     {"op": "order", "ids": ["auth", "api"]}
+    {"op": "place", "id": "psp", "row": ["api", "psp", "auth"]}          a drag: its row, in order
     {"op": "style", "selector": "#psp", "set": {"fill": "#fee2e2"}}      null removes a property
     {"op": "text",  "id": "psp", "name": "Payment provider", "was": "PSP"}
     {"op": "add",   "node": {...}}   or "edge" or "group"
@@ -22,7 +23,7 @@ import re
 from .ids import compact  # noqa: F401 (compact is part of the patch API)
 from .normalize import check
 
-OPS = ("pin", "order", "style", "text", "add", "remove", "move-to-group")
+OPS = ("pin", "order", "place", "style", "text", "add", "remove", "move-to-group")
 TEXT = {"node": ("name", "sub", "tag"), "group": ("name", "tag"), "edge": ("label",)}
 
 
@@ -73,6 +74,41 @@ def _order(d, op):
                 held[slot] = i
             return
     cons.append({"order": ids})
+
+
+def _place(d, op):
+    """A node dropped into a row: it shares the row with the others named, in the order named. With
+    the others in one pinned rank (arch layers, ranked flows), the node takes that rank; else the
+    row is a same-rank constraint, so it holds when the ranks are worked out again. The row's nodes
+    take its order, and drop their lanes."""
+    kind, el = _find(d, op.get("id"))
+    if kind != "node":
+        raise _Conflict(f"'{el['id']}' is a {kind}; place moves nodes", "place a node")
+    row = _ids(op, "row")
+    nid = str(el["id"])
+    if nid not in row or len(set(row)) != len(row):
+        raise _Conflict(f"the row should name '{nid}' once, among the nodes it now sits between",
+                        f'write "row": ["a", "{nid}", "b"]')
+    nodes = {}
+    for i in row:
+        k, other = _find(d, i)
+        if k != "node":
+            raise _Conflict(f"'{i}' is {'an' if k == 'edge' else 'a'} {k}, not a node", "name only nodes in a row")
+        nodes[i] = other
+    mates = [nodes[i] for i in row if i != nid]
+    if not mates:
+        raise _Conflict("a row needs another node besides the one placed", f'write "row": ["a", "{nid}"]')
+    cons = [c for c in d.get("constraints") or [] if not (isinstance(c.get("same-rank"), list) and nid in map(str, c["same-rank"]))]
+    ranks = {m.get("rank") for m in mates}
+    if len(ranks) == 1 and None not in ranks:
+        el["rank"] = ranks.pop()
+    else:
+        el.pop("rank", None)
+        cons.append({"same-rank": row})
+    d["constraints"] = cons
+    for k, i in enumerate(row):  # the row's order replaces the lanes it had: the drag says where they go
+        nodes[i]["order"] = k
+        nodes[i].pop("lane", None)
 
 
 def _style(d, op):
@@ -186,7 +222,7 @@ def _move(d, op):
         el["group"] = str(gid)
 
 
-HANDLERS = {"pin": _pin, "order": _order, "style": _style, "text": _text, "add": _add, "remove": _remove,
+HANDLERS = {"pin": _pin, "order": _order, "place": _place, "style": _style, "text": _text, "add": _add, "remove": _remove,
             "move-to-group": _move}
 
 

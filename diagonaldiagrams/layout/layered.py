@@ -2,11 +2,14 @@
 
     result = layout(nodes, edges, groups, options)
 
-nodes: [{"id", "w", "h", "shape"?, "rank"?, "lane"?, "order"?}]; edges: [{"id", "from", "to",
-"from_at"?, "to_at"?}], where from_at and to_at pin an end on the top or bottom side (left or right
-across): its offset along the side from the node's middle, as a table's column row is (schema);
-groups: [{"id", "members": [node ids], "parent"?}]. Sizes are in pixels, direction TB (top to
-bottom), LR, BT or RL.
+- nodes: [{"id", "w", "h", "shape"?, "rank"?, "lane"?, "order"?}]. rank pins a layer; lane and order
+  keep a relative order within one.
+- edges: [{"id", "from", "to", "from_at"?, "to_at"?}]. from_at and to_at pin an end on the top or
+  bottom side (left or right across): its offset along the side from the node's middle, as a
+  table's column row is (schema).
+- groups: [{"id", "members": [node ids], "parent"?}].
+- options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "aspect",
+  "flat_room" and "min_width". Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
 
 The steps: break cycles (back_edges), rank (ranks), add a dummy wherever an arrow passes a layer and
 a left and a right border wherever a group spans one (Layering), order the layers for few crossings
@@ -102,21 +105,36 @@ def layout(nodes, edges, groups=(), options=None):
             g = gparent.get(g)
         return out  # innermost first
 
-    # 1. ranks
+    # 1. ranks. A same-rank group (from an edit) shares the rank of its pinned member if it has one;
+    # else it is one node while ranks are worked out, as Graphviz's rank=same is
     fixed = {}
     for n in nodes:
         r = n.get("rank")
         if isinstance(r, (int, float)) and not isinstance(r, bool):
             fixed[n["id"]] = r
+    head = {}
+
+    def find(i):
+        while head.get(i, i) != i:
+            i = head[i]
+        return i
+    for grp in o.get("same_rank") or ():
+        grp = [i for i in grp if i in info]
+        r = next((fixed[i] for i in grp if i in fixed), None)
+        for i in grp[1:]:
+            if r is not None:
+                fixed[i] = fixed.setdefault(grp[0], r)
+            elif find(i) != find(grp[0]):
+                head[find(i)] = find(grp[0])
     if fixed and len(fixed) == len(ids):
         rank = ranks(ids, [], fixed)
     else:
-        back = back_edges(ids, [(e["from"], e["to"]) for e in E])
-        oriented = []
-        for k, e in enumerate(E):
-            u, v = (e["to"], e["from"]) if k in back else (e["from"], e["to"])
-            oriented.append((u, v, 1, 1))
-        rank = ranks(ids, oriented, fixed, simplex=o["simplex"])
+        heads = [i for i in ids if find(i) == i]
+        live = [(u, v) for u, v in ((find(e["from"]), find(e["to"])) for e in E) if u != v]
+        back = back_edges(heads, live)
+        oriented = [((v, u) if k in back else (u, v)) + (1, 1) for k, (u, v) in enumerate(live)]
+        merged = ranks(heads, oriented, {find(i): r for i, r in fixed.items()}, simplex=o["simplex"])
+        rank = {i: merged[find(i)] for i in ids}
     res.rank = rank
     nl = max(rank.values()) + 1
 

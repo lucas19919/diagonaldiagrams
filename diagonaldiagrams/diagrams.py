@@ -104,6 +104,16 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
             if isinstance(n.get(k), (int, float)) and not isinstance(n.get(k), bool):
                 d[k] = n[k]
         lnodes.append(d)
+    # constraints from edits (scene/patch.py): same-rank shares a layer; order is kept within one,
+    # for the nodes that carry no order or lane of their own
+    cons = [c for c in spec.get("constraints") or [] if isinstance(c, dict)]
+    same = [[i for i in c["same-rank"] if i in ids] for c in cons if isinstance(c.get("same-rank"), list)]
+    by = {d["id"]: d for d in lnodes}
+    for c in cons:
+        if isinstance(c.get("order"), list):
+            for k, i in enumerate(i for i in c["order"] if i in by):
+                if "order" not in by[i] and "lane" not in by[i]:
+                    by[i]["order"] = k
     ledges = []
     for i, e in enumerate(edges):
         if e.get("from") in ids and e.get("to") in ids:
@@ -113,7 +123,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                     le[key] = at
             ledges.append(le)
     res = layered.layout(lnodes, ledges, [{"id": g["id"], "members": g["members"]} for g in groups],
-                         dict(options, flat_room=flat_room, aspect=_aspect(spec)))
+                         dict(options, flat_room=flat_room, aspect=_aspect(spec), same_rank=[s for s in same if len(s) > 1]))
     notes = (spec.get("notes", []) or [])[:2]
     cw, ch = res.size
     W = max(min_w, int(cw + 2 * MARGIN + 0.999))

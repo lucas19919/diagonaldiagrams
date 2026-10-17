@@ -116,5 +116,72 @@ class V1Files(unittest.TestCase):
         self.assertEqual((again.node("a").style, again.node("b").pin), ({"fill": "red"}, {"x": 1, "y": 2}))
 
 
+
+def drawn_rows(kind, spec):
+    """The rows a render draws (its verdict's layout lines), for a v1 spec."""
+    import json
+    import tempfile
+    from diagonaldiagrams import api
+    with tempfile.TemporaryDirectory() as d:
+        path = os.path.join(d, "spec.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(spec, f)
+        code, out, _ = api.run([kind, path, "-o", os.path.join(d, "out.svg")])
+    verdict = json.loads(out.strip().splitlines()[-1])
+    return code, [line for line in verdict.get("layout", []) if line.startswith("row ")]
+
+
+def placed(v1, kind, ops):
+    scene, _ = normalize(from_v1(v1, kind))
+    patched, n, c = apply(scene, ops)
+    _, spec, warn = to_v1(patched)
+    return spec, n, c, warn
+
+
+class Place(unittest.TestCase):
+    """A drag in the page becomes a place: the node's new row, in order (DESIGN 21.3)."""
+    FLOW = {"nodes": [{"id": "a", "name": "A", "rank": 0}, {"id": "b", "name": "B", "rank": 1, "lane": -1},
+                      {"id": "c", "name": "C", "rank": 1, "lane": 1}, {"id": "d", "name": "D", "rank": 2}],
+            "edges": [{"from": "a", "to": "b"}, {"from": "a", "to": "c"}, {"from": "b", "to": "d"}, {"from": "c", "to": "d"}]}
+
+    def test_reorder_within_a_row_beats_its_lanes(self):
+        spec, n, c, warn = placed(self.FLOW, "flow", [{"op": "place", "id": "b", "row": ["c", "b"]}])
+        self.assertEqual((n, c, warn), (1, [], []))
+        self.assertEqual(drawn_rows("flow", spec), (0, ["row 1: A", "row 2: C | B", "row 3: D"]))
+
+    def test_into_another_ranked_row(self):
+        spec, n, c, _ = placed(self.FLOW, "flow", [{"op": "place", "id": "d", "row": ["b", "d", "c"]}])
+        self.assertEqual(next(x for x in spec["nodes"] if x["id"] == "d")["rank"], 1)
+        self.assertNotIn("constraints", spec)
+        self.assertEqual(drawn_rows("flow", spec), (0, ["row 1: A", "row 2: B | D | C"]))
+
+    def test_unranked_rows_hold_by_a_same_rank_constraint(self):
+        v1 = {"nodes": [{"id": x, "name": x.upper()} for x in "abcd"],
+              "edges": [{"from": "a", "to": "b"}, {"from": "b", "to": "c"}, {"from": "c", "to": "d"}]}
+        spec, n, c, warn = placed(v1, "flow", [{"op": "place", "id": "d", "row": ["b", "d"]}])
+        self.assertEqual((spec["constraints"], warn), ([{"same-rank": ["b", "d"]}], []))
+        code, rows = drawn_rows("flow", spec)
+        self.assertEqual((code, rows[1]), (0, "row 2: B | D"))
+        spec, _, _, _ = placed(spec, "flow", [{"op": "place", "id": "d", "row": ["c", "d"]}])
+        self.assertEqual(spec["constraints"], [{"same-rank": ["c", "d"]}])  # moving on drops the old row
+
+    def test_arch_keeps_frames_whole(self):
+        v1 = {"nodes": [{"id": "gw", "name": "Gateway", "layer": 0}, {"id": "auth", "name": "Auth", "layer": 0},
+                        {"id": "mem", "name": "Memory", "layer": 1}, {"id": "agent", "name": "Agent", "layer": 1},
+                        {"id": "llm", "name": "Model", "layer": 1}],
+              "edges": [{"from": "gw", "to": "agent"}, {"from": "gw", "to": "auth"}, {"from": "agent", "to": "mem"},
+                        {"from": "agent", "to": "llm"}],
+              "groups": [{"id": "rt", "name": "Runtime", "nodes": ["mem", "agent"]}]}
+        spec, _, c, _ = placed(v1, "arch", [{"op": "place", "id": "auth", "row": ["mem", "agent", "auth", "llm"]}])
+        self.assertEqual((c, next(x for x in spec["nodes"] if x["id"] == "auth")["layer"]), ([], 1))
+        self.assertEqual(drawn_rows("arch", spec), (0, ["row 1: Gateway", "row 2: Memory | Agent | Auth | Model"]))
+
+    def test_what_a_place_cannot_be(self):
+        for op in ({"op": "place", "id": "b", "row": ["c"]}, {"op": "place", "id": "b", "row": ["b"]},
+                   {"op": "place", "id": "b", "row": ["b", "zz"]}, {"op": "place", "id": "a->b", "row": ["a->b", "c"]}):
+            _, n, c, _ = placed(self.FLOW, "flow", [op])
+            self.assertEqual((n, len(c)), (0, 1), op)
+
+
 if __name__ == "__main__":
     unittest.main()

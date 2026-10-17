@@ -91,6 +91,44 @@ def _level_children(L, layer):
     return kids
 
 
+def _hint_start(L, r):
+    """Layer r with its hinted items in hint order, frames kept whole. At each level of the frame
+    tree the entries that carry a hint (an item its own, a frame the least of its items') trade
+    places until their hints increase; the others keep theirs. Port items stay beside their nodes."""
+    layer = L.layers[r]
+    if not any(L.hint.get(it) is not None for it in layer):
+        return
+    kids = _level_children(L, layer)
+    here = {v: k for k, v in enumerate(layer)}
+    ports = {}
+    for it in layer:
+        if it in L.attach:
+            ports.setdefault(L.attach[it], []).append(it)
+
+    def build(g):
+        entries = []
+        for kind, x in kids.get(g, []):
+            if kind == "item":
+                ps = ports.get(x, [])
+                entries.append(([p for p in ps if here[p] < here[x]] + [x] + [p for p in ps if here[p] > here[x]],
+                                L.hint.get(x)))
+            else:
+                entries.append(build(x))
+        idx = [k for k, (_, h) in enumerate(entries) if h is not None]
+        for k, e in zip(idx, sorted((entries[k] for k in idx), key=lambda e: e[1])):
+            entries[k] = e
+        flat = [it for items, _ in entries for it in items]
+        if g is not None:
+            lb = ("L", g, r) if ("L", g, r) in L.kind else next(it for it in layer if L.kind[it] == "left" and L.owner[it] == g)
+            rb = ("R", g, r) if ("R", g, r) in L.kind else next(it for it in layer if L.kind[it] == "right" and L.owner[it] == g)
+            flat = [lb] + flat + [rb]
+        hints = [h for _, h in entries if h is not None]
+        return flat, (min(hints) if hints else None)
+    flat, _ = build(None)
+    if sorted(map(str, flat)) == sorted(map(str, layer)):
+        L.layers[r] = flat
+
+
 def _sort_layer(L, r, pos, nbrs):
     """Sorts layer r by the barycenter of each item's neighbors (nbrs: up or down) at positions pos."""
     layer = L.layers[r]
@@ -134,7 +172,9 @@ def _sort_layer(L, r, pos, nbrs):
                                 "hint": L.hint.get(x), "group": None})
             else:
                 items, s, n = solve(x)
-                entries.append({"items": items, "sum": s, "n": n, "at": here[items[0]], "hint": None, "group": x})
+                hints = [L.hint[i] for i in items if L.hint.get(i) is not None]  # a frame keeps its place among hinted items
+                entries.append({"items": items, "sum": s, "n": n, "at": here[items[0]], "hint": min(hints) if hints else None,
+                                "group": x})
         if len(entries) <= 1:
             flat = [it for e in entries for it in e["items"]]
         else:
@@ -237,6 +277,8 @@ def order(L, iterations=24, patience=4, flips=True):
     """Orders L.layers in place for few crossings. Returns the crossing count."""
     if len(L.layers) < 2:
         return 0
+    for r in range(len(L.layers)):  # hinted items start in hint order: a start that crosses nothing skips the sweeps
+        _hint_start(L, r)
     best = [list(x) for x in L.layers]
     best_c = crossings(L)
     frozen = {it for it, h in L.hint.items() if h is not None} | set(L.attach.values()) | set(L.attach)

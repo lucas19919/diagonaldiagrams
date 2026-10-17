@@ -188,6 +188,10 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
         ids = [n.get("id") for n in nodes]
         if len(set(ids)) != len(ids):
             _vissue(errors, warnings, "E", "duplicate node ids", "make ids unique")
+        pinned = [str(n.get("id")) for n in nodes if isinstance(n, dict) and n.get("pin") is not None]
+        if pinned:
+            warnings.append({"code": "not-drawn", "msg": f"pins are not drawn yet ({', '.join(pinned[:3])}{', ...' if len(pinned) > 3 else ''})",
+                             "fix": "to move a node, give it a row with a place patch, or a rank or order; drop the pin if unwanted"})
         for e in edges:
             for k in ("from", "to"):
                 if e.get(k) not in ids:

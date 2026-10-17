@@ -164,8 +164,12 @@ def to_v1(scene):
         nodes = _apply_order(nodes, order)
     elif order:
         others += [{"order": o} for o in order]
+    # flow and arch draw with the layered layout, which reads same-rank and order (diagrams._layered)
+    read = ("same-rank", "order") if kind in ("flow", "arch") else ()
+    unread = [c for c in others if not any(isinstance(c.get(k), list) for k in read)]
+    if unread:
+        warn.append(_not_drawn(f"{len(unread)} constraint(s)", "constraints"))
     if others:
-        warn.append(_not_drawn(f"{len(others)} constraint(s)", "constraints"))
         spec["constraints"] = others
     for el in [*nodes, *scene.edges, *scene.groups]:
         if (getattr(el, "pin", None) or getattr(el, "content", None)) and kind != "schema":
@@ -193,7 +197,7 @@ def to_v1(scene):
 
 def _not_drawn(what, path):
     return {"code": "not-drawn", "msg": f"kept in the spec but not drawn yet: {what}",
-            "fix": "nothing to do: this preset draws it once the style and layout phases land (PLAN P3, P4); drop it if unwanted",
+            "fix": "this preset does not draw it yet; drop it if unwanted. To move a node, use a place patch (its row) instead of a pin",
             "path": path}
 
 
