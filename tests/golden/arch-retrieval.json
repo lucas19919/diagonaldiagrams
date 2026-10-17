@@ -4,7 +4,7 @@
   "examples/show_retrieval.json"
  ],
  "exit": 0,
- "html_sha256": "6cf127b532c8a0bc08e41a9b3f7b0a47d75a2f6904f0f2beab4bef8c78cdb75a",
+ "html_sha256": "f2e80ffd568b44e41fc0e9a8f6e0fe7cd5c357d86b14fbb7e55259710acf48c9",
  "receipt": {
   "auto": false,
   "cmd": "arch",

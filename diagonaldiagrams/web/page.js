@@ -1,11 +1,14 @@
 /* diagonaldiagrams: a diagram page's edit mode and change animation (DESIGN 21.2, 21.3).
  *
  * Settings come from <script id="dd-page" type="application/json">: the figure's kind, its spec
- * and output paths, the drawing before the last edit (or null), and what changed.
+ * and output paths, the layout's layers (rows top to bottom, or columns left to right when
+ * "across"), the drawing before the last edit (or null), and what changed.
  *
- * Edit mode never edits the figure's source. A rename, a color or a drag shows in place and is
+ * Edit mode never edits the figure's source. A rename, a color or a move shows in place and is
  * collected as a patch operation; the engine writes the patch into the spec (apply) and draws the
- * figure again, and the new page animates from the old drawing to the new one.
+ * figure again, and the new page animates from the old drawing to the new one. Moves work with the
+ * mouse and the keyboard alike: a box goes into a layer at a place, which is a place patch (an
+ * order patch for a sequence's actors).
  */
 (function () {
   "use strict";
@@ -15,8 +18,9 @@
   var cfg = JSON.parse(cfgEl.textContent);
   var NS = "http://www.w3.org/2000/svg";
   var reduced = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  var ROW = 30; // outline.layout_rows' row tolerance: a drop lands in the row the verdict names
+  var ROW = 30; // outline.layout_rows' row tolerance, for a figure that gives no layers
   var SWATCHES = ["#fde2e2", "#fff1d6", "#e3f4e1", "#dfeefc", "#ece5fb", null];
+  var across = !!cfg.across; // layers run left to right (schema columns); a layer's boxes go down
 
   // ---- the boxes: each data-node shape, and the parts drawn inside its box ---------------------
 
@@ -62,28 +66,38 @@
       var g = document.createElementNS(NS, "g");
       g.setAttribute("class", "dd-node");
       g.setAttribute("data-of", id);
+      g.setAttribute("aria-label", n.shape.getAttribute("aria-label") || n.label);
       n.parts[0].parentNode.insertBefore(g, n.parts[0]);
       n.parts.forEach(function (p) { g.appendChild(p); });
       n.g = g;
+      n.dx = 0; n.dy = 0;
     });
     return nodes;
   }
 
   var nodes = group(readBoxes(svg));
 
-  function rowsOf(skip) {
-    var list = Object.keys(nodes).map(function (k) { return nodes[k]; })
-      .filter(function (n) { return n.id !== skip; })
-      .sort(function (a, b) { return a.y - b.y || a.x - b.x; });
-    var rows = [];
-    list.forEach(function (n) {
-      var last = rows[rows.length - 1];
-      if (last && Math.abs(last.y - n.y) < ROW) last.items.push(n);
-      else rows.push({y: n.y, items: [n]});
-    });
-    rows.forEach(function (r) { r.items.sort(function (a, b) { return a.x - b.x; }); });
-    return rows;
+  // ---- layers: which boxes share a row (or a column), in order --------------------------------------
+
+  function along(n) { return across ? n.y + n.dy : n.x + n.dx; } // the position within a layer
+  function cross(n) { return across ? n.x + n.dx : n.y + n.dy; } // the layer's position
+
+  var model = (cfg.layers || []).map(function (layer) {
+    return layer.filter(function (id) { return nodes[id]; });
+  }).filter(function (layer) { return layer.length; });
+  if (!model.length) { // a figure that gave no layers: rows by height, as the verdict counts them
+    Object.keys(nodes).map(function (k) { return nodes[k]; }).sort(function (a, b) { return a.y - b.y || a.x - b.x; })
+      .forEach(function (n) {
+        var last = model[model.length - 1];
+        if (last && Math.abs(nodes[last[0]].y - n.y) < ROW) last.push(n.id);
+        else model.push([n.id]);
+      });
   }
+  function layerOf(id) {
+    for (var i = 0; i < model.length; i++) if (model[i].indexOf(id) >= 0) return i;
+    return -1;
+  }
+  function sorted(layer) { return layer.slice().sort(function (a, b) { return along(nodes[a]) - along(nodes[b]); }); }
 
   // ---- page chrome --------------------------------------------------------------------------------
 
@@ -92,7 +106,7 @@
   css.textContent = [
     ".dd-on .dd-node{cursor:grab}",
     ".dd-on .dd-node:hover{filter:drop-shadow(0 0 2px rgba(45,49,66,.45))}",
-    ".dd-sel{outline:none}",
+    ".dd-node:focus{outline:none}",
     ".dd-ring{fill:none;stroke:#eb6c36;stroke-width:2;stroke-dasharray:5 3;pointer-events:none}",
     ".dd-pending{opacity:.75}",
     "#dd-panel{position:fixed;right:12px;top:52px;width:330px;max-width:calc(100vw - 24px);max-height:calc(100vh - 64px);overflow:auto;",
@@ -104,6 +118,7 @@
     "#dd-panel input{font:13px system-ui,sans-serif;width:100%;box-sizing:border-box;padding:.25rem .35rem}",
     "#dd-panel pre{background:rgba(45,49,66,.05);padding:.4rem;white-space:pre-wrap;word-break:break-all;font:11px ui-monospace,monospace;max-height:160px;overflow:auto}",
     "#dd-panel button{font:12px system-ui,sans-serif;margin:.15rem .2rem .15rem 0;padding:.2rem .5rem;cursor:pointer}",
+    "#dd-panel kbd{font:11px ui-monospace,monospace;border:1px solid rgba(45,49,66,.3);border-radius:3px;padding:0 3px}",
     ".dd-sw{display:inline-block;width:20px;height:20px;border:1px solid rgba(45,49,66,.35);margin-right:4px;cursor:pointer;vertical-align:middle}",
     ".dd-note{color:#4f5d75;font-size:12px;margin:.3rem 0}",
     "#dd-changed{font-size:12px;color:#4f5d75;margin-left:.6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"
@@ -122,23 +137,34 @@
 
   var ops = []; // {op, revert}
   var editing = false, selected = null, ring = null;
-  var canDrag = cfg.kind === "flow" || cfg.kind === "arch";
+  var canMove = ["flow", "arch", "schema", "seq"].indexOf(cfg.kind) >= 0;
   var canColor = cfg.kind === "flow" || cfg.kind === "arch";
+  var keysAlong = across ? ["ArrowUp", "ArrowDown"] : ["ArrowLeft", "ArrowRight"];
+  var keysCross = across ? ["ArrowLeft", "ArrowRight"] : ["ArrowUp", "ArrowDown"];
+  var layerWord = across ? "column" : "row";
 
   var panel = document.createElement("div");
   panel.id = "dd-panel";
   panel.innerHTML =
     '<h4>Edit</h4>' +
-    '<div class="dd-note" id="dd-hint">' + (canDrag ? "Click a box to rename or recolor it. Drag it to another place in its row, or into another row." :
-                                            "Click a box to rename it.") + '</div>' +
+    '<div class="dd-note">Click a box, or <kbd>Tab</kbd> to one, to rename' + (canColor ? ' or recolor' : '') + ' it.' +
+    (canMove ? ' Drag it to another place, or press <kbd>Shift</kbd>+arrows to move it' +
+               (cfg.kind === "seq" ? ' along the actors.' : ' within its ' + layerWord + ' or into the next.') : '') + '</div>' +
+    '<div class="dd-note">Arrows go to the next box; <kbd>Enter</kbd> renames' + (canColor ? '; <kbd>1</kbd>-<kbd>6</kbd> color' : '') +
+    '; <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes; <kbd>Esc</kbd> lets go.</div>' +
     '<div id="dd-box" style="display:none">' +
     '  <label class="dd-note" for="dd-name">Name</label><input id="dd-name" autocomplete="off">' +
     (canColor ? '  <div class="dd-note">Color</div><div id="dd-swatches"></div>' : '') +
     '</div>' +
     '<h4>Patch <span id="dd-count"></span></h4><pre id="dd-ops">[]</pre>' +
     '<div><span id="dd-actions"></span></div>' +
-    '<div class="dd-note">Then write it into the spec and draw again:</div><pre id="dd-cmd"></pre>';
+    '<div class="dd-note">Then write it into the spec and draw again:</div><pre id="dd-cmd"></pre>' +
+    '<div class="dd-note">Keep the patch: after the spec is regenerated, apply it again, and edits that no longer fit are reported.</div>';
   document.body.appendChild(panel);
+  var live = document.createElement("div"); // what moved, for screen readers
+  live.setAttribute("aria-live", "polite");
+  live.style.cssText = "position:absolute;left:-10000px";
+  document.body.appendChild(live);
 
   function q(s) { return /[\s"'&|<>]/.test(s) ? '"' + s.replace(/"/g, '\\"') + '"' : s; }
   document.getElementById("dd-cmd").textContent =
@@ -151,9 +177,10 @@
     document.getElementById("dd-ops").textContent = patchJSON();
     document.getElementById("dd-count").textContent = ops.length ? "(" + ops.length + ")" : "";
   }
-  function record(op, revert) {
+  function record(op, revert, said) {
     ops.push({op: op, revert: revert});
     refresh();
+    if (said) live.textContent = said;
   }
 
   var actions = document.getElementById("dd-actions");
@@ -173,24 +200,32 @@
     a.download = "patch.json";
     a.click();
   });
-  undoBtn.addEventListener("click", function () {
+  function undo() {
     var o = ops.pop();
     if (o) o.revert();
     refresh();
     if (selected) select(selected);
-  });
+  }
+  undoBtn.addEventListener("click", undo);
   cmdBtn.addEventListener("click", function () {
     navigator.clipboard.writeText(document.getElementById("dd-cmd").textContent).then(function () { flash(cmdBtn, "Copied"); });
   });
 
   var editBtn = button("Edit", "Rename, recolor and move boxes; the changes become a patch");
   bar.appendChild(editBtn);
-  editBtn.addEventListener("click", function () {
-    editing = !editing;
+  function setEditing(on) {
+    editing = on;
     document.body.classList.toggle("dd-on", editing);
     editBtn.textContent = editing ? "Done editing" : "Edit";
+    Object.keys(nodes).forEach(function (id) { // boxes take focus only while editing
+      var g = nodes[id].g;
+      if (!g) return;
+      if (editing) { g.setAttribute("tabindex", "0"); g.setAttribute("role", "button"); }
+      else { g.removeAttribute("tabindex"); g.removeAttribute("role"); }
+    });
     if (!editing) select(null);
-  });
+  }
+  editBtn.addEventListener("click", function () { setEditing(!editing); });
 
   function select(n) {
     selected = n;
@@ -205,8 +240,7 @@
     ring.setAttribute("rx", 6);
     n.g.appendChild(ring);
     box.style.display = "block";
-    var input = document.getElementById("dd-name");
-    input.value = n.label;
+    document.getElementById("dd-name").value = n.label;
     if (canColor) swatches(n);
   }
 
@@ -217,8 +251,7 @@
     return texts.filter(function (t) { return (parseFloat(t.getAttribute("font-size")) || 0) === size; });
   }
 
-  document.getElementById("dd-name").addEventListener("change", function () {
-    var n = selected, name = this.value.trim();
+  function rename(n, name) {
     if (!n || !name || name === n.label) return;
     var was = n.label, texts = nameTexts(n), old = texts.map(function (t) { return [t.textContent, t.style.display]; });
     texts.forEach(function (t, i) { if (i) t.style.display = "none"; else t.textContent = name; });
@@ -226,27 +259,68 @@
     record({op: "text", id: n.id, name: name, was: was}, function () {
       texts.forEach(function (t, i) { t.textContent = old[i][0]; t.style.display = old[i][1]; });
       n.label = was;
-    });
+    }, "Renamed " + was + " to " + name);
+  }
+  var nameInput = document.getElementById("dd-name");
+  nameInput.addEventListener("change", function () { rename(selected, this.value.trim()); });
+  nameInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { rename(selected, this.value.trim()); if (selected) selected.g.focus(); e.preventDefault(); }
+    else if (e.key === "Escape") { this.value = selected ? selected.label : ""; if (selected) selected.g.focus(); e.preventDefault(); }
+    e.stopPropagation();
   });
 
+  function recolor(n, c) {
+    var was = n.shape.getAttribute("fill");
+    if (c) n.shape.setAttribute("fill", c);
+    record({op: "style", selector: "#" + n.id, set: {fill: c}}, function () { n.shape.setAttribute("fill", was); },
+           c ? "Recolored " + n.label : "Back to the style's color: " + n.label);
+  }
   function swatches(n) {
     var host = document.getElementById("dd-swatches");
     host.innerHTML = "";
-    SWATCHES.forEach(function (c) {
+    SWATCHES.forEach(function (c, k) {
       var s = document.createElement("span");
       s.className = "dd-sw";
-      s.title = c ? c : "back to the style's color";
+      s.title = (k + 1) + ": " + (c ? c : "back to the style's color");
       s.style.background = c || "linear-gradient(135deg,#fff 45%,#eb6c36 46%,#eb6c36 54%,#fff 55%)";
-      s.addEventListener("click", function () {
-        var was = n.shape.getAttribute("fill");
-        if (c) n.shape.setAttribute("fill", c);
-        record({op: "style", selector: "#" + n.id, set: {fill: c}}, function () { n.shape.setAttribute("fill", was); });
-      });
+      s.addEventListener("click", function () { recolor(n, c); });
       host.appendChild(s);
     });
   }
 
-  // a drag: the box follows the pointer; the drop picks a row and a place in it
+  function place(n, dx, dy) {
+    n.dx = dx; n.dy = dy;
+    n.g.setAttribute("transform", dx || dy ? "translate(" + dx + " " + dy + ")" : "");
+    n.g.classList.toggle("dd-pending", !!(dx || dy));
+  }
+
+  // a move: n into layer li at index k among the layer's other boxes. The patch says the layer's
+  // new order; the box is shown at the spot it takes (or where it was dropped). False: no change.
+  function move(n, li, k, at) {
+    var from = layerOf(n.id);
+    var rest = sorted(model[li]).filter(function (id) { return id !== n.id; });
+    k = Math.max(0, Math.min(rest.length, k));
+    var row = rest.slice(0, k).concat([n.id], rest.slice(k));
+    if (from === li && sorted(model[li]).join("\u0000") === row.join("\u0000")) return false;
+    if (cfg.kind !== "seq" && !rest.length) return false; // a place needs another box in its layer
+    var before = model.map(function (l) { return l.slice(); }), was = {dx: n.dx, dy: n.dy};
+    if (from >= 0) model[from] = model[from].filter(function (id) { return id !== n.id; });
+    model[li] = row;
+    if (!at) { // the spot it takes: between its new neighbors, at the layer's line
+      var a = row[k - 1] && nodes[row[k - 1]], b = row[k + 1] && nodes[row[k + 1]];
+      var size = across ? n.box.height : n.box.width, gap = 24;
+      var spot = a && b ? (along(a) + along(b)) / 2 : a ? along(a) + size + gap : along(b) - size - gap;
+      var line = rest.reduce(function (s, id) { return s + cross(nodes[id]); }, 0) / rest.length;
+      at = across ? {x: line, y: spot} : {x: spot, y: line};
+    }
+    place(n, at.x - n.x, at.y - n.y);
+    var op = cfg.kind === "seq" ? {op: "order", ids: row} : {op: "place", id: n.id, row: row};
+    record(op, function () { model = before; place(n, was.dx, was.dy); },
+           "Moved " + n.label + (from === li ? " to place " + (k + 1) + " of " + row.length : " to " + layerWord + " " + (li + 1)));
+    return true;
+  }
+
+  // the mouse: the box follows the pointer; the drop goes into the layer of the nearest box
   function toSvg(evt) {
     var p = svg.createSVGPoint();
     p.x = evt.clientX; p.y = evt.clientY;
@@ -259,10 +333,10 @@
     if (!g) { select(null); return; }
     var n = nodes[g.getAttribute("data-of")];
     select(n);
-    if (!canDrag) return;
+    if (!canMove) return;
     var p = toSvg(evt);
-    drag = {n: n, x0: p.x, y0: p.y, dx: n.dx || 0, dy: n.dy || 0, moved: false};
-    g.setPointerCapture && g.setPointerCapture(evt.pointerId);
+    drag = {n: n, x0: p.x, y0: p.y, dx: n.dx, dy: n.dy, moved: false};
+    try { g.setPointerCapture(evt.pointerId); } catch (e) { /* a pointer the page can't capture still drags */ }
     evt.preventDefault();
   });
   svg.addEventListener("pointermove", function (evt) {
@@ -273,30 +347,71 @@
   });
   svg.addEventListener("pointerup", function (evt) {
     if (!drag) return;
-    var d = drag;
+    var d = drag, n = d.n;
     drag = null;
+    n.g.focus({preventScroll: true});
     if (!d.moved) return;
-    var p = toSvg(evt), dx = d.dx + p.x - d.x0, dy = d.dy + p.y - d.y0;
-    var n = d.n, x = n.x + dx, y = n.y + dy;
-    var rows = rowsOf(n.id), best = null;
-    rows.forEach(function (r) { if (!best || Math.abs(r.y - y) < Math.abs(best.y - y)) best = r; });
-    var gap = rows.length > 1 ? Math.min.apply(null, rows.slice(1).map(function (r, i) { return r.y - rows[i].y; })) : 120;
-    function back() { n.g.setAttribute("transform", d.dx || d.dy ? "translate(" + d.dx + " " + d.dy + ")" : ""); }
-    if (!best || Math.abs(best.y - y) > Math.max(ROW, gap * 0.6)) { back(); return; }
-    var row = best.items.filter(function (m) { return m.x < x; }).map(function (m) { return m.id; });
-    row.push(n.id);
-    row = row.concat(best.items.filter(function (m) { return m.x >= x; }).map(function (m) { return m.id; }));
-    var mine = rowsOf(null).filter(function (r) { return r.items.some(function (m) { return m.id === n.id; }); })[0];
-    var same = mine && mine.items.map(function (m) { return m.id; }).join("\u0000") === row.join("\u0000");
-    if (same) { back(); return; }
-    var was = {dx: d.dx, dy: d.dy};
-    n.dx = dx; n.dy = dy;
-    n.g.classList.add("dd-pending");
-    record({op: "place", id: n.id, row: row}, function () {
-      n.dx = was.dx; n.dy = was.dy;
-      n.g.setAttribute("transform", was.dx || was.dy ? "translate(" + was.dx + " " + was.dy + ")" : "");
-      if (!was.dx && !was.dy) n.g.classList.remove("dd-pending");
+    var p = toSvg(evt), dx = d.dx + p.x - d.x0, dy = d.dy + p.y - d.y0, x = n.x + dx, y = n.y + dy;
+    var near = null, best = Infinity;
+    Object.keys(nodes).forEach(function (id) {
+      var m = nodes[id];
+      if (id === n.id) return;
+      var dist = Math.hypot(m.x + m.dx - x, m.y + m.dy - y);
+      if (dist < best) { best = dist; near = m; }
     });
+    var reach = 1.5 * Math.max(n.box.width, n.box.height, 120);
+    var li = near ? layerOf(near.id) : -1;
+    if (li < 0 || best > reach) { place(n, d.dx, d.dy); return; }
+    var pos = across ? y : x;
+    var k = sorted(model[li]).filter(function (id) { return id !== n.id && along(nodes[id]) < pos; }).length;
+    if (!move(n, li, k, {x: x, y: y})) place(n, d.dx, d.dy);
+  });
+
+  // the keyboard: arrows go to the next box, Shift+arrows move the box, as the mouse does
+  function neighbor(n, key) {
+    var li = layerOf(n.id), layer = sorted(model[li]), k = layer.indexOf(n.id);
+    if (keysAlong.indexOf(key) >= 0) return nodes[layer[k + (key === keysAlong[1] ? 1 : -1)]] || null;
+    var step = key === keysCross[1] ? 1 : -1;
+    for (var j = li + step; j >= 0 && j < model.length; j += step) {
+      if (!model[j].length) continue;
+      return model[j].map(function (id) { return nodes[id]; })
+        .sort(function (a, b) { return Math.abs(along(a) - along(n)) - Math.abs(along(b) - along(n)); })[0];
+    }
+    return null;
+  }
+  function keyMove(n, key) {
+    var li = layerOf(n.id), layer = sorted(model[li]), k = layer.indexOf(n.id);
+    if (keysAlong.indexOf(key) >= 0) return move(n, li, k + (key === keysAlong[1] ? 1 : -1));
+    if (cfg.kind === "seq") return false; // a sequence's actors stand in one row
+    var step = key === keysCross[1] ? 1 : -1, j = li + step;
+    while (j >= 0 && j < model.length && !model[j].length) j += step;
+    if (j < 0 || j >= model.length) return false;
+    var at = sorted(model[j]).filter(function (id) { return along(nodes[id]) < along(n); }).length;
+    return move(n, j, at);
+  }
+  svg.addEventListener("focusin", function (evt) {
+    var g = evt.target.closest && evt.target.closest(".dd-node");
+    if (editing && g && (!selected || selected.g !== g)) select(nodes[g.getAttribute("data-of")]);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (!editing) return;
+    if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z")) { undo(); e.preventDefault(); return; }
+    if (e.target === nameInput) return;
+    var focused = document.activeElement && document.activeElement.closest && document.activeElement.closest(".dd-node");
+    if (focused && (!selected || selected.g !== focused)) select(nodes[focused.getAttribute("data-of")]);
+    if (!selected) return;
+    var n = selected;
+    if (e.key.indexOf("Arrow") === 0) {
+      if (e.shiftKey) { if (canMove) keyMove(n, e.key); }
+      else { var m = neighbor(n, e.key); if (m) m.g.focus(); }
+      e.preventDefault();
+    } else if (e.key === "Enter" || e.key === "F2") {
+      nameInput.focus(); nameInput.select(); e.preventDefault();
+    } else if (canColor && /^[1-6]$/.test(e.key)) {
+      recolor(n, SWATCHES[+e.key - 1]); e.preventDefault();
+    } else if (e.key === "Escape") {
+      n.g.blur(); select(null); e.preventDefault();
+    }
   });
 
   // ---- the change animation: from the drawing before the edit to this one ------------------------
@@ -382,5 +497,7 @@
     else window.addEventListener("load", animate);
   }
 
-  window.ddPage = {nodes: nodes, rows: rowsOf, ops: function () { return ops.map(function (o) { return o.op; }); }, animate: animate};
+  window.ddPage = {nodes: nodes, layers: function () { return model.map(function (l) { return sorted(l); }); },
+                   ops: function () { return ops.map(function (o) { return o.op; }); }, animate: animate,
+                   edit: setEditing, select: function (id) { select(nodes[id] || null); }};
 })();

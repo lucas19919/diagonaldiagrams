@@ -246,6 +246,19 @@ def _previous_drawing(a):
     return old if same else None
 
 
+def _previous_layers(a):
+    """The layers the last drawing's page kept for its edit mode (diff's rows), or None."""
+    from .diff import page_layers
+    base, ext = os.path.splitext(a.o)
+    if ext.lower() not in (".html", ".htm", ".svg"):
+        base = a.o
+    try:
+        with open(base + ".html", encoding="utf-8") as f:
+            return page_layers(f.read())
+    except OSError:
+        return None
+
+
 def _chart_flags(p):
     p.add_argument("--grid", dest="grid", action="store_true", help="draw gridlines (default)")
     p.add_argument("--no-grid", dest="grid", action="store_false", help="drop gridlines; keep ticks")
@@ -529,6 +542,7 @@ def main():
         _brand_check(a, spec, theme, sheets)
         embed = getattr(a, "embed_fonts", False)
         old = _previous_drawing(a)
+        old_layers = _previous_layers(a) if old is not None else None
         prev = None
         if old is not None:  # an edit of this figure: the boxes the edit leaves alone stay near their places
             from .diff import middles
@@ -536,23 +550,27 @@ def main():
                 prev = {k: x for k, (x, _) in middles(old).items()}
             except ValueError:  # an old file that is not a figure this engine drew
                 old = None
+        info = {}  # the layout's layers, which the page's edit mode moves boxes between
         if a.cmd == "flow":
-            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed, engine=a.engine, prev=prev)
+            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed, engine=a.engine, prev=prev,
+                                    info=info)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "arch":
-            svg, _, _ = render_arch(spec, a.corners, theme, sheets, embed, engine=a.engine, prev=prev)
+            svg, _, _ = render_arch(spec, a.corners, theme, sheets, embed, engine=a.engine, prev=prev, info=info)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "seq":
             svg, _, _ = render_seq(spec, a.corners, theme, sheets, embed)
             item_cnt = len(spec.get("actors", []))
+            info = {"layers": [[str(x.get("id")) for x in spec.get("actors", []) if isinstance(x, dict)]], "across": False}
         elif a.cmd == "schema":
-            svg, _, _ = render_schema(spec, a.corners, theme, sheets, embed, engine=a.engine)
+            svg, _, _ = render_schema(spec, a.corners, theme, sheets, embed, engine=a.engine, info=info)
             item_cnt = len(spec.get("tables", []))
         changed = None
         if old is not None:
             from .diff import diff
-            changed = diff(old, svg)["sentences"]
-        page = {"kind": a.cmd, "spec": a.spec, "out": a.o, "previous": old if changed else None, "changed": changed or []}
+            changed = diff(old, svg, old_layers, info.get("layers"))["sentences"]
+        page = {"kind": a.cmd, "spec": a.spec, "out": a.o, "previous": old if changed else None, "changed": changed or [],
+                "layers": info.get("layers"), "across": bool(info.get("across"))}
         o, s = write_out(svg, a.cmd, spec.get("title", a.cmd), spec.get("sub", ""),
                          f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
                          caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",

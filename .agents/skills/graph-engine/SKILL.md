@@ -87,6 +87,8 @@ diagonaldiagrams flow SPEC.json -o out/x.svg
 
 The verdict's `changed` lists what moved, so you can tell them in a sentence; their page animates the change.
 Keep their edits when you regenerate the spec: `place` writes `rank`, `order` and `same-rank`, which you should
-leave as they are. `diff OLD.svg NEW.svg` compares any two drawings.
+leave as they are. Keep the patch too: after regenerating, apply it again. Edits that still fit are written in
+(applying twice changes nothing); a `patch-conflict` names an edit the new spec contradicts, so tell the person.
+`diff OLD NEW` compares any two drawings.
 
 Titles state the finding. Blue is HTTP, dashed is async, coral marks at most two focal items.

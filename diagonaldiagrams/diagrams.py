@@ -14,10 +14,12 @@ ENGINES = ("v2", "v1")
 MARGIN = 30  # between the canvas edge and the nearest box or frame
 
 
-def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, engine=None, prev=None):
+def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, engine=None, prev=None,
+                info=None):
     """Draw a flow: steps in layers top to bottom, decisions branching sideways, loops climbing back
     up the side. auto ranks every node, ignoring the spec's ranks. prev: {node id: x} from the drawing
-    before an edit, so the boxes the edit leaves alone stay near their places."""
+    before an edit, so the boxes the edit leaves alone stay near their places. info, if a dict, gets the
+    layout's layers (_layered), which the page's edit mode moves boxes between."""
     if engine == "v1":
         from .legacy import render_flow as v1
         return v1(spec, corners, auto, theme, sheets, embed)
@@ -38,14 +40,14 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), em
         nodes.append(n)
     shapes = {n["shape"] for n in nodes}
     dr, W, H, extra = _layered(spec, "flow", nodes, t, sty, corners, {"trunk": True, "rank_gap": 64.0, "min_width": 720 - 2 * MARGIN,
-                                                                      "prev": prev}, 720, "flow diagram")
+                                                                      "prev": prev}, 720, "flow diagram", info=info)
     _legend(dr, t, sty, W, H, extra, 48, 32, _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"),
                                                    ("diamond" in shapes, "diamond = decision"),
                                                    ("oval" in shapes, "rounded = start or end")), spec)
     return _as_svg((dr, W, H), sty, embed)
 
 
-def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None, prev=None):
+def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None, prev=None, info=None):
     """Draw an architecture view: one row per layer, calls running down between rows, calls within a
     row running straight between neighbors, groups framed."""
     if engine == "v1":
@@ -67,7 +69,7 @@ def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, e
     edges = spec.get("edges", [])
     eids = edge_ids(edges)
     dr, W, H, extra = _layered(spec, "arch", nodes, t, sty, corners, {"rank_gap": 100.0, "back": "ports", "min_width": 760 - 2 * MARGIN,
-                                                                      "prev": prev}, 760, "architecture diagram")
+                                                                      "prev": prev}, 760, "architecture diagram", info=info)
     http = _first(range(len(edges)), lambda i: str(edges[i].get("proto", "")).startswith("http"))
     focal_node = _first(nodes, lambda n: n.get("focal"))
     focal_edge = _first(range(len(edges)), lambda i: edges[i].get("focal"))
@@ -80,7 +82,7 @@ def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, e
 
 
 def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=None, pins=None, paint_node=None,
-             tails=True, attach=None, a11y_kind="arrow"):
+             tails=True, attach=None, a11y_kind="arrow", info=None):
     """Lays out and paints a flow, arch or schema figure, all but its legend: (Drawing, W, H, legend
     rows). edges: the spec's edges unless given; pins: {edge index: (from_at, to_at)}, ends kept at an
     offset along their sides (a schema's column rows); paint_node(nid, node, cx, cy): its elements,
@@ -127,6 +129,10 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     res = layered.layout(lnodes, ledges, [{"id": g["id"], "members": g["members"]} for g in groups],
                          dict(options, flat_room=flat_room, aspect=_aspect(spec), labels=label_w, margin=MARGIN,
                               same_rank=[s for s in same if len(s) > 1]))
+    if info is not None:  # for the page: each layer's boxes in order, and whether layers run across
+        info["layers"] = [[it for it in layer if it in ids] for layer in res.layers]
+        info["layers"] = [layer for layer in info["layers"] if layer]
+        info["across"] = str(options.get("direction", "TB")).upper() in ("LR", "RL")
     notes = (spec.get("notes", []) or [])[:2]
     cw, ch = res.size
     W = max(min_w, int(cw + 2 * MARGIN + 0.999))
@@ -436,7 +442,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
 TABLE_W, ROW_H = 240, 24  # a table card's width and the pitch of its column rows (paint.table_card)
 
 
-def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None):
+def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None, info=None):
     """Draw tables and their relations: tables in columns left to right, each relation running from
     a column row of one table to a column row of the other, laid out once by the layered layout.
     Tables pinned with x and y keep their places, which the v1 path draws."""
@@ -451,7 +457,8 @@ def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False,
     for tb in tables:
         cols = tb.get("columns", [])
         h = 44 + len(cols) * ROW_H + 12
-        nodes.append({"id": tb["id"], "name": tb.get("name", tb["id"]), "shape": "rect", "_w": TABLE_W, "_h": h, "tbl": tb})
+        nodes.append({"id": tb["id"], "name": tb.get("name", tb["id"]), "shape": "rect", "_w": TABLE_W, "_h": h, "tbl": tb,
+                      **{k: tb[k] for k in ("rank", "order", "lane") if k in tb}})  # a column and a place in it, from edits
         rows[tb["id"]] = {c["name"]: 44 + k * ROW_H + ROW_H / 2 - h / 2 for k, c in enumerate(cols)}
     relations = spec.get("relations", [])
     rids = edge_ids(relations)
@@ -469,7 +476,7 @@ def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False,
     def attach(e, r):
         return {"from": {"node": e.get("from"), "port": e.get("from_col")}, "to": {"node": e.get("to"), "port": e.get("to_col")}}
     dr, W, H, extra = _layered(spec, "schema", nodes, t, sty, corners, options, 780, "database schema", edges=relations,
-                               pins=pins, paint_node=card, tails=False, attach=attach, a11y_kind="relation")
+                               pins=pins, paint_node=card, tails=False, attach=attach, a11y_kind="relation", info=info)
     cols = [c for tb in tables for c in tb.get("columns", [])]
     focal_tbl = _first(tables, lambda tb: tb.get("focal"))
     focal_rel = _first(range(len(relations)), lambda i: relations[i].get("focal"))

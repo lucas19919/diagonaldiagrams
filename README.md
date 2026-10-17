@@ -66,7 +66,7 @@ The audit reads the finished SVG: labels on labels, labels too wide for their bo
 
 ## Edit and draw again
 
-On a flow or architecture page, Edit lets a person rename a box, recolor it, or drag it to another place in its row or into another row. Nothing in the figure's files changes: each edit becomes a patch operation, which the page shows with Copy patch and Save patch.json.
+A diagram's page has Edit. A person renames a box, recolors it (flow and arch), or moves it: within its row or into another one, a schema table into another column, a sequence's actor along the actors. Everything works from the keyboard too: Tab or the arrows go from box to box, Shift+arrows move the selected box, Enter renames, 1–6 pick a color, Ctrl+Z undoes. Nothing in the figure's files changes: each edit becomes a patch operation, which the page shows with Copy patch and Save patch.json.
 
 ```text
 diagonaldiagrams apply deploy.json patch.json
@@ -74,7 +74,9 @@ diagonaldiagrams flow deploy.json -o out/deploy.svg
 {"ok": true, ..., "changed": ["Renamed \"Review\" to \"Peer review\"", "Row 4 now reads Peer review | Fix", "4 other boxes shifted, 103 px on average"]}
 ```
 
-`apply` writes the patch into the spec as fields and constraints, so the next generation of the spec keeps it. A drag becomes `{"op": "place", "id": "fix", "row": ["review", "fix"]}`: the box's row and its place in it, not pixels. Drawn again at the same path, the figure keeps the other boxes near their places, the verdict lists what `changed`, and the new page animates from the old drawing to the new one (Replay change shows it again; reduced motion turns it off). `diagonaldiagrams diff OLD.svg NEW.svg` prints the same list for any two drawings. MCP has `apply` and `diff` tools.
+`apply` writes the patch into the spec as fields and constraints, so the next generation of the spec keeps it. A drag becomes `{"op": "place", "id": "fix", "row": ["review", "fix"]}`: the box's row and its place in it, not pixels. Drawn again at the same path, the figure keeps the other boxes near their places, the verdict lists what `changed`, and the new page animates from the old drawing to the new one (Replay change shows it again; reduced motion turns it off). `diagonaldiagrams diff OLD NEW` prints the same list for any two drawings (two pages compare by the layout's own rows, which a wrapped figure's heights don't show). MCP has `apply` and `diff` tools.
+
+Keep the patch. When the spec is regenerated from a changed brief, apply it again: an edit that still fits is written in again (applying twice changes nothing), and one the new spec contradicts, such as a box that is gone or a name that changed, comes back as a `patch-conflict` with a fix. `tests/unit/test_regeneration.py` checks that every edit either shows in the new drawing or is reported.
 
 `export OUT --to png|pdf|svg|drawio|excalidraw` writes other formats. draw.io and Excalidraw exports keep boxes, frames, and the routed arrows attached to their boxes, so a person can open the figure and drag things around. PNG and PDF use cairosvg if installed, else headless Edge or Chrome.
 

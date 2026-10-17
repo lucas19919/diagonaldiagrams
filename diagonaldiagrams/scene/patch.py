@@ -152,6 +152,8 @@ def _text(d, op):
     if unknown or not fields:
         raise _Conflict(f"a {kind}'s text fields are {', '.join(TEXT[kind])}; this operation sets {', '.join(unknown) or 'none'}",
                         f"set one of: {', '.join(TEXT[kind])}")
+    if all(el.get(k) == v for k, v in fields.items()):
+        return  # already says so: applying a patch again after the spec was written changes nothing
     if "was" in op:
         key = next(iter(fields))
         now = el.get(key, el.get("id") if key == "name" else "")

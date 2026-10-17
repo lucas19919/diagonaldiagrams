@@ -162,10 +162,14 @@ def to_v1(scene):
     others = [c for c in scene.constraints if not isinstance(c.get("order"), list)]
     if kind == "arch":
         nodes = _apply_order(nodes, order)
+    elif kind == "seq":  # actors stand in their list's order: an order over actors is that order
+        actors = {n.id for n in nodes}
+        nodes = _apply_order(nodes, [o for o in order if set(map(str, o)) <= actors])
+        others += [{"order": o} for o in order if not set(map(str, o)) <= actors]
     elif order:
         others += [{"order": o} for o in order]
-    # flow and arch draw with the layered layout, which reads same-rank and order (diagrams._layered)
-    read = ("same-rank", "order") if kind in ("flow", "arch") else ()
+    # flow, arch and schema draw with the layered layout, which reads same-rank and order (diagrams._layered)
+    read = ("same-rank", "order") if kind in ("flow", "arch", "schema") else ()
     unread = [c for c in others if not any(isinstance(c.get(k), list) for k in read)]
     if unread:
         warn.append(_not_drawn(f"{len(unread)} constraint(s)", "constraints"))
@@ -291,6 +295,9 @@ def _v1_table(n):
             out[key] = getattr(n, key)
     if n.focal:
         out["focal"] = True
+    for key in ("rank", "lane", "order"):  # a column and a place in it, from edits (scene/patch.py place)
+        if getattr(n, key) is not None:
+            out[key] = getattr(n, key)
     if n.pin:
         out["x"], out["y"] = n.pin.get("x"), n.pin.get("y")
     table = (n.content or {}).get("table")
