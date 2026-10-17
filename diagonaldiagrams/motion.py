@@ -7,8 +7,8 @@ read() checks a motion block; resolve() turns it into a schedule against a drawn
 arrow's route as a polyline, each event's start and end); at() is the motion layer at a time t.
 The page evaluates the same schedule with web/motion.js, the same arithmetic, so the HTML and the
 exported frames agree. frame() is the figure plus that layer; times() is the frame timing of a
-seamless loop; film() rasterizes the frames, a sheet at a time, and writes a GIF (gif.py) or,
-through ffmpeg, a video.
+seamless loop; film() rasterizes the frames, in one browser kept open (_cdp.py) or a sheet at a
+time, and writes a GIF (gif.py) or, through ffmpeg, a video.
 """
 import math
 import os
@@ -439,15 +439,62 @@ def sheet(svgs, w, h):
             + "".join(tiles) + "</svg>")
 
 
+def _cairo():
+    try:
+        import cairosvg  # noqa: F401
+        return True
+    except (ImportError, OSError):
+        return False
+
+
+# the frame's motion layer, swapped into a page that shows the still figure
+_SWAP = "(() => { const g = document.querySelectorAll('g[data-motion]'); g[g.length - 1].outerHTML = %s; return true })()"
+
+
+def _shoot(browser, svg, s, ts, camera, W, H, pages, keep=None):
+    """The frames, from one browser kept open (_cdp): the still figure loads once in each of a few
+    windows, and each frame swaps in its motion layer and takes a screenshot. Each batch of frames
+    decodes while the browser draws the next."""
+    import json
+    from . import _cdp, gif as giff
+    from .export import _page
+    i = svg.rindex("</svg>")
+    still = svg[:i] + layer([]) + "\n" + svg[i:]
+    b = _cdp.Browser(browser, W, H, pages=min(pages, len(ts)))
+    try:
+        b.load(_page(_crop(still, camera) if camera else still, W, H), W, H)
+        frames, pngs = [], []
+
+        def decode():
+            for png in pngs:
+                prev = frames[-1] if frames else None
+                frames.append(giff.read_png(png, like=prev, period=H))
+                if prev is not None:
+                    prev.px = prev.filtered = None
+        for k0 in range(0, len(ts), len(b.pages)):
+            ks = range(k0, min(len(ts), k0 + len(b.pages)))
+            b.run([(p, _SWAP % json.dumps(layer(at(s, ts[k])))) for p, k in zip(b.pages, ks)])
+            pngs = b.shots(b.pages[:len(ks)], W, H, meanwhile=decode)
+            for k, png in zip(ks, pngs if keep else ()):
+                with open(os.path.join(keep, f"f{k:04d}.png"), "wb") as fh:
+                    fh.write(png)
+        decode()
+        return frames
+    finally:
+        b.close()
+
+
 def film(svg, s, fps=20, gif=None, video=None, camera=None, workers=4, keep=None):
-    """Draws the loop through the PNG export path, a sheet of frames per raster call, then writes the
-    GIF and/or the video. Returns what it wrote: {"frames", "fps", "loop", "gif", "gif_bytes", ...}."""
+    """Draws the loop through the PNG export path, then writes the GIF and/or the video. With Edge
+    or Chrome and no cairosvg, one browser stays open for every frame (_shoot); otherwise, or if
+    that fails, each sheet of frames is one raster call. workers is how many windows or raster
+    calls work at once. Returns what it wrote: {"frames", "fps", "loop", "gif", "gif_bytes", ...}."""
     import shutil
     import subprocess
     import tempfile
     from concurrent.futures import ThreadPoolExecutor
     from . import gif as giff
-    from .export import _raster_svg
+    from .export import _browser, _raster_svg
     n, ts, delays = times(s["loop"], fps)
     if camera:  # whole pixels, so the frames tile exactly
         x, y, w, h = camera
@@ -474,20 +521,33 @@ def film(svg, s, fps=20, gif=None, video=None, camera=None, workers=4, keep=None
                     fh.write(text)
         return _raster_svg(sheet(svgs, W, H), os.path.join(folder, f"sheet{g:03d}.png"), "png", W, scale=1)
     try:
-        with ThreadPoolExecutor(max(1, workers)) as pool:
-            done = list(pool.map(one, range(len(groups))))
-        bad = [why for how, why in done if not how]
-        if bad:
-            raise SpecError(f"a frame did not rasterize: {bad[0]}", "filming needs cairosvg, Edge or Chrome on this machine",
-                            "no-raster")
-        frames, prev = [], None
-        for g in range(len(groups)):
-            part = giff.read_png(os.path.join(folder, f"sheet{g:03d}.png"), like=prev, period=H)
-            if prev is not None:
-                prev.px = prev.filtered = None
-            prev = part
-            frames += giff.split(part, H)[:len(groups[g])]
-        out = {"frames": n, "fps": fps, "loop": s["loop"], "size": [W, H], "raster": done[0][0], "sheets": len(groups)}
+        out = {"frames": n, "fps": fps, "loop": s["loop"], "size": [W, H]}
+        frames, browser = None, None if _cairo() else _browser()
+        if browser:
+            if keep:
+                for k in range(n):
+                    with open(os.path.join(folder, f"f{k:04d}.svg"), "w", encoding="utf-8") as fh:
+                        fh.write(body(k))
+            try:
+                frames = _shoot(browser, svg, s, ts, camera, W, H, workers, keep and folder)
+                out["raster"] = "devtools"
+            except (OSError, ValueError) as e:
+                out["devtools_error"] = str(e)[-300:]
+        if frames is None:
+            with ThreadPoolExecutor(max(1, workers)) as pool:
+                done = list(pool.map(one, range(len(groups))))
+            bad = [why for how, why in done if not how]
+            if bad:
+                raise SpecError(f"a frame did not rasterize: {bad[0]}", "filming needs cairosvg, Edge or Chrome on this machine",
+                                "no-raster")
+            frames, prev = [], None
+            for g in range(len(groups)):
+                part = giff.read_png(os.path.join(folder, f"sheet{g:03d}.png"), like=prev, period=H)
+                if prev is not None:
+                    prev.px = prev.filtered = None
+                prev = part
+                frames += giff.split(part, H)[:len(groups[g])]
+            out.update(raster=done[0][0], sheets=len(groups))
         if gif:
             size, written = giff.write(gif, frames, delays)
             out.update(gif=gif, gif_bytes=size, gif_frames=written)

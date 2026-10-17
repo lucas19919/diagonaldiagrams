@@ -375,6 +375,8 @@ class Coders(unittest.TestCase):
             self.assertEqual(again.rows, sheet.rows)
             gif.write_png(path, one)
             self.assertEqual(gif.read_png(path).rows, a.rows)
+            with open(path, "rb") as f:  # a screenshot arrives as bytes, not a file
+                self.assertEqual(gif.read_png(f.read(), like=two, period=12).rows, a.rows)
 
     def test_the_gif_holds_every_frame_with_its_delay_and_loops(self):
         frames = [_frame(40, 30, (8, 10)), _frame(40, 30, (12, 10)), _frame(40, 30, (12, 10)), _frame(40, 30, None)]
@@ -406,6 +408,143 @@ class Coders(unittest.TestCase):
         both = motion.sheet([motion.frame(svg, s, 0.5), motion.frame(svg, s, 1.0)], 1054, 869)
         self.assertTrue(both.startswith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1054 1738" width="1054">'))
         self.assertEqual(both.count('x="0" y="869" height="869">'), 1)
+
+
+# ---- filming: one browser kept open, or a launch per sheet ------------------------------------
+
+def _serve_websocket(script):
+    """A one-connection WebSocket server on localhost: (port, thread, log). script(conn, recv, send)
+    plays the server's side; recv returns (opcode, payload, masked), send(op, data, fin)."""
+    import base64
+    import hashlib
+    import socket
+    import threading
+    srv = socket.socket()
+    srv.bind(("127.0.0.1", 0))
+    srv.listen(1)
+    log = {}
+
+    def run():
+        conn, _ = srv.accept()
+        f = conn.makefile("rb")
+        head = []
+        while True:
+            line = f.readline().decode().strip()
+            if not line:
+                break
+            head.append(line)
+        key = next(h.split(":", 1)[1].strip() for h in head if h.lower().startswith("sec-websocket-key:"))
+        accept = base64.b64encode(hashlib.sha1((key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").encode()).digest()).decode()
+        conn.sendall(f"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+                     f"Sec-WebSocket-Accept: {accept}\r\n\r\n".encode())
+        log["head"] = head
+
+        def recv():
+            b0, b1 = f.read(2)
+            n = b1 & 127
+            if n >= 126:
+                n = int.from_bytes(f.read(2 if n == 126 else 8), "big")
+            mask = f.read(4) if b1 & 0x80 else b""
+            data = f.read(n)
+            if mask:
+                data = bytes(c ^ mask[i % 4] for i, c in enumerate(data))
+            return b0 & 15, data, bool(mask)
+
+        def send(op, data, fin=True):
+            n = len(data)
+            size = bytes([n]) if n < 126 else bytes([126]) + n.to_bytes(2, "big") if n < 65536 else bytes([127]) + n.to_bytes(8, "big")
+            conn.sendall(bytes([(0x80 if fin else 0) | op]) + size + data)
+        try:
+            script(conn, recv, send, log)
+        finally:
+            conn.close()
+            srv.close()
+    t = threading.Thread(target=run, daemon=True)
+    t.start()
+    return srv.getsockname()[1], t, log
+
+
+class Filming(unittest.TestCase):
+    def test_the_websocket_client_masks_frames_and_reads_every_length(self):
+        from diagonaldiagrams import _cdp
+        texts = ["hi", "é" * 70, "x" * 126, "y" * 70000]  # 7-bit, 7-bit in UTF-8 bytes, 16-bit and 64-bit lengths
+
+        def script(conn, recv, send, log):
+            log["masked"], log["pong"] = [], None
+            for k in range(len(texts)):
+                op, data, masked = recv()
+                log["masked"].append(masked)
+                if k == 1:  # a ping before the answer, which the client must answer
+                    send(9, b"are you there")
+                    log["pong"] = recv()
+                if k == 2:  # an answer in two fragments
+                    send(1, data[:50], fin=False)
+                    send(0, data[50:])
+                else:
+                    send(1, data)
+            send(8, b"")
+        port, t, log = _serve_websocket(script)
+        ws = _cdp._WebSocket(f"ws://127.0.0.1:{port}/devtools/browser/x", 10)
+        try:
+            for text in texts:
+                ws.send(text)
+                self.assertEqual(ws.recv(), text)
+            with self.assertRaises(OSError):  # the server closed it
+                ws.recv()
+        finally:
+            ws.close()
+        t.join(10)
+        self.assertEqual(log["masked"], [True] * 4)  # a client masks every frame
+        self.assertEqual(log["pong"], (10, b"are you there", True))
+        self.assertIn("GET /devtools/browser/x HTTP/1.1", log["head"])
+
+    def test_film_takes_the_open_browser_and_falls_back_to_a_launch_per_sheet(self):
+        from unittest import mock
+        from diagonaldiagrams import export
+        svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 6" width="8"></svg>'
+        s = {"loop": 1.0, "still": 0.0, "paper": "#fff", "flows": [], "traces": []}
+        frames = [_frame(8, 6, (k + 1, 2)) for k in range(4)]
+        sheets = []
+
+        def raster(text, dest, kind, width, scale=2):
+            sheets.append(text)
+            _png(dest, 8, 24, [r for f in frames for r in f.rows], filters=(0,))
+            return "browser", ""
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(export, "_browser", return_value="msedge"), \
+                mock.patch.object(export, "_raster_svg", raster), mock.patch.object(motion, "_cairo", return_value=False):
+            with mock.patch.object(motion, "_shoot", return_value=frames) as shoot:
+                out = motion.film(svg, s, fps=4, gif=os.path.join(d, "a.gif"))
+            self.assertEqual((out["raster"], out["frames"], out["gif_frames"], sheets), ("devtools", 4, 4, []))
+            self.assertEqual(shoot.call_args.args[3], [0.0, 0.25, 0.5, 0.75])  # the frames' times
+            with mock.patch.object(motion, "_shoot", side_effect=OSError("DevTools refused the WebSocket")):
+                out = motion.film(svg, s, fps=4, gif=os.path.join(d, "b.gif"))
+            self.assertEqual((out["raster"], out["sheets"], out["gif_frames"], len(sheets)), ("browser", 1, 4, 1))
+            self.assertIn("refused", out["devtools_error"])
+            with open(os.path.join(d, "a.gif"), "rb") as a, open(os.path.join(d, "b.gif"), "rb") as b:
+                self.assertEqual(a.read(), b.read())  # the same frames make the same file either way
+
+    def test_one_open_browser_draws_each_frame_as_a_launch_of_its_own_would(self):
+        from diagonaldiagrams import export
+        browser = export._browser()
+        if not browser:
+            self.skipTest("no Edge or Chrome on this machine")
+        s, _, svg = checkout([{"trace": PATH}, {"flow": "edge[async]"}])
+        ts = [0.6, 1.9, 2.4]
+        got = motion._shoot(browser, svg, s, ts, None, 1054, 869, pages=2)
+        self.assertEqual([(f.w, f.h) for f in got], [(1054, 869)] * 3)
+        self.assertGreater(sum(a != b for a, b in zip(got[0].rows, got[1].rows)), 20)  # the packet moved
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "alone.png")
+            how, why = export._raster_svg(motion.frame(svg, s, ts[1]), path, "png", 1054, scale=1)
+            self.assertEqual(how, "browser", why)
+            alone = gif.read_png(path)
+        differ = sum(a != b for ra, rb in zip(alone.rows, got[1].rows) if ra != rb
+                     for a, b in zip(_px(ra), _px(rb)))
+        self.assertLess(differ, 200)  # antialiasing at most: 1054 x 869 is 915,926 pixels
+
+
+def _px(row):
+    return [row[i:i + 3] for i in range(0, len(row), 3)]
 
 
 if __name__ == "__main__":

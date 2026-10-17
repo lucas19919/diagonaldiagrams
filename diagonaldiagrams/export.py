@@ -42,6 +42,14 @@ def _browser():
     return None
 
 
+def _page(svg, w, h):
+    """The HTML page a browser draws the SVG from: w x h CSS pixels, nothing else on it."""
+    return ("<!DOCTYPE html><html><head><meta charset='utf-8'><style>"
+            f"html,body{{margin:0;padding:0;width:{w}px;height:{h}px;overflow:hidden;background:#fff}}"
+            "svg{display:block;width:100%;height:100%}</style></head><body>"
+            + svg + "</body></html>")
+
+
 def _raster_svg(svg, dest, kind, width_hint, scale=2):
     """Write a PNG or PDF of the SVG. Cairo if it imports, otherwise Edge or Chrome headless.
     scale is the browser's pixels per SVG unit (cairo takes width_hint as the width).
@@ -62,12 +70,8 @@ def _raster_svg(svg, dest, kind, width_hint, scale=2):
         return None, "no Edge, Chrome, or cairosvg on this machine"
     folder = tempfile.mkdtemp(prefix="graph-raster-")
     page = os.path.join(folder, "fig.html")
-    html = ("<!DOCTYPE html><html><head><meta charset='utf-8'><style>"
-            f"html,body{{margin:0;padding:0;width:{w}px;height:{h}px;overflow:hidden;background:#fff}}"
-            "svg{display:block;width:100%;height:100%}</style></head><body>"
-            + svg + "</body></html>")
     with open(page, "w", encoding="utf-8") as f:
-        f.write(html)
+        f.write(_page(svg, w, h))
     url = "file:///" + os.path.abspath(page).replace("\\", "/")
     profile = os.path.join(folder, "profile")
     dest_abs = os.path.abspath(dest)

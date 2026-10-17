@@ -76,11 +76,15 @@ def _unfilter(ft, f, prior, bpp):
 
 
 def read_png(path, like=None, period=None):
-    """A Frame of RGB rows. The PNG may be a sheet of frames stacked top to bottom, each `period`
-    rows high; each frame is then decoded against the one above it, and the first against the
-    last frame of `like` (the sheet or frame before). Rows that match are reused, not unfiltered."""
-    with open(path, "rb") as f:
-        data = f.read()
+    """A Frame of RGB rows, from a PNG file or its bytes. The PNG may be a sheet of frames stacked
+    top to bottom, each `period` rows high; each frame is then decoded against the one above it,
+    and the first against the last frame of `like` (the sheet or frame before). Rows that match
+    are reused, not unfiltered."""
+    if isinstance(path, (bytes, bytearray)):
+        data, path = path, "the image"
+    else:
+        with open(path, "rb") as f:
+            data = f.read()
     if data[:8] != b"\x89PNG\r\n\x1a\n":
         raise ValueError(f"{path} is not a PNG")
     pos, idat, ihdr = 8, [], None
