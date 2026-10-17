@@ -92,12 +92,13 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     groups = _groups_of(spec, ids)
     head_els, head_h = paint.heading(t, spec.get("title") or "", spec.get("sub") or "", x=30, st=sty.figure(),
                                      eyebrow=spec.get("figure"))
-    flat_room = {}
+    flat_room, label_w = {}, {}
     for i, e in enumerate(edges):  # a labelled arrow between neighbors in a layer needs room for its label
         if e.get("label") and e.get("from") in ids and e.get("to") in ids:
             text = paint.transformed(e["label"], sty.edge(eids[i])["label"])
             box = _label_box(0, 0, text)
             flat_room[(e["from"], e["to"])] = box[2] - box[0] + 24
+            label_w[eids[i]] = box[2] - box[0]
     lnodes = []
     for n in nodes:
         d = {"id": n["id"], "w": n["_w"], "h": n["_h"], "shape": n["shape"]}
@@ -124,7 +125,8 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                     le[key] = at
             ledges.append(le)
     res = layered.layout(lnodes, ledges, [{"id": g["id"], "members": g["members"]} for g in groups],
-                         dict(options, flat_room=flat_room, aspect=_aspect(spec), same_rank=[s for s in same if len(s) > 1]))
+                         dict(options, flat_room=flat_room, aspect=_aspect(spec), labels=label_w, margin=MARGIN,
+                              same_rank=[s for s in same if len(s) > 1]))
     notes = (spec.get("notes", []) or [])[:2]
     cw, ch = res.size
     W = max(min_w, int(cw + 2 * MARGIN + 0.999))

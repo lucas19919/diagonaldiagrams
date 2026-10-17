@@ -41,6 +41,28 @@ def trading(a, b):
     return meets(a, b) and meets(b, a)
 
 
+def _cycle(must, done):
+    """A cycle of rules among the runs not yet placed, as (i, j) pairs: i must sit above j."""
+    j = next(k for k in sorted(must) if k not in done)
+    path, seen = [], {}
+    while j not in seen:
+        seen[j] = len(path)
+        i = min(k for k in must[j] if k not in done)
+        path.append((i, j))
+        j = i
+    return path[seen[j]:]
+
+
+def _loosest(pairs, runs):
+    """The rule in pairs whose two lines stand furthest apart: giving it up costs the least. A
+    dogleg's halves (no shared x) are never given up while another rule can be."""
+    def apart(pair):
+        a, b = runs[pair[0]], runs[pair[1]]
+        gaps = [abs(xa - xb) for xa, da in a.ends for xb, db in b.ends if da == "top" and db == "bottom"]
+        return min((g for g in gaps if g < NEAR), default=-1.0)
+    return max(pairs, key=apart)
+
+
 def assign(runs, margin=14.0):
     """Gives each run a track (0 at the top of the gap). Returns the number of tracks."""
     if not runs:
@@ -88,16 +110,24 @@ def assign(runs, margin=14.0):
         for i in must[j]:
             below[i].append(j)
     ready = sorted((i for i in range(n) if indeg[i] == 0), key=lambda i: (-wins[i], runs[i].lo, i))
-    order = []
-    while ready:
+    order, done = [], set()
+    while len(order) < n:
+        if not ready:  # a longer cycle (three runs passing their columns round): give up its loosest rule
+            i, j = _loosest(_cycle(must, done), runs)
+            must[j].discard(i)
+            below[i].remove(j)
+            indeg[j] -= 1
+            if indeg[j] == 0:
+                ready.append(j)
+            continue
         i = ready.pop(0)
         order.append(i)
+        done.add(i)
         for j in below[i]:
             indeg[j] -= 1
             if indeg[j] == 0:
                 ready.append(j)
         ready.sort(key=lambda i: (-wins[i], runs[i].lo, i))
-    order += [i for i in range(n) if i not in set(order)]
     placed = {}
     for i in order:
         t = 0

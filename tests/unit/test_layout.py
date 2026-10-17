@@ -89,6 +89,16 @@ class Tracks(unittest.TestCase):
         b = channels.Run("b", [(200.0, "top"), (300.0, "bottom")])
         self.assertEqual(channels.assign([a, b]), 1)
 
+    def test_three_runs_passing_columns_round_keep_the_rules_they_can(self):
+        # a must sit above b, b above c and c above a: no order meets all three. The rule given up is
+        # the loosest one (a's line and b's are 11 px apart, b's and c's 10); c leaves where a comes up
+        a = channels.Run("a", [(100.0, "bottom"), (60.0, "top")])
+        b = channels.Run("b", [(71.0, "bottom"), (160.0, "top")])
+        c = channels.Run("c", [(150.0, "bottom"), (100.0, "top")])
+        channels.assign([a, b, c])
+        self.assertLess(c.track, a.track)
+        self.assertLess(b.track, c.track)
+
 
 class Layered(unittest.TestCase):
     def check(self, nodes, edges, groups=(), **options):
@@ -205,6 +215,21 @@ class FuzzRegressions(unittest.TestCase):
 
     def test_a_crowded_decision_side_on_a_wide_figure(self):
         self.check("flow", 20246, 75)  # arrows stacked on one point of the side
+
+    def test_three_back_edges_passing_columns_round_in_one_gap(self):
+        self.check("flow", 402, 79)  # their tracks broke a rule, so two climbs shared a line
+
+    def test_three_exits_on_a_decision_side_beside_a_box(self):
+        self.check("flow", 40630, 51)  # the third turned down inside the box next to the decision
+
+    def test_a_long_label_on_an_arrow_climbing_inside_a_frame(self):
+        self.check("arch", 40349, 6)  # no room inside the frame, so the label sat on its border
+
+    def test_a_label_beside_a_back_edge_climbing_past_a_column(self):
+        self.check("flow", 40124, 37)  # boxes beside the climb and the canvas edge outside it
+
+    def test_a_long_label_on_a_short_back_edge_at_the_canvas_edge(self):
+        self.check("flow", 414, 67)  # another label inside the loop and the canvas edge outside it
 
 
 if __name__ == "__main__":

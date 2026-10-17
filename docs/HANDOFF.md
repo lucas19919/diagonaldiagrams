@@ -21,7 +21,7 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 | P1b Known bugs B1–B9 | done | |
 | P2 Core seams | done | scene model, display list, audit as registered checks, patches (`apply`), receipts v2, sanitizer, registries, a11y; `bench/metrics/p2.md` |
 | P3 Style system and text | done (0.7.0) | cascade, token themes, presets, decorations, encodings, text layout, font files, project config and brand policy; `bench/metrics/p3.md` |
-| P4 Layout and routing kernels | built (0.8.0); fuzz on new seeds open (B29) | PLAN P4 status |
+| P4 Layout and routing kernels | built (0.8.0); fuzz 0 of 1,000 on seeds 0, 20000, 40000 (B29) | PLAN P4 status |
 | P5–P13 | not started | PLAN.md, one section each |
 
 ## P4 as it stands
@@ -29,8 +29,8 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 - **Layout.** flow, arch and schema draw with the layered kernel (`layout/`) once, with no repair loop. Schema runs it left to right with each relation pinned to its column rows (`from_at`, `to_at`). seq draws from `layout/sequence.py`. `--layout-engine v1` draws with `legacy.py` until P8; schema tables pinned with `x` and `y` still use it.
 - **Deleted on 2026-10-17:** eight kernels and the container protocol (`layout/base.py`) that no renderer called. DESIGN 7.3 says why and when each comes back. Don't restore them without a caller.
 - **Labels** keep the case the spec gives (B26). Group titles and the figure label stay small caps.
-- **Fuzz.** CI gates seeds 5000 and 20000 (200 scenes each, `--strict`). A nightly workflow fuzzes 1,000 new seeds and uploads the failures. About 0.5% of new-seed scenes still fail. PLAN's B29 lists them by kind and seed; the two biggest groups are back edges sharing a wrap corridor (`wrap.py`) and labeled arrows with no room inside a frame.
-- **Open in P4:** B29, P4.9–P4.12, constraints beyond rank, lane and order, and LR, BT and RL for flow and arch. P4.1 (nested groups and the container protocol) moves to P5.
+- **Fuzz.** CI gates seeds 5000 and 20000 (200 scenes each, `--strict`). A nightly workflow fuzzes 1,000 new seeds and uploads the failures. B29 fixed what seeds 0 and 40000 found (about 0.5% of scenes); those sets and seed 20000 now fail 0 of 1,000. New seeds may still find more: add each as a `FuzzRegressions` test in `tests/unit/test_layout.py`.
+- **Open in P4:** P4.9–P4.12, constraints beyond rank, lane and order, and LR, BT and RL for flow and arch. P4.1 (nested groups and the container protocol) moves to P5.
 
 ## What's next
 
