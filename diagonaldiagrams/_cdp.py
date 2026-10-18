@@ -100,13 +100,16 @@ class Browser:
 
     def __init__(self, path, w, h, pages=1, timeout=30):
         self.timeout, self.next_id, self.proc, self.drain, self.ws, self.pages = timeout, 0, None, None, None, []
+        self.said = []
         self.profile = tempfile.mkdtemp(prefix="dd-devtools-")
         try:
             try:
                 self._start(path, w, h, max(1, pages))
             except OSError as e:
                 from .export import _sandbox_refused
-                if self.proc is None or self.proc.poll() is None or not _sandbox_refused(str(e)):
+                if self.drain and self.proc is not None and self.proc.poll() is not None:  # it exited: its last words are on their way
+                    self.drain.join(2)
+                if self.proc is None or self.proc.poll() is None or not _sandbox_refused(str(e) + " ".join(self.said)):
                     raise
                 self.close()  # it never started: once more without the sandbox, in a fresh profile
                 self.proc = self.drain = None
@@ -122,13 +125,14 @@ class Browser:
                f"--window-size={w},{h}", "about:blank"]
         self.proc = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         found, lines = [], []
+        self.said = lines  # the browser's own words, all of them: the sandbox's may not be the last
 
         def drain():  # read stderr to its end, so the browser never blocks on a full pipe
             for raw in self.proc.stderr:
                 line = raw.decode("utf-8", "replace").strip()
                 if not found and line.startswith("DevTools listening on ws://"):
                     found.append(line.split(" on ", 1)[1])
-                elif len(lines) < 20:
+                elif len(lines) < 200:
                     lines.append(line)
         self.drain = threading.Thread(target=drain, daemon=True)
         self.drain.start()

@@ -13,8 +13,17 @@ if (!wheel) {
   console.error("usage: node tests/pyodide_smoke.mjs WHEEL");
   process.exit(2);
 }
-const py = await loadPyodide();
-py.unpackArchive(readFileSync(wheel), "wheel");
+function said(e) {  // an error's message, short: Pyodide's own stack is one minified line of 64 KB
+  return (e && e.message ? e.message : String(e)).slice(0, 4000);
+}
+let py;
+try {
+  py = await loadPyodide();
+  py.unpackArchive(readFileSync(wheel), "wheel");
+} catch (e) {
+  console.error("loading Pyodide or the wheel failed:\n" + said(e));
+  process.exit(1);
+}
 py.FS.mkdirTree("/out");
 py.FS.writeFile("/in.json", JSON.stringify({
   title: "Pyodide smoke",
@@ -38,7 +47,7 @@ except SystemExit:
 buf.getvalue()
 `);
 } catch (e) {  // a Python error: its traceback, not Pyodide's minified stack
-  console.error("Python raised:\n" + (e && e.message ? e.message : String(e)));
+  console.error("Python raised:\n" + said(e));
   process.exit(1);
 }
 let verdict = {};
