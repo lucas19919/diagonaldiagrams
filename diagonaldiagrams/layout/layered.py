@@ -755,6 +755,20 @@ class _Plan:
                     return True
         return False
 
+    def _across_port(self, nid, x0, x1, y):
+        """True when a sideways run from x0 to x1 at y (from nid's middle) passes another node's back
+        edge where it runs out sideways to its port item, at much the same y: the two share a line."""
+        lo, hi = min(x0, x1), max(x0, x1)
+        for it in self.L.layers[self.rank[nid]]:
+            if self.L.kind[it] != "port" or self.L.attach[it] == nid:
+                continue
+            n2, (_, eid, role) = self.L.attach[it], it
+            a, b = sorted((self._x(it), self._x(n2)))
+            side = self._side_port(n2, self._x(it))
+            if a < hi and lo < b and abs(self.port(n2, side, eid, role)[1] - y) < channels.NEAR:
+                return True
+        return False
+
     def _separate(self):
         """An arrow coming down into a gap at x and another leaving it downward at the same x would
         share that line whatever their tracks: slide a lone port aside (toward its own run) so they
@@ -905,7 +919,7 @@ class _Plan:
                         x = x + sign * out_st
                         while any(abs(x - t) < channels.NEAR for t in taken):
                             x += sign * self.o["track"]
-                        if self._into_box(a, p[0], x):
+                        if self._into_box(a, p[0], x) or self._across_port(a, p[0], x, p[1]):
                             self.crowded.append((a, s1))
                     spans.append((min(p[0], x), max(p[0], x), a))
                     turns.setdefault((a, s1), []).append(x)

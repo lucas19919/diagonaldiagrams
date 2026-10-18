@@ -326,6 +326,10 @@ class FuzzRegressions(unittest.TestCase):
         # pins put a box's climb 1 px from where the decision's side exit turned down: one line for both
         self.check("flow", 11014, 27, pins={"n17": (965, 1279), "n13": (538, 980), "n16": (390, 1669)})
 
+    def test_a_decision_turning_down_past_another_boxs_run_to_its_port(self):
+        # kept off that box's port item, the turn went past it, onto the back edge's run at the same y
+        self.check("flow", 70166, 175, pins={"n14": (7354, 1452)})
+
 
 if __name__ == "__main__":
     unittest.main()
