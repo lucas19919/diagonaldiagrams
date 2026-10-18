@@ -143,6 +143,12 @@ def _json_where(e):
     return str(e)
 
 
+def _a_pin(pin):
+    """Numbers x and y, and z in 3D, as a scene's pin is (scene/normalize.py)."""
+    return (isinstance(pin, dict) and "x" in pin and "y" in pin and set(pin) <= {"x", "y", "z"}
+            and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in pin.values()))
+
+
 def _validate_spec_dict(spec, errors, warnings, kind=None):
     """Shared diagram-spec checks for `validate` + `doc`. Appends E/W dicts."""
     if not _structure_ok(spec, errors, warnings, kind):
@@ -188,10 +194,11 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
         ids = [n.get("id") for n in nodes]
         if len(set(ids)) != len(ids):
             _vissue(errors, warnings, "E", "duplicate node ids", "make ids unique")
-        pinned = [str(n.get("id")) for n in nodes if isinstance(n, dict) and n.get("pin") is not None]
-        if pinned:
-            warnings.append({"code": "not-drawn", "msg": f"pins are not drawn yet ({', '.join(pinned[:3])}{', ...' if len(pinned) > 3 else ''})",
-                             "fix": "to move a node, give it a row with a place patch, or a rank or order; drop the pin if unwanted"})
+        for n in nodes:  # a pin is drawn (DESIGN 4.6), so it must be one
+            pin = n.get("pin") if isinstance(n, dict) else None
+            if pin is not None and not _a_pin(pin):
+                errors.append({"code": "bad-value", "msg": f"node '{n.get('id')}' has pin {pin!r}; a pin is numbers x and y, "
+                               "where the box's middle goes", "fix": 'write "pin": {"x": 120, "y": 80}, or drop it'})
         for e in edges:
             for k in ("from", "to"):
                 if e.get(k) not in ids:

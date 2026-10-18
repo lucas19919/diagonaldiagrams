@@ -14,6 +14,7 @@ of the figure as little as the four allow (PLAN P4.9).
 
 A flow's main path (spine) is forced the way borders are, so all four keep it straight. On an edit
 the four without it join the mix, since a path that flips sides would otherwise move every box.
+hold() then moves pinned items to their x (DESIGN 4.6), pushing what stands in their way.
 """
 import math
 
@@ -320,3 +321,96 @@ def spine(layers, paths, up, hold, forced_up):
         for a, b in zip(seq, seq[1:]):
             out[b] = a
     return out
+
+
+def hold(layers, xs, sep, width, forced_up, targets, walls=None, straight=()):
+    """(xs, blocked): xs with each pinned item moved to its x, in the order targets ([(item, x)])
+    gives them.
+
+    An item moves with the items forced in line with it (frame borders, forced_up), and with those it
+    stands in line with along a straight arrow (straight: (upper, lower) pairs), so the arrow stays
+    straight. What stands in its way along a layer is pushed over by as little as sep allows, and
+    pushes in turn, so the result is as valid as xs was. walls: per layer, the least x a left edge may
+    take there (the canvas's margin), or None; what stands past one is pushed back first. A pin
+    already held, or a wall, stops a push: the item then gets as near its x as it can, and blocked
+    says what stopped it ("pin", "edge", or "layout" when xs gave nothing safe to move)."""
+    head = {}
+
+    def find(v):
+        while head.get(v, v) != v:
+            v = head[v]
+        return v
+    for b, a in list(forced_up.items()) + [(v, u) for u, v in straight if abs(xs[u] - xs[v]) < 0.01]:
+        if find(a) != find(b):
+            head[find(b)] = find(a)
+    blocked = {}
+    x = {}
+    for layer in layers:
+        for v in layer:
+            r = find(v)
+            if r in x and abs(x[r] - xs[v]) > 0.01:  # a frame's borders out of line (BK's last resort)
+                return xs, {t[0]: "layout" for t in targets}
+            x[r] = xs[v]
+    succ, pred, floor = {}, {}, {}  # floor: the least x a block may take, its layers' walls allowing
+    for k, layer in enumerate(layers):
+        if layer and walls and walls[k] is not None:
+            r = find(layer[0])
+            floor[r] = max(floor.get(r, -INF), walls[k] + width[layer[0]] / 2.0)
+        for u, v in zip(layer, layer[1:]):
+            a, b, s = find(u), find(v), sep(u, v)
+            if s > succ.setdefault(a, {}).get(b, -INF):
+                succ[a][b] = s
+                pred.setdefault(b, {})[a] = s
+    indeg = {r: len(pred.get(r, ())) for r in x}
+    topo = [r for r in x if indeg[r] == 0]
+    for r in topo:
+        for c in succ.get(r, ()):
+            indeg[c] -= 1
+            if indeg[c] == 0:
+                topo.append(c)
+    if len(topo) != len(x):
+        return xs, {t[0]: "layout" for t in targets}
+
+    def reach(b, nxt, order):
+        """Longest distance from block b to each block it reaches along nxt (order: topological)."""
+        far = {b: 0.0}
+        for r in order:
+            if r in far:
+                for c, s in nxt.get(r, {}).items():
+                    far[c] = max(far.get(c, -INF), far[r] + s)
+        return far
+    if floor:  # what stands past a wall moves right to it, and pushes what is beyond
+        for r in topo:
+            x[r] = max([x[r], floor.get(r, -INF)] + [x[a] + s for a, s in pred.get(r, {}).items()])
+    held = set()
+    for item, want in targets:
+        if item not in xs or find(item) in held:
+            continue
+        b = find(item)
+        at = x[b]
+        d, why = abs(want - at), None
+        if want > at:  # right: the blocks it reaches keep their gaps, and a held one stops it
+            far = reach(b, succ, topo[topo.index(b):])
+            for f in held & set(far):
+                if x[f] - far[f] - at < d:
+                    d, why = x[f] - far[f] - at, "pin"
+            d = max(d, 0.0)
+            for r, s in far.items():
+                x[r] = max(x[r], at + d + s)
+        elif want < at:  # left, the same way, and the first item of a layer stops at its wall
+            back = topo[::-1]
+            far = reach(b, pred, back[back.index(b):])
+            for f in held & set(far):
+                if at - far[f] - x[f] < d:
+                    d, why = at - far[f] - x[f], "pin"
+            for r in set(far) & set(floor):  # one already past its wall is only kept from going further
+                bound = at - far[r] - min(x[r], floor[r])
+                if bound < d:
+                    d, why = bound, "edge"
+            d = max(d, 0.0)
+            for r, s in far.items():
+                x[r] = min(x[r], at - d - s)
+        if why and d < abs(want - at) - 0.01:
+            blocked[item] = why
+        held.add(b)
+    return {v: x[find(v)] for v in xs}, blocked

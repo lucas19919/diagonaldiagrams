@@ -11,6 +11,12 @@
 - options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "prev" ({node
   id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room" and
   "min_width". Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
+- options for pinned nodes (DESIGN 4.6), read in TB only: "pins" ({node id: x} in prev's frame: the
+  node's middle stands there), "wall" (in prev's frame, the least x a box's left edge may take before
+  the first cut: the canvas's margin), "anchor" ({node id: x on the canvas}: where the renderer puts
+  the pinned nodes, which sets the canvas's edges), "row_y" ({node id: y}: its layer's middle stands
+  at least that low, as Result.bands gives it) and "cuts" (the layers to wrap after, as Result.cuts
+  gives them; [] for none).
 
 The steps: break cycles (back_edges), rank (ranks), add a dummy wherever an arrow passes a layer and
 a left and a right border wherever a group spans one (Layering), order the layers for few crossings
@@ -61,12 +67,17 @@ class Route:
 
 
 class Result:
-    __slots__ = ("pos", "size", "routes", "frames", "layers", "crossings", "issues", "rank", "wrapped")
+    __slots__ = ("pos", "size", "routes", "frames", "layers", "crossings", "issues", "rank", "wrapped", "blocked",
+                 "bands", "cuts", "flat")
 
     def __init__(self):
         self.pos, self.size, self.routes, self.frames = {}, (0.0, 0.0), {}, {}
         self.layers, self.crossings, self.issues, self.rank = [], 0, [], {}
         self.wrapped = False
+        self.blocked = {}  # pinned node -> what kept it from its x ("pin", "edge", "layout"; bk.hold)
+        self.bands = []  # each layer's middle y, before wrap and before the frame is moved to the canvas
+        self.flat = {}  # each node's x, before wrap and label room and before the frame is moved
+        self.cuts = []  # the layers wrap cut after
 
 
 def _shape(n):
@@ -260,9 +271,9 @@ def layout(nodes, edges, groups=(), options=None):
                     key = frozenset((kids[i], kids[j]))
                     spread[key] = max(spread.get(key, 0.0), info[nid]["w"] + o["node_gap"])
 
-    # a labelled arrow within a layer whose ends have frame borders, or arrows passing the layer,
-    # between them: the room it needs goes on the middle pair of the items between, on top of their
-    # own gaps
+    # a labelled arrow within a layer whose ends have frame borders or other arrows' lines between
+    # them (a back edge's port item, a long arrow's dummy): the room it needs goes on one pair of the
+    # items between, on top of their own gaps
     extra = {}
     for (a, b), room in flat_room.items():
         if a not in L.layer_of or b not in L.layer_of or L.layer_of[a] != L.layer_of[b]:
@@ -270,21 +281,21 @@ def layout(nodes, edges, groups=(), options=None):
         layer = L.layers[L.layer_of[a]]
         i, j = sorted((layer.index(a), layer.index(b)))
         mid = layer[i:j + 1]
-        between = {L.kind[x] for x in mid[1:-1]}
-        if j - i < 2 or "node" in between:
+        if j - i < 2 or any(L.kind[x] not in ("left", "right", "port", "dummy") for x in mid[1:-1]):
             continue
-        pairs = list(zip(mid, mid[1:]))
-        if between <= {"left", "right"}:
-            # the label sits between two borders, never across one: the widest gap alone must hold it
-            key = max(pairs, key=lambda xy: gap(*xy))
-            if room > gap(*key):
-                extra[key] = max(extra.get(key, 0.0), room - gap(*key))
-        elif not between & {"left", "right"}:
-            # it may sit across a passing arrow (a soft obstacle), so the whole span must hold it
-            free = sum(width[x] / 2.0 + width[y] / 2.0 + gap(x, y) for x, y in pairs) - width[a] / 2.0 - width[b] / 2.0
-            if room > free:
-                key = pairs[len(pairs) // 2]
-                extra[key] = max(extra.get(key, 0.0), room - free)
+        # the label sits between two borders, never across one: the widest stretch between borders
+        # alone must hold it. It may cross a line: a back edge's climb stops short of the arrow on one
+        # side, so the label sits on the other, and a long arrow passes under the label's pill
+        stretches = [[]]
+        for xy in zip(mid, mid[1:]):
+            stretches[-1].append(xy)
+            if L.kind[xy[1]] in ("left", "right"):
+                stretches.append([])
+        widest = max((s for s in stretches if s), key=lambda s: sum(gap(*xy) for xy in s))
+        have = sum(gap(*xy) for xy in widest)
+        key = max(widest, key=lambda xy: gap(*xy))
+        if room > have:
+            extra[key] = max(extra.get(key, 0.0), room - have)
 
     def sep(a, b):
         return max(width[a] / 2.0 + width[b] / 2.0 + gap(a, b) + extra.get((a, b), 0.0),
@@ -304,6 +315,15 @@ def layout(nodes, edges, groups=(), options=None):
                         {k: float(v) for k, v in prev.items() if k in info} if prev else None, straight)
     if o.get("balance"):  # arch: each node over what it calls (bk.balance)
         xs = bk.balance(L.layers, L.up, L.down, L.kind, xs, sep)
+    # 4b. pinned nodes go to their x, pushing what stands in their way (DESIGN 4.6); after the
+    # balance, so a pin's x holds exactly
+    pins = {k: float(v) for k, v in (o.get("pins") or {}).items() if k in info} if direction == "TB" else {}
+    if pins:
+        targets, walls = _pin_targets(pins, prev or {}, xs, ids, o.get("wall"), o.get("cuts") or [], nl)
+        lines = [(u, v) for u in L.kind if L.kind[u] in ("dummy", "port")
+                 for v in L.down[u] if L.kind[v] in ("dummy", "port")]  # an arrow's items, which a push keeps in line
+        xs, res.blocked = bk.hold(L.layers, xs, sep, width, forced_up, targets, walls, lines)
+    res.flat = {i: xs[i] for i in ids}
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
     band_h = [max((info[it]["h"] for it in layer if L.kind[it] == "node"), default=0.0) for layer in L.layers]
@@ -317,6 +337,10 @@ def layout(nodes, edges, groups=(), options=None):
 
     # 6. heights: a gap is as tall as its tracks and the frames' bands around it need
     head_at, pad_at = _frame_depths(span, gparent)
+    low = {}  # a layer whose middle must stand at least this low (row_y): the gap above it grows
+    for i, v in (o.get("row_y") or {}).items():
+        if i in rank:
+            low[rank[i]] = max(low.get(rank[i], v), float(v))
     y, band_top = 0.0, []
     gap_h = {}
     for g in range(-1, nl):
@@ -327,6 +351,8 @@ def layout(nodes, edges, groups=(), options=None):
             mid = (n + 1) * o["track"] + o["stub"] if n else 0.0
         else:
             mid = max(o["rank_gap"], (n + 1) * o["track"] + 2 * o["stub"] if n else 0.0)
+        if g + 1 in low:
+            mid += max(0.0, low[g + 1] - (y + pads + mid + heads + band_h[g + 1] / 2.0))
         gap_h[g] = (pads, mid, heads)
         y += pads + mid + heads
         if g + 1 < nl:
@@ -335,6 +361,7 @@ def layout(nodes, edges, groups=(), options=None):
     H = y
     res.layers = [list(x) for x in L.layers]
     cy = {r: band_top[r] + band_h[r] / 2.0 for r in range(nl)}
+    res.bands = [cy[r] for r in range(nl)]
     track_y = {}
     for g in range(-1, nl):
         pads, mid, heads = gap_h[g]
@@ -355,23 +382,27 @@ def layout(nodes, edges, groups=(), options=None):
         res.routes[r.id] = r
 
     # 6b. a tall strip folds into columns near the target aspect (wrap.py)
-    wrapped = False
     if o.get("aspect"):
         from .wrap import wrap
         target = float(o["aspect"])
-        wrapped = wrap(res.pos, rank, info, res.frames, span, res.routes, band_top, band_h,
-                       {r: n * o["group_pad"] for r, n in pad_at.items()},
-                       {r: n * o["group_head"] for r, n in head_at.items()}, o, 1.0 / target if across else target,
-                       min_width=o.get("min_width", 0.0))
-    res.wrapped = wrapped
+        res.cuts = wrap(res.pos, rank, info, res.frames, span, res.routes, band_top, band_h,
+                        {r: n * o["group_pad"] for r, n in pad_at.items()},
+                        {r: n * o["group_head"] for r, n in head_at.items()}, o, 1.0 / target if across else target,
+                        min_width=o.get("min_width", 0.0), cuts=o.get("cuts"))
+    wrapped = res.wrapped = bool(res.cuts)
 
     # 6c. a label with no clear spot beside its arrow gets a strip of room there (room.py)
     room_x = []
     if o.get("labels") and direction == "TB":
         from .room import make_room
         reach = {i: info[i]["w"] / 2.0 + o["loop"] + flat_room[(i, i)] for i in loop_nodes if (i, i) in flat_room}
+        left = None
+        anchor = {k: float(v) for k, v in (o.get("anchor") or {}).items() if k in res.pos}
+        if anchor:  # a pinned figure's canvas begins where its pins put it, as the renderer will place it
+            keep = [p for p in anchor if p not in res.blocked] or list(anchor)
+            left = sum(res.pos[p][0] - anchor[p] for p in keep) / len(keep)
         room_x = make_room(res.pos, info, res.frames, res.routes, o["labels"], reach, o.get("min_width", 0.0),
-                           o.get("margin", 0.0))
+                           o.get("margin", 0.0), left)
 
     # 7. into the canvas's frame of reference, and turned for LR, BT, RL
     pts = [p for r in res.routes.values() for p in r.points]
@@ -407,6 +438,19 @@ def layout(nodes, edges, groups=(), options=None):
             r.points = [(W - x, y) for x, y in r.points]
             r.sides = tuple({"e": "w", "w": "e"}.get(s, s) for s in r.sides)
     return res
+
+
+def _pin_targets(pins, prev, xs, ids, wall, cuts, nl):
+    """([(node, x)], walls) for bk.hold: each pin in BK's frame. prev's frame is read off the other
+    boxes, which keep their earlier places as nearly as BK allows (one shift for them all); with no
+    earlier places at all, BK's frame is the pins' own. walls: per layer, the wall in BK's frame for
+    the layers before the first cut (wrap sets the later columns right of them), else None."""
+    seen = [float(prev[i]) - xs[i] for i in ids if i not in pins and i in prev]
+    shift = sum(seen) / len(seen) if seen else 0.0  # BK's x + shift: prev's frame
+    out = [(p, pins[p] - shift) for p in ids if p in pins]
+    first = min(cuts) if cuts else nl
+    walls = [wall - shift if wall is not None and seen and r <= first else None for r in range(nl)]
+    return out, walls
 
 
 def _turn(side, direction):
@@ -723,6 +767,20 @@ class _Plan:
                     return True
         return False
 
+    def _across_port(self, nid, x0, x1, y):
+        """True when a sideways run from x0 to x1 at y (from nid's middle) passes another node's back
+        edge where it runs out sideways to its port item, at much the same y: the two share a line."""
+        lo, hi = min(x0, x1), max(x0, x1)
+        for it in self.L.layers[self.rank[nid]]:
+            if self.L.kind[it] != "port" or self.L.attach[it] == nid:
+                continue
+            n2, (_, eid, role) = self.L.attach[it], it
+            a, b = sorted((self._x(it), self._x(n2)))
+            side = self._side_port(n2, self._x(it))
+            if a < hi and lo < b and abs(self.port(n2, side, eid, role)[1] - y) < channels.NEAR:
+                return True
+        return False
+
     def _separate(self):
         """An arrow coming down into a gap at x and another leaving it downward at the same x would
         share that line whatever their tracks: slide a lone port aside (toward its own run) so they
@@ -870,7 +928,10 @@ class _Plan:
                     nxt = self._x(ds[0]) if ds else q[0]
                     clear = self._clear(a, x, nxt)
                     out_st = self.stub.get((eid, "out"), st)
-                    taken = [self._x(pt) for pt, n2 in self.L.attach.items() if n2 == a] + turns.get((a, s1), [])
+                    # every line through this layer (any node's back-edge port items, long arrows'
+                    # dummies) and the turns already beside this node: a turn down near one shares its line
+                    taken = [self._x(it) for it in self.L.layers[self.rank[a]] if self.L.kind[it] in ("port", "dummy")]
+                    taken += turns.get((a, s1), [])
                     spans = level.setdefault(self.rank[a], [])
                     lo, hi = min(x, nxt), max(x, nxt)
                     free = not any(n2 != a and lo - channels.NEAR < h2 and l2 - channels.NEAR < hi for l2, h2, n2 in spans)
@@ -881,7 +942,7 @@ class _Plan:
                         x = x + sign * out_st
                         while any(abs(x - t) < channels.NEAR for t in taken):
                             x += sign * self.o["track"]
-                        if self._into_box(a, p[0], x):
+                        if self._into_box(a, p[0], x) or self._across_port(a, p[0], x, p[1]):
                             self.crowded.append((a, s1))
                     spans.append((min(p[0], x), max(p[0], x), a))
                     turns.setdefault((a, s1), []).append(x)

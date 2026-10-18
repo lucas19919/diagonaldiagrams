@@ -99,7 +99,7 @@ def _place(d, op):
     """A node dropped into a row: it shares the row with the others named, in the order named. With
     the others in one pinned rank (arch layers, ranked flows), the node takes that rank; else the
     row is a same-rank constraint, so it holds when the ranks are worked out again. The row's nodes
-    take its order, and drop their lanes."""
+    take its order, and drop their lanes. The node drops its pin, which would hold it where it was."""
     kind, el = _find(d, op.get("id"))
     if kind != "node":
         raise _Conflict(f"'{el['id']}' is a {kind}; place moves nodes", "place a node")
@@ -128,6 +128,7 @@ def _place(d, op):
     for k, i in enumerate(row):  # the row's order replaces the lanes it had: the drag says where they go
         nodes[i]["order"] = k
         nodes[i].pop("lane", None)
+    el.pop("pin", None)
 
 
 def _style(d, op):

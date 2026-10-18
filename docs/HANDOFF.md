@@ -38,9 +38,10 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 
 The owner asked for animation and better editing ahead of P5. Three slices are built (PLAN's P10 and P9 statuses, DESIGN 21.2 and 21.4 as-built):
 - **Edit loop:** every diagram page's Edit mode hands over a patch (`place`, `order`, `text`, `style`), by mouse or keyboard: boxes move within and between the layout's layers, a sequence's messages between steps. `apply` writes the patch; drawing again at the same path keeps the other boxes near their places, reports `changed`, and animates the old drawing into the new one. `diff` compares any two drawings. A kept patch applied again after the spec is regenerated keeps every edit or reports it (`tests/unit/test_regeneration.py`).
+- **Pins:** flow and arch draw a node's `pin` as a row and an x in it (DESIGN 4.6 and 7.3 as-built): the figure is laid out without its pins, then again with each pinned box held at its x. A pin that can't hold is a `constraint` warning in the verdict. A `place` drops the pin.
 - **Stories:** `story STORY.json -o OUT.html` presents one figure as views (focus, dim, hide, highlight, reveal) in one page that animates between them.
 
-Next is the owner's call: draw pins in flow and arch (a layout feature: the layered kernel would have to keep a node where it is pinned), widen stories (several figures, pages, annotations, PDF), or go back to P5.
+Next is the owner's call: widen stories (several figures, pages, annotations, PDF), or go back to P5.
 
 ## Decisions that wait on the owner
 
