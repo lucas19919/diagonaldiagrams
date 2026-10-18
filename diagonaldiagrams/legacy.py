@@ -226,7 +226,8 @@ def _render_flow_once(spec, corners="editorial", auto=False, theme=None, styler=
     H = int(low + 112)
     extra = _bottom(t, sty, spec, W)
     H += extra
-    dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")), kind="flow diagram")
+    dr = paint.Drawing(W, H, spec.get("title", "flow"), spec.get("sub", spec.get("title", "flow")), kind="flow diagram",
+                       legible=True)
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     frame_at, seg_boxes = len(dr.items), []
     node_boxes = [(cx - 80, cy - n["_h"] / 2, cx + 80, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
@@ -502,7 +503,8 @@ def _render_arch_once(spec, corners="editorial", theme=None, styler=None):
     H = int(low + 112)
     extra = _bottom(t, sty, spec, W)
     H += extra
-    dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")), kind="architecture diagram")
+    dr = paint.Drawing(W, H, spec.get("title", "arch"), spec.get("sub", spec.get("title", "arch")), kind="architecture diagram",
+                       legible=True)
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
     for nid, (x, y, n) in pos.items():
@@ -637,7 +639,7 @@ def _render_schema_once(spec, corners="editorial", theme=None, styler=None):
     extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "schema"), spec.get("sub", spec.get("title", "schema")),
-                       kind="database schema")
+                       kind="database schema", legible=True)
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     # Relations (rendered behind table cards)
     rel_labels = []

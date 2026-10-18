@@ -139,17 +139,16 @@ class Styler:
     def _readable(self, fg, bg):
         """A default text color that stays readable when the fill under it changes (a data-driven fill,
         a dark brand color): kept if it meets WCAG AA (4.5:1), else ink or paper, whichever reads
-        better. A color a stylesheet chose is never changed here; the contrast check judges it."""
-        from .parse import Color, color, contrast
+        better, or black or white when neither of those meets it on a mid-tone fill (one of the two
+        always does). A color a stylesheet chose is never changed here; the contrast check judges it."""
+        from .parse import Color, color, readable
         if not isinstance(bg, Color):
             return css(fg)
         key = ("readable", css(fg), bg.css)
         if key not in self._memo:
-            paper = color(self.token("paper"))
-            if contrast(fg, bg, paper) >= 4.5:
-                self._memo[key] = css(fg)
-            else:
-                self._memo[key] = max((color(self.token("ink")), paper), key=lambda c: contrast(c, bg, paper)).css
+            fg = color(fg)
+            pick = readable(fg, bg, color(self.token("ink")), color(self.token("paper")))
+            self._memo[key] = css(fg) if pick is fg else pick.css
         return self._memo[key]
 
     def _font(self, text_style):

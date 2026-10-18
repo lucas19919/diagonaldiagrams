@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="database schema" viewBox="0 0 1000 544" width="1000">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="database schema" data-legibility="all" viewBox="0 0 1000 544" width="1000">
 <title>Training store</title>
 <desc>A run points at its data, its checkpoints, and its scores.</desc>
 <rect width="1000" height="544" fill="#f5f5f5" aria-hidden="true"/>

@@ -148,12 +148,14 @@ def project(items, projection=None):
 class Drawing:
     """A figure being painted: its size, its accessible title and description, the elements in
     paint order, the projection (None in 2D), and its kind ("flow diagram"), which makes it a
-    navigable graphics document rather than a single image (None: role="img", as charts are)."""
-    __slots__ = ("width", "height", "title", "desc", "items", "projection", "kind")
+    navigable graphics document rather than a single image (None: role="img", as charts are).
+    legible: its default colors and sizes pass the legibility checks (B25), so it writes
+    data-legibility="all" and the audit judges every text, not only those a stylesheet styled."""
+    __slots__ = ("width", "height", "title", "desc", "items", "projection", "kind", "legible")
 
-    def __init__(self, width, height, title="", desc="", items=None, projection=None, kind=None):
+    def __init__(self, width, height, title="", desc="", items=None, projection=None, kind=None, legible=False):
         self.width, self.height, self.title, self.desc = width, height, title, desc
-        self.items, self.projection, self.kind = list(items or []), projection, kind
+        self.items, self.projection, self.kind, self.legible = list(items or []), projection, kind, legible
 
     def _items(self):
         """The elements to write: after the projection stage, with the definitions decorations
@@ -173,7 +175,7 @@ class Drawing:
 
     def _root(self):
         role = (f'role="graphics-document" aria-roledescription="{_attr(self.kind)}"' if self.kind else 'role="img"')
-        return role
+        return role + (' data-legibility="all"' if self.legible else "")
 
     def add(self, *elements):
         self.items.extend(elements)
@@ -186,6 +188,8 @@ class Drawing:
         what svg() would write, after the projection stage."""
         import xml.etree.ElementTree as ET
         root = ET.Element("svg", {"viewBox": f"0 0 {fmt(self.width)} {fmt(self.height)}", "width": fmt(self.width)})
+        if self.legible:
+            root.set("data-legibility", "all")
         ET.SubElement(root, "title").text = self.title or None
         ET.SubElement(root, "desc").text = self.desc or None
         root.extend(e.etree(bool(self.kind)) for e in self._items())
@@ -605,6 +609,7 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
         card = 1
     after = card + 3  # the card, its header band, and the rule under the header
     out[after:after] = decor + _sides(out[card], lambda: deco.rect_sides(x, y, w, h, rx), st, "table", tid)
+    ink, soft = on_fill(t["ink"], st["fill"], t), on_fill(t["soft"], st["fill"], t)  # the rows' text, on the card
     tag = tbl.get("tag", "")
     if tag:  # in small capitals at the header's right end
         tg = dict(st["tag"], color=st["tag"].get("color") or t["muted"])
@@ -626,10 +631,22 @@ def table_card(t, x, y, w, h, rx, tid, tbl, row_h, st=None):
                 break
         name_x = badge_x + (28 if (c.get("pk") or c.get("fk")) else 0)
         out.append(el("text", c["name"], owner=own, role="column.name", x=name_x, y=cy + 15, font_size=11, font_family=MONO,
-                      fill=t["ink"]))
+                      fill=ink))
         out.append(el("text", c.get("type", ""), owner=own, role="column.type", x=x + w - 12, y=cy + 15, font_size=10,
-                      font_family=MONO, fill=t["soft"], text_anchor="end"))
+                      font_family=MONO, fill=soft, text_anchor="end"))
     return out
+
+
+def on_fill(fg, fill, t):
+    """A theme text color that reads on fill (a stylesheet's or a scale's): fg if it meets WCAG AA,
+    else ink, paper, black or white (style.parse.readable). A fill it can't read keeps fg."""
+    from .style.parse import color, readable
+    try:
+        fg_c, bg = color(fg), color(fill)
+    except Exception:
+        return fg
+    pick = readable(fg_c, bg, color(t["ink"]), color(t["paper"]))
+    return fg if pick is fg_c else pick.css
 
 
 def readable_on_tint(fg, card, alpha=0.15):

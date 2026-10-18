@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" viewBox="0 0 333 789" width="333">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" data-legibility="all" viewBox="0 0 333 789" width="333">
 <title>Canary promotion</title>
 <desc>Yes promotes. No rolls back into the build.</desc>
 <rect width="333" height="789" fill="#f5f5f5" aria-hidden="true"/>

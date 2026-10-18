@@ -211,53 +211,90 @@ def group_frames(v, issues):
                                "fix": "move the text or the group's members so the frame clears it", "at": [round(mx), round(my)]})
 
 
-def _under(v, t):
-    """The paint under a text: the last solid fill painted before it whose shape holds its middle,
-    as (color, opacity), or the figure's own background."""
-    cx, cy = (t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2
-    under = None
-    for it in v.items:
-        if it is t:
-            break
-        if it.kind == "shape" and it.fill and it.box and it.box[0] <= cx <= it.box[2] and it.box[1] <= cy <= it.box[3]:
+def _layers(v):
+    """The solid fills in paint order, read once per figure: (position in v.items, box, Color or
+    None when the fill can't be read, opacity); and each text's position."""
+    from ..style.parse import color
+    layers, at, seen = [], {}, {}
+    for k, it in enumerate(v.items):
+        if it.kind == "text":
+            at[id(it)] = k
+        elif it.kind == "shape" and it.fill and it.box:
             paint = str(it.fill[0]).strip().lower()
-            if paint not in ("none", "transparent") and not paint.startswith("url("):
-                under = it
-    return under.fill if under is not None else ("#ffffff", 1.0)
+            if paint in ("none", "transparent") or paint.startswith("url("):
+                continue
+            if paint not in seen:
+                try:
+                    seen[paint] = color(paint)
+                except Exception:
+                    seen[paint] = None
+            layers.append((k, it.box, seen[paint], it.fill[1]))
+    return layers, at
+
+
+def _under(t, layers, at):
+    """The paint under a text's middle: every solid fill painted before it whose shape holds that
+    point, laid in paint order over a white page, so a translucent fill is read over what it covers.
+    Returns (Color, words for the message), or None when a fill can't be read."""
+    from ..style.parse import Color
+    cx, cy = (t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2
+    bg, words = Color(255, 255, 255), "#ffffff"
+    mine = at[id(t)]
+    for k, b, c, opacity in layers:
+        if k > mine:
+            break
+        if b[0] <= cx <= b[2] and b[1] <= cy <= b[3]:
+            if c is None:
+                return None
+            a = c.a * opacity
+            if a >= 1:
+                bg, words = c, c.css
+            elif a > 0:
+                bg = Color(c.r * a + bg.r * (1 - a), c.g * a + bg.g * (1 - a), c.b * a + bg.b * (1 - a))
+                words = f"{c.css} at {a:.2g} over {words.split(' over ')[-1]}"
+    return bg, words
 
 
 @check("text contrast", "contrast")
 def text_contrast(v, issues):
     # WCAG AA: 4.5:1, or 3:1 for large text (18.66 px, or 14 px bold). Judged where a stylesheet chose
-    # the color; the default themes' own shortfalls are known bug B25.
-    from ..style.parse import Color, color, contrast
+    # the color, and everywhere on a figure whose defaults pass (data-legibility="all": flow, arch, seq
+    # and schema). The chart kinds' defaults still fall short (B25), so there only styled text is judged.
+    from ..style.parse import color, contrast
+    layers = None
     for t in v.texts:
-        if not t.color_from:
+        if not (t.color_from or v.every):
             continue
         try:
             fg = color(t.color)
-            bg_color, alpha = _under(v, t)
-            bg = color(bg_color)
         except Exception:
             continue
-        if alpha < 1:
-            bg = Color(bg.r, bg.g, bg.b, bg.a * alpha)
+        if layers is None:
+            layers = _layers(v)
+        under = _under(t, *layers)
+        if under is None:
+            continue
+        bg, bg_color = under
         ratio = contrast(fg, bg)
         need = 3.0 if t.size >= 18.66 or (t.size >= 14 and t.bold) else 4.5
         if ratio < need:
             mx, my = (t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2
+            where = f"the color comes from {t.color_from}" if t.color_from else "the color is the theme's default"
             issues.append({"code": "contrast",
                            "msg": f"'{t.text[:24]}' is {t.color} on {bg_color}: {ratio:.1f}:1, under the {need:g}:1 "
-                                  f"WCAG AA asks for; the color comes from {t.color_from}",
-                           "fix": "darken the text or lighten what is under it, in that rule", "at": [round(mx), round(my)]})
+                                  f"WCAG AA asks for; {where}",
+                           "fix": ("darken the text or lighten what is under it, in that rule" if t.color_from else
+                                   "set a darker color for it in a stylesheet; a default that fails is a bug"),
+                           "at": [round(mx), round(my)]})
 
 
 @check("text size", "min-size")
 def min_size(v, issues):
     for t in v.texts:
-        if t.size_from and t.size < 9:
-            issues.append({"code": "min-size", "msg": f"'{t.text[:24]}' is {t.size:g} px, under 9 px; the size comes from "
-                                                       f"{t.size_from}", "fix": "use 9 px or more", "at": [round(t.box[0]), round(t.box[1])]})
+        if (t.size_from or v.every) and t.size < 9:
+            where = f"the size comes from {t.size_from}" if t.size_from else "the size is the preset's default"
+            issues.append({"code": "min-size", "msg": f"'{t.text[:24]}' is {t.size:g} px, under 9 px; {where}",
+                           "fix": "use 9 px or more", "at": [round(t.box[0]), round(t.box[1])]})
 
 
 @check("fonts found", "font-fallback")
@@ -353,6 +390,7 @@ def run_checks(dl, stats=None):
         shapes = []
     arrows = dl.arrows
     v = SimpleNamespace(W=dl.width, H=dl.height, texts=texts, shapes=shapes, arrows=arrows, items=dl.items,
+                        every=dl.legibility == "all",
                         frames=dl.frames, named=dl.named, diamonds=dl.diamonds, ellipses=dl.ellipses,
                         tb=[t.box for t in texts], sb=[s.box for s in shapes], runs=arrow_runs(arrows),
                         near=lambda xs, ys=None: near_pairs(xs, ys, dl.width, dl.height))

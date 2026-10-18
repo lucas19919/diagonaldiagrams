@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="sequence diagram" viewBox="0 0 772 720" width="772">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="sequence diagram" data-legibility="all" viewBox="0 0 772 720" width="772">
 <title>Tool loop</title>
 <desc>The model asks, the tool answers, the ledger keeps the trace.</desc>
 <rect width="772" height="720" fill="#f5f5f5" aria-hidden="true"/>

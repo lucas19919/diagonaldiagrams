@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" viewBox="0 0 1016 842" width="1016">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" data-legibility="all" viewBox="0 0 1016 842" width="1016">
 <title>An AI agent platform</title>
 <desc>Requests come in at the top; the agent calls a model and its tools; results land in storage.</desc>
 <rect width="1016" height="842" fill="#f5f5f5" aria-hidden="true"/>

@@ -131,6 +131,18 @@ def contrast(fg, bg, paper=None):
     return (a + 0.05) / (b + 0.05)
 
 
+def readable(fg, bg, ink, paper):
+    """A default text color that reads on bg: fg if it meets WCAG AA (4.5:1), else ink or paper,
+    whichever reads better, else black or white on a mid-tone bg (one of the two always meets it).
+    Colors; a translucent bg is laid over paper."""
+    if contrast(fg, bg, paper) >= 4.5:
+        return fg
+    def best(*cs):
+        return max(cs, key=lambda c: contrast(c, bg, paper))
+    pick = best(ink, paper)
+    return pick if contrast(pick, bg, paper) >= 4.5 else best(Color(0, 0, 0), Color(255, 255, 255))
+
+
 def _over(c, under):
     if c.a >= 1:
         return c

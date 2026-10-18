@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="database schema" viewBox="0 0 920 312" width="920">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="database schema" data-legibility="all" viewBox="0 0 920 312" width="920">
 <title>E-Commerce Core Schema</title>
 <desc>Primary tables, foreign key constraints, and status enums</desc>
 <rect width="920" height="312" fill="#f5f5f5" aria-hidden="true"/>

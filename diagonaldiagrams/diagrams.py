@@ -214,7 +214,8 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     H = int(low + (64 if legend else MARGIN))
     extra = _bottom(t, sty, spec, W)
     H += extra
-    dr = paint.Drawing(W, H, spec.get("title", kind), spec.get("sub", spec.get("title", kind)), kind=label)
+    dr = paint.Drawing(W, H, spec.get("title", kind), spec.get("sub", spec.get("title", kind)), kind=label,
+                       legible=True)
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     frame_at = len(dr.items)
     for nid, (cx, cy, n) in pos.items():
@@ -466,7 +467,7 @@ def render_seq(spec, corners="editorial", theme=None, sheets=(), embed=False):
     extra = _bottom(t, sty, spec, W)
     H += extra
     dr = paint.Drawing(W, H, spec.get("title", "sequence"), spec.get("sub", spec.get("title", "sequence")),
-                       kind="sequence diagram")
+                       kind="sequence diagram", legible=True)
     dr.add(paint.paper(t, W, H, sty.figure()["paper"]), paint.marker_defs(t), *head_els)
     # Lifelines
     for aid, (cx, a) in pos.items():

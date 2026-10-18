@@ -4,7 +4,7 @@
   "examples/checkout_platform.json"
  ],
  "exit": 0,
- "html_sha256": "3504fd0545e064d691d651d4dca2821cce96b2c4efa438708dfacc80e02461c7",
+ "html_sha256": "8a67998c2b21c5e3785b0bc76bf1f267402120f6312fb892bcce60d407585921",
  "receipt": {
   "auto": false,
   "cmd": "arch",

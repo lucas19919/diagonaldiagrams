@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" viewBox="0 0 956 886" width="956">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" data-legibility="all" viewBox="0 0 956 886" width="956">
 <title>Checkout platform, grouped</title>
 <desc>The same system with its clients, core, and event consumers framed.</desc>
 <rect width="956" height="886" fill="#f5f5f5" aria-hidden="true"/>

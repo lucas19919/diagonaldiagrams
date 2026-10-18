@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" viewBox="0 0 436 609" width="436">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" data-legibility="all" viewBox="0 0 436 609" width="436">
 <title>Deploy approval</title>
 <desc>Yes = right · No = down · diamond &lt;= 3 exits</desc>
 <rect width="436" height="609" fill="#f5f5f5" aria-hidden="true"/>

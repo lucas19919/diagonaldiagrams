@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="sequence diagram" viewBox="0 0 772 516" width="772">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="sequence diagram" data-legibility="all" viewBox="0 0 772 516" width="772">
 <title>One action</title>
 <desc>A door asks the grammar to decide. The writer commits the effect and one audit line.</desc>
 <rect width="772" height="516" fill="#f5f5f5" aria-hidden="true"/>

@@ -4,7 +4,7 @@
   "examples/schema_ecommerce.json"
  ],
  "exit": 0,
- "html_sha256": "7718092b6ef6a8b2df60c8e5f77d7b22265c0345c9a3c88385ae40be92d3afc7",
+ "html_sha256": "876ac71b100fd7bdf9bc2843fbfc93fc3e988544100408bb092532cdde3edd8e",
  "receipt": {
   "auto": false,
   "cmd": "schema",

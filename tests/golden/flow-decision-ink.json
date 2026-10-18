@@ -6,7 +6,7 @@
   "ink"
  ],
  "exit": 0,
- "html_sha256": "753fe8839bfbcf68ef8eea93ede6101faa84c7fa831f4a42c6283e46f473354c",
+ "html_sha256": "2728a20463ab7664f3ecb7e3b6339999468794af4dbea8d6e5b05e87830d1498",
  "receipt": {
   "auto": false,
   "cmd": "flow",

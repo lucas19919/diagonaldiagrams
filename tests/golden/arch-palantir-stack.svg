@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" viewBox="0 0 589 600" width="589">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" data-legibility="all" viewBox="0 0 589 600" width="589">
 <title>Palantir, from data to AIP</title>
 <desc>Foundry carries data into the ontology. AIP reads and acts. Apollo deploys both on Rubix.</desc>
 <rect width="589" height="600" fill="#f5f5f5" aria-hidden="true"/>
