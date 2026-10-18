@@ -5,6 +5,11 @@
  * and the camera (the viewBox). Those are animated; anything else is set at once. Keys: arrows,
  * Space, Page Up/Down, Home, End; N shows the speaker notes. The address bar keeps the view and
  * step (#view or #view/2), so a link opens the story where it was.
+ *
+ * A frame with motion (DESIGN 21.2.1) carries its schedule. While it shows, a layer above the
+ * figure plays it (web/motion.js evaluates it at each animation frame); P pauses it. It is taken
+ * out before a move between frames, so the frames still match element by element. Under reduced
+ * motion the layer is one still moment: the path lit, no packets.
  */
 (function () {
   "use strict";
@@ -16,6 +21,7 @@
   var BLANK = {opacity: "1"};
   var full = [0, 0, data.size[0], data.size[1]];
   var at = -1, box = full.slice(), tween = null;
+  var layer = null, raf = null, paused = false, frozen = null, clock = 0;
 
   function parse(markup) {
     var holder = document.createElement("div");
@@ -89,10 +95,37 @@
     dotsEl.appendChild(d);
   });
 
+  function stopMotion() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
+    layer = null;
+  }
+  function startMotion() {
+    var m = at >= 0 && frames[at].motion;
+    if (!m || !window.ddMotion) return;
+    layer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    layer.setAttribute("data-motion", "");
+    layer.setAttribute("aria-hidden", "true");
+    layer.setAttribute("pointer-events", "none");
+    live.appendChild(layer);
+    if (reduced || frozen !== null) { ddMotion.draw(layer, ddMotion.at(m, frozen !== null ? frozen : m.still)); return; }
+    var last = null;
+    clock = 0;
+    function tick(now) {
+      if (last !== null && !paused) clock += (now - last) / 1000;
+      last = now;
+      ddMotion.draw(layer, ddMotion.at(m, clock));
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
   function go(k) {
     k = Math.max(0, Math.min(frames.length - 1, k));
     if (k === at) return;
     var f = frames[k], v = views[f.view], first = at < 0;
+    stopMotion(); // the layer is not part of the frame, so it is out of the way of apply()
     if (!first) apply(k);
     at = k;
     if (first) setBox(f.viewBox || full);
@@ -107,6 +140,7 @@
     document.getElementById("next").disabled = k === frames.length - 1;
     var hash = "#" + encodeURIComponent(v.id) + (f.steps > 1 ? "/" + (f.step + 1) : "");
     if (location.hash !== hash) history.replaceState(null, "", hash);
+    startMotion();
   }
 
   function fromHash() {
@@ -127,6 +161,7 @@
     else if (e.key === "Home") go(0);
     else if (e.key === "End") go(frames.length - 1);
     else if (e.key === "n" || e.key === "N") document.body.classList.toggle("notes-on");
+    else if (e.key === "p" || e.key === "P") paused = !paused;
   });
   window.addEventListener("hashchange", function () { go(fromHash()); });
 
@@ -141,6 +176,12 @@
     var s = parse(f.svg);
     s.removeAttribute("width");
     if (f.viewBox) s.setAttribute("viewBox", f.viewBox.join(" "));
+    if (f.motion && window.ddMotion) { // printed as its still moment
+      var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("aria-hidden", "true");
+      s.appendChild(g);
+      ddMotion.draw(g, ddMotion.at(f.motion, f.motion.still));
+    }
     page.appendChild(s);
     if (v.text) { var p = document.createElement("p"); p.textContent = v.text; page.appendChild(p); }
     print.appendChild(page);
@@ -150,5 +191,8 @@
   var first = fromHash();
   if (first > 0) apply(first); // the live drawing starts as frame 0
   go(first); // at is -1, so this draws the page for the first frame without a transition
-  window.ddStory = {go: go, at: function () { return at; }, frames: frames.length};
+  if (frames.some(function (f) { return f.motion; })) document.getElementById("hint").textContent += " \u00b7 P pauses motion";
+  // motion(t) holds the layer at t seconds (as an exported frame shows it); motion(null) plays it again
+  function hold(t) { frozen = t === null || t === undefined ? null : t; stopMotion(); startMotion(); }
+  window.ddStory = {go: go, at: function () { return at; }, frames: frames.length, motion: hold};
 })();
