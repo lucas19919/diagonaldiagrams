@@ -45,6 +45,7 @@ DEFAULTS = {
     "back": "side",        # arrows going back up: "side" loops (flow) or "ports", top to bottom (arch)
     "wrap_layers": 12,     # fewer layers than this never wrap
     "balance": False,      # center each node over what it calls, after Brandes-Köpf (arch)
+    "straight": False,     # the main path runs straight down: each node over its longest branch (flow)
 }
 _FLIP = {"n": "w", "s": "e", "w": "n", "e": "s"}
 
@@ -293,9 +294,14 @@ def layout(nodes, edges, groups=(), options=None):
         ku, kv = L.kind[u], L.kind[v]
         lines = ("dummy", "port")
         return (ku in lines and kv in lines) or (ku in ("left", "right") and kv == ku and L.owner[u] == L.owner[v])
+    straight = None
+    if o.get("straight"):  # flow: each node over the child that continues its longest path (bk.spine)
+        climb = set(L.attach) | {d for kind, top, bot, ds in kinds if kind == "back" for d in ds}
+        straight = bk.spine(L.layers, [(top, ds, bot) for kind, top, bot, ds in kinds if kind == "down"], L.up,
+                            lambda u, v: inner(u, v) and u not in climb and v not in climb, forced_up)
     prev = o.get("prev") if direction == "TB" else None  # an earlier drawing's x per node: stay near it
     xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up,
-                        {k: float(v) for k, v in prev.items() if k in info} if prev else None)
+                        {k: float(v) for k, v in prev.items() if k in info} if prev else None, straight)
     if o.get("balance"):  # arch: each node over what it calls (bk.balance)
         xs = bk.balance(L.layers, L.up, L.down, L.kind, xs, sep)
     # 5. ports, routes and the gaps' tracks
@@ -739,7 +745,8 @@ class _Plan:
     def _doglegs(self):
         """Two runs that trade columns in a gap (long arrows crossing between their dummies): one of
         them takes a dogleg, a low track, a jog just past the other run's span, then a high track, so
-        it passes above the other at one end and below it at the other."""
+        it passes above the other at one end and below it at the other. Three or more passing their
+        columns round (channels.ring) are untied the same way, one dogleg at a time."""
         for g, runs in list(self.runs.items()):
             done = set()
             for a in list(runs):
@@ -750,22 +757,32 @@ class _Plan:
                     if r is None:
                         continue
                     other = a if r is b else b
-                    top = next(x for x, d in r.ends if d == "top")
-                    bot = next(x for x, d in r.ends if d == "bottom")
-                    sign = 1.0 if top >= bot else -1.0
-                    taken = [x for q in runs for x, _ in q.ends] + self.passes.get(g, [])
-                    xd = (other.hi if sign > 0 else other.lo) + sign * channels.NEAR
-                    while any(abs(xd - x) < channels.NEAR for x in taken):
-                        xd += sign * channels.NEAR
-                    high = channels.Run(r.key + ("high",) if isinstance(r.key, tuple) else (r.key, "high"),
-                                        [(top, "top"), (xd, "mid")])
-                    low = channels.Run(r.key + ("low",) if isinstance(r.key, tuple) else (r.key, "low"),
-                                       [(xd, "mid"), (bot, "bottom")])
-                    high.above.append(low)
-                    runs.remove(r)
-                    runs += [high, low]
+                    self._dogleg(g, runs, r, other.lo, other.hi)
                     done.update((id(a), id(b)))
-                    self._rewire(r, top, bot, xd, high, low)
+            for _ in range(len(runs)):
+                rs = channels.ring(runs)
+                r = next((q for q in rs if len(q.ends) == 2), None) if rs else None
+                if r is None:
+                    break
+                self._dogleg(g, runs, r, min(q.lo for q in rs if q is not r), max(q.hi for q in rs if q is not r))
+
+    def _dogleg(self, g, runs, r, lo, hi):
+        """Splits run r of gap g in two, joined by a jog just past lo..hi on the side of its top end."""
+        top = next(x for x, d in r.ends if d == "top")
+        bot = next(x for x, d in r.ends if d == "bottom")
+        sign = 1.0 if top >= bot else -1.0
+        taken = [x for q in runs for x, _ in q.ends] + self.passes.get(g, [])
+        xd = (hi if sign > 0 else lo) + sign * channels.NEAR
+        while any(abs(xd - x) < channels.NEAR for x in taken):
+            xd += sign * channels.NEAR
+        high = channels.Run(r.key + ("high",) if isinstance(r.key, tuple) else (r.key, "high"),
+                            [(top, "top"), (xd, "mid")])
+        low = channels.Run(r.key + ("low",) if isinstance(r.key, tuple) else (r.key, "low"),
+                           [(xd, "mid"), (bot, "bottom")])
+        high.above.append(low)
+        runs.remove(r)
+        runs += [high, low]
+        self._rewire(r, top, bot, xd, high, low)
 
     def _rewire(self, r, top, bot, xd, high, low):
         """Points an arrow's legs at the two halves of its dogleg, in the order the arrow runs."""

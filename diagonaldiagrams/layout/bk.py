@@ -11,6 +11,9 @@ used instead: each of them is valid and the constraints are linear, so their mea
 Given where items stood in an earlier drawing (prev), any weighted mean of the four is valid for the
 same reason, so the one closest to the earlier places is taken instead: an edit then moves the rest
 of the figure as little as the four allow (PLAN P4.9).
+
+A flow's main path (spine) is forced the way borders are, so all four keep it straight. On an edit
+the four without it join the mix, since a path that flips sides would otherwise move every box.
 """
 import math
 
@@ -142,16 +145,9 @@ def _nearest(vals, prev, steps=4):
     return {v: sum(w * xs_[v] for w, xs_ in zip(ws, vals)) / steps for v in vals[0]}
 
 
-def coordinates(layers, up, down, width, sep, kind, inner, forced_up, prev=None):
-    """{item: x of its center}. layers in order; up/down: neighbors; width: item -> width; sep(a, b):
-    least distance between the centers of a and b when a is directly left of b; kind: item -> kind
-    ("left"/"right" mark group borders); inner(u, v): u-v is an inner segment; forced_up: item -> the
-    item above it that it must align with (group border chains); prev: item -> its x in an earlier
-    drawing, in any frame (a shift of the whole drawing costs nothing)."""
-    if not any(layers):
-        return {}
+def _four(layers, up, down, sep, kind, conflicts, forced_up):
+    """The four alignments, packed: {"ul"|"ur"|"dl"|"dr": {item: x}}, each that packed cleanly."""
     forced_down = {b: a for a, b in forced_up.items()}
-    conflicts = _type1(layers, up, inner)
     xss = {}
     for vert in ("u", "d"):
         lays = layers if vert == "u" else layers[::-1]
@@ -165,6 +161,24 @@ def coordinates(layers, up, down, width, sep, kind, inner, forced_up, prev=None)
             if horiz == "r":
                 xs = {v: -x for v, x in xs.items()}
             xss[vert + horiz] = xs
+    return xss
+
+
+def coordinates(layers, up, down, width, sep, kind, inner, forced_up, prev=None, straight=None):
+    """{item: x of its center}. layers in order; up/down: neighbors; width: item -> width; sep(a, b):
+    least distance between the centers of a and b when a is directly left of b; kind: item -> kind
+    ("left"/"right" mark group borders); inner(u, v): u-v is an inner segment; forced_up: item -> the
+    item above it that it must align with (group border chains); prev: item -> its x in an earlier
+    drawing, in any frame (a shift of the whole drawing costs nothing); straight: more pairs like
+    forced_up that all four alignments keep (a flow's main path, spine()). With prev as well, the four
+    alignments without them are mixed in too, so an edit may bend the path rather than move the figure."""
+    if not any(layers):
+        return {}
+    conflicts = _type1(layers, up, inner)
+    xss = _four(layers, up, down, sep, kind, conflicts, {**forced_up, **straight} if straight else forced_up)
+    loose = _four(layers, up, down, sep, kind, conflicts, forced_up) if straight and prev else {}
+    if not xss:
+        xss, loose = loose or _four(layers, up, down, sep, kind, conflicts, forced_up), {}
     if not xss:
         x, out = 0.0, {}
         for layer in layers:  # nothing aligned cleanly: pack each layer from the left
@@ -178,15 +192,17 @@ def coordinates(layers, up, down, width, sep, kind, inner, forced_up, prev=None)
         return max(x + width[v] / 2 for v, x in xs.items()) - min(x - width[v] / 2 for v, x in xs.items())
     smallest = min(xss.values(), key=span)
     lo, hi = min(smallest.values()), max(smallest.values())
-    for key, xs in list(xss.items()):
-        if xs is smallest:
-            continue
+
+    def to_smallest(key, xs):
         delta = lo - min(xs.values()) if key[1] == "l" else hi - max(xs.values())
-        xss[key] = {v: x + delta for v, x in xs.items()}
+        return {v: x + delta for v, x in xs.items()}
+    for key, xs in list(xss.items()):
+        if xs is not smallest:
+            xss[key] = to_smallest(key, xs)
     vals = list(xss.values())
     items = list(vals[0])
     chains = [(a, b) for b, a in forced_up.items()]
-    near = _nearest(vals, prev)
+    near = _nearest(vals + [to_smallest(key, xs) for key, xs in loose.items()], prev)
     if near is not None and _valid(layers, near, sep, chains):
         return near
     if len(vals) == 4:
@@ -251,3 +267,56 @@ def balance(layers, up, down, kind, xs, sep):
     for layer in layers[1:]:
         solve(layer, up, True)
     return xs
+
+
+def spine(layers, paths, up, hold, forced_up):
+    """A flow's main path, to run straight down: each node over the child that continues the longest
+    path below it, and each child under the parent with the longest path above it (lengths in boxes,
+    so a long arrow that skips steps loses to the steps). A tie picks no one, so a decision whose
+    branches are equally long stays centered over them. paths: (top node, [dummies top to bottom],
+    bottom node) per arrow going down. An arrow is left to the alignments when its line would cross
+    a frame border, a segment hold(u, v) keeps straight, or an arrow kept before it (longest paths
+    first). Returns new forced_up pairs: item -> the item above it that it must align with."""
+    pos = {v: k for layer in layers for k, v in enumerate(layer)}
+    layer_of = {v: r for r, layer in enumerate(layers) for v in layer}
+    kids, parents = {}, {}
+    for p in paths:
+        kids.setdefault(p[0], {}).setdefault(p[2], p)  # the first arrow between two boxes
+        parents.setdefault(p[2], {}).setdefault(p[0], p)
+    nodes = sorted(set(kids) | set(parents), key=lambda v: (layer_of[v], pos[v]))
+    below, above = {}, {}
+    for v in reversed(nodes):
+        below[v] = 1 + max((below[c] for c in kids.get(v, ())), default=0)
+    for v in nodes:
+        above[v] = 1 + max((above[p] for p in parents.get(v, ())), default=0)
+
+    def best(cands, score):
+        top = max((score[c] for c in cands), default=None)
+        win = [c for c in cands if score[c] == top]
+        return win[0] if len(win) == 1 else None
+    child = {v: best(list(kids.get(v, ())), below) for v in nodes}
+    picked = []
+    for v in nodes:
+        p = best([p for p in parents.get(v, ()) if child[p] == v], above)
+        if p is not None:
+            picked.append(kids[p][v])
+    picked.sort(key=lambda p: (-(above[p[0]] + below[p[2]]), layer_of[p[0]], pos[p[0]]))
+    held = {}  # layer r -> [(position above, position below)] of the segments from r to r + 1 held
+    for b, a in forced_up.items():
+        held.setdefault(layer_of[a], []).append((pos[a], pos[b]))
+    for r in range(len(layers) - 1):
+        for v in layers[r + 1]:
+            for u in up.get(v, ()):
+                if hold(u, v):
+                    held.setdefault(r, []).append((pos[u], pos[v]))
+    out = {}
+    for top, ds, bot in picked:
+        seq = [top] + list(ds) + [bot]
+        segs = [(layer_of[a], pos[a], pos[b]) for a, b in zip(seq, seq[1:])]
+        if any((a - x) * (b - y) < 0 for r, a, b in segs for x, y in held.get(r, ())):
+            continue
+        for r, a, b in segs:
+            held.setdefault(r, []).append((a, b))
+        for a, b in zip(seq, seq[1:]):
+            out[b] = a
+    return out

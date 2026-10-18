@@ -132,13 +132,13 @@ def main():
         cy = sum(p[1] for p in pts) / 4
         hw = max(p[0] for p in pts) - cx
         hh = max(p[1] for p in pts) - cy
-        right = max(pts, key=lambda p: p[0])
+        sides = [max(pts, key=lambda p: p[0]), min(pts, key=lambda p: p[0])]
         starts = [(float(x), float(y)) for x, y in _re.findall(r"M\s*([\d.]+),([\d.]+)", flow_svg)]
         def _inside(x, y):
             return abs(x - cx) / hw + abs(y - cy) / hh < 0.92
-        check("flow arrow leaves the diamond's right point",
-              any(abs(x - right[0]) < 1.5 and abs(y - right[1]) < 1.5 for x, y in starts),
-              str(right))
+        check("flow arrow leaves by a side point of the diamond",
+              any(abs(x - px) < 1.5 and abs(y - py) < 1.5 for x, y in starts for px, py in sides),
+              str(sides))
         check("flow arrows do not start inside the diamond",
               not any(_inside(x, y) for x, y in starts))
     def _terminals(svg):
@@ -933,6 +933,9 @@ def known_bugs():
     # receipt v2: a diagram's receipt holds the scene it drew, so export doesn't need the spec file
     spec = _dump("b11-flow.json", json.load(open(os.path.join(HERE, "examples", "flow_decision.json"), encoding="utf-8")))
     b11f = os.path.join(WORK, "b11-flow.svg")
+    for ext in (".svg", ".html", ".graph.json"):  # a drawing left by an earlier run would make this an edit
+        if os.path.exists(os.path.join(WORK, "b11-flow" + ext)):
+            os.remove(os.path.join(WORK, "b11-flow" + ext))
     run("flow", spec, "-o", b11f)
     os.remove(spec)
     rc, out = run("export", b11f, "--to", "svg", "-o", os.path.join(WORK, "b11-flow-export.svg"))

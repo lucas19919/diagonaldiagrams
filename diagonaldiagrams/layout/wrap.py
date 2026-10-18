@@ -16,7 +16,9 @@ def _choose(heights, cuttable, width_of, target, most=8, across=None):
     """(cuts, aspect): the layer indices after which to cut, for the column count whose aspect ratio
     lands nearest the target. heights: per layer, the height it adds (its band and the gap above).
     across: per layer, how many arrows a cut after it would carry to the next column; within a quarter
-    of a column's height of where the even cut would fall, the cut takes the layer with the fewest."""
+    of a column's height of where the even cut would fall, the cut takes the layer with the fewest.
+    A count whose tallest column is over half again its even share is passed over: where frames
+    leave few places to cut, more columns only add slivers beside one that stays tall."""
     total = sum(heights)
     if total <= 0:
         return [], 0.0
@@ -38,6 +40,8 @@ def _choose(heights, cuttable, width_of, target, most=8, across=None):
             continue
         bounds = [-1] + cuts + [len(heights) - 1]
         hs = [sum(heights[bounds[i] + 1:bounds[i + 1] + 1]) for i in range(len(bounds) - 1)]
+        if max(hs) > 1.5 * want:
+            continue
         ws = [width_of(bounds[i] + 1, bounds[i + 1]) for i in range(len(bounds) - 1)]
         aspect = sum(ws) / max(hs)
         score = abs(math.log(aspect / target))

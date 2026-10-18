@@ -41,6 +41,35 @@ def trading(a, b):
     return meets(a, b) and meets(b, a)
 
 
+def ring(runs):
+    """Three or more runs passing their columns round, each coming down where the next leaves
+    downward: no order of tracks keeps every pair apart, so one of them needs a dogleg. Returns
+    them in a list, or None."""
+    nxt = [[j for j, b in enumerate(runs) if j != i and any(
+        da == "top" and db == "bottom" and abs(xa - xb) < NEAR for xa, da in a.ends for xb, db in b.ends)]
+        for i, a in enumerate(runs)]
+    state = {}
+    for s in range(len(runs)):
+        if s in state:
+            continue
+        state[s], stack, path = 1, [(s, iter(nxt[s]))], [s]
+        while stack:
+            i, it = stack[-1]
+            j = next(it, None)
+            if j is None:
+                state[i] = 2
+                stack.pop()
+                path.pop()
+            elif state.get(j) == 1:
+                if len(path) - path.index(j) >= 3:  # two runs trading columns are trading()'s case
+                    return [runs[k] for k in path[path.index(j):]]
+            elif j not in state:
+                state[j] = 1
+                stack.append((j, iter(nxt[j])))
+                path.append(j)
+    return None
+
+
 def _cycle(must, done):
     """A cycle of rules among the runs not yet placed, as (i, j) pairs: i must sit above j."""
     j = next(k for k in sorted(must) if k not in done)

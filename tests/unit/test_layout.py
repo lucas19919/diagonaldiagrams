@@ -99,6 +99,14 @@ class Tracks(unittest.TestCase):
         self.assertLess(c.track, a.track)
         self.assertLess(b.track, c.track)
 
+    def test_a_ring_is_three_runs_each_coming_down_where_the_next_leaves(self):
+        a = channels.Run("a", [(100.0, "top"), (64.0, "bottom")])
+        b = channels.Run("b", [(28.0, "top"), (100.0, "bottom")])
+        c = channels.Run("c", [(64.0, "top"), (28.0, "bottom")])
+        self.assertEqual({r.key for r in channels.ring([a, b, c])}, {"a", "b", "c"})
+        d = channels.Run("d", [(28.0, "top"), (64.0, "bottom")])  # a and d trade columns: no ring
+        self.assertIsNone(channels.ring([channels.Run("a", [(64.0, "top"), (28.0, "bottom")]), d]))
+
 
 class Layered(unittest.TestCase):
     def check(self, nodes, edges, groups=(), **options):
@@ -156,6 +164,33 @@ class Layered(unittest.TestCase):
         self.assertLess(abs(w / h - 4 / 3) / (4 / 3), 0.5)
         nodes, edges = chain(6)
         self.assertFalse(self.check(nodes, edges, aspect=4 / 3).wrapped)
+
+    def test_a_wrap_never_leaves_one_column_tall_beside_slivers(self):
+        from diagonaldiagrams.layout import wrap
+        cuttable = {0, 1, 2, 36, 37, 38}  # a frame spans layers 3 to 36
+        cuts, _ = wrap._choose([100.0] * 40, cuttable, lambda lo, hi: 300.0, 4 / 3)
+        self.assertEqual(cuts, [])
+
+    def test_straight_runs_the_longest_path_down_one_line(self):
+        # b is a decision whose branch c goes on (c, d, f, ...) and whose branch x stops; f is a
+        # decision whose two branches are as long as each other, so it stays over both
+        ids = "abxcdfghk"
+        nodes = [{"id": i, "w": 160, "h": 56, "shape": "diamond" if i in "bf" else "rect"} for i in ids]
+        pairs = ["ab", "bx", "bc", "cd", "df", "fg", "fh", "gk", "hk", "ad"]
+        edges = [{"id": p, "from": p[0], "to": p[1]} for p in pairs]
+        res = self.check(nodes, edges, straight=True)
+        x = {i: res.pos[i][0] for i in ids}
+        for i in "bcdf":
+            self.assertAlmostEqual(x[i], x["a"], delta=0.5, msg=i)
+        self.assertAlmostEqual(x["f"], (x["g"] + x["h"]) / 2.0, delta=0.5)
+        again = self.check(nodes, edges, straight=True, prev=x)  # its own places as the earlier drawing
+        self.assertEqual({i: round(again.pos[i][0], 3) for i in ids}, {i: round(x[i], 3) for i in ids})
+
+    def test_straight_holds_the_invariants(self):
+        for seed in range(12):
+            nodes, edges = random_graph(seed, 8 + seed * 2)
+            res = self.check(nodes, edges, trunk=True, straight=True)
+            self.check(nodes, edges, trunk=True, straight=True, prev={n: x for n, (x, _) in res.pos.items() if n != "n1"})
 
 
 class Sequence(unittest.TestCase):
@@ -239,6 +274,12 @@ class FuzzRegressions(unittest.TestCase):
 
     def test_lanes_inside_sibling_frames(self):
         self.check("flow", 330, 71)  # the frames took their members' lane hints and broke their own order
+
+    def test_three_long_arrows_passing_columns_round_in_one_gap(self):
+        self.check("flow", 634, 167)  # no order of tracks kept them apart, so two shared a line
+
+    def test_a_frame_that_leaves_few_places_to_cut(self):
+        self.check("flow", 20056, 125)  # the wrap made one tall column and slivers, and broke a route
 
 
 if __name__ == "__main__":

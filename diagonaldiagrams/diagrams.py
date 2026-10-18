@@ -49,7 +49,7 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), em
     sentence = _phrases((bool(shapes - {"diamond", "oval", "dot"}), "box = step"), ("diamond" in shapes, "diamond = decision"),
                         ("oval" in shapes, "rounded = start or end"))
     min_w = _min_width(spec, t, sty, sentence)
-    dr, W, H, extra = _layered(spec, "flow", nodes, t, sty, corners, {"trunk": True, "rank_gap": 48.0, "min_width": min_w - 2 * MARGIN,
+    dr, W, H, extra = _layered(spec, "flow", nodes, t, sty, corners, {"trunk": True, "straight": True, "rank_gap": 48.0, "min_width": min_w - 2 * MARGIN,
                                                                       "prev": prev}, min_w, "flow diagram", info=info,
                                legend=bool(sentence))
     _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)

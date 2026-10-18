@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" viewBox="0 0 428 623" width="428">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" viewBox="0 0 428 609" width="428">
 <title>Deploy approval</title>
 <desc>Yes = right · No = down · diamond &lt;= 3 exits</desc>
-<rect width="428" height="623" fill="#2d3142" aria-hidden="true"/>
+<rect width="428" height="609" fill="#2d3142" aria-hidden="true"/>
 <defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#bfc0c0"/></marker><marker id="aa" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#f08a59"/></marker><marker id="al" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#6a95d8"/></marker><marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#aab2c4"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5">Deploy approval</text>
 <text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0">Yes = right · No = down · diamond &lt;= 3 exits</text>
-<rect x="166" y="72" width="112" height="40" rx="20" fill="#2d3142" aria-hidden="true"/>
-<rect x="166" y="72" width="112" height="40" rx="20" fill="#393e53" stroke="#868fa5" data-node="start" data-label="Push" role="graphics-symbol" aria-roledescription="start or end" aria-label="Push"/>
-<text x="222" y="96.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Push</text>
-<rect x="166" y="160" width="112" height="54" rx="6" fill="#2d3142" aria-hidden="true"/>
-<rect x="166" y="160" width="112" height="54" rx="6" fill="#393e53" stroke="#868fa5" data-node="tests" data-label="CI tests" role="graphics-symbol" aria-roledescription="box" aria-label="CI tests, ci: 4 min"/>
-<text x="222" y="183.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">CI tests</text>
-<text x="222" y="200.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">ci: 4 min</text>
-<polygon points="266,274 322,308.5 266,343 210,308.5" fill="#2d3142" aria-hidden="true"/>
-<polygon points="266,274 322,308.5 266,343 210,308.5" fill="rgba(240,138,89,0.12)" stroke="#f08a59" data-node="risk?" data-label="Risky?" data-cx="266" data-cy="308.5" role="graphics-symbol" aria-roledescription="decision" aria-label="Risky?"/>
-<text x="266" y="312.8" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Risky?</text>
+<rect x="286" y="72" width="112" height="40" rx="20" fill="#2d3142" aria-hidden="true"/>
+<rect x="286" y="72" width="112" height="40" rx="20" fill="#393e53" stroke="#868fa5" data-node="start" data-label="Push" role="graphics-symbol" aria-roledescription="start or end" aria-label="Push"/>
+<text x="342" y="96.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Push</text>
+<rect x="286" y="160" width="112" height="54" rx="6" fill="#2d3142" aria-hidden="true"/>
+<rect x="286" y="160" width="112" height="54" rx="6" fill="#393e53" stroke="#868fa5" data-node="tests" data-label="CI tests" role="graphics-symbol" aria-roledescription="box" aria-label="CI tests, ci: 4 min"/>
+<text x="342" y="183.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">CI tests</text>
+<text x="342" y="200.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">ci: 4 min</text>
+<polygon points="342,274 398,308.5 342,343 286,308.5" fill="#2d3142" aria-hidden="true"/>
+<polygon points="342,274 398,308.5 342,343 286,308.5" fill="rgba(240,138,89,0.12)" stroke="#f08a59" data-node="risk?" data-label="Risky?" data-cx="342" data-cy="308.5" role="graphics-symbol" aria-roledescription="decision" aria-label="Risky?"/>
+<text x="342" y="312.8" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Risky?</text>
 <rect x="46" y="398" width="112" height="40" rx="6" fill="#2d3142" aria-hidden="true"/>
 <rect x="46" y="398" width="112" height="40" rx="6" fill="#393e53" stroke="#868fa5" data-node="fix" data-label="Fix" role="graphics-symbol" aria-roledescription="box" aria-label="Fix"/>
 <text x="102" y="422.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Fix</text>
@@ -22,30 +22,30 @@
 <rect x="286" y="391" width="112" height="54" rx="6" fill="#393e53" stroke="#868fa5" data-node="review" data-label="Review" role="graphics-symbol" aria-roledescription="box" aria-label="Review, owner:payments"/>
 <text x="342" y="414.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Review</text>
 <text x="342" y="431.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">owner:payments</text>
-<rect x="210" y="519" width="112" height="40" rx="20" fill="#2d3142" aria-hidden="true"/>
-<rect x="210" y="519" width="112" height="40" rx="20" fill="#393e53" stroke="#868fa5" data-node="ship" data-label="Ship" role="graphics-symbol" aria-roledescription="start or end" aria-label="Ship"/>
-<text x="266" y="543.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Ship</text>
-<path d="M222,112 L222,160" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#aa)" data-from="start" data-to="tests" data-label="push" data-id="start-&gt;tests:push" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Push to CI tests: push"/>
-<path d="M222,214 L222,236 Q222,244 230,244 L258,244 Q266,244 266,252 L266,274" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="tests" data-to="risk?" data-label="pass" data-id="tests-&gt;risk?:pass" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="CI tests to Risky?: pass"/>
-<path d="M222,214 L222,236 Q222,244 214,244 L110,244 Q102,244 102,252 L102,398" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="tests" data-to="fix" data-label="fail" data-id="tests-&gt;fix:fail" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="CI tests to Fix: fail"/>
-<path d="M322,308.5 L326,308.5 Q330,308.5 330,312.5 L330,391" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#aa)" data-from="risk?" data-to="review" data-label="yes" data-id="risk?-&gt;review:yes" data-from-port="e" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Risky? to Review: yes"/>
-<path d="M210,308.5 L198,308.5 Q190,308.5 190,316.5 L190,467 Q190,475 198,475 L258,475 Q266,475 266,483 L266,519" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="risk?" data-to="ship" data-label="no" data-id="risk?-&gt;ship:no" data-from-port="w" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Risky? to Ship: no"/>
-<path d="M46,418 L38,418 Q30,418 30,410 L30,195 Q30,187 38,187 L166,187" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="fix" data-to="tests" data-label="retry" data-id="fix-&gt;tests:retry" data-from-port="w" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Fix to CI tests: retry"/>
-<path d="M330,445 L330,481 Q330,489 322,489 L274,489 Q266,489 266,497 L266,519" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="review" data-to="ship" data-label="approve" data-id="review-&gt;ship:approve" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Review to Ship: approve"/>
-<rect x="226" y="127" width="31" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
-<text x="241.5" y="139" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">push</text>
-<rect x="228.5" y="224" width="31" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
-<text x="244" y="236" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">pass</text>
-<rect x="106" y="312" width="24" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
-<text x="118" y="324" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">fail</text>
-<rect x="334" y="340.75" width="26" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
-<text x="347" y="352.75" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">yes</text>
+<rect x="286" y="505" width="112" height="40" rx="20" fill="#2d3142" aria-hidden="true"/>
+<rect x="286" y="505" width="112" height="40" rx="20" fill="#393e53" stroke="#868fa5" data-node="ship" data-label="Ship" role="graphics-symbol" aria-roledescription="start or end" aria-label="Ship"/>
+<text x="342" y="529.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#f5f5f5" text-anchor="middle" aria-hidden="true">Ship</text>
+<path d="M342,112 L342,160" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#aa)" data-from="start" data-to="tests" data-label="push" data-id="start-&gt;tests:push" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Push to CI tests: push"/>
+<path d="M342,214 L342,274" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="tests" data-to="risk?" data-label="pass" data-id="tests-&gt;risk?:pass" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="CI tests to Risky?: pass"/>
+<path d="M342,214 L342,236 Q342,244 334,244 L110,244 Q102,244 102,252 L102,398" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="tests" data-to="fix" data-label="fail" data-id="tests-&gt;fix:fail" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="CI tests to Fix: fail"/>
+<path d="M342,343 L342,391" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#aa)" data-from="risk?" data-to="review" data-label="yes" data-id="risk?-&gt;review:yes" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Risky? to Review: yes"/>
+<path d="M286,308.5 L198,308.5 Q190,308.5 190,316.5 L190,467 Q190,475 198,475 L334,475 Q342,475 342,483 L342,505" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="risk?" data-to="ship" data-label="no" data-id="risk?-&gt;ship:no" data-from-port="w" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Risky? to Ship: no"/>
+<path d="M46,418 L38,418 Q30,418 30,410 L30,195 Q30,187 38,187 L286,187" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="fix" data-to="tests" data-label="retry" data-id="fix-&gt;tests:retry" data-from-port="w" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Fix to CI tests: retry"/>
+<path d="M342,445 L342,505" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#a)" data-from="review" data-to="ship" data-label="approve" data-id="review-&gt;ship:approve" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Review to Ship: approve"/>
+<rect x="346" y="127" width="31" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
+<text x="361.5" y="139" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">push</text>
+<rect x="346" y="235" width="31" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
+<text x="361.5" y="247" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">pass</text>
+<rect x="210" y="224" width="24" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
+<text x="222" y="236" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">fail</text>
+<rect x="346" y="358" width="26" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
+<text x="359" y="370" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">yes</text>
 <rect x="194" y="382.75" width="20" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
 <text x="204" y="394.75" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">no</text>
-<rect x="34" y="293.5" width="30" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
-<text x="49" y="305.5" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">retry</text>
-<rect x="275" y="469" width="46" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
-<text x="298" y="481" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">approve</text>
-<line x1="30" y1="583" x2="398" y2="583" stroke="rgba(245,245,245,0.14)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="601" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0">box = step, diamond = decision, rounded = start or end</text>
+<rect x="143" y="167" width="30" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
+<text x="158" y="179" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">retry</text>
+<rect x="346" y="466" width="46" height="16" rx="2" fill="#2d3142" aria-hidden="true"/>
+<text x="369" y="478" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0" text-anchor="middle" aria-hidden="true">approve</text>
+<line x1="30" y1="569" x2="398" y2="569" stroke="rgba(245,245,245,0.14)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="587" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#bfc0c0">box = step, diamond = decision, rounded = start or end</text>
 </svg>
