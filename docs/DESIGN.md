@@ -525,7 +525,7 @@ One module writes SVG. Its rules:
 - **Frames** are a light tint with a solid outline in `line`, so they don't read as dashed arrows.
 - **Sequence.** Actor boxes share the size the widest name needs. Arrows run from lifeline to lifeline. Messages are 44 px apart, and the lifelines stop 24 px under the last one.
 - **Schema.** A table's tag is small capitals at the header's right end; PK and FK badges are 9 px, their text darkened until it reads at 4.5:1 on the badge.
-- **Contrast (B25).** `soft` is 4.8:1 on the editorial paper (was 3.5:1), and the ink and print themes' `soft` pass too. Box outlines use the new `line` token (about 3.3:1), lighter than `ink`. On the 26 reference figures of these four types, no default text is under 9 px, and none fails WCAG AA except a false positive on the dark theme's focal box: the check reads a translucent fill as if it lay on white, not on what is under it. The `contrast` and `min-size` checks still judge only stylesheet-set values; judging defaults too is the next step, once the chart kinds pass (P6, P8).
+- **Contrast (B25).** `soft` is 4.8:1 on the editorial paper (was 3.5:1), and the ink and print themes' `soft` pass too. Box outlines use the new `line` token (about 3.3:1), lighter than `ink`. On the 26 reference figures of these four types, no default text is under 9 px or under WCAG AA. These four types write `data-legibility="all"` on the root `<svg>`, so `contrast` and `min-size` judge their default text too (9.3). A default text color stays readable on any fill a stylesheet gives a box: it switches to ink or paper, or to black or white when neither reaches 4.5:1. Schema column rows follow the same rule.
 - **Measured.** Blind pairwise judging of old and new on those 26 figures (Sonnet and Opus, each pair in both orders): the new look was preferred in 103 of 104 judgments (PLAN, metrics).
 
 ## 9. Audit
@@ -557,7 +557,7 @@ Checks run on the display list, so they know exactly which items are nodes, labe
 
 | Code | Severity | Catches |
 | --- | --- | --- |
-| `contrast` | error | Text below WCAG AA (4.5:1, or 3:1 for text ≥ 18 px) against its actual background. Names the rule that set the colors. |
+| `contrast` | error | Text below WCAG AA (4.5:1, or 3:1 for text ≥ 18 px) against its actual background. Names the rule that set the color, or says it is the theme's default. |
 | `min-size` | warning | Text under 9 px. |
 | `truncated` | warning | Any text that was cut. |
 | `font-fallback` | warning | A named font wasn't found; bundled metrics were used. |
@@ -577,10 +577,11 @@ Checks run on the display list, so they know exactly which items are nodes, labe
 | `aspect` | warning | Output is far from the requested aspect ratio. |
 
 As built in P3.9:
-- **`contrast`** compares a text's fill with the last solid fill painted under its middle, composited over the figure.
+- **`contrast`** compares a text's fill with what is painted under its middle. Every solid fill painted before the text whose shape holds that point is laid in paint order over a white page. So a translucent fill is read over what it covers, not over white.
 - **`min-size`** flags text under 9 px.
 - **`colors`** counts distinct, non-grey node fills.
-- **Attribution:** renderers mark text whose color or size a stylesheet set with `data-color-from` and `data-size-from`, holding the sheet and rule. Issues quote them. Until the default themes pass on their own (B25), only marked text is judged.
+- **Attribution:** renderers mark text whose color or size a stylesheet set with `data-color-from` and `data-size-from`, holding the sheet and rule. Issues quote them.
+- **What is judged (B25).** flow, arch, seq and schema write `data-legibility="all"` on the root `<svg>` (`paint.Drawing(legible=True)`). Their default themes pass, so on these figures every text is judged, and an issue on default text says so. The chart kinds (`_c_*`) don't write it yet, because their defaults still fall short (P6, P8). On them, and on foreign SVG, only marked text is judged. A chart kind writes the marker once its defaults pass.
 
 ### 9.4 Foreign SVG
 
@@ -858,6 +859,8 @@ Kept on every relevant element:
 - `data-from`, `data-to`;
 - `data-msg`, `data-msg-from`, `data-msg-to`;
 - `data-role`.
+
+Added with the default-text audit (B25): `data-legibility="all"` on the root `<svg>` of flow, arch, seq and schema figures. It tells the audit to judge every text's contrast and size (9.3).
 
 Added in 0.7 (P2.15): `data-id` on every drawn edge, sequence message and schema relation, carrying the id the scene gives it (4.8). Schema table cards now carry `data-node` and `data-label`, and relations carry `data-from`, `data-to` and `data-label`, as the other diagrams already did. The `--outline` edges and messages, and the draw.io and Excalidraw cells (`node:ID`, `edge:ID`, `group:ID`), use the same ids, so an element keeps its id and its export cell across edits.
 

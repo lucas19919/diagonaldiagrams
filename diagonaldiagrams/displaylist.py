@@ -55,10 +55,13 @@ for _name, _default in Item.FIELDS:  # the defaults, on the class
 
 
 class DisplayList:
-    __slots__ = ("width", "height", "items")
+    """legibility: "all" when the figure's renderer says its default colors and sizes pass (the
+    root's data-legibility), so the contrast and size checks judge every text; None judges only
+    text a stylesheet styled."""
+    __slots__ = ("width", "height", "items", "legibility")
 
-    def __init__(self, width=0.0, height=0.0, items=None):
-        self.width, self.height, self.items = width, height, list(items or [])
+    def __init__(self, width=0.0, height=0.0, items=None, legibility=None):
+        self.width, self.height, self.items, self.legibility = width, height, list(items or []), legibility
 
     def add(self, item):
         self.items.append(item)

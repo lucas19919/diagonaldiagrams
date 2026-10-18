@@ -195,7 +195,7 @@ _INLINE = {k: re.compile(rf"(?:^|;)\s*{k}\s*:\s*([^;]+)") for k in KEEP}  # one 
 
 def svg_import(root, width, height):
     """The display list of a parsed SVG (an ElementTree root) with a width x height canvas."""
-    dl = DisplayList(width, height)
+    dl = DisplayList(width, height, legibility=root.get("data-legibility"))
     css = stylesheet(root)
     seen, centers, z = set(), [], [0]
 

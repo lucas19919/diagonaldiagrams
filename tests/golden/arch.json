@@ -4,7 +4,7 @@
   "examples/arch.json"
  ],
  "exit": 0,
- "html_sha256": "5dbf1d1529c3b95977bcd3ba40e2d1fc3b52bb514a46d35b5c8dc459b9fed0e5",
+ "html_sha256": "a36f5ce862bae0870dfbd8756ce44558679afc534cbe12d492edd1a5785476ec",
  "receipt": {
   "auto": false,
   "cmd": "arch",

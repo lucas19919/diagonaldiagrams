@@ -229,7 +229,7 @@ The remaining bugs are fixed where their code is replaced:
 | B22 | Routing ignores group frames | P4.3, fixed in the layered path |
 | B23 | Flow back edges: the ±20 nudge has no effect on the same-side branch | P4.3, fixed in the layered path |
 | B24 | `_c_swim` ports float off its 140×48 boxes because `_node_box` assumes 160×56 | P8.1 |
-| B25 | The default themes miss the legibility checks:<ul><li>editorial `soft` text is 3.5:1 and accent text 2.9:1, under WCAG AA's 4.5:1;</li><li>tag and key-badge text is 7–8 px, under 9 px.</li></ul>The checks judge stylesheet-set values only until this is fixed. | Fixed 2026-10-17 with the default look (the owner's go-ahead; DESIGN 8.5): `soft` darkened in all three themes (editorial 4.8:1), box outlines on a new `line` token, tags and PK/FK badges at 9 px, badge text darkened to 4.5:1 on its tint. On the 26 flow, arch, seq and schema reference figures no default text is under 9 px or under AA. The checks still judge stylesheet-set values only; judging defaults waits on the chart kinds (P6, P8) |
+| B25 | The default themes miss the legibility checks:<ul><li>editorial `soft` text is 3.5:1 and accent text 2.9:1, under WCAG AA's 4.5:1;</li><li>tag and key-badge text is 7–8 px, under 9 px.</li></ul>The checks judge stylesheet-set values only until this is fixed. | Fixed 2026-10-17 with the default look (the owner's go-ahead; DESIGN 8.5): `soft` darkened in all three themes (editorial 4.8:1), box outlines on a new `line` token, tags and PK/FK badges at 9 px, badge text darkened to 4.5:1 on its tint. On the 26 flow, arch, seq and schema reference figures no default text is under 9 px or under AA. Then the audit was finished for these four types:<ul><li>they write `data-legibility="all"` on the root `<svg>`, so `contrast` and `min-size` judge default text too;</li><li>a translucent fill is read over the paint beneath it (the dark theme's focal box read 1.0:1 before);</li><li>a default text color on a stylesheet's mid-tone fill falls back to black or white when neither ink nor paper reaches 4.5:1, and schema column rows follow the fill.</li></ul>On the 115 goldens no verdict changed; 32 changed only by the attribute. The chart kinds still judge stylesheet-set values only, until their defaults pass (P6, P8) |
 | B26 | Arrow labels are uppercased in the SVG text: "POST /checkout" reads "POST /CHECKOUT", for copy and paste and screen readers too | Fixed 2026-10-17: labels keep the spec's case; a stylesheet can still ask for uppercase |
 | B27 | `sync --commit` runs `git add -A`, so it commits unrelated work in the tree | Fixed 2026-10-17: it commits only what it wrote |
 | B28 | Two decisions in a layer that branch toward each other share the layer's middle line; a crowded decision side stacks its ports on one point | Fixed 2026-10-17 (layered router) |
@@ -316,8 +316,8 @@ Exit:
 
 Deviations:
 - **Default text measuring:** the default font stack keeps the built-in width estimate, so default figures are the same on every machine. Named fonts are measured from their files. The bundled metric tables (Inter, Selawik, Roboto, Liberation Sans) wait on downloading those fonts. Receipts don't record font hashes yet, and kerning is not applied.
-- **Theme legibility:** the default themes fall short of the legibility checks (B25), so `contrast` and `min-size` judge stylesheet-set values only.
-- **Not built:** inset shadows and `sketch`. Sequence lifelines and schema column rows still use theme constants.
+- **Theme legibility:** the default themes fell short of the legibility checks (B25), so `contrast` and `min-size` judged stylesheet-set values only. Since 2026-10-18 they judge default text too on flow, arch, seq and schema. The chart kinds still judge stylesheet-set values only.
+- **Not built:** inset shadows and `sketch`. Sequence lifelines and schema column rows still use theme constants. Since B25, column text switches color when the table's fill would make it unreadable.
 - **Version:** 0.6.0 was never cut at P1's close, so 0.7.0 is the first version bump since 0.5.0. `plugin.json` and `server.json` say 0.7.0 too.
 - **Speed:** measured side by side with P2's tree, because this machine's speed swings by up to 2×.
   - A CLI call from bytecode is a little faster than at P2: 152 against 160 ms.
@@ -360,7 +360,7 @@ Deviations:
 - **P3.9:** `contrast` (error), `min-size` and `colors` (warnings) run in the audit.
   - Contrast is measured against the fill actually under the text, at WCAG AA (4.5:1, or 3:1 for large text).
   - Text whose color or size a stylesheet chose carries that rule's name, so the issue names it: "the color comes from stylesheet 'brand', rule '#fix::label'".
-  - Default colors are not judged yet; the themes themselves fall short (B25).
+  - Default colors were not judged at first, because the themes fell short (B25). Since 2026-10-18 they are, on flow, arch, seq and schema. Charts still aren't.
   - `font-fallback` comes with fonts (P3.5). `legend` has nothing to catch while every scale draws its own legend.
 - **P3.6:** boxes lay their text out in the computed style (`text/measure.py`, `text/markup.py`): size, weight and line height decide the wrap, and boxes and sequence actors grow to fit.
   - Nothing is cut by default (B16 for these four types). `overflow: shrink` steps down to 9 px; `ellipsis` cuts at `max-lines`.
