@@ -50,6 +50,13 @@ def _page(svg, w, h):
             + svg + "</body></html>")
 
 
+def _sandbox_refused(out):
+    """Whether a headless browser's output says it could not start its sandbox, as on Linux CI
+    runners, in containers and as root. It is then run once more with --no-sandbox; it only ever
+    loads a local page the engine wrote from its own SVG."""
+    return not sys.platform.startswith("win") and "sandbox" in (out or "").lower()
+
+
 def _raster_svg(svg, dest, kind, width_hint, scale=2):
     """Write a PNG or PDF of the SVG. Cairo if it imports, otherwise Edge or Chrome headless.
     scale is the browser's pixels per SVG unit (cairo takes width_hint as the width).
@@ -73,32 +80,36 @@ def _raster_svg(svg, dest, kind, width_hint, scale=2):
     with open(page, "w", encoding="utf-8") as f:
         f.write(_page(svg, w, h))
     url = "file:///" + os.path.abspath(page).replace("\\", "/")
-    profile = os.path.join(folder, "profile")
     dest_abs = os.path.abspath(dest)
-    if kind == "pdf":
-        cmd = [browser, "--headless=new", "--disable-gpu", f"--user-data-dir={profile}",
-               "--no-pdf-header-footer", f"--print-to-pdf={dest_abs}", url]
-    else:
-        cmd = [browser, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-               f"--force-device-scale-factor={scale}", f"--user-data-dir={profile}",
-               f"--window-size={w},{h}", f"--screenshot={dest_abs}", url]
     import time
-    if os.path.exists(dest_abs):
-        os.remove(dest_abs)
-    try:
-        p = subprocess.run(cmd, timeout=90, capture_output=True, text=True, errors="replace")
-    except (subprocess.TimeoutExpired, OSError) as e:
-        shutil.rmtree(folder, ignore_errors=True)
-        return None, f"{os.path.basename(browser)} did not finish: {e}"
-    # Edge and Chrome on Windows can hand the job to a running browser and exit at once.
-    # The file lands a second or two later, so wait for it before the page is deleted.
-    last, deadline = -1, time.time() + 30
-    while time.time() < deadline:
-        size = os.path.getsize(dest_abs) if os.path.isfile(dest_abs) else -1
-        if size > 400 and size == last:
-            break
-        last = size
-        time.sleep(0.4)
+    for flags in ([], ["--no-sandbox"]):  # the second only when the browser could not start its sandbox
+        profile = os.path.join(folder, "profile" + "".join(flags))
+        if kind == "pdf":
+            cmd = [browser, "--headless=new", "--disable-gpu", *flags, f"--user-data-dir={profile}",
+                   "--no-pdf-header-footer", f"--print-to-pdf={dest_abs}", url]
+        else:
+            cmd = [browser, "--headless=new", "--disable-gpu", *flags, "--hide-scrollbars",
+                   f"--force-device-scale-factor={scale}", f"--user-data-dir={profile}",
+                   f"--window-size={w},{h}", f"--screenshot={dest_abs}", url]
+        if os.path.exists(dest_abs):
+            os.remove(dest_abs)
+        try:
+            p = subprocess.run(cmd, timeout=90, capture_output=True, text=True, errors="replace")
+        except (subprocess.TimeoutExpired, OSError) as e:
+            shutil.rmtree(folder, ignore_errors=True)
+            return None, f"{os.path.basename(browser)} did not finish: {e}"
+        if not flags and p.returncode != 0 and _sandbox_refused((p.stderr or "") + (p.stdout or "")):
+            continue
+        # Edge and Chrome on Windows can hand the job to a running browser and exit at once.
+        # The file lands a second or two later, so wait for it before the page is deleted.
+        last, deadline = -1, time.time() + 30
+        while time.time() < deadline:
+            size = os.path.getsize(dest_abs) if os.path.isfile(dest_abs) else -1
+            if size > 400 and size == last:
+                break
+            last = size
+            time.sleep(0.4)
+        break
     shutil.rmtree(folder, ignore_errors=True)
     if os.path.isfile(dest_abs) and os.path.getsize(dest_abs) > 400:
         return "browser", ""

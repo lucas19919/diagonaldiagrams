@@ -23,7 +23,9 @@ py.FS.writeFile("/in.json", JSON.stringify({
   edges: [{ from: "a", to: "b" }, { from: "b", to: "c", label: "yes" }, { from: "b", to: "d", label: "no" },
           { from: "c", to: "e" }, { from: "d", to: "b" }],
 }));
-const out = py.runPython(`
+let out;
+try {
+  out = py.runPython(`
 import contextlib, io, sys
 from diagonaldiagrams.cli import cli
 buf = io.StringIO()
@@ -35,6 +37,10 @@ except SystemExit:
     pass
 buf.getvalue()
 `);
+} catch (e) {  // a Python error: its traceback, not Pyodide's minified stack
+  console.error("Python raised:\n" + (e && e.message ? e.message : String(e)));
+  process.exit(1);
+}
 let verdict = {};
 try {
   verdict = JSON.parse(out.trim().split("\n").pop());

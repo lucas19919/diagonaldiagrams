@@ -102,13 +102,22 @@ class Browser:
         self.timeout, self.next_id, self.proc, self.drain, self.ws, self.pages = timeout, 0, None, None, None, []
         self.profile = tempfile.mkdtemp(prefix="dd-devtools-")
         try:
-            self._start(path, w, h, max(1, pages))
+            try:
+                self._start(path, w, h, max(1, pages))
+            except OSError as e:
+                from .export import _sandbox_refused
+                if self.proc is None or self.proc.poll() is None or not _sandbox_refused(str(e)):
+                    raise
+                self.close()  # it never started: once more without the sandbox, in a fresh profile
+                self.proc = self.drain = None
+                self.profile = tempfile.mkdtemp(prefix="dd-devtools-")
+                self._start(path, w, h, max(1, pages), ["--no-sandbox"])
         except BaseException:
             self.close()
             raise
 
-    def _start(self, path, w, h, pages):
-        cmd = [path, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run", "--no-default-browser-check",
+    def _start(self, path, w, h, pages, flags=()):
+        cmd = [path, "--headless=new", "--disable-gpu", *flags, "--hide-scrollbars", "--no-first-run", "--no-default-browser-check",
                "--disable-extensions", "--mute-audio", "--remote-debugging-port=0", f"--user-data-dir={self.profile}",
                f"--window-size={w},{h}", "about:blank"]
         self.proc = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
