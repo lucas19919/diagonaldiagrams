@@ -1,13 +1,16 @@
-# Handoff: where the redesign stands (2026-10-17)
+# Handoff: where the redesign stands (2026-10-18)
 
 This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md says what the engine should be, PLAN.md says in what order to build it, and the "As built" notes in DESIGN record where the build differs. Read those three. This file adds what they don't: the current state, what's open, how to check your work, and the habits that kept output stable.
 
 ## State of the repository
 
 - **Branches.** Each phase is a branch stacked on the one before: `master` (= origin/master, 0.5.0) → `p0-baseline` → `p1-package` → `p1b-bugs` → `p2-core` → `p3-style` → `p4-layout`.
-  - Three slices sit on `p4-layout`, ahead of P5, each stacked on the one before: `slice-edit-animate` (edit a diagram in its page, apply the patch, animate the change), `slice-stories` (views of one figure in one page) and `slice-edit-hardening` (keyboard editing, moves along the layout's layers, messages, regeneration). `b29-fuzz` (the B29 fixes, also on `p4-layout`) is merged into `slice-stories`. `slice-edit-hardening` is current and holds everything.
-  - `claude/hungry-sanderson-6f4623`, one commit on `slice-edit-hardening`: the default look for flow, arch, seq and schema, which fixes B25 (DESIGN 8.5; the owner approved it on 2026-10-17). It is not merged into `slice-edit-hardening` yet.
-  - The six phase branches are on GitHub since 2026-10-17, as a backup; the three slices and `b29-fuzz` are local only. None is merged into `master`, and there is no PR. Anyone who installs from the README still gets 0.5.0.
+  - Three slices sit on `p4-layout`, ahead of P5, each stacked on the one before: `slice-edit-animate` (edit a diagram in its page, apply the patch, animate the change), `slice-stories` (views of one figure in one page) and `slice-edit-hardening` (keyboard editing, moves along the layout's layers, messages, regeneration). `b29-fuzz` (the B29 fixes, also on `p4-layout`) is merged into `slice-stories`.
+  - `slice-integration`, on `slice-edit-hardening`, is current and holds everything. It merges three stacks built in side sessions, each on its own `claude/...` branch:
+    - the default look for flow, arch, seq and schema (B25, DESIGN 8.5), the straight trunk in long flows, and default text judged by the audit (`data-legibility`);
+    - pins in flow and arch (DESIGN 4.6), and the router fixes pins exposed (B30);
+    - motion from meaning: a story view's `trace` and `flow`, filmed as a GIF or MP4 (DESIGN 21.2.1).
+  - The six phase branches are on GitHub since 2026-10-17, as a backup; the slices, `slice-integration`, the `claude/...` branches and `b29-fuzz` are local only. None is merged into `master`, and there is no PR. Anyone who installs from the README still gets 0.5.0.
   - CI runs on pushes to `master` and on PRs, so the phase branches have not run in CI yet.
 - **Version.** 0.8.0 in `diagonaldiagrams/__init__.py`, `.claude-plugin/plugin.json` and `server.json` (they must match). Nothing past 0.5.0 has been released.
 - **Rules from the owner:**
@@ -40,8 +43,10 @@ The owner asked for animation and better editing ahead of P5. Three slices are b
 - **Edit loop:** every diagram page's Edit mode hands over a patch (`place`, `order`, `text`, `style`), by mouse or keyboard: boxes move within and between the layout's layers, a sequence's messages between steps. `apply` writes the patch; drawing again at the same path keeps the other boxes near their places, reports `changed`, and animates the old drawing into the new one. `diff` compares any two drawings. A kept patch applied again after the spec is regenerated keeps every edit or reports it (`tests/unit/test_regeneration.py`).
 - **Pins:** flow and arch draw a node's `pin` as a row and an x in it (DESIGN 4.6 and 7.3 as-built): the figure is laid out without its pins, then again with each pinned box held at its x. A pin that can't hold is a `constraint` warning in the verdict. A `place` drops the pin.
 - **Stories:** `story STORY.json -o OUT.html` presents one figure as views (focus, dim, hide, highlight, reveal) in one page that animates between them.
+- **Motion:** a view's `motion` block traces a path or sets dots flowing along arrows; the page plays it, and `story ... --gif` or `--video` films it (DESIGN 21.2.1).
+- **The default look** (DESIGN 8.5): labels beside their arrows, boxes that fit their text, balanced arch, a straight trunk in long flows, default text that passes contrast and size checks. Blind pairwise judging: 103 of 104 for the new look.
 
-Next is the owner's call: widen stories (several figures, pages, annotations, PDF), or go back to P5.
+Next is the owner's call: bring the chart kinds up to the new look (P6, P8), a dark product theme and isometric 3D (P7), widen stories, or go back to P5.
 
 ## Decisions that wait on the owner
 
