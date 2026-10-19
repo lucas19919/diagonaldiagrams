@@ -64,6 +64,107 @@ Text size where each figure lands, bench flows (median px, [measure.py](measure.
 No tool's 20- or 40-step flow is readable on an A4 page; dd's is the least bad. dd's own text is also smaller to
 begin with: 13 px names and 11 px subtitles and sequence messages, against Pele's 16 and Mermaid's 14-16.
 
+## Rerun in the column with `--fit column` (2026-10-19)
+
+Fix 1 below is built on branch `fit-placement` (0216277): `--fit slide|page|column`. The column placement was
+judged again with dd drawn at `--fit column`: no wrapping, at most 640 px wide, wide rows dealt into stacked
+columns, wide schemas stacked. Pele's and Mermaid's figures, the 62 pairs, the 24 batches (same pairs, sides and
+blind names as b07-b18 and b25-b36), the judge prompt and the judge models were the same as before. That makes
+248 judgments; the two orders agree in 96%. Full tables: [runs/fit-column/results.md](runs/fit-column/results.md).
+
+| against | clearer, before → after | better looking, before → after |
+| --- | --- | --- |
+| Pele | 56% → **68%** (84/124) | 84% → **78%** (97/124) |
+| Mermaid | 65% → **77%** (95/124) | 86% → **86%** (107/124) |
+
+Flowcharts (agent figures and same-source figures, 16 judgments a cell), clearer:
+
+| steps | vs Pele | vs Mermaid |
+| --- | --- | --- |
+| 5, 11 | 100% → 100% | 100% → 100% |
+| 20 | 69% → **100%** | 56% → **100%** |
+| 40 | 19% → **100%** | 6% → **100%** |
+
+dd's 20- and 40-step flows now win every column judgment on both questions. As one strip they keep their 13 px
+text; wrapped, they had 5-8 px.
+
+Other types did not gain, and arch lost:
+- **Arch:** N (dd's native specs) fell from 88% and 100% clearer to 50% and 50%, and L stayed at 0% against Pele
+  (25% → 0% against Mermaid). Both checkout-groups figures lost every judgment. Text is larger now (9-13 px
+  against 5.5-10.5), but the narrow layouts run long wrap-around edges, put the labels far from them and take
+  three screens. Judges preferred compact drawings at smaller sizes. `--fit column` should probably
+  leave a wide arch figure's layers whole, since dd's own wide arch won here before.
+- **Schema and ER:** about the same (L 0% → 0% against Pele, N 25% → 38%). Stacked tables keep 11 px text, but
+  every loss names the ER drawing (fix 2): relation lines leave from arbitrary rows (Mermaid ER gives no columns),
+  no crow's feet, and "1:N 1:N" doubled labels. Opus judges add that a single stack hides the tree's fan-out.
+- **Sequence** figures are the same drawings in both runs; their verdicts moved by at most one judgment of four.
+
+## Arch again: rows only where they take less of the column (2026-10-19)
+
+Branch `fit-arch-whole` (on `fit-placement`) deals a layer into rows only where the result takes less of the
+column than the layers kept whole and shrunk: `layered.room`, the figure's height times its width in column
+widths, which is the area it needs with its text at full size. Each dealing try is measured against the whole
+layout; the least room stands. Of the benchmark's 31 dd figures, only the 4 arch ones draw differently
+(fresh, at `--fit column`); every flow, schema and sequence figure is byte-identical to the fit-column run.
+
+| figure | fit-column | now |
+| --- | --- | --- |
+| N checkout-groups | 638 x 1716, rows | 956 x 886, layers whole (text 9 px in the column) |
+| L checkout-groups | 651 x 1700, rows | 880 x 876, layers whole (10 px) |
+| N agent-platform | 797 x 1264, rows | 822 x 970, the Tools group over two rows (11 px) |
+| L agent-platform | 579 x 1782, rows | 679 x 1314, fewer rows (13 px) |
+
+Only the 8 arch pairs were judged again, in the column: the same batches, pair numbers, sides, prompt and judge
+models as the fit-column run ([pairs.py](pairs.py) `--only ref-arch`), 17 batches, 32 judgments; the two orders
+agree in 84%. Tables: [runs/fit-column-arch/results.md](runs/fit-column-arch/results.md).
+
+| arch, clearer | first run (slide drawing) | fit-column | now |
+| --- | --- | --- | --- |
+| N vs Pele | 88% (7/8) | 50% (4/8) | **88% (7/8)** |
+| N vs Mermaid | 100% (8/8) | 50% (4/8) | **88% (7/8)** |
+| L vs Pele | 0% (0/8) | 0% (0/8) | **0% (0/8)** |
+| L vs Mermaid | 25% (2/8) | 0% (0/8) | **38% (3/8)** |
+
+Better looking, all 8 pairs: 72% (first run), 38% (fit-column), **81%** (26/32) now.
+
+- **Checkout-groups** came back: N won 6 of 8 (0 of 8 in fit-column), L against Mermaid 2 of 4. Judges again cite
+  one screen, Orders beside Payments, and short edges; the losses cite small text (two Opus judgments) and, for L
+  against Pele, shared trunks (settled and card on one segment, verify and browse on one bar: fix 3 below).
+- **Agent-platform, N** won all 8 again. Judges note the `svg` edge looping round the two-row Tools group.
+- **Agent-platform, L** won 1 of 8. Its rows still send a bundle of parallel edges down the side from Agent with
+  their labels away from them, and "diagonaldiagrams" breaks as "diagonaldi-agrams". Kept whole it would be
+  1583 px wide (5.5 px text, which lost every judgment in the first run).
+
+## A port, a lane and a label for each arrow out of Agent (2026-10-19)
+
+Branch `fit-arch-fanout` (on `fit-arch-whole`) changes only figures with a layer dealt into rows. The arrows from
+above such a layer down to its lower rows run down lanes beside them (the comb). The flow preset ran them out of
+one port and along one bar (its trunk), so the Mermaid agent platform's calls out of Agent read as one bundle, with
+`prompt` and `search` labelled on the bar they shared. Now a side with such an arrow has no trunk: each arrow
+leaves by a port of its own, as near as it can to where it heads (`recall` straight down to Memory, the others
+packed toward their lanes), on a track and lane of its own, and its label goes first on its last sideways run,
+just above its box. A name's lines are no longer balanced into a room narrower than its longest word
+("diagonaldi-agrams" is "diagonaldiagrams" again). Of the 31 dd figures drawn fresh at `--fit column`, only the two
+agent platforms change; every flow, schema, sequence and checkout figure is byte-identical to fit-column-arch.
+
+The 8 arch pairs were judged again in the same 17 batches (32 judgments; orders agree 88%). Tables:
+[runs/fit-column-fanout/results.md](runs/fit-column-fanout/results.md).
+
+| arch, clearer | fit-column-arch | now |
+| --- | --- | --- |
+| L vs Pele | 0% (0/8) | **0% (0/8)** |
+| L vs Mermaid | 38% (3/8) | **50% (4/8)** |
+| N vs Pele | 88% (7/8) | **75% (6/8)** |
+| N vs Mermaid | 88% (7/8) | **88% (7/8)** |
+
+- **L agent-platform** went from 1 to 4 of 4 clearer against Mermaid, and from 0 to 3 of 4 better looking against
+  Pele. Judges now say each fan-out edge has its own lane with its label next to its target. It still loses all 4
+  clearer judgments to Pele: the targets stand in one tall column fed by four long lanes down the right, where Pele
+  puts the tools side by side. That is the rows the layer is dealt into (`layered.room`), not its ports or labels.
+- **N agent-platform** (also redrawn: `draw` now drops straight into its box) kept all 8.
+- The checkout-groups figures did not change; their verdicts moved by one or two judgments (L vs Mermaid 2 to 0,
+  N vs Pele 3 to 2), which is the judges' noise on identical images.
+
 ## What to fix, ranked by how often it loses
 
 160 judgments went against dd. Each loss's reason and "dd's weakness" phrase were tagged by keyword
@@ -166,4 +267,89 @@ py -3 bench/quality/report.py
 
 ```bash
 py -3 bench/quality/sheet.py
+```
+
+The `--fit column` rerun, with dd from a checkout of `fit-placement` (the column PNGs are not committed; raster.py
+rebuilds them from runs/fit-column/svg):
+
+```bash
+py -3 bench/quality/render.py --run fit-column --fit column --dd PATH_TO_FIT_PLACEMENT_CHECKOUT
+```
+
+```bash
+py -3 bench/quality/raster.py --run fit-column --context column
+```
+
+The arch rerun, with dd from a checkout of `fit-arch-whole`, judging only the arch pairs:
+
+```bash
+py -3 bench/quality/render.py --run fit-column-arch --fit column --dd PATH_TO_FIT_ARCH_WHOLE_CHECKOUT
+```
+
+```bash
+py -3 bench/quality/raster.py ref-arch --run fit-column-arch --context column
+```
+
+```bash
+py -3 bench/quality/pairs.py JUDGE_DIR --run fit-column-arch --context column --only ref-arch
+```
+
+```bash
+py -3 bench/quality/prompts.py JUDGE_DIR --run fit-column-arch
+```
+
+Then one judge per batch, then:
+
+```bash
+py -3 bench/quality/tally.py JUDGE_DIR --run fit-column-arch
+```
+
+```bash
+py -3 bench/quality/compare.py fit-column-arch --base fit-column --only ref-arch
+```
+
+The fan-out rerun, with dd from a checkout of `fit-arch-fanout`, judging the arch pairs again:
+
+```bash
+py -3 bench/quality/render.py --run fit-column-fanout --fit column --dd PATH_TO_FIT_ARCH_FANOUT_CHECKOUT
+```
+
+```bash
+py -3 bench/quality/raster.py ref-arch --run fit-column-fanout --context column
+```
+
+```bash
+py -3 bench/quality/pairs.py JUDGE_DIR --run fit-column-fanout --context column --only ref-arch
+```
+
+```bash
+py -3 bench/quality/prompts.py JUDGE_DIR --run fit-column-fanout
+```
+
+Then one judge per batch, then:
+
+```bash
+py -3 bench/quality/tally.py JUDGE_DIR --run fit-column-fanout
+```
+
+```bash
+py -3 bench/quality/compare.py fit-column-fanout --base fit-column-arch --only ref-arch
+```
+
+```bash
+py -3 bench/quality/pairs.py JUDGE_DIR --run fit-column --context column
+```
+
+```bash
+py -3 bench/quality/prompts.py JUDGE_DIR --run fit-column
+```
+
+Then one judge per batch as above, then:
+
+```bash
+py -3 bench/quality/tally.py JUDGE_DIR --run fit-column
+```
+
+```bash
+py -3 bench/quality/compare.py fit-column
 ```

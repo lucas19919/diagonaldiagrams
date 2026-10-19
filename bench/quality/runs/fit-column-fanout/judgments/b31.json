@@ -1,0 +1,12 @@
+[
+  {"pair": "p06",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "In A every arrow has its own line with its label sitting right on it (verify, browse, checkout; session/cache; card, settled, placed), so it is unambiguous where each goes. In B, verify/browse share one trunk, settled and card leave Payments on a shared line with labels side by side, and the dashed 'placed' edge loops out left across the Checkout core boundary, which makes it hard to tell which label belongs to which arrow.",
+    "looks": "B", "looks_margin": "slight", "looks_why": "B is compact, fits in one view, and has a polished card style with a highlighted orange checkout path and uppercase group captions. A is tidy and uses real cylinder shapes, but is tall and sparse with a lot of empty space on the right of the top half.",
+    "weak_A": "tall and sparse; needs scrolling across two images",
+    "weak_B": "shared trunks and loose labels make edges ambiguous (placed/settled/card, verify/browse)"},
+  {"pair": "p09",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A routes every edge separately with a labelled chip on the line itself (placed, settled, card all distinct below Checkout core; ingest/email/reserve fan out cleanly). B merges edges onto shared trunks, places 'settled' and 'card' next to each other on one line, and sends 'placed' on a long dashed detour through the Checkout core group, so the reader must guess which label belongs to which arrow.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has a restrained, consistent palette, rounded cards, one accent colour for the main path, and fits in one compact frame. A uses clashing pink, cyan and orange group fills, heavy black boxes with drop shadows and grey label chips, and is very tall with empty space.",
+    "weak_A": "garish group colours and grey label chips; very tall",
+    "weak_B": "merged edge trunks and detached labels obscure which arrow is which"}
+]

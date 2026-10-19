@@ -1,0 +1,17 @@
+[
+  {"pair": "p08",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A is compact: Agent sits beside Memory and Model API with short labelled arrows, there is a subtitle that explains the flow, and a legend decodes blue/dashed/coral. B reads fine too, but it is taller, five edges leave Agent as a tight bundle before fanning out, and the dashed persist line crosses the svg line just above Storage.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A has consistent rounded cards with bold titles, small icons, and one coral accent for the Agent/Model API path, which makes it look finished. B is a plain grey sketch with a lot of empty space (Auth floats alone on the left, with a big gap beside the runtime group).",
+    "weak_A": "svg edge loops far left around the Tools group and crosses the execute edge",
+    "weak_B": "tall, sparse layout with a bundled fan-out from Agent and a persist/svg crossing"},
+  {"pair": "p09",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "In A each edge label (prompt, search, execute, draw, events) sits on its own line at a clear midpoint, so it's easy to see where each arrow goes. In B, four parallel vertical wires run down the right side from Agent, and the prompt/recall/search labels crowd together just below Agent, so it's unclear which label belongs to which wire.",
+    "looks": "A", "looks_margin": "slight", "looks_why": "B has nicer card styling, but it stacks everything in one tall column with long parallel wires and wastes the left half. It also breaks a node name as 'diagonaldi-agrams MCP' and ends with a meaningless 'box = step' legend. A is plain but tidy, with smooth curves.",
+    "weak_A": "plain grey styling and empty space around the isolated Auth node",
+    "weak_B": "long bundle of parallel wires with crowded, ambiguous labels near Agent"},
+  {"pair": "p10",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "In B the labels sit cleanly beside their arrows and a legend explains the line styles. In A the 'draw' and 'execute' labels stack on top of each other and of the wires below Agent, so it is hard to tell which goes to Code sandbox and which to diagonaldiagrams. A's grey-boxed labels also cover the lines.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B is a polished card layout with icons, one coral highlight, and consistent grouping. A uses default monospace text, grey label patches, and clashing pastel group fills (pink, teal, orange, cyan), so it looks unfinished.",
+    "weak_A": "overlapping draw/execute labels on the parallel wires below Agent",
+    "weak_B": "svg edge detours far left around the Tools group and crosses the execute edge"}
+]

@@ -1,0 +1,12 @@
+[
+  {"pair": "p06",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B's labels are larger and each lane's label (search, execute, draw) sits right next to its target box, whereas in A the 'draw' and 'execute' labels collide where those two edges cross under the Agent runtime. A is shorter, but its small text and tangled four-edge bundle out of Agent are harder to trace.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has a polished, consistent style: rounded cards, bold readable names, muted group frames and one orange accent for the model call. A looks like raw default output, with grey label chips, pastel group fills and thin small type.",
+    "weak_A": "draw/execute labels overlap at an edge crossing below Agent",
+    "weak_B": "very tall, with a long bundle of four parallel lanes down the right side"},
+  {"pair": "p07",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B shows the whole system in one compact view, with a legend and role tags (SVC, STORE, API), and the Orders-to-Payments charge reads as a straight horizontal step. A has big readable text but needs two screens, and the long verify/browse/settled/placed drops make it harder to see the overall structure.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has balanced proportions, a colour scheme (blue calls, coral highlight) and tidy group frames. A is sparse and stretched vertically, with large empty areas and a plain grey wireframe look.",
+    "weak_A": "tall and sparse, so it needs scrolling, with long vertical edges",
+    "weak_B": "small secondary text, and the settled/placed dashed lines cross near Event bus"}
+]

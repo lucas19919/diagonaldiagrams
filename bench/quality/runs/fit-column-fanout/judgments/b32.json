@@ -1,0 +1,7 @@
+[
+  {"pair": "p03",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A's labels and node text are large and every edge label sits squarely on its own line, so placed/settled/card into Kafka and Stripe are unambiguous. B shows the whole system at once with a legend, but its text is small at column width and the placed/settled dashed lines cross and run together between Orders, Payments and Event bus.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B is compact and polished: soft grouped frames, type tags, bold names, colour-coded HTTP vs background edges and a coral highlight on the checkout path. A is a tall, sparse layout with grey label boxes and heavy black lines that spans two screens.",
+    "weak_A": "very tall and sparse; needs scrolling across two screens to follow the flow",
+    "weak_B": "small text and tangled dashed placed/settled lines near Event bus"}
+]

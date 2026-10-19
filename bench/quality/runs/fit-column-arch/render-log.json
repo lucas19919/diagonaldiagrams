@@ -1,0 +1,816 @@
+{
+ "dd_commit": "cb6ec55",
+ "figures": {
+  "A-05-r1-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7qyolm_q\\figure.html",
+    "items": 5,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7qyolm_q\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7qyolm_q\\figure.svg"
+   }
+  },
+  "A-05-r2-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-b1pjtuze\\figure.html",
+    "items": 5,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load customer account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-b1pjtuze\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-b1pjtuze\\figure.svg"
+   }
+  },
+  "A-11-r1-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mpksc7ih\\figure.html",
+    "items": 11,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Charge card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mpksc7ih\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mpksc7ih\\figure.svg"
+   }
+  },
+  "A-11-r2-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-hrht2hhl\\figure.html",
+    "items": 11,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Charge card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-hrht2hhl\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-hrht2hhl\\figure.svg"
+   }
+  },
+  "A-20-r1-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ffbdakb2\\figure.html",
+    "items": 20,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Charge card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Validate request",
+     "row 12: Check 3 passed? (decision)",
+     "row 13: Score fraud risk",
+     "row 14: Reserve stock",
+     "row 15: Charge card",
+     "row 16: Check 4 passed? (decision)",
+     "row 17: Notify warehouse",
+     "row 18: Print shipping label",
+     "row 19: Send receipt",
+     "row 20: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ffbdakb2\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ffbdakb2\\figure.svg"
+   }
+  },
+  "A-20-r2-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-vtwrx9t_\\figure.html",
+    "items": 20,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Charge card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Validate request",
+     "row 12: Check 3 passed? (decision)",
+     "row 13: Score fraud risk",
+     "row 14: Reserve stock",
+     "row 15: Charge card",
+     "row 16: Check 4 passed? (decision)",
+     "row 17: Notify warehouse",
+     "row 18: Print shipping label",
+     "row 19: Send receipt",
+     "row 20: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-vtwrx9t_\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-vtwrx9t_\\figure.svg"
+   }
+  },
+  "A-40-r1-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-lc3kkwfj\\figure.html",
+    "items": 40,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load customer account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Charge the card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Validate request",
+     "row 12: Check 3 passed? (decision)",
+     "row 13: Score fraud risk",
+     "row 14: Reserve stock",
+     "row 15: Charge the card",
+     "row 16: Check 4 passed? (decision)",
+     "row 17: Notify warehouse",
+     "row 18: Print shipping label",
+     "row 19: Send receipt",
+     "row 20: Check 5 passed? (decision)",
+     "row 21: Validate request",
+     "row 22: Load customer account",
+     "row 23: Score fraud risk",
+     "row 24: Check 6 passed? (decision)",
+     "row 25: Charge the card",
+     "row 26: Write ledger entry",
+     "row 27: Notify warehouse",
+     "row 28: Check 7 passed? (decision)",
+     "row 29: Send receipt",
+     "row 30: Update order status",
+     "row 31: Validate request",
+     "row 32: Check 8 passed? (decision)",
+     "row 33: Score fraud risk",
+     "row 34: Reserve stock",
+     "row 35: Charge the card",
+     "row 36: Check 9 passed? (decision)",
+     "row 37: Notify warehouse",
+     "row 38: Print shipping label",
+     "row 39: Send receipt",
+     "row 40: Process done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-lc3kkwfj\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-lc3kkwfj\\figure.svg",
+    "warnings": [
+     {
+      "fix": "dedupe title/caption/source",
+      "msg": "'Score fraud risk' repeated 4x"
+     }
+    ]
+   }
+  },
+  "A-40-r2-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mteop0ml\\figure.html",
+    "items": 40,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load customer account",
+     "row 3: Score fraud risk",
+     "row 4: 3. Check 1 passed? (decision)",
+     "row 5: Charge card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: 7. Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Validate request",
+     "row 12: 11. Check 3 passed? (decision)",
+     "row 13: Score fraud risk",
+     "row 14: Reserve stock",
+     "row 15: Charge card",
+     "row 16: 15. Check 4 passed? (decision)",
+     "row 17: Notify warehouse",
+     "row 18: Print shipping label",
+     "row 19: Send receipt",
+     "row 20: 19. Check 5 passed? (decision)",
+     "row 21: Validate request",
+     "row 22: Load customer account",
+     "row 23: Score fraud risk",
+     "row 24: 23. Check 6 passed? (decision)",
+     "row 25: Charge card",
+     "row 26: Write ledger entry",
+     "row 27: Notify warehouse",
+     "row 28: 27. Check 7 passed? (decision)",
+     "row 29: Send receipt",
+     "row 30: Update order status",
+     "row 31: Validate request",
+     "row 32: 31. Check 8 passed? (decision)",
+     "row 33: Score fraud risk",
+     "row 34: Reserve stock",
+     "row 35: Charge card",
+     "row 36: 35. Check 9 passed? (decision)",
+     "row 37: Notify warehouse",
+     "row 38: Print shipping label",
+     "row 39: Send receipt",
+     "row 40: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mteop0ml\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mteop0ml\\figure.svg",
+    "warnings": [
+     {
+      "fix": "dedupe title/caption/source",
+      "msg": "'Score fraud risk' repeated 4x"
+     }
+    ]
+   }
+  },
+  "L-bench-05-a-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-as2vu33l\\figure.html",
+    "items": 5,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load customer account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-as2vu33l\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-as2vu33l\\figure.svg"
+   }
+  },
+  "L-bench-05-b-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7zroirz_\\figure.html",
+    "items": 5,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Step 1: Load customer account",
+     "row 3: Step 2: Score fraud risk",
+     "row 4: Step 3: Check 1 passed? (decision)",
+     "row 5: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7zroirz_\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7zroirz_\\figure.svg"
+   }
+  },
+  "L-bench-11-a-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-9pbgk_zm\\figure.html",
+    "items": 11,
+    "layout": [
+     "row 1: Request received",
+     "row 2: 1. Load customer account",
+     "row 3: 2. Score fraud risk",
+     "row 4: 3. Check 1 passed? (decision)",
+     "row 5: 4. Charge card",
+     "row 6: 5. Write ledger entry",
+     "row 7: 6. Notify warehouse",
+     "row 8: 7. Check 2 passed? (decision)",
+     "row 9: 8. Send receipt",
+     "row 10: 9. Update order status",
+     "row 11: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-9pbgk_zm\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-9pbgk_zm\\figure.svg"
+   }
+  },
+  "L-bench-11-b-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-cx5kouh8\\figure.html",
+    "items": 11,
+    "layout": [
+     "row 1: Start: request received",
+     "row 2: 1. Load customer account",
+     "row 3: 2. Score fraud risk",
+     "row 4: 3. Check 1 passed? (decision)",
+     "row 5: 4. Charge card",
+     "row 6: 5. Write ledger entry",
+     "row 7: 6. Notify warehouse",
+     "row 8: 7. Check 2 passed? (decision)",
+     "row 9: 8. Send receipt",
+     "row 10: 9. Update order status",
+     "row 11: End: process done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-cx5kouh8\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-cx5kouh8\\figure.svg"
+   }
+  },
+  "L-bench-20-a-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-z04fh9og\\figure.html",
+    "items": 20,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load customer account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Charge card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Validate request",
+     "row 12: Check 3 passed? (decision)",
+     "row 13: Score fraud risk",
+     "row 14: Reserve stock",
+     "row 15: Charge card",
+     "row 16: Check 4 passed? (decision)",
+     "row 17: Notify warehouse",
+     "row 18: Print shipping label",
+     "row 19: Send receipt",
+     "row 20: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-z04fh9og\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-z04fh9og\\figure.svg"
+   }
+  },
+  "L-bench-20-b-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-kpmtpjlk\\figure.html",
+    "items": 20,
+    "layout": [
+     "row 1: Request received",
+     "row 2: 1. Load customer account",
+     "row 3: 2. Score fraud risk",
+     "row 4: 3. Check 1 passed? (decision)",
+     "row 5: 4. Charge the card",
+     "row 6: 5. Write ledger entry",
+     "row 7: 6. Notify warehouse",
+     "row 8: 7. Check 2 passed? (decision)",
+     "row 9: 8. Send receipt",
+     "row 10: 9. Update order status",
+     "row 11: 10. Validate request",
+     "row 12: 11. Check 3 passed? (decision)",
+     "row 13: 12. Score fraud risk",
+     "row 14: 13. Reserve stock",
+     "row 15: 14. Charge the card",
+     "row 16: 15. Check 4 passed? (decision)",
+     "row 17: 16. Notify warehouse",
+     "row 18: 17. Print shipping label",
+     "row 19: 18. Send receipt",
+     "row 20: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-kpmtpjlk\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-kpmtpjlk\\figure.svg"
+   }
+  },
+  "L-bench-40-a-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-h5jsgt37\\figure.html",
+    "items": 40,
+    "layout": [
+     "row 1: Request received",
+     "row 2: Load customer account",
+     "row 3: Score fraud risk",
+     "row 4: Check 1 passed? (decision)",
+     "row 5: Charge card",
+     "row 6: Write ledger entry",
+     "row 7: Notify warehouse",
+     "row 8: Check 2 passed? (decision)",
+     "row 9: Send receipt",
+     "row 10: Update order status",
+     "row 11: Validate request",
+     "row 12: Check 3 passed? (decision)",
+     "row 13: Score fraud risk",
+     "row 14: Reserve stock",
+     "row 15: Charge card",
+     "row 16: Check 4 passed? (decision)",
+     "row 17: Notify warehouse",
+     "row 18: Print shipping label",
+     "row 19: Send receipt",
+     "row 20: Check 5 passed? (decision)",
+     "row 21: Validate request",
+     "row 22: Load customer account",
+     "row 23: Score fraud risk",
+     "row 24: Check 6 passed? (decision)",
+     "row 25: Charge card",
+     "row 26: Write ledger entry",
+     "row 27: Notify warehouse",
+     "row 28: Check 7 passed? (decision)",
+     "row 29: Send receipt",
+     "row 30: Update order status",
+     "row 31: Validate request",
+     "row 32: Check 8 passed? (decision)",
+     "row 33: Score fraud risk",
+     "row 34: Reserve stock",
+     "row 35: Charge card",
+     "row 36: Check 9 passed? (decision)",
+     "row 37: Notify warehouse",
+     "row 38: Print shipping label",
+     "row 39: Send receipt",
+     "row 40: Done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-h5jsgt37\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-h5jsgt37\\figure.svg",
+    "warnings": [
+     {
+      "fix": "dedupe title/caption/source",
+      "msg": "'Score fraud risk' repeated 4x"
+     }
+    ]
+   }
+  },
+  "L-bench-40-b-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-8ahukoxc\\figure.html",
+    "items": 40,
+    "layout": [
+     "row 1: Request received",
+     "row 2: 1. Load customer account",
+     "row 3: 2. Score fraud risk",
+     "row 4: 3. Check 1 passed? (decision)",
+     "row 5: 4. Charge card",
+     "row 6: 5. Write ledger entry",
+     "row 7: 6. Notify warehouse",
+     "row 8: 7. Check 2 passed? (decision)",
+     "row 9: 8. Send receipt",
+     "row 10: 9. Update order status",
+     "row 11: 10. Validate request",
+     "row 12: 11. Check 3 passed? (decision)",
+     "row 13: 12. Score fraud risk",
+     "row 14: 13. Reserve stock",
+     "row 15: 14. Charge card",
+     "row 16: 15. Check 4 passed? (decision)",
+     "row 17: 16. Notify warehouse",
+     "row 18: 17. Print shipping label",
+     "row 19: 18. Send receipt",
+     "row 20: 19. Check 5 passed? (decision)",
+     "row 21: 20. Validate request",
+     "row 22: 21. Load customer account",
+     "row 23: 22. Score fraud risk",
+     "row 24: 23. Check 6 passed? (decision)",
+     "row 25: 24. Charge card",
+     "row 26: 25. Write ledger entry",
+     "row 27: 26. Notify warehouse",
+     "row 28: 27. Check 7 passed? (decision)",
+     "row 29: 28. Send receipt",
+     "row 30: 29. Update order status",
+     "row 31: 30. Validate request",
+     "row 32: 31. Check 8 passed? (decision)",
+     "row 33: 32. Score fraud risk",
+     "row 34: 33. Reserve stock",
+     "row 35: 34. Charge card",
+     "row 36: 35. Check 9 passed? (decision)",
+     "row 37: 36. Notify warehouse",
+     "row 38: 37. Print shipping label",
+     "row 39: 38. Send receipt",
+     "row 40: Process done"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-8ahukoxc\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-8ahukoxc\\figure.svg",
+    "warnings": [
+     {
+      "fix": "style the figure with --style FILE, a JSON stylesheet (describe style)",
+      "msg": "6 classDef, class, style, linkStyle or click lines are not drawn"
+     }
+    ]
+   }
+  },
+  "L-ex-er-shop-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ckc8jgd6\\figure.html",
+    "items": 4,
+    "layout": [
+     "tables: CUSTOMER, ORDER, LINE_ITEM, PRODUCT",
+     "column 1: CUSTOMER | ORDER | PRODUCT | LINE_ITEM"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ckc8jgd6\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ckc8jgd6\\figure.svg"
+   }
+  },
+  "L-ex-flow-how-it-works-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mjkjupwp\\figure.html",
+    "items": 9,
+    "layout": [
+     "row 1: Your agent describes the diagram",
+     "row 2: Check the description",
+     "row 3: Makes sense? (decision)",
+     "row 4: Lay out and draw | Tell the agent what to fix",
+     "row 5: Check the drawing",
+     "row 6: Anything overlapping? (decision)",
+     "row 7: Rearrange | Finished diagram"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mjkjupwp\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-mjkjupwp\\figure.svg"
+   }
+  },
+  "L-ex-seq-checkout-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-t_n3dl6p\\figure.html",
+    "items": 5,
+    "layout": [
+     "actors: User | API Gateway | Auth | Orders | Payments",
+     "1. User -> API Gateway: POST /checkout",
+     "2. API Gateway -> Auth: verify token",
+     "3. Auth -> API Gateway: ok",
+     "4. API Gateway -> Orders: create order",
+     "5. Orders -> Payments: OrderCreated",
+     "6. Orders -> API Gateway: 201 Created",
+     "7. API Gateway -> User: 201 Created"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-t_n3dl6p\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-t_n3dl6p\\figure.svg"
+   }
+  },
+  "L-ref-arch-agent-platform-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-5tu8wtun\\figure.html",
+    "items": 15,
+    "layout": [
+     "row 1: Web chat Next.js | Mobile app Swift | Email intake SES",
+     "row 2: API gateway Envoy:443",
+     "row 3: Auth OIDC | Agent Python:8000",
+     "row 4: Memory pgvector",
+     "row 5: Model API external",
+     "row 6: Web search tool",
+     "row 7: Code sandbox Firecracker",
+     "row 8: diagonaldiagrams MCP",
+     "row 9: Event bus Kafka",
+     "row 10: Object store files, figures | Postgres runs, users | Traces OpenTelemetry",
+     "frame Clients: Web chat Next.js, Mobile app Swift, Email intake SES",
+     "frame Agent runtime: Memory pgvector, Agent Python:8000",
+     "frame Tools: Web search tool, Code sandbox Firecracker, diagonaldiagrams MCP",
+     "frame Storage: Object store files, figures, Postgres runs, users"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-5tu8wtun\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-5tu8wtun\\figure.svg"
+   }
+  },
+  "L-ref-arch-checkout-groups-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-6uu2893k\\figure.html",
+    "items": 14,
+    "layout": [
+     "row 1: Web app React | Mobile app Swift",
+     "row 2: API gateway Envoy:443",
+     "row 3: Auth Go:8081 | Catalog Go:8082 | Orders Kotlin:8083",
+     "row 4: Redis sessions, cache | Payments Kotlin:8084 | Postgres orders, ledger",
+     "row 5: Event bus Kafka | Stripe external",
+     "row 6: Inventory reserve stock | Notifications email, push | Analytics ClickHouse",
+     "frame Clients: Web app React, Mobile app Swift",
+     "frame Checkout core: Orders Kotlin:8083, Payments Kotlin:8084, Postgres orders, ledger",
+     "frame Event consumers: Inventory reserve stock, Notifications email, push, Analytics ClickHouse"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-6uu2893k\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-6uu2893k\\figure.svg"
+   }
+  },
+  "L-ref-schema-ecommerce-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-odl5mfkr\\figure.html",
+    "items": 3,
+    "layout": [
+     "tables: users, orders, order_items",
+     "column 1: users | orders | order_items"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-odl5mfkr\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-odl5mfkr\\figure.svg"
+   }
+  },
+  "L-ref-schema-store-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-d8hpdvvm\\figure.html",
+    "items": 5,
+    "layout": [
+     "tables: datasets, runs, checkpoints, metrics, evals",
+     "column 1: datasets | runs | checkpoints | metrics | evals"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-d8hpdvvm\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-d8hpdvvm\\figure.svg"
+   }
+  },
+  "L-ref-seq-checkout-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7wklx1j9\\figure.html",
+    "items": 5,
+    "layout": [
+     "actors: Customer | Web App | API Gateway | Payment Svc | Postgres",
+     "1. Customer -> Web App: Submit Order",
+     "2. Web App -> API Gateway: POST /checkout",
+     "3. API Gateway -> Payment Svc: Authorize Card",
+     "4. Payment Svc -> Postgres: Store Ledger TX",
+     "5. Postgres -> Payment Svc: TX Committed",
+     "6. Payment Svc -> API Gateway: Payment Succeeded",
+     "7. API Gateway -> Web App: 201 Created (Order #491)",
+     "8. Web App -> Customer: Show Confirmation"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7wklx1j9\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-7wklx1j9\\figure.svg"
+   }
+  },
+  "L-ref-seq-toolloop-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-v421mu4u\\figure.html",
+    "items": 5,
+    "layout": [
+     "actors: User | Agent | Model | Tools | Ledger",
+     "1. User -> Agent: Ask",
+     "2. Agent -> Model: Plan",
+     "3. Model -> Agent: Call tool",
+     "4. Agent -> Tools: Search",
+     "5. Tools -> Agent: Passages",
+     "6. Agent -> Model: Ground",
+     "7. Model -> Agent: Draft",
+     "8. Agent -> Ledger: Record",
+     "9. Ledger -> Agent: Stored",
+     "10. Agent -> User: Answer",
+     "11. User -> Agent: Follow up",
+     "12. Agent -> Model: Revise"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-v421mu4u\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-v421mu4u\\figure.svg"
+   }
+  },
+  "N-ref-arch-agent-platform-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-a537pk8b\\figure.html",
+    "items": 15,
+    "layout": [
+     "row 1: Web chat | Mobile app | Email intake",
+     "row 2: API gateway | Auth",
+     "row 3: Memory | Agent | Model API",
+     "row 4: Web search | diagonaldiagrams",
+     "row 5: Code sandbox | Event bus",
+     "row 6: Object store | Postgres | Traces",
+     "frame Clients: Web chat, Mobile app, Email intake",
+     "frame Agent runtime: Memory, Agent",
+     "frame Tools: Web search, Code sandbox, diagonaldiagrams",
+     "frame Storage: Object store, Postgres"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-a537pk8b\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-a537pk8b\\figure.svg"
+   }
+  },
+  "N-ref-arch-checkout-groups-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-wn5p74i2\\figure.html",
+    "items": 14,
+    "layout": [
+     "row 1: Web app | Mobile app",
+     "row 2: API gateway",
+     "row 3: Auth | Catalog | Orders | Payments",
+     "row 4: Redis | Postgres | Event bus | Stripe",
+     "row 5: Inventory | Notifications | Analytics",
+     "frame Clients: Web app, Mobile app",
+     "frame Checkout core: Orders, Payments, Postgres",
+     "frame Event consumers: Inventory, Notifications, Analytics"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-wn5p74i2\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-wn5p74i2\\figure.svg"
+   }
+  },
+  "N-ref-schema-ecommerce-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-_8917r23\\figure.html",
+    "items": 3,
+    "layout": [
+     "tables: users, orders, order_items",
+     "column 1: users | orders | order_items"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-_8917r23\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-_8917r23\\figure.svg"
+   }
+  },
+  "N-ref-schema-store-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-kfon5v9l\\figure.html",
+    "items": 5,
+    "layout": [
+     "tables: datasets, runs, checkpoints, metrics, evals",
+     "column 1: datasets | runs | metrics | checkpoints | evals"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-kfon5v9l\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-kfon5v9l\\figure.svg"
+   }
+  },
+  "N-ref-seq-checkout-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-iap33m0i\\figure.html",
+    "items": 5,
+    "layout": [
+     "actors: Customer | Web App | API Gateway | Payment Svc | Postgres",
+     "1. Customer -> Web App: Submit Order",
+     "2. Web App -> API Gateway: POST /checkout",
+     "3. API Gateway -> Payment Svc: Authorize Card",
+     "4. Payment Svc -> Postgres: Store Ledger TX",
+     "5. Postgres -> Payment Svc: TX Committed",
+     "6. Payment Svc -> API Gateway: Payment Succeeded",
+     "7. API Gateway -> Web App: 201 Created (Order #491)",
+     "8. Web App -> Customer: Show Confirmation"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-iap33m0i\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-iap33m0i\\figure.svg"
+   }
+  },
+  "N-ref-seq-toolloop-dd": {
+   "ok": true,
+   "verdict": {
+    "html": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ok6wjeen\\figure.html",
+    "items": 5,
+    "layout": [
+     "actors: User | Agent | Model | Tools | Ledger",
+     "1. User -> Agent: Ask",
+     "2. Agent -> Model: Plan",
+     "3. Model -> Agent: Call tool",
+     "4. Agent -> Tools: Search",
+     "5. Tools -> Agent: Passages",
+     "6. Agent -> Model: Ground",
+     "7. Model -> Agent: Draft",
+     "8. Agent -> Ledger: Record",
+     "9. Ledger -> Agent: Stored",
+     "10. Agent -> User: Answer",
+     "11. User -> Agent: Follow up",
+     "12. Agent -> Model: Revise"
+    ],
+    "ok": true,
+    "receipt": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ok6wjeen\\figure.graph.json",
+    "svg": "C:\\Users\\lucas\\AppData\\Local\\Temp\\ddq-ok6wjeen\\figure.svg"
+   }
+  }
+ },
+ "fit": "column"
+}

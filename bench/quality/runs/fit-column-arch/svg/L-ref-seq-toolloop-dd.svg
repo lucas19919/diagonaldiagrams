@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="sequence diagram" data-legibility="all" viewBox="0 0 772 702" width="772">
+<title>Tool loop</title>
+<desc>Tool loop</desc>
+<rect width="772" height="702" fill="#f5f5f5" aria-hidden="true"/>
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#4f5d75"/></marker><marker id="aa" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#eb6c36"/></marker><marker id="al" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#636c82"/></marker></defs>
+<text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Tool loop</text>
+<line x1="82" y1="106" x2="82" y2="646" stroke="#7d8699" stroke-opacity=".6" stroke-width="1" stroke-dasharray="3,4" aria-hidden="true"/>
+<line x1="234" y1="106" x2="234" y2="646" stroke="#7d8699" stroke-opacity=".6" stroke-width="1" stroke-dasharray="3,4" aria-hidden="true"/>
+<line x1="386" y1="106" x2="386" y2="646" stroke="#7d8699" stroke-opacity=".6" stroke-width="1" stroke-dasharray="3,4" aria-hidden="true"/>
+<line x1="538" y1="106" x2="538" y2="646" stroke="#7d8699" stroke-opacity=".6" stroke-width="1" stroke-dasharray="3,4" aria-hidden="true"/>
+<line x1="690" y1="106" x2="690" y2="646" stroke="#7d8699" stroke-opacity=".6" stroke-width="1" stroke-dasharray="3,4" aria-hidden="true"/>
+<line x1="83.5" y1="138" x2="233" y2="138" stroke="#4f5d75" stroke-width="1.4" data-msg="Ask" data-msg-from="User" data-msg-to="Agent" marker-end="url(#a)" data-id="user-&gt;agent:Ask" role="graphics-symbol" aria-roledescription="message" aria-label="1. User to Agent: Ask"/>
+<rect x="144.5" y="118" width="27" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="158" y="130" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Ask</text>
+<line x1="235.5" y1="182" x2="385" y2="182" stroke="#4f5d75" stroke-width="1.4" data-msg="Plan" data-msg-from="Agent" data-msg-to="Model" marker-end="url(#a)" data-id="agent-&gt;model:Plan" role="graphics-symbol" aria-roledescription="message" aria-label="2. Agent to Model: Plan"/>
+<rect x="295" y="162" width="30" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="310" y="174" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Plan</text>
+<line x1="384.5" y1="226" x2="235" y2="226" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="4,4" data-msg="Call tool" data-msg-from="Model" data-msg-to="Agent" marker-end="url(#a)" data-id="model-&gt;agent:Call tool" role="graphics-symbol" aria-roledescription="message" aria-label="3. Model to Agent: Call tool"/>
+<rect x="285.5" y="206" width="49" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="310" y="218" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Call tool</text>
+<line x1="235.5" y1="270" x2="537" y2="270" stroke="#4f5d75" stroke-width="1.4" data-msg="Search" data-msg-from="Agent" data-msg-to="Tools" marker-end="url(#a)" data-id="agent-&gt;tools:Search" role="graphics-symbol" aria-roledescription="message" aria-label="4. Agent to Tools: Search"/>
+<rect x="365.5" y="250" width="41" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="386" y="262" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Search</text>
+<line x1="536.5" y1="314" x2="235" y2="314" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="4,4" data-msg="Passages" data-msg-from="Tools" data-msg-to="Agent" marker-end="url(#a)" data-id="tools-&gt;agent:Passages" role="graphics-symbol" aria-roledescription="message" aria-label="5. Tools to Agent: Passages"/>
+<rect x="358.5" y="294" width="55" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="386" y="306" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Passages</text>
+<line x1="235.5" y1="358" x2="385" y2="358" stroke="#4f5d75" stroke-width="1.4" data-msg="Ground" data-msg-from="Agent" data-msg-to="Model" marker-end="url(#a)" data-id="agent-&gt;model:Ground" role="graphics-symbol" aria-roledescription="message" aria-label="6. Agent to Model: Ground"/>
+<rect x="289.5" y="338" width="41" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="310" y="350" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Ground</text>
+<line x1="384.5" y1="402" x2="235" y2="402" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="4,4" data-msg="Draft" data-msg-from="Model" data-msg-to="Agent" marker-end="url(#a)" data-id="model-&gt;agent:Draft" role="graphics-symbol" aria-roledescription="message" aria-label="7. Model to Agent: Draft"/>
+<rect x="294.5" y="382" width="31" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="310" y="394" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Draft</text>
+<line x1="235.5" y1="446" x2="689" y2="446" stroke="#4f5d75" stroke-width="1.4" data-msg="Record" data-msg-from="Agent" data-msg-to="Ledger" marker-end="url(#a)" data-id="agent-&gt;ledger:Record" role="graphics-symbol" aria-roledescription="message" aria-label="8. Agent to Ledger: Record"/>
+<rect x="441.5" y="426" width="41" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="462" y="438" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Record</text>
+<line x1="688.5" y1="490" x2="235" y2="490" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="4,4" data-msg="Stored" data-msg-from="Ledger" data-msg-to="Agent" marker-end="url(#a)" data-id="ledger-&gt;agent:Stored" role="graphics-symbol" aria-roledescription="message" aria-label="9. Ledger to Agent: Stored"/>
+<rect x="442.5" y="470" width="39" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="462" y="482" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Stored</text>
+<line x1="232.5" y1="534" x2="83" y2="534" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="4,4" data-msg="Answer" data-msg-from="Agent" data-msg-to="User" marker-end="url(#a)" data-id="agent-&gt;user:Answer" role="graphics-symbol" aria-roledescription="message" aria-label="10. Agent to User: Answer"/>
+<rect x="135.5" y="514" width="45" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="158" y="526" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Answer</text>
+<line x1="83.5" y1="578" x2="233" y2="578" stroke="#4f5d75" stroke-width="1.4" data-msg="Follow up" data-msg-from="User" data-msg-to="Agent" marker-end="url(#a)" data-id="user-&gt;agent:Follow up" role="graphics-symbol" aria-roledescription="message" aria-label="11. User to Agent: Follow up"/>
+<rect x="129.5" y="558" width="57" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="158" y="570" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Follow up</text>
+<line x1="235.5" y1="622" x2="385" y2="622" stroke="#4f5d75" stroke-width="1.4" data-msg="Revise" data-msg-from="Agent" data-msg-to="Model" marker-end="url(#a)" data-id="agent-&gt;model:Revise" role="graphics-symbol" aria-roledescription="message" aria-label="12. Agent to Model: Revise"/>
+<rect x="289.5" y="602" width="41" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="310" y="614" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Revise</text>
+<rect x="30" y="54" width="104" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="30" y="54" width="104" height="52" rx="6" fill="#ffffff" stroke="#7d8699" data-node="user" data-label="User" role="graphics-symbol" aria-roledescription="actor" aria-label="User"/>
+<text x="82" y="74.1" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">USER</text>
+<text x="82" y="91.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">User</text>
+<rect x="182" y="54" width="104" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="182" y="54" width="104" height="52" rx="6" fill="#ffffff" stroke="#7d8699" data-node="agent" data-label="Agent" role="graphics-symbol" aria-roledescription="actor" aria-label="Agent"/>
+<text x="234" y="84.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Agent</text>
+<rect x="334" y="54" width="104" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="334" y="54" width="104" height="52" rx="6" fill="#ffffff" stroke="#7d8699" data-node="model" data-label="Model" role="graphics-symbol" aria-roledescription="actor" aria-label="Model"/>
+<text x="386" y="84.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Model</text>
+<rect x="486" y="54" width="104" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="486" y="54" width="104" height="52" rx="6" fill="#ffffff" stroke="#7d8699" data-node="tools" data-label="Tools" role="graphics-symbol" aria-roledescription="actor" aria-label="Tools"/>
+<text x="538" y="84.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Tools</text>
+<rect x="638" y="54" width="104" height="52" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="638" y="54" width="104" height="52" rx="6" fill="#ffffff" stroke="#7d8699" data-node="ledger" data-label="Ledger" role="graphics-symbol" aria-roledescription="actor" aria-label="Ledger"/>
+<text x="690" y="84.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Ledger</text>
+<line x1="30" y1="662" x2="742" y2="662" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="680" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">solid = call, dashed = reply or event</text>
+</svg>

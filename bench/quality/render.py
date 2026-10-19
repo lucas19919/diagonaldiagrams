@@ -7,8 +7,15 @@ Three sets, written to bench/quality/svg/:
                            Pele's and Mermaid's drawings of the Mermaid translation in L-ref-*
 
 Tools: diagonaldiagrams from this checkout, Pele 1.6.0 and mermaid-cli 12 from the bench tools folder.
-Each tool runs at its defaults. Every output is deleted first, so dd never takes its edit path."""
-import glob, json, os, shutil, subprocess, sys, tempfile
+Each tool runs at its defaults. Every output is deleted first, so dd never takes its edit path.
+
+A rerun of dd alone, with a fit, from another checkout, into bench/quality/runs/NAME/svg:
+
+    py -3 bench/quality/render.py --run fit-column --fit column --dd D:/path/to/checkout
+
+It redraws dd's figures with --fit (the agent figures from the agents' own specs) and copies Pele's and
+Mermaid's from svg/, so they are the same drawings the first judging saw."""
+import argparse, glob, json, os, shutil, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -30,12 +37,12 @@ NATIVE = {
 }
 
 
-def dd(args, dest):
-    """Run diagonaldiagrams from this checkout into a fresh folder and keep the SVG."""
-    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONPATH=REPO)
+def dd(args, dest, checkout=REPO):
+    """Run diagonaldiagrams from a checkout (this one unless given) into a fresh folder and keep the SVG."""
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONPATH=checkout)
     with tempfile.TemporaryDirectory(prefix="ddq-") as tmp:
         out = os.path.join(tmp, "figure.svg")
-        p = subprocess.run([sys.executable, "-m", "diagonaldiagrams", *args, "-o", out], cwd=REPO, env=env,
+        p = subprocess.run([sys.executable, "-m", "diagonaldiagrams", *args, "-o", out], cwd=checkout, env=env,
                            capture_output=True, text=True, encoding="utf-8", errors="replace")
         if not os.path.isfile(out):
             print(f"dd failed on {args}: {p.stdout[-400:]} {p.stderr[-400:]}")
@@ -56,7 +63,44 @@ def mmdc(src, dest):
     return {"ok": os.path.isfile(dest), "out": (p.stdout + p.stderr)[-800:]}
 
 
+def rerun(name, fit, checkout):
+    """dd's figures again with --fit FIT, drawn by checkout, beside copies of the others' (module doc)."""
+    folder = os.path.join(HERE, "runs", name)
+    out = os.path.join(folder, "svg")
+    os.makedirs(out, exist_ok=True)
+    for f in glob.glob(os.path.join(out, "*.svg")):
+        os.remove(f)
+    for f in glob.glob(os.path.join(OUT, "*.svg")):
+        if not os.path.basename(f).endswith("-dd.svg"):
+            shutil.copyfile(f, os.path.join(out, os.path.basename(f)))
+    log, flag = {}, ["--fit", fit]
+    for d in sorted(glob.glob(os.path.join(RUNS, "diagonaldiagrams-*-r*"))):
+        _, steps, run = os.path.basename(d).split("-")
+        with open(os.path.join(d, "figure.graph.json"), encoding="utf-8") as f:
+            receipt = json.load(f)  # what the agent drew: its command and its spec, at the defaults
+        log[f"A-{steps}-{run}-dd"] = dd([receipt["cmd"], os.path.join(d, receipt["spec"]), *flag],
+                                        os.path.join(out, f"A-{steps}-{run}-dd.svg"), checkout)
+    for src in sorted(glob.glob(os.path.join(HERE, "sources", "*.mmd"))):
+        name_ = os.path.splitext(os.path.basename(src))[0]
+        log[f"L-{name_}-dd"] = dd(["mermaid", src, *flag], os.path.join(out, f"L-{name_}-dd.svg"), checkout)
+    for name_, (cmd, spec) in NATIVE.items():
+        log[f"N-{name_}-dd"] = dd([cmd, os.path.join(checkout, spec), *flag], os.path.join(out, f"N-{name_}-dd.svg"), checkout)
+    head = subprocess.run(["git", "-C", checkout, "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    with open(os.path.join(folder, "render-log.json"), "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"fit": fit, "dd_commit": head, "figures": log}, f, indent=1, sort_keys=True)
+    print(f"wrote {len(glob.glob(os.path.join(out, '*.svg')))} SVGs to {out} (dd at {head}, --fit {fit})")
+
+
 def main():
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--run", help="a rerun of dd alone into runs/RUN (needs --fit)")
+    ap.add_argument("--fit", choices=["slide", "page", "column"])
+    ap.add_argument("--dd", default=REPO, help="the diagonaldiagrams checkout to draw with (default: this one)")
+    a = ap.parse_args()
+    if a.run:
+        if not a.fit:
+            ap.error("--run needs --fit")
+        return rerun(a.run, a.fit, os.path.abspath(a.dd))
     os.makedirs(OUT, exist_ok=True)
     for f in glob.glob(os.path.join(OUT, "*.svg")):
         os.remove(f)

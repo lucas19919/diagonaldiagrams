@@ -1,0 +1,7 @@
+[
+  {"pair": "p10",
+   "clearer": "A", "clearer_margin": "clear", "clearer_why": "A fits in one image, so the whole flow reads at once. The Orders-to-Payments charge arrow is horizontal, the highlight and a legend explain line styles, and labels sit cleanly on the lines. B is split in two with an overlap, and its long vertical runs make Auth/Catalog to Redis hard to follow. Its dotted lines from Orders and Payments run close together, and the 'email' dotted arrow runs into the 'Event consumers' title.",
+   "looks": "A", "looks_margin": "clear", "looks_why": "A has a polished look: soft grouped frames, kind tags, a coral highlight, a title and subtitle, and compact balanced spacing. B has heavy black lines, grey label chips that look like highlighter, pastel pink, mint and orange frames that clash, and a lot of empty space.",
+   "weak_A": "Dashed lines from Orders and Payments run close together near Event bus, and the text is small once shrunk",
+   "weak_B": "Split into two images, with heavy black lines, grey label chips, a dotted arrow hitting the group title, and long empty vertical runs"}
+]

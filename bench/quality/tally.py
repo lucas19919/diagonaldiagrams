@@ -2,7 +2,8 @@
 
 Copies each batch's verdicts.json from JUDGE_DIR into judgments/bNN.json (when given), unblinds them
 with judgments/key.json, and writes judgments/all.csv (one row per judgment and question) and
-results.json (win rates for dd by opponent, family, size, placement and judge; order agreement)."""
+results.json (win rates for dd by opponent, family, size, placement and judge; order agreement).
+With --run RUN (a rerun: render.py and pairs.py --run), all of it is under runs/RUN instead."""
 import csv, glob, json, os, shutil, sys
 from collections import defaultdict
 
@@ -57,6 +58,13 @@ def group(rows, *keys):
 
 
 def main():
+    global JD
+    root = HERE
+    if "--run" in sys.argv:
+        i = sys.argv.index("--run")
+        root = os.path.join(HERE, "runs", sys.argv[i + 1])
+        del sys.argv[i:i + 2]
+        JD = os.path.join(root, "judgments")
     key, rows = load()
     with open(os.path.join(JD, "all.csv"), "w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
@@ -79,7 +87,7 @@ def main():
         "order_agreement": round(sum(a == b for a, b in both) / len(both), 3) if both else None,
         "by_pair": group(rows, "pair", "context", "question"),
     }
-    with open(os.path.join(HERE, "results.json"), "w", encoding="utf-8", newline="\n") as f:
+    with open(os.path.join(root, "results.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(res, f, indent=1)
     for k in ("overall", "by_opponent", "by_opponent_context"):
         print(k, json.dumps(res[k], indent=1))

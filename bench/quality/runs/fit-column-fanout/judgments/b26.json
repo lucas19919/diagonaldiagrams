@@ -1,0 +1,12 @@
+[
+  {"pair": "p03",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B puts the three tools side by side in one row and labels each Agent branch (prompt, search, execute, draw, events) at a common height, so the fan-out reads at a glance. A stacks Model API and the tools in one tall column fed by five parallel lanes that run down the right edge across both images, which makes them hard to trace (for example, which lane is 'draw' versus 'execute').",
+    "looks": "A", "looks_margin": "slight", "looks_why": "A has polished white cards, consistent group panels, a bold title and one coral accent for the prompt edge. B looks like default plain-grey output with small text, though its cylinders for the databases are a nice touch.",
+    "weak_A": "long bundle of parallel lanes from Agent down the right side; very tall figure",
+    "weak_B": "plain default styling; 'Storage' label pushed to the right corner of its group"},
+  {"pair": "p05",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A is compact. Auth and Model API sit beside their callers, the edges are short and the labels clean, and a legend explains blue, dashed and coral. In B the 'draw' and 'execute' labels sit on top of each other where their lines cross under the Agent runtime, and the long lines from the Agent are harder to follow.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A has neat cards with icons and subtitles, a restrained palette with a coral highlight, and a subtitle explaining the flow. B has grey-boxed labels, clashing pink, teal and orange group fills, a thin monospace-like font and a crowded crossing in the middle.",
+    "weak_A": "svg line from diagonaldiagrams loops far left around the Tools group to reach Object store",
+    "weak_B": "overlapping 'draw'/'execute' labels and crossing lines; garish group colors"}
+]

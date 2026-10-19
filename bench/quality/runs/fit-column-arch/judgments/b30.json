@@ -1,0 +1,9 @@
+[
+  {"pair": "p03",
+    "clearer": "B", "clearer_margin": "slight",
+    "clearer_why": "B's text is noticeably larger at column width and every edge label sits on its own line (verify/browse/checkout fan out separately from the gateway; 'placed' runs cleanly around the right of Checkout core to Kafka). In A, 'verify' and 'browse' both sit on the shared horizontal trunk so it is unclear which goes to Auth vs Catalog, and the dashed 'placed' edge leaves Orders' junction, exits the Checkout core box on the left and loops around Payments to reach Kafka.",
+    "looks": "A", "looks_margin": "slight",
+    "looks_why": "A is compact, fits in one screen, and has a more designed finish: small-caps group headers, DB tags, and an orange highlighted checkout->charge path. B looks like a plain default render, stretched over two screens with long empty vertical runs (Auth/Catalog down to Redis) and a large blank lower-left area, though its cylinders for databases are a nice touch.",
+    "weak_A": "small text; ambiguous verify/browse labels on a shared trunk and an awkward 'placed' detour out of the Checkout core box",
+    "weak_B": "very tall with long empty edge runs and wasted whitespace, needs scrolling across two screens"}
+]

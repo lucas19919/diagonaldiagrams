@@ -1,0 +1,16 @@
+[
+  {"pair": "p05",
+   "clearer": "A", "clearer_margin": "clear",
+   "clearer_why": "A gives every edge its own lane and label (placed, settled, card, ingest, email, reserve), so each arrow can be traced. In B, settled and card share a trunk below Payments, the email label sits on its line, and the placed dashed line runs through the Checkout core box.",
+   "looks": "B", "looks_margin": "slight",
+   "looks_why": "B is compact, fits in one image and has a soft palette with an orange accent for the main path. A's grey label highlight boxes look crude and it needs scrolling, but its lines are cleaner.",
+   "weak_A": "Grey label highlight boxes and tall layout that needs scrolling",
+   "weak_B": "Overlapping and shared edges (settled/card, email, placed) and labels floating off their lines"},
+  {"pair": "p08",
+   "clearer": "A", "clearer_margin": "clear",
+   "clearer_why": "A separates all edges, with the placed and settled dashed lines clearly routed to the Event bus, and its labels sit cleanly on their lines. B has the same shared and overlapping routes (settled/card, email label crossed by its line, placed line through the group border).",
+   "looks": "A", "looks_margin": "slight",
+   "looks_why": "A is tidy, with readable large text and white label pills, and no collisions. B is compact and polished in style but looks cluttered where lines overlap.",
+   "weak_A": "Long, tall layout that needs scrolling, plus plain grey styling",
+   "weak_B": "Overlapping edges and labels in the lower half, and small text"}
+]

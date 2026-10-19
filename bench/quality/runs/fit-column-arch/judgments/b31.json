@@ -1,0 +1,16 @@
+[
+  {"pair": "p06",
+    "clearer": "A", "clearer_margin": "clear",
+    "clearer_why": "In A every edge has its own line, and its label sits on that line (verify, browse, checkout; charge/write/placed out of Orders; card/settled out of Payments), so each arrow is easy to follow. B merges edges into shared trunks: verify and browse both sit on one horizontal bar, Orders sends charge, write and the dashed placed down one stem, Payments sends solid card and dashed settled down one stem, and placed takes a detour out the left side of Checkout core, so it is hard to tell which label belongs to which arrow.",
+    "looks": "B", "looks_margin": "slight",
+    "looks_why": "B is compact, fits one screen, and has a consistent modern card style with an orange accent on the checkout path. A is plainer, has a large empty area in the upper right, and is split across two screens, although its curved edges and cylinder shapes look tidy.",
+    "weak_A": "tall, needs scrolling across two screens, with wasted space top right",
+    "weak_B": "edges merged into shared trunks with ambiguous labels, plus a meaningless 'box = step' legend"},
+  {"pair": "p09",
+    "clearer": "A", "clearer_margin": "clear",
+    "clearer_why": "A routes each edge separately, and each label sits on a gray chip right on its own line: placed and settled run as two parallel dotted lines into Kafka, and ingest, email and reserve each drop to their own consumer. B shares trunks for verify/browse, charge/write/placed, card/settled and the three consumer edges, and its placed edge loops outside Checkout core, so arrows and labels are hard to match.",
+    "looks": "B", "looks_margin": "slight",
+    "looks_why": "B looks more polished: soft gray groups, rounded white cards, a single orange highlight for checkout, and it fits one view. A has a default-Mermaid look, with mismatched pastel group colors (pink, teal, orange), gray label chips and heavy dark borders, and it is spread over two screens.",
+    "weak_A": "generic Mermaid styling with clashing pastel groups, over two screens",
+    "weak_B": "shared edge trunks make label-to-arrow mapping ambiguous; placed edge detours around the group"}
+]

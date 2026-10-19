@@ -1,0 +1,12 @@
+[
+  {"pair": "p03",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "B fans the Agent's five outgoing edges out to a single row of labels (prompt, search, execute, draw, events) right above their targets, so each arrow is easy to match. A runs four parallel lines plus a dashed one down the right side as a bundle, and its 'prompt' and 'search' labels sit ambiguously near the Agent, with 'search' next to the orange line that actually goes to Model API.",
+    "looks": "B", "looks_margin": "slight", "looks_why": "A has crisper, bolder type and tidy uppercase group headers, but it stretches into a tall single column with a long bundle of parallel wires, a mid-word hyphen in 'diagonaldi-agrams' and an odd 'box = step' footer. B's plainer Mermaid-style boxes form a more balanced layout, with tools side by side and cylinders for the stores.",
+    "weak_A": "bundle of parallel lines from Agent with ambiguous labels",
+    "weak_B": "plain default styling and small type; persist line crosses svg edge"},
+  {"pair": "p05",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A puts Memory, Agent and Model API on one row with short labelled arrows, adds a subtitle and a legend explaining blue, dashed and coral, and keeps every label clear of lines. In B the 'draw' and 'execute' labels are stacked on top of each other where several vertical lines from the Agent cross, so it is hard to tell which edge reaches Code sandbox and which reaches the MCP.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A looks finished, with consistent rounded cards, small icons, a coral accent on the Agent-to-Model path and soft group shading. B uses a thin monospace font, grey label chips, mismatched pastel group fills (pink, teal, orange, cyan) and a tangled knot of lines below the Agent.",
+    "weak_A": "svg edge loops a long way around the Tools group and crosses the execute edge",
+    "weak_B": "overlapping draw/execute labels in a tangle of crossing lines"}
+]

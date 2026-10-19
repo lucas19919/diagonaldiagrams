@@ -1,0 +1,17 @@
+[
+  {"pair": "p08",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A is compact, with Auth and Model API placed beside the gateway and agent and a legend explaining blue/dashed/coral; nearly the whole figure fits in one view. B spreads the same graph over a much taller, sparse layout, with Auth stranded far left and the agent's five outgoing edges bundled into curves that must be traced.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A has a polished card style with icons, a subtitle, color-coded edges and a highlighted agent path. B is a plain gray-box default look with much empty space and uneven placement.",
+    "weak_A": "svg edge from diagonaldiagrams takes a long detour around the left edge, and its label sits near Web search",
+    "weak_B": "tall, sparse layout with bundled agent edges and Auth isolated far left"},
+  {"pair": "p09",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A fans the agent's edges out to a row of labeled targets in a moderate height, so each edge is easy to match to its destination. B stacks everything into one tall column, so four long parallel lanes run down the right side across the Model API and Tools areas, and the reader has to scroll and follow them a long way.",
+    "looks": "B", "looks_margin": "slight", "looks_why": "B has crisper cards, consistent styling and an orange highlight on the prompt path. Its long right-hand lanes and narrow tall column are awkward, but A's plain gray default style looks rougher.",
+    "weak_A": "plain default styling with lots of empty space and Auth stranded at the left",
+    "weak_B": "very tall single column with long parallel lanes and a pointless 'box = step' legend"},
+  {"pair": "p10",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "B keeps every edge label clean and separate, and Auth and Model API sit next to their sources, with a legend. In A, the 'draw' and 'execute' labels overlap where their lines cross below Agent runtime, and the gray-highlighted labels are harder to read.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B looks polished, with icons, a subtitle, color-coded edges and consistent cards. A has clashing pastel group fills, small monospace text, heavy black borders and gray label chips.",
+    "weak_A": "overlapping 'draw'/'execute' labels at a line crossing, and a clashing pastel style",
+    "weak_B": "svg edge detours around the far left of the Tools group"}
+]
