@@ -290,6 +290,8 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                 rail.append((cx + n["_w"] / 2, cy, nt["text"]))
         dr.add(*paint.note_rail(t, rail, W - 186, top, st=sty.figure()["note"]))
     _owned_opacity(dr, sty)
+    if info is not None:  # the drawing itself: the verdict's audit and outline read it in memory (cli._finish)
+        info["drawing"] = dr
     return dr, W, H, extra
 
 

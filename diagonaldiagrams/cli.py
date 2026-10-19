@@ -1,16 +1,16 @@
 """The command line: arguments, the one-line JSON verdict, and the layout outline."""
-import argparse, html, json, os, sys
+import json, os, sys
 from .errors import SpecError
 from . import __version__
 from ._issues import _SPEC_KEYS
 from ._output import LAYOUTS, save_receipt, write_out
 from ._theme import THEMES, get_theme
-from .charts.catalog import _CHART_BLURB
-from .describe import DESCRIBE, do_describe
 from ._lazy import lazy
 
 _audit_file = lazy("diagonaldiagrams.audit", "_audit_file")
+_audit_drawn = lazy("diagonaldiagrams.audit", "_audit_drawn")
 do_audit = lazy("diagonaldiagrams.audit", "do_audit")
+do_describe = lazy("diagonaldiagrams.describe", "do_describe")
 render_chart = lazy("diagonaldiagrams.charts.render", "render_chart")
 render_arch = lazy("diagonaldiagrams.diagrams", "render_arch")
 render_flow = lazy("diagonaldiagrams.diagrams", "render_flow")
@@ -167,6 +167,12 @@ def _report(obj, code):
     raise SystemExit(code)
 
 
+def _chart_kinds():
+    """The chart taxonomy's kinds, loaded only by the commands that draw or check one."""
+    from .charts.catalog import _CHART_BLURB
+    return _CHART_BLURB
+
+
 def _prevalidate(a):
     """Render runs validate first. A bad spec stops here with the same JSON validate prints."""
     if a.cmd in _SPEC_KEYS:
@@ -179,7 +185,7 @@ def _prevalidate(a):
         errors, warnings = _validate_target(a.csv, "scatter", a.x, a.y, a.group, a.facet)
     elif a.cmd == "geo":
         errors, warnings = _validate_target(a.src, "geo", a.lon, a.lat)
-    elif a.cmd == "chart" and a.kind in _CHART_BLURB:
+    elif a.cmd == "chart" and a.kind in _chart_kinds():
         roles = {f: getattr(a, f, None) for f in ("size", "label", "parent", "val", "a", "b", "lo", "hi")}
         errors, warnings = _validate_target(a.src, a.kind, a.x, a.y, a.group, unbounded=a.no_budget, roles=roles)
     else:
@@ -190,14 +196,14 @@ def _prevalidate(a):
     return warnings
 
 
-def _outline(svg_path, structured=False, info=None):
+def _outline(svg_path, structured=False, info=None, root=None):
     """The drawn layout as text (the verdict's layout rows), and with structured=True the --outline
     object too. Lets an agent check the structure for a few dozen tokens instead of a picture.
-    info: the layout's layers from the renderer, which the rows then follow."""
+    info: the layout's layers from the renderer, which the rows then follow. root: the figure's tree
+    in memory (paint.Drawing.tree), read instead of the file."""
     from .outline import layout_rows, outline, read_figure
     try:
-        raw = open(svg_path, encoding="utf-8").read()
-        fig = read_figure(raw)
+        fig = read_figure(root if root is not None else open(svg_path, encoding="utf-8").read())
     except (OSError, SyntaxError):  # ElementTree's ParseError is a SyntaxError
         return None, None
     info = info or {}
@@ -208,10 +214,16 @@ def _outline(svg_path, structured=False, info=None):
 
 def _finish(a, html, svg, count, unit, pre, changed=None, info=None):
     """One JSON line per render: the files, the count, the audit verdict, and what changed since the
-    figure was last drawn at this path, when it was. info: the layout's layers (_outline)."""
-    rep = {"ok": True, "errors": [], "warnings": []} if getattr(a, "no_audit", False) else _audit_file(svg)
+    figure was last drawn at this path, when it was. info: the layout's layers (_outline), and a
+    diagram's drawing, which the audit and the outline then read in memory instead of the file."""
+    drawing = (info or {}).get("drawing")
+    root = drawing.tree() if drawing is not None else None
+    if getattr(a, "no_audit", False):
+        rep = {"ok": True, "errors": [], "warnings": []}
+    else:
+        rep = _audit_drawn(drawing, root) if root is not None else _audit_file(svg)
     out = {"ok": rep["ok"], "svg": svg, "html": html, "receipt": os.path.splitext(html)[0] + ".graph.json", unit: count}
-    layout, structured = _outline(svg, getattr(a, "outline", False), info)
+    layout, structured = _outline(svg, getattr(a, "outline", False), info, root)
     if layout:
         out["layout"] = layout
     if changed is not None:
@@ -316,7 +328,68 @@ class _OnlyOne:
         return self.sub.add_parser(name, **kw) if name == self.want else _Skipped()
 
 
-def main():
+RENDER = ("flow", "arch", "seq", "schema", "mermaid")
+# The render commands' options as _parse() declares them: {flag: (dest, choices or None)} for one that
+# takes a value, and {flag: dest} for a switch (store_true). tests/unit/test_cli_args.py holds the two
+# to the same answers.
+_VALUES = {"-s": ("spec_text", None), "--string": ("spec_text", None), "--spec-text": ("spec_text", None), "-o": ("o", None),
+           "--corners": ("corners", ("sharp", "rounded", "editorial")), "--theme": ("theme", tuple(THEMES)),
+           "--theme-file": ("theme_file", None), "--layout-engine": ("engine", ("v2", "v1")), "--style": ("style", None),
+           "--caption": ("caption", None), "--figure": ("figure", None), "--font": ("font", None)}
+_SWITCHES = {"--no-audit": "no_audit", "--outline": "outline", "--embed-fonts": "embed_fonts"}
+
+
+def _quick(argv):
+    """A render command's arguments read without argparse, which with the modules it loads costs a
+    call more than drawing a small figure: flow, arch, seq, schema or mermaid, an optional spec, and
+    the options above written out in full (--opt VALUE or --opt=VALUE). Anything else (help, --version,
+    an abbreviation, a mistake, a value that starts with "-") returns None, and _parse() reads it, so
+    argparse's answers and errors stay the only ones."""
+    if not argv or argv[0] not in RENDER:
+        return None
+    from types import SimpleNamespace
+    cmd = argv[0]
+    a = SimpleNamespace(cmd=cmd, spec=None, spec_text=None, o=None, corners="editorial", theme="editorial", theme_file=None,
+                        engine="v2", no_audit=False, outline=False, style=[], embed_fonts=False, caption=None, figure=None,
+                        font=None)
+    switches = dict(_SWITCHES, **({"--auto": "auto"} if cmd == "flow" else {}))
+    if cmd == "flow":
+        a.auto = False
+    spec, k = [], 1
+    while k < len(argv):
+        arg = argv[k]
+        k += 1
+        if not arg.startswith("-") or arg == "-":
+            spec.append(arg)
+            continue
+        flag, eq, value = arg.partition("=") if arg.startswith("--") else (arg, "", "")
+        if flag in switches and not eq:
+            setattr(a, switches[flag], True)
+            continue
+        if flag not in _VALUES or (eq and not value):
+            return None
+        if not eq:
+            if k >= len(argv) or (argv[k].startswith("-") and argv[k] != "-"):
+                return None
+            value, k = argv[k], k + 1
+        dest, choices = _VALUES[flag]
+        if choices is not None and value not in choices:
+            return None
+        if dest == "style":
+            a.style = a.style + [value]
+        else:
+            setattr(a, dest, value)
+    if len(spec) > 1 or a.o is None:
+        return None
+    a.spec = spec[0] if spec else None
+    return a
+
+
+def _parse():
+    """The command line as argparse reads it: every command, --help, --version, and the errors."""
+    import argparse
+    from .charts.catalog import _CHART_BLURB
+    from .describe import DESCRIBE
     ap = argparse.ArgumentParser(prog="diagonaldiagrams")
     ap.add_argument("--version", action="version", version=f"diagonaldiagrams {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -485,7 +558,11 @@ def main():
     p.add_argument("new", help="the later .svg or .html")
     p = sub.add_parser("mcp", help="MCP server over stdio (describe/validate/infer/audit/scatter/diagram/bar/line)")
     p.add_argument("--isolate", action="store_true", help="run each tool call in its own process (180 s limit)")
-    a = ap.parse_args()
+    return ap.parse_args()
+
+
+def main():
+    a = _quick(sys.argv[1:]) or _parse()
     if a.cmd == "mcp":
         _exit_with(do_mcp(a))
         return

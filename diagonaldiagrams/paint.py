@@ -62,13 +62,14 @@ class Element:
     """One SVG element. depth and pts3d are the 3D hooks: a face's 3D corners, and its distance from
     the viewer once projected (0 in 2D). a11y names a part a reader navigates; attach says what an
     edge joins: {"from": {"node", "port"}, "to": {...}}."""
-    __slots__ = ("tag", "attrs", "text", "children", "owner", "role", "depth", "pts3d", "a11y", "attach")
+    __slots__ = ("tag", "attrs", "text", "children", "owner", "role", "depth", "pts3d", "a11y", "attach", "written")
 
     def __init__(self, tag, attrs=None, text=None, children=None, owner="", role="", depth=0.0, pts3d=None,
                  a11y=None, attach=None):
         self.tag, self.attrs, self.text, self.children = tag, attrs if attrs is not None else {}, text, children or []
         self.owner, self.role, self.depth, self.pts3d = owner, role, depth, pts3d
         self.a11y, self.attach = a11y, attach
+        self.written = None  # the attribute values svg() last wrote, which node() reads back
 
     def __repr__(self):
         return f"Element({self.tag!r}, owner={self.owner!r}, role={self.role!r})"
@@ -101,11 +102,94 @@ class Element:
         return node
 
     def svg(self, aria=False):
-        parts = [f' {k}="{_attr(v)}"' for k, v in self.values(aria).items()]
+        self.written = self.values(aria)
+        parts = [f' {k}="{_attr(v)}"' for k, v in self.written.items()]
         head = f"<{self.tag}{''.join(parts)}"
         if self.text is None and not self.children:
             return head + "/>"
         return head + ">" + _text(self.text or "") + "".join(c.svg() for c in self.children) + f"</{self.tag}>"
+
+    def node(self, aria=False, tail=None):
+        """This element as Node, what an XML parser reads back from svg(): an attribute's tabs and
+        line breaks become spaces, as XML's attribute-value normalization makes them. Raises _Odd for
+        a name the parser would read otherwise (a prefix, xmlns)."""
+        attrib = self.written if self.written is not None else self.values(aria)
+        if not _named(self.tag):
+            raise _Odd(self.tag)
+        for k, v in attrib.items():
+            if not (_NAMES.get(k) or _named(k)):
+                raise _Odd(k)
+            if "\n" in v or "\t" in v:
+                attrib = dict(attrib) if attrib is self.written else attrib
+                attrib[k] = v.replace("\n", " ").replace("\t", " ")
+        return Node(self.tag, attrib, str(self.text or "") or None, [c.node() for c in self.children], tail)
+
+
+SVG_NS = "{http://www.w3.org/2000/svg}"
+# control characters an XML parser would not give back as svg() wrote them: those XML forbids, and
+# carriage returns, which it turns into line breaks (Drawing.tree)
+_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\r]")
+_NAME = re.compile(r"[A-Za-z_][\w.-]*\Z")
+_NAMES = {}  # element or attribute name -> whether a parser reads it as written
+
+
+def _reads_back(text):
+    """Whether an XML parser gives every character of text back as written: no control character or
+    carriage return, no U+FFFE or U+FFFF, no lone surrogate."""
+    if _CONTROL.search(text):
+        return False
+    if text.isascii():
+        return True
+    if "\ufffe" in text or "\uffff" in text:
+        return False
+    try:
+        text.encode("utf-8")
+    except UnicodeEncodeError:  # a lone surrogate
+        return False
+    return True
+
+
+def _named(name):
+    ok = _NAMES.get(name)
+    if ok is None:
+        ok = _NAMES[name] = bool(_NAME.match(name)) and not name.lower().startswith("xml")
+    return ok
+
+
+class _Odd(Exception):
+    """A drawing a parser would not read back as it was drawn (Drawing.tree)."""
+
+
+class Node:
+    """One element of a drawing as ElementTree reads it from the SVG text: tag (with the SVG
+    namespace), attrib, get(), text, tail, and its children by iteration; iter() and itertext() as
+    ElementTree's. Made from the Elements (Drawing.tree), so the audit and the outline read a figure
+    just drawn without writing, reading and parsing it again."""
+    __slots__ = ("tag", "attrib", "text", "tail", "children", "get")
+
+    def __init__(self, tag, attrib, text=None, children=None, tail=None):
+        self.tag, self.attrib, self.text, self.tail = SVG_NS + tag, attrib, text, tail
+        self.children = children or []
+        self.get = attrib.get
+
+    def __iter__(self):
+        return iter(self.children)
+
+    def __len__(self):
+        return len(self.children)
+
+    def iter(self):
+        yield self
+        for c in self.children:
+            yield from c.iter()
+
+    def itertext(self):
+        if self.text:
+            yield self.text
+        for c in self.children:
+            yield from c.itertext()
+            if c.tail:
+                yield c.tail
 
 
 _ATTR_NAMES = {}  # stroke_width -> stroke-width, worked out once per name
@@ -151,11 +235,12 @@ class Drawing:
     navigable graphics document rather than a single image (None: role="img", as charts are).
     legible: its default colors and sizes pass the legibility checks (B25), so it writes
     data-legibility="all" and the audit judges every text, not only those a stylesheet styled."""
-    __slots__ = ("width", "height", "title", "desc", "items", "projection", "kind", "legible")
+    __slots__ = ("width", "height", "title", "desc", "items", "projection", "kind", "legible", "written")
 
     def __init__(self, width, height, title="", desc="", items=None, projection=None, kind=None, legible=False):
         self.width, self.height, self.title, self.desc = width, height, title, desc
         self.items, self.projection, self.kind, self.legible = list(items or []), projection, kind, legible
+        self.written = None  # the text svg() last wrote
 
     def _items(self):
         """The elements to write: after the projection stage, with the definitions decorations
@@ -201,7 +286,30 @@ class Drawing:
         lines = [head, f"<title>{_text(self.title)}</title>", f"<desc>{_text(self.desc)}</desc>"]
         lines += [e.svg(bool(self.kind)) for e in self._items()]
         lines.append("</svg>")
-        return "\n".join(lines)
+        self.written = "\n".join(lines)
+        return self.written
+
+    def tree(self):
+        """The drawing as ElementTree would parse the text svg() wrote (Node), or None when a parser
+        would read some of it otherwise (a control character, a carriage return, a prefixed name):
+        then only the text itself says what it holds."""
+        text = self.written if self.written is not None else self.svg()
+        if not _reads_back(text):
+            return None
+        aria = bool(self.kind)
+        try:
+            kids = [Node("title", {}, str(self.title) or None, tail="\n"), Node("desc", {}, str(self.desc) or None, tail="\n")]
+            kids += [e.node(aria, "\n") for e in self._items()]
+        except _Odd:
+            return None
+        attrib = {"role": "graphics-document", "aria-roledescription": str(self.kind)} if self.kind else {"role": "img"}
+        if self.legible:
+            attrib["data-legibility"] = "all"
+        attrib["viewBox"], attrib["width"] = f"0 0 {fmt(self.width)} {fmt(self.height)}", fmt(self.width)
+        for k, v in attrib.items():
+            if "\n" in v or "\t" in v:
+                attrib[k] = v.replace("\n", " ").replace("\t", " ")
+        return Node("svg", attrib, "\n", kids)
 
 
 # ---------- painters: the parts flow, arch, seq and schema draw ----------

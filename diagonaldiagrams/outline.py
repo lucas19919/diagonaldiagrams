@@ -6,7 +6,6 @@ render verdict, outline() the structured one behind --outline, and svg_model() w
 Excalidraw exports are built from.
 """
 import re
-import xml.etree.ElementTree as ET
 
 from .scene.ids import EdgeIds
 
@@ -34,8 +33,13 @@ def _path_points(d):
 
 def read_figure(svg):
     """The marked parts of a figure, in document order. svg is the SVG text (an HTML page works too
-    if it is passed already cut down to its <svg>)."""
-    root = ET.fromstring(svg)
+    if it is passed already cut down to its <svg>), or the figure's tree as parsing it gives it (a
+    drawing's paint.Drawing.tree)."""
+    if isinstance(svg, str):
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(svg)
+    else:
+        root = svg
     vb = (root.get("viewBox") or "").split()
     fig = {"size": [_num(vb[2]), _num(vb[3])] if len(vb) == 4 else None, "nodes": {}, "edges": [], "frames": [],
            "actors": [], "messages": [], "roles": {}}

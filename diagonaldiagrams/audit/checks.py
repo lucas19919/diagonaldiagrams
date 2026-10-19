@@ -6,7 +6,7 @@ and that order is the order issues are reported in. docs/DESIGN.md section 9.6 d
 import math
 from types import SimpleNamespace
 
-from ..geom import center, inside, near_pairs, overlap, path_crosses
+from ..geom import center, inside, length_inside, near_pairs, overlap
 from ..registry import Registry
 
 CHECKS = Registry("check")  # name -> function(view, issues), with the codes it reports; run in order
@@ -68,6 +68,19 @@ def shape_overlap(v, issues):
                            "fix": "give them different rank or lane, or fewer items per row", "at": center(a)})
 
 
+def _crosses(spans, b):
+    """geom.path_crosses(segments, b) for segments given with their bounding boxes, (p, q, x0, y0,
+    x1, y1): one lying wholly apart from b runs exactly 0 px inside it, so it is not measured."""
+    total = 0.0
+    for p, q, x0, y0, x1, y1 in spans:
+        if x1 < b[0] or x0 > b[2] or y1 < b[1] or y0 > b[3]:
+            continue
+        total += length_inside(p, q, b)
+        if total > 2:
+            return True
+    return False
+
+
 @check("arrows through boxes and labels", "through", "strike")
 def arrow_paths(v, issues):
     sb, tb = v.sb, v.tb
@@ -82,21 +95,23 @@ def arrow_paths(v, issues):
                 if ar.pts[k] is not None and ar.pts[k + 1] is not None]
         if not segs:
             continue
-        # the arrow's bounding box: anything outside it cannot be crossed, so skip it cheaply
-        ax0 = min(min(p[0], q[0]) for p, q in segs)
-        ay0 = min(min(p[1], q[1]) for p, q in segs)
-        ax1 = max(max(p[0], q[0]) for p, q in segs)
-        ay1 = max(max(p[1], q[1]) for p, q in segs)
+        # each segment with its bounding box, and the arrow's: anything outside it cannot be crossed,
+        # so skip it cheaply
+        spans = [(p, q, min(p[0], q[0]), min(p[1], q[1]), max(p[0], q[0]), max(p[1], q[1])) for p, q in segs]
+        ax0 = min(s[2] for s in spans)
+        ay0 = min(s[3] for s in spans)
+        ax1 = max(s[4] for s in spans)
+        ay1 = max(s[5] for s in spans)
 
         def apart(b):
             return b[2] < ax0 or b[0] > ax1 or b[3] < ay0 or b[1] > ay1
         for i, b in enumerate(sb):
-            if apart(b):
+            if b[2] < ax0 or b[0] > ax1 or b[3] < ay0 or b[1] > ay1:
                 continue
             if i in holders or any(b[0] - 6 <= e[0] <= b[2] + 6 and b[1] - 6 <= e[1] <= b[3] + 6 for e in ar.ends):
                 continue  # a group frame, or the box this arrow leaves or enters
             core = (b[0] + 3, b[1] + 3, b[2] - 3, b[3] - 3)
-            if core[2] > core[0] and core[3] > core[1] and path_crosses(segs, core):
+            if core[2] > core[0] and core[3] > core[1] and _crosses(spans, core):
                 issues.append({"code": "through", "msg": f"an arrow runs through the box at {center(b)}",
                                "fix": "move one node to another lane or rank so the arrow goes around it", "at": center(b)})
         for cx, cy, hw, hh in v.diamonds:
@@ -132,12 +147,12 @@ def arrow_paths(v, issues):
                 issues.append({"code": "through", "msg": f"an arrow runs through the circle at {[round(cx), round(cy)]}",
                                "fix": "move one node so the arrow goes around it", "at": [round(cx), round(cy)]})
         for t in v.texts:
-            if t.z > ar.z or apart(t.box):
-                continue  # the label is painted over the arrow, on purpose, or is nowhere near it
             b = t.box
+            if t.z > ar.z or b[2] < ax0 or b[0] > ax1 or b[3] < ay0 or b[1] > ay1:
+                continue  # the label is painted over the arrow, on purpose, or is nowhere near it
             h = b[3] - b[1]
             core = (b[0] + 1, b[1] + 0.2 * h, b[2] - 1, b[3] - 0.2 * h)
-            if core[2] > core[0] and path_crosses(segs, core):
+            if core[2] > core[0] and _crosses(spans, core):
                 issues.append({"code": "strike", "msg": f"an arrow is drawn across the label '{t.text[:24]}'",
                                "fix": "move the node or the label off the arrow's path", "at": center(b)})
 
@@ -181,6 +196,8 @@ def diamond_labels(v, issues):
         b = t.box
         mx, my = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
         for cx, cy, hw, hh in v.diamonds:
+            if hw > 0 and hh > 0 and (b[2] + 8 < cx - hw or b[0] - 8 > cx + hw or b[3] + 3 < cy - hh or b[1] - 3 > cy + hh):
+                continue  # the pill (7 px beside the text, 2 above and below) is over a pixel clear of it
             if abs(mx - cx) / hw + abs(my - cy) / hh <= 1:
                 continue  # the decision's own question
             # measured with the label's background pill, which is what covers the outline
@@ -339,6 +356,8 @@ def truncated(v, issues):
 def too_many_colors(v, issues):
     # More than 8 distinct node colors stop meaning anything: nobody tells the ninth apart.
     from ..style.parse import color
+    if len({str((it.fill or ("none",))[0]).strip().lower() for it in v.named} - {"none", "transparent"}) <= 8:
+        return  # 8 fills or fewer: never too many, whatever their saturation (and colorsys stays unloaded)
     import colorsys
     seen = []
     for it in v.named:

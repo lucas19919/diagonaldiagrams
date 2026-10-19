@@ -6,8 +6,6 @@ which states today's look as rules, with --corners as its node radius), the spec
 sheets, and any further sheets. node(), edge() and group() read it into small dicts of painting
 values; marker() names the arrowhead for a stroke color.
 """
-import copy
-
 from .cascade import Cascade, scene_views
 from .encode import Scale, is_encoding
 from .select import View
@@ -67,6 +65,15 @@ def check_styles(spec, kind=None):
     return out
 
 
+def _copied(v):
+    """A stylesheet's JSON copied all the way down, as copy.deepcopy would (without loading copy)."""
+    if isinstance(v, dict):
+        return {k: _copied(x) for k, x in v.items()}
+    if isinstance(v, list):
+        return [_copied(x) for x in v]
+    return v
+
+
 def _look(c):
     """The one visual a legend swatch shows for a rule: a side's border color, else the fill, else
     the stroke."""
@@ -86,7 +93,7 @@ class Styler:
         base = name if name in THEME_NAMES else "editorial"
         plain = v1_theme(base)
         overrides = {token_name(k): v for k, v in theme.items() if not k.startswith("_") and plain.get(k) != v}
-        preset = copy.deepcopy(sheet(kind))
+        preset = _copied(sheet(kind))
         node_rule = preset.setdefault("rules", {}).setdefault("node", {})
         node_rule.setdefault("border-radius", CORNER_RX.get(corners, 6))  # --corners, as a rule (B15)
         scene = self._scene(spec, kind)
