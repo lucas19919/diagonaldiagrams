@@ -1,0 +1,11 @@
+{
+  "title": "Palantir, from raw data to an AI decision",
+  "figure": {"type": "arch", "spec": "palantir_platform.json"},
+  "views": [
+    {"id": "decision", "title": "From a sensor reading to an agent's action",
+     "text": "Data is synced, landed and built into the Ontology. AIP Logic grounds itself in it, calls a model, and writes its action back.",
+     "dim": "#workshop, #automate, #functions, #evals",
+     "motion": [{"trace": "sources -> connect -> datasets -> builder -> funnel -> ontology -> logic -> models"},
+                {"flow": "edge[async]"}]}
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "title": "A Falcon 9 mission, from countdown to landing",
+  "sub": "At stage separation the mission splits: the second stage carries the payload to orbit while the booster flies itself home.",
+  "budget": false,
+  "nodes": [
+    {"id": "count", "name": "Countdown", "sub": "propellant load, T-35 min", "shape": "oval"},
+    {"id": "go", "name": "Go for launch?", "shape": "diamond"},
+    {"id": "scrub", "name": "Scrub and recycle", "sub": "weather or a sensor"},
+    {"id": "liftoff", "name": "Liftoff", "sub": "nine Merlin engines"},
+    {"id": "maxq", "name": "Max-Q", "sub": "peak aerodynamic load"},
+    {"id": "meco", "name": "Main engine cutoff", "sub": "about T+2:30"},
+    {"id": "sep", "name": "Stage separation"},
+    {"id": "ses", "name": "Second-stage ignition", "sub": "one Merlin Vacuum"},
+    {"id": "fairing", "name": "Fairing separation", "sub": "halves recovered at sea"},
+    {"id": "seco", "name": "Second-stage cutoff", "sub": "parking orbit"},
+    {"id": "deploy", "name": "Payload deployed", "shape": "oval"},
+    {"id": "boostback", "name": "Boostback burn", "sub": "turn toward the landing site"},
+    {"id": "entry", "name": "Entry burn", "sub": "slow down for the air"},
+    {"id": "landing", "name": "Landing burn", "sub": "one engine, legs out"},
+    {"id": "landed", "name": "Booster landed", "sub": "droneship or landing zone", "shape": "oval"}
+  ],
+  "edges": [
+    {"from": "count", "to": "go"},
+    {"from": "go", "to": "liftoff", "label": "go"},
+    {"from": "go", "to": "scrub", "label": "no go"},
+    {"from": "scrub", "to": "count", "label": "next window"},
+    {"from": "liftoff", "to": "maxq"},
+    {"from": "maxq", "to": "meco"},
+    {"from": "meco", "to": "sep"},
+    {"from": "sep", "to": "ses", "label": "second stage"},
+    {"from": "ses", "to": "fairing"},
+    {"from": "fairing", "to": "seco"},
+    {"from": "seco", "to": "deploy"},
+    {"from": "sep", "to": "boostback", "label": "booster"},
+    {"from": "boostback", "to": "entry"},
+    {"from": "entry", "to": "landing"},
+    {"from": "landing", "to": "landed"}
+  ]
+}

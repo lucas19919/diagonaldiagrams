@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="flow diagram" data-legibility="all" viewBox="0 0 769 1121" width="769">
+<title>A Falcon 9 mission, from countdown to landing</title>
+<desc>At stage separation the mission splits: the second stage carries the payload to orbit while the booster flies itself home.</desc>
+<rect width="769" height="1121" fill="#f5f5f5" aria-hidden="true"/>
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#4f5d75"/></marker><marker id="aa" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#eb6c36"/></marker><marker id="al" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#636c82"/></marker></defs>
+<text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">A Falcon 9 mission, from countdown to landing</text>
+<text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">At stage separation the mission splits: the second stage carries the payload to orbit while the booster flies itself home.</text>
+<rect x="258.5" y="72" width="160" height="54" rx="20" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="258.5" y="72" width="160" height="54" rx="20" fill="#ffffff" stroke="#7d8699" data-node="count" data-label="Countdown" role="graphics-symbol" aria-roledescription="start or end" aria-label="Countdown, propellant load, T-35 min"/>
+<text x="338.5" y="95.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Countdown</text>
+<text x="338.5" y="112.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">propellant load, T-35 min</text>
+<polygon points="338.5,174 418.5,208.5 338.5,243 258.5,208.5" fill="#f5f5f5" aria-hidden="true"/>
+<polygon points="338.5,174 418.5,208.5 338.5,243 258.5,208.5" fill="#ffffff" stroke="#7d8699" data-node="go" data-label="Go for launch?" data-cx="338.5" data-cy="208.5" role="graphics-symbol" aria-roledescription="decision" aria-label="Go for launch?"/>
+<text x="338.5" y="212.8" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Go for launch?</text>
+<rect x="466.5" y="291" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="466.5" y="291" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="scrub" data-label="Scrub and recycle" role="graphics-symbol" aria-roledescription="box" aria-label="Scrub and recycle, weather or a sensor"/>
+<text x="538.5" y="314.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Scrub and recycle</text>
+<text x="538.5" y="331.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">weather or a sensor</text>
+<rect x="274.5" y="291" width="128" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="274.5" y="291" width="128" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="liftoff" data-label="Liftoff" role="graphics-symbol" aria-roledescription="box" aria-label="Liftoff, nine Merlin engines"/>
+<text x="338.5" y="314.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Liftoff</text>
+<text x="338.5" y="331.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">nine Merlin engines</text>
+<rect x="266.5" y="393" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="266.5" y="393" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="maxq" data-label="Max-Q" role="graphics-symbol" aria-roledescription="box" aria-label="Max-Q, peak aerodynamic load"/>
+<text x="338.5" y="416.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Max-Q</text>
+<text x="338.5" y="433.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">peak aerodynamic load</text>
+<rect x="266.5" y="495" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="266.5" y="495" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="meco" data-label="Main engine cutoff" role="graphics-symbol" aria-roledescription="box" aria-label="Main engine cutoff, about T+2:30"/>
+<text x="338.5" y="518.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Main engine cutoff</text>
+<text x="338.5" y="535.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">about T+2:30</text>
+<rect x="266.5" y="597" width="144" height="40" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="266.5" y="597" width="144" height="40" rx="6" fill="#ffffff" stroke="#7d8699" data-node="sep" data-label="Stage separation" role="graphics-symbol" aria-roledescription="box" aria-label="Stage separation"/>
+<text x="338.5" y="621.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Stage separation</text>
+<rect x="142.5" y="697" width="176" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="142.5" y="697" width="176" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="ses" data-label="Second-stage ignition" role="graphics-symbol" aria-roledescription="box" aria-label="Second-stage ignition, one Merlin Vacuum"/>
+<text x="230.5" y="720.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Second-stage ignition</text>
+<text x="230.5" y="737.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">one Merlin Vacuum</text>
+<rect x="158.5" y="799" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="158.5" y="799" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="fairing" data-label="Fairing separation" role="graphics-symbol" aria-roledescription="box" aria-label="Fairing separation, halves recovered at sea"/>
+<text x="230.5" y="822.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Fairing separation</text>
+<text x="230.5" y="839.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">halves recovered at sea</text>
+<rect x="150.5" y="901" width="160" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="150.5" y="901" width="160" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="seco" data-label="Second-stage cutoff" role="graphics-symbol" aria-roledescription="box" aria-label="Second-stage cutoff, parking orbit"/>
+<text x="230.5" y="924.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Second-stage cutoff</text>
+<text x="230.5" y="941.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">parking orbit</text>
+<rect x="158.5" y="1010" width="144" height="40" rx="20" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="158.5" y="1010" width="144" height="40" rx="20" fill="#ffffff" stroke="#7d8699" data-node="deploy" data-label="Payload deployed" role="graphics-symbol" aria-roledescription="start or end" aria-label="Payload deployed"/>
+<text x="230.5" y="1034.7" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Payload deployed</text>
+<rect x="358.5" y="697" width="176" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="358.5" y="697" width="176" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="boostback" data-label="Boostback burn" role="graphics-symbol" aria-roledescription="box" aria-label="Boostback burn, turn toward the landing site"/>
+<text x="446.5" y="720.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Boostback burn</text>
+<text x="446.5" y="737.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">turn toward the landing site</text>
+<rect x="374.5" y="799" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="374.5" y="799" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="entry" data-label="Entry burn" role="graphics-symbol" aria-roledescription="box" aria-label="Entry burn, slow down for the air"/>
+<text x="446.5" y="822.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Entry burn</text>
+<text x="446.5" y="839.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">slow down for the air</text>
+<rect x="382.5" y="901" width="128" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="382.5" y="901" width="128" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="landing" data-label="Landing burn" role="graphics-symbol" aria-roledescription="box" aria-label="Landing burn, one engine, legs out"/>
+<text x="446.5" y="924.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Landing burn</text>
+<text x="446.5" y="941.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">one engine, legs out</text>
+<rect x="366.5" y="1003" width="160" height="54" rx="20" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="366.5" y="1003" width="160" height="54" rx="20" fill="#ffffff" stroke="#7d8699" data-node="landed" data-label="Booster landed" role="graphics-symbol" aria-roledescription="start or end" aria-label="Booster landed, droneship or landing zone"/>
+<text x="446.5" y="1026.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Booster landed</text>
+<text x="446.5" y="1043.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">droneship or landing zone</text>
+<path d="M338.5,126 L338.5,174" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="count" data-to="go" data-label="" data-id="count-&gt;go" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Countdown to Go for launch?"/>
+<path d="M338.5,243 L338.5,291" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="go" data-to="liftoff" data-label="go" data-id="go-&gt;liftoff:go" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Go for launch? to Liftoff: go"/>
+<path d="M418.5,208.5 L518.5,208.5 Q526.5,208.5 526.5,216.5 L526.5,291" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="go" data-to="scrub" data-label="no go" data-id="go-&gt;scrub:no go" data-from-port="e" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Go for launch? to Scrub and recycle: no go"/>
+<path d="M610.5,318 L618.5,318 Q626.5,318 626.5,310 L626.5,107 Q626.5,99 618.5,99 L418.5,99" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="scrub" data-to="count" data-label="next window" data-id="scrub-&gt;count:next window" data-from-port="e" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Scrub and recycle to Countdown: next window"/>
+<path d="M338.5,345 L338.5,393" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="liftoff" data-to="maxq" data-label="" data-id="liftoff-&gt;maxq" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Liftoff to Max-Q"/>
+<path d="M338.5,447 L338.5,495" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="maxq" data-to="meco" data-label="" data-id="maxq-&gt;meco" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Max-Q to Main engine cutoff"/>
+<path d="M338.5,549 L338.5,597" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="meco" data-to="sep" data-label="" data-id="meco-&gt;sep" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Main engine cutoff to Stage separation"/>
+<path d="M338.5,637 L338.5,659 Q338.5,667 330.5,667 L250.5,667 Q242.5,667 242.5,675 L242.5,697" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="sep" data-to="ses" data-label="second stage" data-id="sep-&gt;ses:second stage" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Stage separation to Second-stage ignition: second stage"/>
+<path d="M230.5,751 L230.5,799" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="ses" data-to="fairing" data-label="" data-id="ses-&gt;fairing" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Second-stage ignition to Fairing separation"/>
+<path d="M230.5,853 L230.5,901" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="fairing" data-to="seco" data-label="" data-id="fairing-&gt;seco" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Fairing separation to Second-stage cutoff"/>
+<path d="M230.5,955 L230.5,1010" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="seco" data-to="deploy" data-label="" data-id="seco-&gt;deploy" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Second-stage cutoff to Payload deployed"/>
+<path d="M338.5,637 L338.5,659 Q338.5,667 346.5,667 L426.5,667 Q434.5,667 434.5,675 L434.5,697" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="sep" data-to="boostback" data-label="booster" data-id="sep-&gt;boostback:booster" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Stage separation to Boostback burn: booster"/>
+<path d="M446.5,751 L446.5,799" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="boostback" data-to="entry" data-label="" data-id="boostback-&gt;entry" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Boostback burn to Entry burn"/>
+<path d="M446.5,853 L446.5,901" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="entry" data-to="landing" data-label="" data-id="entry-&gt;landing" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Entry burn to Landing burn"/>
+<path d="M446.5,955 L446.5,1003" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="landing" data-to="landed" data-label="" data-id="landing-&gt;landed" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Landing burn to Booster landed"/>
+<rect x="342.5" y="258" width="20" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="352.5" y="270" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">go</text>
+<rect x="455" y="188.5" width="35" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="472.5" y="200.5" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">no go</text>
+<rect x="630.5" y="199.5" width="71" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="666" y="211.5" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">next window</text>
+<rect x="254.5" y="647" width="72" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="290.5" y="659" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">second stage</text>
+<rect x="364.5" y="647" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="386.5" y="659" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">booster</text>
+<line x1="30" y1="1081" x2="739" y2="1081" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="1099" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">box = step, diamond = decision, rounded = start or end</text>
+</svg>
