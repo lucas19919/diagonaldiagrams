@@ -153,9 +153,7 @@ class RoundTrip(unittest.TestCase):
         s, _ = normalize({"version": 2, "preset": "flow", "nodes": [{"id": "a", "pin": {"x": 1, "y": 2}}],
                           "annotations": [{"type": "callout", "target": "#a", "text": "!"}]})
         _, _, warn = to_v1(s)
-        self.assertEqual([w["path"] for w in warn], ["annotations"])  # a flow draws its pins (DESIGN 4.6)
-        s, _ = normalize({"version": 2, "preset": "seq", "nodes": [{"id": "a", "pin": {"x": 1, "y": 2}}]})
-        self.assertEqual([w["path"] for w in to_v1(s)[2]], ["nodes.a"])  # a sequence does not
+        self.assertEqual([w["path"] for w in warn], ["annotations", "nodes.a"])
 
     def test_a_scene_without_a_drawable_preset_is_refused(self):
         s, _ = normalize({"version": 2, "nodes": [{"id": "a"}]})

@@ -50,23 +50,15 @@ def _choose(heights, cuttable, width_of, target, most=8, across=None):
     return (best[1], best[2]) if best else ([], 0.0)
 
 
-def wrap(pos, rank, info, frames, span, routes, band_top, band_h, pads_below, heads_above, o, target, min_width=0.0,
-         cuts=None):
+def wrap(pos, rank, info, frames, span, routes, band_top, band_h, pads_below, heads_above, o, target, min_width=0.0):
     """Wraps in place: pos {node: (x, y)}, frames {group: box}, routes (Route, points changed). Returns
-    the layers it cut after ([] when it did not wrap). band_top/band_h: per layer; pads_below[r] and
-    heads_above[r]: the frame bands just below layer r and just above it. cuts: the cuts to make, from
-    an earlier layout of the same figure ([] for none); one a frame now spans moves to the nearest
-    layer it can fall after."""
+    True when it wrapped. band_top/band_h: per layer; pads_below[r] and heads_above[r]: the frame
+    bands just below layer r and just above it."""
     nl = len(band_top)
+    if nl < o.get("wrap_layers", 12) or target is None:
+        return False
     track, stub, side = o["track"], o["stub"], o["side_gap"]
     cuttable = {r for r in range(nl - 1) if not any(lo <= r < hi for lo, hi in span.values())}
-    if cuts:
-        cuts = sorted({min(cuttable, key=lambda r: (abs(r - c), r)) for c in cuts}) if cuttable else None
-    given = cuts is not None
-    if given and not cuts:
-        return []
-    if not given and (nl < o.get("wrap_layers", 12) or target is None):
-        return []
     gap_top = [band_top[r] + band_h[r] + pads_below.get(r, 0.0) for r in range(nl)]  # where a chunk ends
 
     def start(r):  # where the chunk beginning at layer r begins: the gap above it, tracks and all
@@ -92,16 +84,15 @@ def wrap(pos, rank, info, frames, span, routes, band_top, band_h, pads_below, he
     def width_of(lo, hi):
         a, b = x_extent(lo, hi)
         return b - a + 2 * side
-    if not given:
-        natural = max(width_of(0, nl - 1), min_width) / (ends[-1] - start(0))
-        if natural >= target * 0.5:  # at most twice as tall as wanted: one column reads better
-            return []
-        across = [sum(1 for r in routes.values() if min(rank[r.nodes[0]], rank[r.nodes[1]]) <= q < max(rank[r.nodes[0]],
-                                                                                                     rank[r.nodes[1]]))
-                  for q in range(nl)]
-        cuts, _ = _choose(heights, cuttable, width_of, target, across=across)
-        if not cuts:
-            return []
+    natural = max(width_of(0, nl - 1), min_width) / (ends[-1] - start(0))
+    if natural >= target * 0.5:  # at most twice as tall as wanted: one column reads better
+        return False
+    across = [sum(1 for r in routes.values() if min(rank[r.nodes[0]], rank[r.nodes[1]]) <= q < max(rank[r.nodes[0]],
+                                                                                                 rank[r.nodes[1]]))
+              for q in range(nl)]
+    cuts, _ = _choose(heights, cuttable, width_of, target, across=across)
+    if not cuts:
+        return False
     bounds = [-1] + cuts + [nl - 1]
     chunks = [(bounds[i] + 1, bounds[i + 1]) for i in range(len(bounds) - 1)]
 
@@ -117,7 +108,7 @@ def wrap(pos, rank, info, frames, span, routes, band_top, band_h, pads_below, he
             continue
         pieces = _split(r.points, cuts, chunks, gap_top, band_top, heads_above)
         if pieces is None:
-            return []
+            return False
         split[eid] = pieces
         for c, x_in, x_out, up in pieces["cuts"]:
             crossing[c].append((eid, x_in, x_out, up))
@@ -190,7 +181,7 @@ def wrap(pos, rank, info, frames, span, routes, band_top, band_h, pads_below, he
                 pts += way[::-1] if up else way
             pts += seg
         routes[eid].points = _clean(pts)
-    return list(cuts)
+    return True
 
 
 def _split(points, cuts, chunks, gap_top, band_top, heads_above):

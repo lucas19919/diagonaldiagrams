@@ -222,7 +222,7 @@ def _finish(a, html, svg, count, unit, pre, changed=None, info=None):
         out["errors"] = rep["errors"]
         out["next"] = ("the files are written so you can look; change the spec or flags and render again "
                        "(--no-audit accepts the figure as it is)")
-    warns = list(pre or []) + list((info or {}).get("issues") or []) + rep["warnings"]  # issues: pins that missed
+    warns = list(pre or []) + rep["warnings"]
     if warns:
         out["warnings"] = warns
     _report(out, 0 if rep["ok"] else 1)

@@ -6,8 +6,8 @@ kernels (P4) read scenes directly. For a v1 spec the round trip draws the same b
 corpus checks it.
 
 Fields only a scene has (style, class, pin, constraints, ...) are written into the v1 spec under
-their scene names. The renderers draw the ones they can (styles; flow and arch pins; same-rank and
-order constraints) and from_v1() reads them all back, so a patch applied to a v1 file
+their scene names. The renderers draw the ones they can (styles; same-rank and order constraints;
+a schema table's pin) and from_v1() reads them all back, so a patch applied to a v1 file
 (scene/patch.py) is kept there.
 """
 from ..errors import SpecError
@@ -176,10 +176,9 @@ def to_v1(scene):
         warn.append(_not_drawn(f"{len(unread)} constraint(s)", "constraints"))
     if others:
         spec["constraints"] = others
-    for el in [*nodes, *scene.edges, *scene.groups]:  # flow and arch draw pins (DESIGN 4.6), schema its tables'
-        parts = [k for k in ("pin", "content") if getattr(el, k, None) and (k == "content" or kind == "seq")]
-        if parts and kind != "schema":
-            warn.append(_not_drawn(f"the {' and '.join(parts)} of '{el.id}'", f"{type(el).__name__.lower()}s.{el.id}"))
+    for el in [*nodes, *scene.edges, *scene.groups]:  # schema draws its tables' pins as columns
+        if (getattr(el, "pin", None) or getattr(el, "content", None)) and kind != "schema":
+            warn.append(_not_drawn(f"the pin or content of '{el.id}'", f"{type(el).__name__.lower()}s.{el.id}"))
             break
     if kind in ("flow", "arch"):
         spec["nodes"] = [_v1_node(n, kind) for n in nodes]
@@ -203,7 +202,7 @@ def to_v1(scene):
 
 def _not_drawn(what, path):
     return {"code": "not-drawn", "msg": f"kept in the spec but not drawn yet: {what}",
-            "fix": "this preset does not draw it yet; drop it if unwanted",
+            "fix": "this preset does not draw it yet; drop it if unwanted. To move a node, use a place patch (its row) instead of a pin",
             "path": path}
 
 

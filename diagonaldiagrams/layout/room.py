@@ -42,27 +42,22 @@ def _segs(routes):
             for r in routes.values() for p, q in zip(r.points, r.points[1:])]
 
 
-def _canvas(pos, info, frames, routes, reach, extra, min_width, margin, left=None):
+def _canvas(pos, info, frames, routes, reach, extra, min_width, margin):
     """The canvas edges, as diagrams.py sets them: the figure's extent plus the margin, centered in the
-    least width; or, for a pinned figure, from its left edge (left), at least a margin from the figure."""
+    least width."""
     boxes = _boxes(pos, info) + list(frames.values())
     xs = [p[0] for r in routes.values() for p in r.points] + list(extra)
     lo = min([b[0] for b in boxes] + xs)
     hi = max([b[2] for b in boxes] + xs + [pos[n][0] + d for n, d in reach.items() if n in pos])
-    if left is None:
-        W = max(min_width + 2 * margin, int(hi - lo + 2 * margin + 0.999))
-        left = lo - (W - (hi - lo)) / 2.0
-    else:
-        left = min(left, lo - margin)
-        W = max(min_width + 2 * margin, int(hi - left + margin + 0.999))
+    W = max(min_width + 2 * margin, int(hi - lo + 2 * margin + 0.999))
+    left = lo - (W - (hi - lo)) / 2.0
     return [(left - 40, -FAR, left, FAR), (left + W, -FAR, left + W + 40, FAR)]
 
 
-def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, margin=0.0, left=None):
+def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, margin=0.0):
     """Opens room for labels, in place: pos {node: (x, y)}, frames {group: box}, routes (their points).
     widths: {edge id: pill width}. reach: {node: how far past its center the figure reaches} (a self-loop
-    and its label). left: where a pinned figure's canvas begins, in this frame. Returns the x of points
-    the figure's extent must take in."""
+    and its label). Returns the x of points the figure's extent must take in."""
     reach = reach or {}
     extra, placed = [], []
     fixed = soft = canvas = None
@@ -74,7 +69,7 @@ def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, marg
             if fixed is None:
                 fixed = _boxes(pos, info) + _strips(frames)
                 soft = _segs(routes)
-                canvas = _canvas(pos, info, frames, routes, reach, extra, min_width, margin, left)
+                canvas = _canvas(pos, info, frames, routes, reach, extra, min_width, margin)
             avoid = fixed + placed + canvas
             mx, my, vert = longest_segment(r.points, list(frames.values()))
             c = place_label(mx, my, vert, None, r.points, avoid, soft, w, GAP)
