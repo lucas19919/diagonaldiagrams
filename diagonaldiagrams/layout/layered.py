@@ -9,8 +9,9 @@
   table's column row is (schema).
 - groups: [{"id", "members": [node ids], "parent"?}].
 - options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "prev" ({node
-  id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room" and
-  "min_width". Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
+  id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room",
+  "min_width" and "max_width" (TB and BT: a layer too wide for it spreads over rows, rows.py).
+  Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
 
 The steps: break cycles (back_edges), rank (ranks), add a dummy wherever an arrow passes a layer and
 a left and a right border wherever a group spans one (Layering), order the layers for few crossings
@@ -26,6 +27,7 @@ their members and nothing else (B20).
 from . import bk, channels, order as ordering
 from .order import Layering
 from .rank import back_edges, ranks
+from .rows import spread as deal_rows
 
 DEFAULTS = {
     "direction": "TB",
@@ -46,6 +48,7 @@ DEFAULTS = {
     "wrap_layers": 12,     # fewer layers than this never wrap
     "balance": False,      # center each node over what it calls, after Brandes-Köpf (arch)
     "straight": False,     # the main path runs straight down: each node over its longest branch (flow)
+    "over": False,         # every arrow within a layer runs over the top, neighbors' too (a stacked schema)
 }
 _FLIP = {"n": "w", "s": "e", "w": "n", "e": "s"}
 
@@ -76,6 +79,28 @@ def _shape(n):
 
 def layout(nodes, edges, groups=(), options=None):
     o = dict(DEFAULTS, **(options or {}))
+    res = _layout(nodes, edges, groups, o)
+    most = o.get("max_width")
+    if not most or str(o["direction"]).upper() not in ("TB", "BT") or res.size[0] <= most:
+        return res
+    # too wide for where it goes (a fit's column or page): each layer too wide for it on its own
+    # deals its boxes over rows (rows.py), one row more each try, until the figure fits; else the
+    # narrowest try stands
+    best, tried = res, set()
+    for more in range(5):
+        res = _layout(nodes, edges, groups, dict(o, more_rows=more))
+        seen = tuple(sorted((str(i), r) for i, r in res.rank.items()))
+        if seen in tried:  # the same rows as a try before
+            continue
+        tried.add(seen)
+        if res.size[0] < best.size[0] - 0.5:
+            best = res
+        if res.size[0] <= most:
+            return res
+    return best
+
+
+def _layout(nodes, edges, groups, o):
     direction = str(o["direction"]).upper()
     across = direction in ("LR", "RL")
     res = Result()
@@ -138,6 +163,10 @@ def layout(nodes, edges, groups=(), options=None):
         oriented = [((v, u) if k in back else (u, v)) + (1, 1) for k, (u, v) in enumerate(live)]
         merged = ranks(heads, oriented, {find(i): r for i, r in fixed.items()}, simplex=o["simplex"])
         rank = {i: merged[find(i)] for i in ids}
+    first, stack = {}, {}  # node -> the rank of the first row its layer spread over; the box it stands under (rows.py)
+    if o.get("more_rows") is not None:  # 1b. a layer too wide for max_width spreads over rows of its own
+        top = {i: chain(gof.get(i))[-1] if gof.get(i) is not None else None for i in ids}
+        rank, first, stack = deal_rows(rank, ids, info, E, lambda i: top[i] if top[i] is not None else ("node", find(i)), o)
     res.rank = rank
     nl = max(rank.values()) + 1
 
@@ -210,7 +239,9 @@ def layout(nodes, edges, groups=(), options=None):
         key[nid] = float(info[nid]["k"])
     for kind, top, bot, ds in kinds:
         for d in ds:
-            key[d] = key[top] + 0.5
+            # in the rows a layer spread over, an arrow down to a lower row's box passes where that
+            # box stands, between the boxes dealt to the rows above it
+            key[d] = key[bot] if first.get(bot, rank[bot]) <= d[2] < rank[bot] else key[top] + 0.5
     for pt, nid in L.attach.items():
         key[pt] = key[nid] + 0.25
     for r in range(len(L.layers)):
@@ -290,6 +321,20 @@ def layout(nodes, edges, groups=(), options=None):
         return max(width[a] / 2.0 + width[b] / 2.0 + gap(a, b) + extra.get((a, b), 0.0),
                    spread.get(frozenset((a, b)), 0.0))
 
+    # a frame's title (o["heads"]: group -> its width, given where a fit narrows the figure and rows
+    # may hold one box) in a frame with one box in its top layer, or too narrow to find a clear spot
+    # between the arrows coming down into it, gets room before the frame's first item in its top
+    # layer, where no arrow comes in
+    for g, (lo, _) in span.items() if o.get("heads") and direction == "TB" else ():
+        title = o["heads"].get(g, 0.0)
+        layer = L.layers[lo]
+        a, b = layer.index(("L", g, lo)), layer.index(("R", g, lo))
+        boxes = sum(1 for x in layer[a + 1:b] if L.kind[x] == "node")
+        if boxes < 2 or sum(sep(x, y) for x, y in zip(layer[a:b], layer[a + 1:b + 1])) < 2 * (title + 24.0):
+            pair = (layer[a], layer[a + 1])
+            free = sep(*pair) - width[pair[1]] / 2.0  # from the border to the item's left side
+            extra[pair] = extra.get(pair, 0.0) + max(0.0, title + 20.0 - free)
+
     def inner(u, v):
         ku, kv = L.kind[u], L.kind[v]
         lines = ("dummy", "port")
@@ -300,9 +345,16 @@ def layout(nodes, edges, groups=(), options=None):
         straight = bk.spine(L.layers, [(top, ds, bot) for kind, top, bot, ds in kinds if kind == "down"], L.up,
                             lambda u, v: inner(u, v) and u not in climb and v not in climb, forced_up)
     prev = o.get("prev") if direction == "TB" else None  # an earlier drawing's x per node: stay near it
-    xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up,
-                        {k: float(v) for k, v in prev.items() if k in info} if prev else None, straight)
-    if o.get("balance"):  # arch: each node over what it calls (bk.balance)
+    prev = {k: float(v) for k, v in prev.items() if k in info} if prev else None
+    xs = None
+    if stack:  # rows a layer spread over: each box in line with the one above it in its column
+        xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up, prev,
+                            {**(straight or {}), **stack})
+        if not bk.valid(L.layers, xs, sep, forced_up):  # the columns broke a frame or a gap: not in line
+            xs, stack = None, {}
+    if xs is None:
+        xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up, prev, straight)
+    if o.get("balance") and not stack:  # arch: each node over what it calls (bk.balance)
         xs = bk.balance(L.layers, L.up, L.down, L.kind, xs, sep)
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
@@ -481,7 +533,7 @@ class _Plan:
             between = [it for it in self.L.layers[self.rank[a]]
                        if self.L.kind[it] == "node" and min(self.order_of[a], self.order_of[b]) < self.order_of[it]
                        < max(self.order_of[a], self.order_of[b])]
-            if not between:
+            if not between and not self.o["over"]:
                 s1 = "e" if self._x(b) > self._x(a) else "w"
                 s2 = "w" if s1 == "e" else "e"
                 self._slot(a, s1, eid, "out", 0.0)

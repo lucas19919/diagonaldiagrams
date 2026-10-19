@@ -803,6 +803,22 @@ def agent_loop():
         f.write("\n".join(["---", "title: T", "---", "flowchart TD", "  A[open --> B", ""]))
     rc, out = run("mermaid", fm, "-o", os.path.join(WORK, "frontmatter.svg"))
     check("a Mermaid error names its line in the file, front matter counted", rc == 1 and "line 5" in out, out[:200])
+    steps = [f"  S{i}[Step {i}] --> S{i + 1}[Step {i + 1}]" for i in range(24)]
+    for fit, wraps in (("slide", True), ("column", False)):  # where it goes: Mermaid front matter, as --fit
+        long = os.path.join(WORK, f"long-{fit}.mmd")
+        with open(long, "w", encoding="utf-8") as f:
+            f.write("\n".join(["---", "title: Long", f"fit: {fit}", "---", "flowchart TD"] + steps + [""]))
+        rc, out = run("mermaid", long, "-o", os.path.join(WORK, f"long-{fit}.svg"))
+        lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
+        check(f"fit: {fit} {'wraps a long flow into columns' if wraps else 'keeps a long flow one strip'}",
+              rc == 0 and any(r.startswith("wrapped into") for r in lay) == wraps, out[-300:])
+    rc, out = run("schema", os.path.join(HERE, "examples", "schema_ecommerce.json"), "--fit", "column",
+                  "-o", os.path.join(WORK, "schema-column.svg"))
+    lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
+    head = open(os.path.join(WORK, "schema-column.svg"), encoding="utf-8").read(400) if rc == 0 else ""
+    width = float(head.split('viewBox="0 0 ', 1)[1].split()[0]) if 'viewBox="0 0 ' in head else 1e9
+    check("--fit column stacks a wide schema's tables in one column, 640 px at most",
+          rc == 0 and "column 1: users | orders | order_items" in lay and width <= 640, out[-300:])
     rc, out = run("mermaid", os.path.join(HERE, "examples", "checkout_sequence.mmd"), "-o", os.path.join(WORK, "outline_seq.svg"))
     lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
     check("a sequence's verdict lists its actors and each message",

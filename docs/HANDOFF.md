@@ -20,6 +20,7 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
     | `gif.py` and `_cdp.py`; `--svg` writes an animated SVG, and `--gif` and `--video` go through ffmpeg (DESIGN 21.2.1) | −651 | ffmpeg codes GIFs better; the SVG needs nothing |
 
     Package code went from 22,913 lines (21,948 Python, 965 JavaScript) to 20,823 (20,264 and 559), and tests from 5,257 to 4,891. Every gate passed at d37c304: unit 242, style 7, smoke 264 with `DD_ENTRY` unset and `module`, 115 goldens byte-identical and deterministic, scene round trip 29/29 (69/69 with `--fuzz 40`), fuzz 0 failed at seeds 5000 and 20000 (200, `--strict`) and 0 of 1,000 at seeds 0, 20000 and 40000.
+  - `fit-placement`, on `slice-slim`, says where a figure will be read: `--fit slide|page|column`, a Mermaid front matter line `fit: column`, or a spec's `size.fit` (DESIGN 7.3). It is the top fix from the blind quality benchmark (`bench-quality-0.8`, bench/quality/README.md), where 116 of the 160 judgments dd lost were in a 700 px column. `slide` stays the default, so no golden changed. In a `column`, a long flow stays one strip, a layer too wide for 640 px is dealt into stacked columns (`layout/rows.py`), and a wide schema stacks its tables. `tests/fuzz/run.py --fit column` fuzzes that path; it is not a CI gate. The column judging was rerun on `bench-quality-fit` (bench/quality/runs/fit-column). Gates: unit 254, style 7, smoke 267 with `DD_ENTRY` unset and `module`, 115 goldens byte-identical and deterministic, scene round trip 29/29, fuzz 0 failed at seeds 5000 and 20000 (200, `--strict`).
   - The six phase branches are on GitHub since 2026-10-17, as a backup. `slice-integration` is on GitHub too, as PR #1 against `master` (CI green, not merged). `slice-slim`, the other slices, the `claude/...` branches and `b29-fuzz` are local only. Nothing is merged into `master`: anyone who installs from the README still gets 0.5.0.
   - CI runs on pushes to `master` and on PRs, so the phase branches have not run in CI yet.
 - **Version.** 0.8.0 in `diagonaldiagrams/__init__.py`, `.claude-plugin/plugin.json` and `server.json` (they must match). Nothing past 0.5.0 has been released.
@@ -74,6 +75,7 @@ python scripts/golden.py                      # byte-compare 115 figures; prints
 python scripts/golden.py --update --only NAME ...   # only after reviewing the change
 python scripts/scene_roundtrip.py
 python tests/fuzz/run.py --n 200 --seed 5000 --strict      # what CI gates (also --seed 20000)
+python tests/fuzz/run.py --n 200 --seed 5000 --fit column  # the narrow-column path (--fit), not gated
 python tests/fuzz/run.py --n 1000 --seed 40000 --keep DIR  # new seeds find what the gate misses
 python tests/fuzz/run.py --one KIND SEED NODES             # one scene, from a --keep JSON
 python scripts/metrics.py --save NAME --compare bench/metrics/p3.json

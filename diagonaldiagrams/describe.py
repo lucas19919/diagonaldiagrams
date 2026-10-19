@@ -3,6 +3,11 @@ import json
 from ._draw import ICONS
 from .charts.catalog import _chart_meta
 
+# where a figure goes (diagrams.FITS), for flow, arch and schema
+FIT = ("{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. "
+       "page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: "
+       "no wrap, at most 640 px wide (wide rows split, schema tables stack)")
+
 
 DESCRIBE = {
     "scatter": {
@@ -36,6 +41,7 @@ DESCRIBE = {
         },
         "sequenceDiagram": "participant A as Name | actor U as User | A->>B: call | B-->>A: reply | A-)B: async event",
         "erDiagram": "A ||--o{ B : verb | A { type name PK }",
+        "fit": "where the figure goes, as --fit: a line fit: column (or slide, page) in the front matter between --- lines",
         "not drawn": "classDef/style colors, notes, loop/alt blocks, LR direction (flows draw top-down)",
         "example": "flowchart TD\n  A([Push]) --> B{Risky?}\n  B -->|yes| C[Review]\n  B -->|no| D([Ship])\n  C --> D",
     },
@@ -43,6 +49,7 @@ DESCRIBE = {
     "flow": {
         "input": "JSON spec {title, sub, nodes[], edges[], groups[]}",
         "writes": "diagonaldiagrams flow SPEC.json -o OUT.svg",
+        "size": FIT,
         "node": {"id": "unique", "shape": "oval=start/end | rect=step | diamond=decision | dot=merge",
                  "name": "2-4 words", "tag": "optional kind, e.g. MANUAL (not STEP/START/END: the shape says it)", "sub": "mono sublabel", "rank": "row, 0 at the top (default: automatic)",
                  "lane": "-1 left|0 center|1 right (default 0)", "focal": "bool, max 2 per diagram"},
@@ -56,6 +63,7 @@ DESCRIBE = {
     "arch": {
         "input": "JSON spec {title, sub, nodes[], edges[]}",
         "writes": "diagonaldiagrams arch SPEC.json -o OUT.svg",
+        "size": FIT,
         "node": {"id": "unique", "layer": "row int (default 0)", "name": "service", "sub": "Lang:port e.g. Go:8080",
                  "tag": "UI|API|SVC|STORE", "focal": "bool, max 2"},
         "edge": {"from": "id", "to": "id", "label": "VERB", "proto": "https=blue arrow", "async": "dashed bool", "focal": "bool"},
@@ -76,6 +84,7 @@ DESCRIBE = {
     "schema": {
         "input": "JSON spec {title, sub, tables[], relations[]}",
         "writes": "diagonaldiagrams schema SPEC.json -o OUT.svg",
+        "size": FIT,
         "table": {"id": "unique", "name": "table_name", "tag": "AUTH|CORE|AUDIT", "focal": "bool, max 2",
                   "columns": [{"name": "col", "type": "data_type", "pk": "bool", "fk": "bool", "unique": "bool"}]},
         "relation": {"from": "id", "from_col": "col", "to": "id", "to_col": "col", "label": "1:N|1:1|M:N", "focal": "bool"},

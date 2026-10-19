@@ -1,7 +1,7 @@
 """validate and infer."""
 import json, os
 from ._draw import ICONS
-from ._issues import _SPEC_KEYS, _vissue
+from ._issues import _FITS, _SPEC_KEYS, _vissue
 from ._text import _wrap_px
 from .charts.catalog import _CHART_BLURB
 from .mermaid import load_spec
@@ -152,6 +152,10 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
             for el in spec.get(k) or [])):
         from .style.styler import check_styles
         errors.extend(check_styles(spec, kind))
+    fit = spec.get("size").get("fit") if isinstance(spec.get("size"), dict) else None
+    if fit is not None and str(fit).strip().lower() not in _FITS:
+        _vissue(errors, warnings, "E", f"size.fit is {json.dumps(fit)[:40]}, not one of {', '.join(_FITS)}",
+                "slide: a slide or a screen-wide figure; page: a document page; column: a docs or notes column, read by scrolling")
     if "actors" in spec or "messages" in spec:
         actors, messages = spec.get("actors", []), spec.get("messages", [])
         a_ids = [a.get("id") for a in actors]

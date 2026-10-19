@@ -35,6 +35,19 @@ It prints one JSON line:
 arrow crosses a box or a label. Do not screenshot, open, or grep the SVG to check: answer from the
 verdict. Each extra look costs a full round trip.
 
+## Where it goes
+
+Pick `--fit` for where the figure will be read, so its text stays full size there:
+
+- `--fit column` for a README, docs page, wiki, notes app or chat: a column about 700 px wide, read by
+  scrolling. A long flow stays one tall strip, a wide row splits into rows, schema tables stack, and
+  the figure is at most 640 px wide.
+- `--fit slide` (the default) for a deck or a full-width screen: a long flow wraps into columns.
+- `--fit page` for a printed or PDF page: a long flow wraps toward portrait.
+
+In Mermaid, a front matter line does the same (`---`, `fit: column`, `---` above `flowchart TD`); in a
+JSON spec, `"size": {"fit": "column"}`. Sequence diagrams draw the same in every fit.
+
 ## Mermaid
 
 `([x])` start or end, `[x]` step, `{x}` decision, `[(x)]` store. `-->|label|`, `-.->` dashed,

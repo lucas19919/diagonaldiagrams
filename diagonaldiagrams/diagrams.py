@@ -13,13 +13,15 @@ from .style.styler import Styler
 MARGIN = 30  # between the canvas edge and the nearest box or frame
 
 
-def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, prev=None, info=None):
+def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, prev=None, info=None,
+                narrow=None):
     """Draw a flow: steps in layers top to bottom, decisions branching sideways, loops climbing back
     up the side. auto ranks every node, ignoring the spec's ranks. prev: {node id: x} from the drawing
     before an edit, so the boxes the edit leaves alone stay near their places. info, if a dict, gets the
-    layout's layers (_layered), for the verdict's rows and for diff."""
+    layout's layers (_layered), for the verdict's rows and for diff. narrow: the boxes' widest before
+    their text wraps; a figure too wide for where it goes (_fit) draws again with NARROW."""
     t = theme or THEME
-    sty = Styler(spec, "flow", t, corners, sheets)
+    sty = Styler(spec, "flow", t, corners, sheets, narrow=narrow)
     nodes = []
     for n in spec["nodes"]:
         n = dict(n)
@@ -47,7 +49,9 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), em
                                                                       "prev": prev}, min_w, "flow diagram", info=info,
                                legend=bool(sentence))
     _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
-    return _as_svg((dr, W, H), sty, embed)
+    out = _as_svg((dr, W, H), sty, embed)
+    return _narrower(out, spec, narrow, info,
+                     lambda alt: render_flow(spec, corners, auto, theme, sheets, embed, prev, alt, narrow=NARROW))
 
 
 def _even_widths(nodes, sty, spread=4 / 3):
@@ -94,11 +98,11 @@ def _label_w(text, st):
     return float(int(width(text, st["font-size"], _bold(st), "", st.get("font")) + 8.999))
 
 
-def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, prev=None, info=None):
+def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, prev=None, info=None, narrow=None):
     """Draw an architecture view: one row per layer, calls running down between rows, calls within a
-    row running straight between neighbors, groups framed."""
+    row running straight between neighbors, groups framed. narrow: as render_flow's."""
     t = theme or THEME
-    sty = Styler(spec, "arch", t, corners, sheets)
+    sty = Styler(spec, "arch", t, corners, sheets, narrow=narrow)
     nodes = []
     layered = any("layer" in n or "rank" in n for n in spec["nodes"])
     for n in spec["nodes"]:
@@ -126,17 +130,20 @@ def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, p
                                                                       "prev": prev}, min_w, "architecture diagram", info=info,
                                legend=bool(sentence))
     _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
-    return _as_svg((dr, W, H), sty, embed)
+    out = _as_svg((dr, W, H), sty, embed)
+    return _narrower(out, spec, narrow, info,
+                     lambda alt: render_arch(spec, corners, theme, sheets, embed, prev, alt, narrow=NARROW))
 
 
 def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=None, pins=None, paint_node=None,
-             tails=True, attach=None, a11y_kind="arrow", info=None, legend=True):
+             tails=True, attach=None, a11y_kind="arrow", info=None, legend=True, stack=False):
     """Lays out and paints a flow, arch or schema figure, all but its legend: (Drawing, W, H, legend
     rows). edges: the spec's edges unless given; pins: {edge index: (from_at, to_at)}, ends kept at an
     offset along their sides (a schema's column rows); paint_node(nid, node, cx, cy): its elements,
     else the node's shape; attach(edge, route): the ends' attachment for exports and the audit. legend: a
     sentence goes under the figure. An arrow gets a dot where it leaves its box only when its style asks
-    (marker-start: circle)."""
+    (marker-start: circle). Where the spec says the figure goes (_fit) sets the shape it wraps toward and
+    the widest it draws; stack: a figure wider than that puts its boxes in one column (schema)."""
     from .layout import layered
     edges = spec.get("edges", []) if edges is None else edges
     eids = edge_ids(edges)
@@ -175,9 +182,22 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                 if at is not None:
                     le[key] = at
             ledges.append(le)
-    res = layered.layout(lnodes, ledges, [{"id": g["id"], "members": g["members"]} for g in groups],
-                         dict(options, flat_room=flat_room, aspect=_aspect(spec), labels=label_w, margin=MARGIN,
-                              same_rank=[s for s in same if len(s) > 1]))
+    frames_in = [{"id": g["id"], "members": g["members"]} for g in groups]
+    aspect, most = _fit(spec)
+    lay = dict(options, flat_room=flat_room, aspect=aspect, labels=label_w, margin=MARGIN,
+               same_rank=[s for s in same if len(s) > 1])
+    if most:  # narrowed to fit: rows may hold one box, so each frame keeps room for its title
+        lay["max_width"] = most - 2 * MARGIN
+        lay["heads"] = {g["id"]: paint.frame_title(g, sty.group(g["id"])["title"])[1] for g in groups}
+    res = layered.layout(lnodes, ledges, frames_in, lay)
+    if stack and most and res.size[0] + 2 * MARGIN > most:
+        # too wide for where it goes: the tables in one column, in the order they read side by side
+        # (column by column, each top to bottom), every relation running down beside them
+        seen = [i for layer in res.layers for i in layer if i in ids]
+        for d in lnodes:
+            d.update(rank=0, order=seen.index(d["id"]))
+            d.pop("lane", None)
+        res = layered.layout(lnodes, ledges, frames_in, dict(lay, over=True, flat_room={}, same_rank=[]))
     top = max(MARGIN, head_h + 12)
     if info is not None:  # for the page and the verdict: each layer's boxes in order, and whether layers run across
         info["layers"] = [[it for it in layer if it in ids] for layer in res.layers]
@@ -316,21 +336,49 @@ def _owned_opacity(dr, sty):
 
 
 ASPECT = 4 / 3  # a layered figure much taller than this wraps into columns (layout/wrap.py)
+# where the figure will be shown (size.fit, --fit): the shape a tall flow wraps toward (None: it
+# never wraps, and the reader scrolls) and the widest it may draw, in px, before a wide layer spreads
+# over rows and a schema stacks its tables. slide: a 16:9 slide or a figure as wide as the screen;
+# page: a portrait document page (A4 or Letter), read without scrolling; column: a docs or notes
+# column about 700 px wide, read by scrolling
+FITS = {"slide": (ASPECT, None), "page": (0.7, 640), "column": (None, 640)}
+NARROW = 144  # under a fit with a max width, a box's text wraps past this many px (the presets say 192)
 
 
-def _aspect(spec):
-    """The target width / height: the spec's size.aspect ("16:9", 1.6), else ASPECT."""
+def _fit(spec):
+    """(aspect, max width) for where the spec says the figure goes (size.fit, default slide), with
+    its size.aspect ("16:9", 1.6) and size.width (px) over the fit's."""
     size = spec.get("size") if isinstance(spec.get("size"), dict) else {}
+    aspect, most = FITS.get(str(size.get("fit") or "slide").strip().lower(), FITS["slide"])
     a = size.get("aspect")
     try:
         if isinstance(a, str) and ":" in a:
             w, h = a.split(":", 1)
-            return float(w) / float(h)
-        if a is not None:
-            return float(a)
+            aspect = float(w) / float(h)
+        elif a is not None:
+            aspect = float(a)
     except (TypeError, ValueError, ZeroDivisionError):
         pass
-    return ASPECT
+    w = size.get("width")
+    if isinstance(w, (int, float)) and not isinstance(w, bool) and w > 0:
+        most = float(w)
+    return aspect, most
+
+
+def _narrower(out, spec, narrow, info, again):
+    """out, a drawing (svg, W, H), or if it is wider than where it goes allows (_fit) and its boxes'
+    text could wrap sooner, the drawing again(info) gives with NARROW, when that one is narrower."""
+    most = _fit(spec)[1]
+    if narrow is not None or not most or out[1] <= most:
+        return out
+    alt = {} if info is not None else None
+    other = again(alt)
+    if other[1] >= out[1]:
+        return out
+    if info is not None:
+        info.clear()
+        info.update(alt)
+    return other
 
 
 def _longest(pts, frames=()):
@@ -572,7 +620,7 @@ def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False,
     min_w = _min_width(spec, t, sty, sentence)
     dr, W, H, extra = _layered(spec, "schema", nodes, t, sty, corners, dict(options, min_width=min_w - 2 * MARGIN), min_w,
                                "database schema", edges=relations, pins=pins, paint_node=card, tails=False, attach=attach,
-                               a11y_kind="relation", info=info, legend=bool(sentence))
+                               a11y_kind="relation", info=info, legend=bool(sentence), stack=True)
     _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
     return _as_svg((dr, W, H), sty, embed)
 

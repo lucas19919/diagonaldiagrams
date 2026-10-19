@@ -668,6 +668,12 @@ def readable_on_tint(fg, card, alpha=0.15):
     return c.css
 
 
+def frame_title(g, ts):
+    """(text, width) of a group's title as its frame draws it, ts its title style."""
+    label = transformed((g["tag"] + "  " if g.get("tag") else "") + str(g["name"]), ts)
+    return label, _text_w(label, ts["font-size"], True) + 0.4 * len(label)
+
+
 def group_frames(t, groups, pos, avoid=(), style_of=None, boxes=None):
     """A frame behind each group's members. Its name goes in the top corner (left, else right)
     that no arrow crosses; avoid holds the arrows' segment boxes. style_of(gid) gives a group's
@@ -690,8 +696,7 @@ def group_frames(t, groups, pos, avoid=(), style_of=None, boxes=None):
                       data_group=g["id"], data_name=g["name"], data_members=",".join(g["members"]),
                       a11y={"name": f"{g['name']}: {names}", "kind": "group"}))
         ts = gs["title"]
-        label = transformed((g["tag"] + "  " if g.get("tag") else "") + str(g["name"]), ts)
-        lw = _text_w(label, ts["font-size"], True) + 0.4 * len(label)
+        label, lw = frame_title(g, ts)
 
         def hits(lx):
             b = (lx - 8, y0 + 3, lx + lw + 8, y0 + 19)  # keep clear of arrows, not just off them

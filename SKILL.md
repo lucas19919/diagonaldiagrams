@@ -22,6 +22,11 @@ Exit 0 and `"ok": true`: done; `layout` lists what was drawn. Exit 1: read `erro
 proposes a scatter spec, and `export out/x --to png --layout wide` redraws from
 the receipt. `validate` and `audit` also run alone; `audit` reads any SVG.
 
+Say where a flow, arch, schema or Mermaid figure will be read with `--fit`: `column` for a README, docs
+page or notes column (no wrap, at most 640 px wide, read by scrolling), `slide` (default) for a deck,
+`page` for a printed page. Mermaid front matter `fit: column` and a spec's `"size": {"fit": "column"}`
+do the same.
+
 ## Recipes
 
 ```bash

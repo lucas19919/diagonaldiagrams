@@ -107,7 +107,7 @@ A scene is JSON. Every field is optional except what a preset requires. Field na
   "caption": "",
   "preset": "arch",                    // optional; sets layout, style and defaults
   "use": ["c4", "3d"],                 // toolkits, in cascade order
-  "size": { "width": 960, "aspect": "16:9", "max-height": 1600 },
+  "size": { "fit": "column", "width": 960, "aspect": "16:9", "max-height": 1600 },  // fit: where it is read (7.3)
   "style": "brand.json",               // or an inline stylesheet object, or a list of both
   "defs": { },                         // data-defined shapes, presets, icons, markers, scales (11.4)
   "data": { "lat": { "csv": "lat.csv" } },
@@ -453,6 +453,16 @@ A `Placement` holds child positions (x, y, and optional z for 3D), container-loc
 
 `size.width` and `size.aspect` are passed to the root layout. `layered` uses them to choose `wrap` and spacing; `grid` uses them to choose columns. A 40-step flow lands in columns near the target aspect instead of one 5000 px strip.
 
+That is right on a slide and wrong in a narrow column. `size.fit` says where the figure will be read, and sets both (`--fit` on the command line, `fit:` in Mermaid front matter):
+
+| fit | wraps toward | widest | for |
+| --- | --- | --- | --- |
+| `slide` (default) | 4:3 | no limit | a deck or a full-width screen |
+| `page` | 0.7, portrait | 640 px | a printed or PDF page, read without scrolling |
+| `column` | never wraps | 640 px | a README, docs page or notes column about 700 px wide, read by scrolling |
+
+`size.aspect` and `size.width` win over the fit's. The blind quality benchmark (bench/quality, 2026-10-19) found that 116 of the 160 judgments dd lost were in a 700 px column, where its wrapped flows and wide figures shrank to 4–8 px text.
+
 **As built (P4, layered):** `layout/` holds the kernel.
 - **Ranks (`rank.py`):** cycles are broken by v1's depth-first walk, so a loop's start stays on top. Unpinned ranks are the longest path, compacted by the network simplex for parts up to 400 nodes. Pinned ranks (flow `rank`, arch `layer`) are kept, made dense.
 - **Order (`order.py`):** each layer holds nodes, dummies (a long arrow passing a layer), port items (where a back edge turns beside its node) and a left and right border for every group spanning it. Layers sort as a tree, so groups stay whole and sibling groups keep one order in every layer. Barycenter sweeps and transposition keep the best of up to 24 passes. Each port is then tried on the other side of its node.
@@ -461,6 +471,7 @@ A `Placement` holds child positions (x, y, and optional z for 3D), container-loc
 - **Main path (`bk.spine`, flow only):** each node lines up over the child that continues the longest path below it, counted in boxes, and each child under the parent with the longest path above it. A tie picks neither, so a decision whose two branches are equally long stays over both. These pairs are forced in all four alignments, as frame borders are, so the main path runs straight down each column. Before, each decision moved it one branch sideways, so long flows drew as staircases and wrapped into fewer, wider columns. A pair whose line would cross a frame border, a long forward arrow or a pair kept before it is left out. A back edge's climb gives way and bends instead.
 - **Routes (`layered.py`, `channels.py`):** an arrow leaves by a port, runs straight through its dummies, and turns in the gaps between layers. A side with arrows both leaving and arriving packs each group from the middle out (12 px from the middle, then a slot apart), so two stacked boxes of different widths put their ends at the same x. Each turn has a track of its own, assigned per gap (B21). A gap is as tall as its tracks need, so nothing is moved afterwards. Back edges either climb beside their nodes through port items (flow, B19, B23) or run from the top of the lower node to the bottom of the upper one (arch, `back: "ports"`). Two arrows that would trade columns in a gap get a dogleg, and so does one of three or more that pass their columns round; a cycle of track rules that is left gives up its loosest rule (B29). A decision side whose exits would turn down inside the box beside it, or past another box's back edge where it runs out to its port item at the same height, sends its exit with the nearest target out of the bottom vertex. A side exit turns down clear of every port item and dummy in its layer, any node's, not only its own (B30).
 - **Label room (`room.py`):** after the routes and wrap, each label is placed as the renderer will place it. A label with no spot clear of boxes, frame borders, earlier labels and the canvas edge gets a strip of empty space beside its first spot (what lies past the strip moves over; a frame it crosses widens), or a wider canvas. Like wrap, it moves things once, with no audit and no redraw. A figure whose labels fit draws as before.
+- **Fit (`diagrams._fit`, `layout/rows.py`):** a flow or arch figure wider than its fit allows draws again with box text wrapping sooner (max-width 144 instead of 192), if that is narrower. The kernel then deals each layer too wide on its own over rows: units (a top frame's members in the layer, one node, or an edit's same-rank set; units an arrow within the layer joins stay together while they fit) are dealt in turn into columns. bk holds each box in line with the one above it, so the arrows down to a column's lower boxes run beside it like a comb. Each try adds a row; then each too-wide layer, then every layer, goes one box a row. The first try that fits stands, else the narrowest. A frame's top layer keeps room for its title on either side of an arrow coming in. A schema whose side-by-side drawing is too wide stacks its tables in one column, in the order they read side by side, and every relation runs down the left side between its column rows (`over`: arrows within a layer go over the top, neighbors' too). Sequence diagrams draw the same in every fit.
 - **Wrap (`wrap.py`):** a layout of 12 or more layers at least twice as tall as the target aspect wants (default 4:3, or the spec's `size.aspect`) is cut between layers no frame spans. Within a quarter of a column's height of where an even cut would fall, the cut takes the layer the fewest arrows cross. A column count whose tallest column is over half again its even share is skipped, so a frame that leaves few places to cut doesn't give one tall column beside slivers. The chunks sit side by side, joined by corridors under, between and over them.
 - **Pinned ends:** an edge's `from_at` and `to_at` keep its end at that offset along the side. Schema pins each relation to its column rows.
 - **Schema (`table` above):** the layered kernel run left to right (`direction: LR`, `back: "ports"`), so rows become ports on the tables' left and right sides. There is no separate `table` kernel.
@@ -844,7 +855,7 @@ Every subcommand and flag listed by `--help` today keeps its meaning:
 - render commands: `flow`, `arch`, `seq`, `schema`, `mermaid`, `bar`, `line`, `scatter`, `geo`, `chart <kind>`;
 - other commands: `validate`, `audit`, `infer`, `describe`, `export`, `doc`, `extract`, `monitor`, `sync`, `mcp`.
 
-New flags are additive: `--style`, `--defs`, `--toolkit`, `--font`, `--embed-fonts`, `--size`, `--aspect`.
+New flags are additive: `--style`, `--defs`, `--toolkit`, `--font`, `--embed-fonts`, `--size`, `--aspect`, `--fit`.
 
 ### 14.2 Input formats
 
