@@ -251,7 +251,7 @@ def _previous_drawing(a):
 
 
 def _previous_layers(a):
-    """The layers the last drawing's page kept for its edit mode (diff's rows), or None."""
+    """The layers the last drawing's page kept (diff's rows), or None."""
     from .diff import page_layers
     base, ext = os.path.splitext(a.o)
     if ext.lower() not in (".html", ".htm", ".svg"):
@@ -556,7 +556,7 @@ def main():
                 prev = {k: x for k, (x, _) in middles(old).items()}
             except ValueError:  # an old file that is not a figure this engine drew
                 old = None
-        info = {}  # the layout's layers, which the page's edit mode moves boxes between
+        info = {}  # the layout's layers, for the verdict and the page (diff reads them back)
         if a.cmd == "flow":
             svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed, prev=prev, info=info)
             item_cnt = len(spec.get("nodes", []))
@@ -574,8 +574,7 @@ def main():
         if old is not None:
             from .diff import diff
             changed = diff(old, svg, old_layers, info.get("layers"))["sentences"]
-        page = {"kind": a.cmd, "spec": a.spec, "out": a.o, "previous": old if changed else None, "changed": changed or [],
-                "layers": info.get("layers"), "across": bool(info.get("across"))}
+        page = {"kind": a.cmd, "previous": old if changed else None, "changed": changed or [], "layers": info.get("layers")}
         o, s = write_out(svg, a.cmd, spec.get("title", a.cmd), spec.get("sub", ""),
                          f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
                          caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",

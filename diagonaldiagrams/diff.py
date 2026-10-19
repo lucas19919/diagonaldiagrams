@@ -79,7 +79,7 @@ def _in_order(ids, rank):
 
 
 def page_layers(text):
-    """The layout's layers a diagram page keeps for its edit mode, or None (an SVG, or no page)."""
+    """The layout's layers a diagram page keeps, or None (an SVG, or no page)."""
     import json
     m = re.search(r'<script type="application/json" id="dd-page">(.*?)</script>', text, re.S)
     if not m:

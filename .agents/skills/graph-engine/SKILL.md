@@ -76,21 +76,21 @@ To walk someone through a figure, write a story: the figure, then views that `fo
 `diagonaldiagrams story STORY.json -o out/story.html` draws every view into one page that animates
 between them. `describe story` has the format; a warning means a selector matched nothing.
 
-## Edits from a person
+## Edits as patches
 
-A flow or arch page has Edit: rename, recolor, and drag boxes. It hands the person a patch, a JSON list like
-`[{"op": "place", "id": "fix", "row": ["review", "fix"]}]`. When they give you one, write it into the spec and
-draw again at the same `-o` path:
+To move, rename or recolor boxes, write a patch: a JSON list like
+`[{"op": "place", "id": "fix", "row": ["review", "fix"]}]` (`place` puts a box in a row, in that order). Write it
+into the spec and draw again at the same `-o` path:
 
 ```bash
 diagonaldiagrams apply SPEC.json patch.json
 diagonaldiagrams flow SPEC.json -o out/x.svg
 ```
 
-The verdict's `changed` lists what moved, so you can tell them in a sentence; their page animates the change.
-Keep their edits when you regenerate the spec: `place` writes `rank`, `order` and `same-rank`, which you should
+The verdict's `changed` lists what moved, so you can say it in a sentence; the page animates the change.
+Keep edits when you regenerate the spec: `place` writes `rank`, `order` and `same-rank`, which you should
 leave as they are. Keep the patch too: after regenerating, apply it again. Edits that still fit are written in
-(applying twice changes nothing); a `patch-conflict` names an edit the new spec contradicts, so tell the person.
+(applying twice changes nothing); a `patch-conflict` names an edit the new spec contradicts.
 `diff OLD NEW` compares any two drawings.
 
 Titles state the finding. Blue is HTTP, dashed is async, coral marks at most two focal items.

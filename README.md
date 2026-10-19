@@ -61,12 +61,16 @@ The audit reads the finished SVG: labels on labels, labels too wide for their bo
 | File | Contents |
 | --- | --- |
 | `OUT.svg` | The drawing. Title and subtitle are on the figure; points and bars have hover tooltips. |
-| `OUT.html` | The same figure, plus Copy SVG, Export SVG, and Export PNG. A diagram's page also has Edit. |
+| `OUT.html` | The same figure, plus Copy SVG, Export SVG, and Export PNG. A diagram's page also animates what changed since the last drawing. |
 | `OUT.graph.json` | The receipt. `export` redraws from it. |
 
 ## Edit and draw again
 
-A diagram's page has Edit. A person renames a box, recolors it, or moves it: within its row or into another one, a schema table into another column, a sequence's actor along the actors. In a sequence they also drag a message to another step and change its label. Everything works from the keyboard too: Tab or the arrows go from box to box (Down from an actor goes to its messages), Shift+arrows move the selected box or message, Enter renames, 1–6 pick a color, Ctrl+Z undoes. Nothing in the figure's files changes: each edit becomes a patch operation, which the page shows with Copy patch and Save patch.json.
+An edit is a patch: a JSON list of operations that say what changes, not where pixels go. `place` puts a box in a row, in that order; `order`, `text` and `style` reorder, rename and recolor; `add`, `remove` and `move-to-group` change what is drawn.
+
+```json
+[{"op": "place", "id": "fix", "row": ["review", "fix"]}, {"op": "text", "id": "review", "name": "Peer review"}]
+```
 
 ```text
 diagonaldiagrams apply deploy.json patch.json
@@ -74,9 +78,11 @@ diagonaldiagrams flow deploy.json -o out/deploy.svg
 {"ok": true, ..., "changed": ["Renamed \"Review\" to \"Peer review\"", "Row 4 now reads Peer review | Fix", "4 other boxes shifted, 103 px on average"]}
 ```
 
-`apply` writes the patch into the spec as fields and constraints, so the next generation of the spec keeps it. A drag becomes `{"op": "place", "id": "fix", "row": ["review", "fix"]}`: the box's row and its place in it, not pixels. Drawn again at the same path, the figure keeps the other boxes near their places, the verdict lists what `changed`, and the new page animates from the old drawing to the new one (Replay change shows it again; reduced motion turns it off). `diagonaldiagrams diff OLD NEW` prints the same list for any two drawings (two pages compare by the layout's own rows, which a wrapped figure's heights don't show). MCP has `apply` and `diff` tools.
+`apply` writes the patch into the spec as fields and constraints, so the next generation of the spec keeps it. Drawn again at the same path, the figure keeps the other boxes near their places, the verdict lists what `changed`, and the new page animates from the old drawing to the new one (Replay change shows it again; reduced motion turns it off). `diagonaldiagrams diff OLD NEW` prints the same list for any two drawings (two pages compare by the layout's own rows, which a wrapped figure's heights don't show). MCP has `apply` and `diff` tools.
 
 Keep the patch. When the spec is regenerated from a changed brief, apply it again: an edit that still fits is written in again (applying twice changes nothing), and one the new spec contradicts, such as a box that is gone or a name that changed, comes back as a `patch-conflict` with a fix. `tests/unit/test_regeneration.py` checks that every edit either shows in the new drawing or is reported.
+
+Until 2026-10-19 a diagram's page also had an Edit mode, where a person dragged boxes and copied the patch. It was removed: agents write patches themselves, and a person who wants to drag boxes can export to draw.io or Excalidraw (DESIGN 21.4).
 
 `export OUT --to png|pdf|svg|drawio|excalidraw` writes other formats. draw.io and Excalidraw exports keep boxes, frames, and the routed arrows attached to their boxes, so a person can open the figure and drag things around. PNG and PDF use cairosvg if installed, else headless Edge or Chrome.
 

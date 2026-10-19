@@ -75,8 +75,8 @@ svg{{display:block;max-width:100%;height:auto;margin:0 auto}}
 
 def write_out(svg, kind, title, sub, eyebrow, out, caption="", cap_title="", source="", corners="editorial", theme=None,
               page=None):
-    """Writes OUT.html and OUT.svg. page: a diagram's edit mode and change animation (web/page.js),
-    {"kind", "spec", "out", "previous": the SVG before an edit or None, "changed": [sentences]}."""
+    """Writes OUT.html and OUT.svg. page: a diagram's change animation (web/page.js), {"kind",
+    "layers": the layout's layers, "previous": the SVG before an edit or None, "changed": [sentences]}."""
     t = theme or THEME
     # -o NAME.html, NAME.svg, or NAME all give NAME.html + NAME.svg side by side
     base, ext = os.path.splitext(out)
@@ -98,7 +98,7 @@ def write_out(svg, kind, title, sub, eyebrow, out, caption="", cap_title="", sou
 
 
 def _page(page):
-    """The edit mode and change animation (web/page.js) and their settings, for a diagram's page."""
+    """The change animation (web/page.js) and its settings, for a diagram's page."""
     script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web", "page.js")
     with open(script, encoding="utf-8") as f:
         js = f.read()

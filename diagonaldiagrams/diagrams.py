@@ -17,7 +17,7 @@ def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), em
     """Draw a flow: steps in layers top to bottom, decisions branching sideways, loops climbing back
     up the side. auto ranks every node, ignoring the spec's ranks. prev: {node id: x} from the drawing
     before an edit, so the boxes the edit leaves alone stay near their places. info, if a dict, gets the
-    layout's layers (_layered), which the page's edit mode moves boxes between."""
+    layout's layers (_layered), for the verdict's rows and for diff."""
     t = theme or THEME
     sty = Styler(spec, "flow", t, corners, sheets)
     nodes = []

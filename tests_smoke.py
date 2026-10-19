@@ -1115,7 +1115,7 @@ def edit_loop_checks():
         return text, json.loads(data)
     rc, first = run("flow", spec, "-o", out)
     text, cfg = page()
-    check("a first drawing has no changes, and its page carries the edit mode",
+    check("a first drawing has no changes, and its page carries the change animation",
           rc == 0 and '"changed"' not in first and cfg["previous"] is None and cfg["kind"] == "flow" and "ddPage" in text, first[-200:])
     patch = os.path.join(home, "patch.json")
     with open(patch, "w", encoding="utf-8") as f:

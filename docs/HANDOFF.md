@@ -40,7 +40,7 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 ## What's next
 
 The owner asked for animation and better editing ahead of P5. Three slices are built (PLAN's P10 and P9 statuses, DESIGN 21.2 and 21.4 as-built):
-- **Edit loop:** every diagram page's Edit mode hands over a patch (`place`, `order`, `text`, `style`), by mouse or keyboard: boxes move within and between the layout's layers, a sequence's messages between steps. `apply` writes the patch; drawing again at the same path keeps the other boxes near their places, reports `changed`, and animates the old drawing into the new one. `diff` compares any two drawings. A kept patch applied again after the spec is regenerated keeps every edit or reports it (`tests/unit/test_regeneration.py`).
+- **Edit loop:** an agent writes a patch (`place`, `order`, `text`, `style`, ...); `apply` writes it into the spec; drawing again at the same path keeps the other boxes near their places, reports `changed`, and animates the old drawing into the new one. `diff` compares any two drawings. A kept patch applied again after the spec is regenerated keeps every edit or reports it (`tests/unit/test_regeneration.py`).
 - **Pins:** removed on `slice-slim` (2026-10-19). A pin on a flow or arch node is `not-drawn` again; `place`, `rank` and `order` say where a box goes (DESIGN 4.6). The router fixes pins exposed (B30) stay.
 - **Stories:** `story STORY.json -o OUT.html` presents one figure as views (focus, dim, hide, highlight, reveal) in one page that animates between them.
 - **Motion:** a view's `motion` block traces a path or sets dots flowing along arrows; the page plays it, and `story ... --gif` or `--video` films it (DESIGN 21.2.1).
