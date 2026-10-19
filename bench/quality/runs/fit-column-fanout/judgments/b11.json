@@ -1,0 +1,12 @@
+[
+  {"pair": "p01",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "B gives every edge its own clean path and label, and the dashed 'placed' and 'settled' events reach the Event bus separately. In A, 'placed' loops around the left of the Orders column, 'settled' and 'card' share the same stretch of line under Payments, and the 'email' label sits on a dashed line.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has larger text, cylinders for databases and spacing that lets each group breathe. A has crowded, overlapping routes below Payments and across the group frames, and plain boxes throughout.",
+    "weak_A": "tangled, overlapping edges near Payments and Event bus; the dashed loop around Orders",
+    "weak_B": "very tall, so it needs scrolling, and some connector lines are long and empty"},
+  {"pair": "p06",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B's text is larger at column width and the edges are spread out and easy to trace. A fits on one screen with a legend and highlighted Orders and Payments, but its labels are tiny and the dashed 'settled' and 'placed' lines run close together and cross the group border near Event bus.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A is compact and polished, with a consistent palette, type tags, a subtitle and a legend that explains blue, dashed and coral. B is a grey, plain, tall figure with no legend, and the thick lines are not explained.",
+    "weak_A": "very small text; crowded dashed edges around Event bus",
+    "weak_B": "tall and sparse, with no legend, and the thick-line meaning is unexplained"}
+]

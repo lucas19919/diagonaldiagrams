@@ -1,0 +1,270 @@
+{
+ "judgments": 32,
+ "overall": {
+  "clearer": {
+   "n": 32,
+   "dd_wins": 17,
+   "rate": 0.531
+  },
+  "looks": {
+   "n": 32,
+   "dd_wins": 29,
+   "rate": 0.906
+  }
+ },
+ "by_opponent": {
+  "mermaid|clearer": {
+   "n": 16,
+   "dd_wins": 11,
+   "rate": 0.688
+  },
+  "mermaid|looks": {
+   "n": 16,
+   "dd_wins": 16,
+   "rate": 1.0
+  },
+  "pele|clearer": {
+   "n": 16,
+   "dd_wins": 6,
+   "rate": 0.375
+  },
+  "pele|looks": {
+   "n": 16,
+   "dd_wins": 13,
+   "rate": 0.812
+  }
+ },
+ "by_opponent_context": {
+  "mermaid|column|clearer": {
+   "n": 16,
+   "dd_wins": 11,
+   "rate": 0.688
+  },
+  "mermaid|column|looks": {
+   "n": 16,
+   "dd_wins": 16,
+   "rate": 1.0
+  },
+  "pele|column|clearer": {
+   "n": 16,
+   "dd_wins": 6,
+   "rate": 0.375
+  },
+  "pele|column|looks": {
+   "n": 16,
+   "dd_wins": 13,
+   "rate": 0.812
+  }
+ },
+ "by_family_opponent_context": {
+  "L|mermaid|column|clearer": {
+   "n": 8,
+   "dd_wins": 4,
+   "rate": 0.5
+  },
+  "L|mermaid|column|looks": {
+   "n": 8,
+   "dd_wins": 8,
+   "rate": 1.0
+  },
+  "L|pele|column|clearer": {
+   "n": 8,
+   "dd_wins": 0,
+   "rate": 0.0
+  },
+  "L|pele|column|looks": {
+   "n": 8,
+   "dd_wins": 5,
+   "rate": 0.625
+  },
+  "N|mermaid|column|clearer": {
+   "n": 8,
+   "dd_wins": 7,
+   "rate": 0.875
+  },
+  "N|mermaid|column|looks": {
+   "n": 8,
+   "dd_wins": 8,
+   "rate": 1.0
+  },
+  "N|pele|column|clearer": {
+   "n": 8,
+   "dd_wins": 6,
+   "rate": 0.75
+  },
+  "N|pele|column|looks": {
+   "n": 8,
+   "dd_wins": 8,
+   "rate": 1.0
+  }
+ },
+ "by_size": {
+  "L|arch|mermaid|column|clearer": {
+   "n": 8,
+   "dd_wins": 4,
+   "rate": 0.5
+  },
+  "L|arch|mermaid|column|looks": {
+   "n": 8,
+   "dd_wins": 8,
+   "rate": 1.0
+  },
+  "L|arch|pele|column|clearer": {
+   "n": 8,
+   "dd_wins": 0,
+   "rate": 0.0
+  },
+  "L|arch|pele|column|looks": {
+   "n": 8,
+   "dd_wins": 5,
+   "rate": 0.625
+  }
+ },
+ "by_model": {
+  "opus|mermaid|clearer": {
+   "n": 8,
+   "dd_wins": 5,
+   "rate": 0.625
+  },
+  "opus|mermaid|looks": {
+   "n": 8,
+   "dd_wins": 8,
+   "rate": 1.0
+  },
+  "opus|pele|clearer": {
+   "n": 8,
+   "dd_wins": 3,
+   "rate": 0.375
+  },
+  "opus|pele|looks": {
+   "n": 8,
+   "dd_wins": 8,
+   "rate": 1.0
+  },
+  "sonnet|mermaid|clearer": {
+   "n": 8,
+   "dd_wins": 6,
+   "rate": 0.75
+  },
+  "sonnet|mermaid|looks": {
+   "n": 8,
+   "dd_wins": 8,
+   "rate": 1.0
+  },
+  "sonnet|pele|clearer": {
+   "n": 8,
+   "dd_wins": 3,
+   "rate": 0.375
+  },
+  "sonnet|pele|looks": {
+   "n": 8,
+   "dd_wins": 5,
+   "rate": 0.625
+  }
+ },
+ "by_dd_first": {
+  "False|clearer": {
+   "n": 16,
+   "dd_wins": 9,
+   "rate": 0.562
+  },
+  "False|looks": {
+   "n": 16,
+   "dd_wins": 14,
+   "rate": 0.875
+  },
+  "True|clearer": {
+   "n": 16,
+   "dd_wins": 8,
+   "rate": 0.5
+  },
+  "True|looks": {
+   "n": 16,
+   "dd_wins": 15,
+   "rate": 0.938
+  }
+ },
+ "order_agreement": 0.875,
+ "by_pair": {
+  "L-ref-arch-agent-platform-dd~mermaid|column|clearer": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "L-ref-arch-agent-platform-dd~mermaid|column|looks": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "L-ref-arch-agent-platform-dd~pele|column|clearer": {
+   "n": 4,
+   "dd_wins": 0,
+   "rate": 0.0
+  },
+  "L-ref-arch-agent-platform-dd~pele|column|looks": {
+   "n": 4,
+   "dd_wins": 3,
+   "rate": 0.75
+  },
+  "L-ref-arch-checkout-groups-dd~mermaid|column|clearer": {
+   "n": 4,
+   "dd_wins": 0,
+   "rate": 0.0
+  },
+  "L-ref-arch-checkout-groups-dd~mermaid|column|looks": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "L-ref-arch-checkout-groups-dd~pele|column|clearer": {
+   "n": 4,
+   "dd_wins": 0,
+   "rate": 0.0
+  },
+  "L-ref-arch-checkout-groups-dd~pele|column|looks": {
+   "n": 4,
+   "dd_wins": 2,
+   "rate": 0.5
+  },
+  "N-ref-arch-agent-platform-dd~mermaid|column|clearer": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "N-ref-arch-agent-platform-dd~mermaid|column|looks": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "N-ref-arch-agent-platform-dd~pele|column|clearer": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "N-ref-arch-agent-platform-dd~pele|column|looks": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "N-ref-arch-checkout-groups-dd~mermaid|column|clearer": {
+   "n": 4,
+   "dd_wins": 3,
+   "rate": 0.75
+  },
+  "N-ref-arch-checkout-groups-dd~mermaid|column|looks": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  },
+  "N-ref-arch-checkout-groups-dd~pele|column|clearer": {
+   "n": 4,
+   "dd_wins": 2,
+   "rate": 0.5
+  },
+  "N-ref-arch-checkout-groups-dd~pele|column|looks": {
+   "n": 4,
+   "dd_wins": 4,
+   "rate": 1.0
+  }
+ }
+}

@@ -1,0 +1,7 @@
+[
+  {"pair": "p03",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "B's fan-out lines from Agent are spaced and each ends at its labelled target with legible labels; in A the 'draw' and 'execute' labels collide and the five parallel lines from Agent run tightly together and are hard to trace, with small text.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has a consistent muted palette, larger text, uppercase group headers, a highlighted orange prompt path and a tidy single column; A is wide and shrunk, with gray label highlights, clashing pastel group colours and cramped lines.",
+    "weak_A": "colliding draw/execute labels and a tight bundle of parallel lines, small text",
+    "weak_B": "long tall layout with a dense bundle of five parallel lines running down the right side"}
+]

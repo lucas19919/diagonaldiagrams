@@ -1,0 +1,12 @@
+[
+  {"pair": "p07",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A keeps each arrow on its own distinct route with every label readable. B bundles four near-parallel lines out of Agent, and the 'draw' and 'execute' labels collide and overlap lines.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A has a consistent palette, icons, rounded cards and a legend. B has mixed pastel group fills, grey label boxes, thick and thin strokes and tangled lines.",
+    "weak_A": "Long routed lines (svg, execute) wrap around the left side, and the image is tall",
+    "weak_B": "Parallel line bundle from Agent with overlapping 'draw'/'execute' labels"},
+  {"pair": "p08",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "B is compact and every arrow is short, with a clear top-to-bottom flow and a legend. In A, Auth and Catalog have very long vertical lines to Redis, and the Orders and Payments dashed lines to Kafka run far down the page.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B is balanced and polished, with colour coding, type tags and a highlighted Orders to Payments pair. A is sparse and has large empty areas and stretched lines.",
+    "weak_A": "Long stretched connectors and wide empty space, and the figure is split across two images",
+    "weak_B": "Dashed 'settled' and 'placed' lines cross near the Event bus and sit close together"}
+]

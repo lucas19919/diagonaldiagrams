@@ -1,0 +1,7 @@
+[
+  {"pair": "p01",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A's labels sit on their lines and each fan-out arrow lands on its target with the label next to it (prompt, search, execute, draw, events). In B five long parallel lines run down the right side and the labels float beside them, so it is hard to tell which line goes where; persist/ingest from the Event bus are ambiguous.",
+    "looks": "A", "looks_margin": "slight", "looks_why": "A is compact and balanced, with a tidy fan-out and distinct line weights for the main prompt path and dashed events. B has nicer typography and an orange highlight, but the tall bundle of parallel lines and the loose layout look tangled.",
+    "weak_A": "plain styling, small text, and the fan-out lines from Agent run tightly parallel",
+    "weak_B": "long parallel line bundle down the right side and floating labels make routing hard to follow"}
+]

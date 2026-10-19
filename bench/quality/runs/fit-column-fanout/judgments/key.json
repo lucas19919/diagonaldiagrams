@@ -1,0 +1,1473 @@
+{
+ "pairs": {
+  "A-05-r1-dd~pele": {
+   "id": "A-05-r1-dd~pele",
+   "family": "A",
+   "size": "05",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-05-r1-dd",
+    "A-05-r1-pele"
+   ]
+  },
+  "A-05-r1-dd~mermaid": {
+   "id": "A-05-r1-dd~mermaid",
+   "family": "A",
+   "size": "05",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-05-r1-dd",
+    "A-05-r1-mermaid"
+   ]
+  },
+  "A-05-r2-dd~pele": {
+   "id": "A-05-r2-dd~pele",
+   "family": "A",
+   "size": "05",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-05-r2-dd",
+    "A-05-r2-pele"
+   ]
+  },
+  "A-05-r2-dd~mermaid": {
+   "id": "A-05-r2-dd~mermaid",
+   "family": "A",
+   "size": "05",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-05-r2-dd",
+    "A-05-r2-mermaid"
+   ]
+  },
+  "A-11-r1-dd~pele": {
+   "id": "A-11-r1-dd~pele",
+   "family": "A",
+   "size": "11",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-11-r1-dd",
+    "A-11-r1-pele"
+   ]
+  },
+  "A-11-r1-dd~mermaid": {
+   "id": "A-11-r1-dd~mermaid",
+   "family": "A",
+   "size": "11",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-11-r1-dd",
+    "A-11-r1-mermaid"
+   ]
+  },
+  "A-11-r2-dd~pele": {
+   "id": "A-11-r2-dd~pele",
+   "family": "A",
+   "size": "11",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-11-r2-dd",
+    "A-11-r2-pele"
+   ]
+  },
+  "A-11-r2-dd~mermaid": {
+   "id": "A-11-r2-dd~mermaid",
+   "family": "A",
+   "size": "11",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-11-r2-dd",
+    "A-11-r2-mermaid"
+   ]
+  },
+  "A-20-r1-dd~pele": {
+   "id": "A-20-r1-dd~pele",
+   "family": "A",
+   "size": "20",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-20-r1-dd",
+    "A-20-r1-pele"
+   ]
+  },
+  "A-20-r1-dd~mermaid": {
+   "id": "A-20-r1-dd~mermaid",
+   "family": "A",
+   "size": "20",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-20-r1-dd",
+    "A-20-r1-mermaid"
+   ]
+  },
+  "A-20-r2-dd~pele": {
+   "id": "A-20-r2-dd~pele",
+   "family": "A",
+   "size": "20",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-20-r2-dd",
+    "A-20-r2-pele"
+   ]
+  },
+  "A-20-r2-dd~mermaid": {
+   "id": "A-20-r2-dd~mermaid",
+   "family": "A",
+   "size": "20",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-20-r2-dd",
+    "A-20-r2-mermaid"
+   ]
+  },
+  "A-40-r1-dd~pele": {
+   "id": "A-40-r1-dd~pele",
+   "family": "A",
+   "size": "40",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-40-r1-dd",
+    "A-40-r1-pele"
+   ]
+  },
+  "A-40-r1-dd~mermaid": {
+   "id": "A-40-r1-dd~mermaid",
+   "family": "A",
+   "size": "40",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-40-r1-dd",
+    "A-40-r1-mermaid"
+   ]
+  },
+  "A-40-r2-dd~pele": {
+   "id": "A-40-r2-dd~pele",
+   "family": "A",
+   "size": "40",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "A-40-r2-dd",
+    "A-40-r2-pele"
+   ]
+  },
+  "A-40-r2-dd~mermaid": {
+   "id": "A-40-r2-dd~mermaid",
+   "family": "A",
+   "size": "40",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "A-40-r2-dd",
+    "A-40-r2-mermaid"
+   ]
+  },
+  "L-bench-05-a-dd~pele": {
+   "id": "L-bench-05-a-dd~pele",
+   "family": "L",
+   "size": "05",
+   "source": "bench-05-a",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-05-a-dd",
+    "L-bench-05-a-pele"
+   ]
+  },
+  "L-bench-05-a-dd~mermaid": {
+   "id": "L-bench-05-a-dd~mermaid",
+   "family": "L",
+   "size": "05",
+   "source": "bench-05-a",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-05-a-dd",
+    "L-bench-05-a-mermaid"
+   ]
+  },
+  "L-bench-05-b-dd~pele": {
+   "id": "L-bench-05-b-dd~pele",
+   "family": "L",
+   "size": "05",
+   "source": "bench-05-b",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-05-b-dd",
+    "L-bench-05-b-pele"
+   ]
+  },
+  "L-bench-05-b-dd~mermaid": {
+   "id": "L-bench-05-b-dd~mermaid",
+   "family": "L",
+   "size": "05",
+   "source": "bench-05-b",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-05-b-dd",
+    "L-bench-05-b-mermaid"
+   ]
+  },
+  "L-bench-11-a-dd~pele": {
+   "id": "L-bench-11-a-dd~pele",
+   "family": "L",
+   "size": "11",
+   "source": "bench-11-a",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-11-a-dd",
+    "L-bench-11-a-pele"
+   ]
+  },
+  "L-bench-11-a-dd~mermaid": {
+   "id": "L-bench-11-a-dd~mermaid",
+   "family": "L",
+   "size": "11",
+   "source": "bench-11-a",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-11-a-dd",
+    "L-bench-11-a-mermaid"
+   ]
+  },
+  "L-bench-11-b-dd~pele": {
+   "id": "L-bench-11-b-dd~pele",
+   "family": "L",
+   "size": "11",
+   "source": "bench-11-b",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-11-b-dd",
+    "L-bench-11-b-pele"
+   ]
+  },
+  "L-bench-11-b-dd~mermaid": {
+   "id": "L-bench-11-b-dd~mermaid",
+   "family": "L",
+   "size": "11",
+   "source": "bench-11-b",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-11-b-dd",
+    "L-bench-11-b-mermaid"
+   ]
+  },
+  "L-bench-20-a-dd~pele": {
+   "id": "L-bench-20-a-dd~pele",
+   "family": "L",
+   "size": "20",
+   "source": "bench-20-a",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-20-a-dd",
+    "L-bench-20-a-pele"
+   ]
+  },
+  "L-bench-20-a-dd~mermaid": {
+   "id": "L-bench-20-a-dd~mermaid",
+   "family": "L",
+   "size": "20",
+   "source": "bench-20-a",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-20-a-dd",
+    "L-bench-20-a-mermaid"
+   ]
+  },
+  "L-bench-20-b-dd~pele": {
+   "id": "L-bench-20-b-dd~pele",
+   "family": "L",
+   "size": "20",
+   "source": "bench-20-b",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-20-b-dd",
+    "L-bench-20-b-pele"
+   ]
+  },
+  "L-bench-20-b-dd~mermaid": {
+   "id": "L-bench-20-b-dd~mermaid",
+   "family": "L",
+   "size": "20",
+   "source": "bench-20-b",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-20-b-dd",
+    "L-bench-20-b-mermaid"
+   ]
+  },
+  "L-bench-40-a-dd~pele": {
+   "id": "L-bench-40-a-dd~pele",
+   "family": "L",
+   "size": "40",
+   "source": "bench-40-a",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-40-a-dd",
+    "L-bench-40-a-pele"
+   ]
+  },
+  "L-bench-40-a-dd~mermaid": {
+   "id": "L-bench-40-a-dd~mermaid",
+   "family": "L",
+   "size": "40",
+   "source": "bench-40-a",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-40-a-dd",
+    "L-bench-40-a-mermaid"
+   ]
+  },
+  "L-bench-40-b-dd~pele": {
+   "id": "L-bench-40-b-dd~pele",
+   "family": "L",
+   "size": "40",
+   "source": "bench-40-b",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-bench-40-b-dd",
+    "L-bench-40-b-pele"
+   ]
+  },
+  "L-bench-40-b-dd~mermaid": {
+   "id": "L-bench-40-b-dd~mermaid",
+   "family": "L",
+   "size": "40",
+   "source": "bench-40-b",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-bench-40-b-dd",
+    "L-bench-40-b-mermaid"
+   ]
+  },
+  "L-ex-er-shop-dd~pele": {
+   "id": "L-ex-er-shop-dd~pele",
+   "family": "L",
+   "size": "er",
+   "source": "ex-er-shop",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ex-er-shop-dd",
+    "L-ex-er-shop-pele"
+   ]
+  },
+  "L-ex-er-shop-dd~mermaid": {
+   "id": "L-ex-er-shop-dd~mermaid",
+   "family": "L",
+   "size": "er",
+   "source": "ex-er-shop",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ex-er-shop-dd",
+    "L-ex-er-shop-mermaid"
+   ]
+  },
+  "L-ex-flow-how-it-works-dd~pele": {
+   "id": "L-ex-flow-how-it-works-dd~pele",
+   "family": "L",
+   "size": "flow",
+   "source": "ex-flow-how-it-works",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ex-flow-how-it-works-dd",
+    "L-ex-flow-how-it-works-pele"
+   ]
+  },
+  "L-ex-flow-how-it-works-dd~mermaid": {
+   "id": "L-ex-flow-how-it-works-dd~mermaid",
+   "family": "L",
+   "size": "flow",
+   "source": "ex-flow-how-it-works",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ex-flow-how-it-works-dd",
+    "L-ex-flow-how-it-works-mermaid"
+   ]
+  },
+  "L-ex-seq-checkout-dd~pele": {
+   "id": "L-ex-seq-checkout-dd~pele",
+   "family": "L",
+   "size": "seq",
+   "source": "ex-seq-checkout",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ex-seq-checkout-dd",
+    "L-ex-seq-checkout-pele"
+   ]
+  },
+  "L-ex-seq-checkout-dd~mermaid": {
+   "id": "L-ex-seq-checkout-dd~mermaid",
+   "family": "L",
+   "size": "seq",
+   "source": "ex-seq-checkout",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ex-seq-checkout-dd",
+    "L-ex-seq-checkout-mermaid"
+   ]
+  },
+  "L-ref-arch-agent-platform-dd~pele": {
+   "id": "L-ref-arch-agent-platform-dd~pele",
+   "family": "L",
+   "size": "arch",
+   "source": "ref-arch-agent-platform",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ref-arch-agent-platform-dd",
+    "L-ref-arch-agent-platform-pele"
+   ]
+  },
+  "L-ref-arch-agent-platform-dd~mermaid": {
+   "id": "L-ref-arch-agent-platform-dd~mermaid",
+   "family": "L",
+   "size": "arch",
+   "source": "ref-arch-agent-platform",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ref-arch-agent-platform-dd",
+    "L-ref-arch-agent-platform-mermaid"
+   ]
+  },
+  "L-ref-arch-checkout-groups-dd~pele": {
+   "id": "L-ref-arch-checkout-groups-dd~pele",
+   "family": "L",
+   "size": "arch",
+   "source": "ref-arch-checkout-groups",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ref-arch-checkout-groups-dd",
+    "L-ref-arch-checkout-groups-pele"
+   ]
+  },
+  "L-ref-arch-checkout-groups-dd~mermaid": {
+   "id": "L-ref-arch-checkout-groups-dd~mermaid",
+   "family": "L",
+   "size": "arch",
+   "source": "ref-arch-checkout-groups",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ref-arch-checkout-groups-dd",
+    "L-ref-arch-checkout-groups-mermaid"
+   ]
+  },
+  "L-ref-schema-ecommerce-dd~pele": {
+   "id": "L-ref-schema-ecommerce-dd~pele",
+   "family": "L",
+   "size": "schema",
+   "source": "ref-schema-ecommerce",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ref-schema-ecommerce-dd",
+    "L-ref-schema-ecommerce-pele"
+   ]
+  },
+  "L-ref-schema-ecommerce-dd~mermaid": {
+   "id": "L-ref-schema-ecommerce-dd~mermaid",
+   "family": "L",
+   "size": "schema",
+   "source": "ref-schema-ecommerce",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ref-schema-ecommerce-dd",
+    "L-ref-schema-ecommerce-mermaid"
+   ]
+  },
+  "L-ref-schema-store-dd~pele": {
+   "id": "L-ref-schema-store-dd~pele",
+   "family": "L",
+   "size": "schema",
+   "source": "ref-schema-store",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ref-schema-store-dd",
+    "L-ref-schema-store-pele"
+   ]
+  },
+  "L-ref-schema-store-dd~mermaid": {
+   "id": "L-ref-schema-store-dd~mermaid",
+   "family": "L",
+   "size": "schema",
+   "source": "ref-schema-store",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ref-schema-store-dd",
+    "L-ref-schema-store-mermaid"
+   ]
+  },
+  "L-ref-seq-checkout-dd~pele": {
+   "id": "L-ref-seq-checkout-dd~pele",
+   "family": "L",
+   "size": "seq",
+   "source": "ref-seq-checkout",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ref-seq-checkout-dd",
+    "L-ref-seq-checkout-pele"
+   ]
+  },
+  "L-ref-seq-checkout-dd~mermaid": {
+   "id": "L-ref-seq-checkout-dd~mermaid",
+   "family": "L",
+   "size": "seq",
+   "source": "ref-seq-checkout",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ref-seq-checkout-dd",
+    "L-ref-seq-checkout-mermaid"
+   ]
+  },
+  "L-ref-seq-toolloop-dd~pele": {
+   "id": "L-ref-seq-toolloop-dd~pele",
+   "family": "L",
+   "size": "seq",
+   "source": "ref-seq-toolloop",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "L-ref-seq-toolloop-dd",
+    "L-ref-seq-toolloop-pele"
+   ]
+  },
+  "L-ref-seq-toolloop-dd~mermaid": {
+   "id": "L-ref-seq-toolloop-dd~mermaid",
+   "family": "L",
+   "size": "seq",
+   "source": "ref-seq-toolloop",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "L-ref-seq-toolloop-dd",
+    "L-ref-seq-toolloop-mermaid"
+   ]
+  },
+  "N-ref-arch-agent-platform-dd~pele": {
+   "id": "N-ref-arch-agent-platform-dd~pele",
+   "family": "N",
+   "size": "arch",
+   "source": "ref-arch-agent-platform",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "N-ref-arch-agent-platform-dd",
+    "L-ref-arch-agent-platform-pele"
+   ]
+  },
+  "N-ref-arch-agent-platform-dd~mermaid": {
+   "id": "N-ref-arch-agent-platform-dd~mermaid",
+   "family": "N",
+   "size": "arch",
+   "source": "ref-arch-agent-platform",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "N-ref-arch-agent-platform-dd",
+    "L-ref-arch-agent-platform-mermaid"
+   ]
+  },
+  "N-ref-arch-checkout-groups-dd~pele": {
+   "id": "N-ref-arch-checkout-groups-dd~pele",
+   "family": "N",
+   "size": "arch",
+   "source": "ref-arch-checkout-groups",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "N-ref-arch-checkout-groups-dd",
+    "L-ref-arch-checkout-groups-pele"
+   ]
+  },
+  "N-ref-arch-checkout-groups-dd~mermaid": {
+   "id": "N-ref-arch-checkout-groups-dd~mermaid",
+   "family": "N",
+   "size": "arch",
+   "source": "ref-arch-checkout-groups",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "N-ref-arch-checkout-groups-dd",
+    "L-ref-arch-checkout-groups-mermaid"
+   ]
+  },
+  "N-ref-schema-ecommerce-dd~pele": {
+   "id": "N-ref-schema-ecommerce-dd~pele",
+   "family": "N",
+   "size": "schema",
+   "source": "ref-schema-ecommerce",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "N-ref-schema-ecommerce-dd",
+    "L-ref-schema-ecommerce-pele"
+   ]
+  },
+  "N-ref-schema-ecommerce-dd~mermaid": {
+   "id": "N-ref-schema-ecommerce-dd~mermaid",
+   "family": "N",
+   "size": "schema",
+   "source": "ref-schema-ecommerce",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "N-ref-schema-ecommerce-dd",
+    "L-ref-schema-ecommerce-mermaid"
+   ]
+  },
+  "N-ref-schema-store-dd~pele": {
+   "id": "N-ref-schema-store-dd~pele",
+   "family": "N",
+   "size": "schema",
+   "source": "ref-schema-store",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "N-ref-schema-store-dd",
+    "L-ref-schema-store-pele"
+   ]
+  },
+  "N-ref-schema-store-dd~mermaid": {
+   "id": "N-ref-schema-store-dd~mermaid",
+   "family": "N",
+   "size": "schema",
+   "source": "ref-schema-store",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "N-ref-schema-store-dd",
+    "L-ref-schema-store-mermaid"
+   ]
+  },
+  "N-ref-seq-checkout-dd~pele": {
+   "id": "N-ref-seq-checkout-dd~pele",
+   "family": "N",
+   "size": "seq",
+   "source": "ref-seq-checkout",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "N-ref-seq-checkout-dd",
+    "L-ref-seq-checkout-pele"
+   ]
+  },
+  "N-ref-seq-checkout-dd~mermaid": {
+   "id": "N-ref-seq-checkout-dd~mermaid",
+   "family": "N",
+   "size": "seq",
+   "source": "ref-seq-checkout",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "N-ref-seq-checkout-dd",
+    "L-ref-seq-checkout-mermaid"
+   ]
+  },
+  "N-ref-seq-toolloop-dd~pele": {
+   "id": "N-ref-seq-toolloop-dd~pele",
+   "family": "N",
+   "size": "seq",
+   "source": "ref-seq-toolloop",
+   "tools": [
+    "dd",
+    "pele"
+   ],
+   "figs": [
+    "N-ref-seq-toolloop-dd",
+    "L-ref-seq-toolloop-pele"
+   ]
+  },
+  "N-ref-seq-toolloop-dd~mermaid": {
+   "id": "N-ref-seq-toolloop-dd~mermaid",
+   "family": "N",
+   "size": "seq",
+   "source": "ref-seq-toolloop",
+   "tools": [
+    "dd",
+    "mermaid"
+   ],
+   "figs": [
+    "N-ref-seq-toolloop-dd",
+    "L-ref-seq-toolloop-mermaid"
+   ]
+  }
+ },
+ "batches": {
+  "b07": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 2,
+     "pair": "N-ref-arch-checkout-groups-dd~mermaid",
+     "A": "L-ref-arch-checkout-groups-mermaid",
+     "B": "N-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p02-A-1of2.png",
+       "p02-A-2of2.png"
+      ],
+      "B": [
+       "p02-B.png"
+      ]
+     }
+    },
+    {
+     "n": 3,
+     "pair": "N-ref-arch-agent-platform-dd~mermaid",
+     "A": "L-ref-arch-agent-platform-mermaid",
+     "B": "N-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p03-A-1of2.png",
+       "p03-A-2of2.png"
+      ],
+      "B": [
+       "p03-B-1of2.png",
+       "p03-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "pair": "L-ref-arch-checkout-groups-dd~mermaid",
+     "A": "L-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-mermaid",
+     "files": {
+      "A": [
+       "p04-A.png"
+      ],
+      "B": [
+       "p04-B-1of2.png",
+       "p04-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "pair": "L-ref-arch-agent-platform-dd~mermaid",
+     "A": "L-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-mermaid",
+     "files": {
+      "A": [
+       "p08-A-1of2.png",
+       "p08-A-2of2.png"
+      ],
+      "B": [
+       "p08-B-1of2.png",
+       "p08-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b09": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 8,
+     "pair": "N-ref-arch-agent-platform-dd~pele",
+     "A": "L-ref-arch-agent-platform-pele",
+     "B": "N-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p08-A-1of2.png",
+       "p08-A-2of2.png"
+      ],
+      "B": [
+       "p08-B-1of2.png",
+       "p08-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b10": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 1,
+     "pair": "L-ref-arch-agent-platform-dd~pele",
+     "A": "L-ref-arch-agent-platform-pele",
+     "B": "L-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p01-A-1of2.png",
+       "p01-A-2of2.png"
+      ],
+      "B": [
+       "p01-B-1of2.png",
+       "p01-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b11": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 1,
+     "pair": "L-ref-arch-checkout-groups-dd~pele",
+     "A": "L-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-pele",
+     "files": {
+      "A": [
+       "p01-A.png"
+      ],
+      "B": [
+       "p01-B-1of2.png",
+       "p01-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "pair": "N-ref-arch-checkout-groups-dd~pele",
+     "A": "N-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-pele",
+     "files": {
+      "A": [
+       "p06-A.png"
+      ],
+      "B": [
+       "p06-B-1of2.png",
+       "p06-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b13": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 7,
+     "pair": "N-ref-arch-agent-platform-dd~mermaid",
+     "A": "N-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-mermaid",
+     "files": {
+      "A": [
+       "p07-A-1of2.png",
+       "p07-A-2of2.png"
+      ],
+      "B": [
+       "p07-B-1of2.png",
+       "p07-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "pair": "N-ref-arch-checkout-groups-dd~pele",
+     "A": "L-ref-arch-checkout-groups-pele",
+     "B": "N-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p08-A-1of2.png",
+       "p08-A-2of2.png"
+      ],
+      "B": [
+       "p08-B.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b15": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 3,
+     "pair": "L-ref-arch-agent-platform-dd~mermaid",
+     "A": "L-ref-arch-agent-platform-mermaid",
+     "B": "L-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p03-A-1of2.png",
+       "p03-A-2of2.png"
+      ],
+      "B": [
+       "p03-B-1of2.png",
+       "p03-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b16": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 5,
+     "pair": "L-ref-arch-checkout-groups-dd~mermaid",
+     "A": "L-ref-arch-checkout-groups-mermaid",
+     "B": "L-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p05-A-1of2.png",
+       "p05-A-2of2.png"
+      ],
+      "B": [
+       "p05-B.png"
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "pair": "L-ref-arch-checkout-groups-dd~pele",
+     "A": "L-ref-arch-checkout-groups-pele",
+     "B": "L-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p08-A-1of2.png",
+       "p08-A-2of2.png"
+      ],
+      "B": [
+       "p08-B.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b17": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 4,
+     "pair": "N-ref-arch-agent-platform-dd~pele",
+     "A": "N-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-pele",
+     "files": {
+      "A": [
+       "p04-A-1of2.png",
+       "p04-A-2of2.png"
+      ],
+      "B": [
+       "p04-B-1of2.png",
+       "p04-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "pair": "L-ref-arch-agent-platform-dd~pele",
+     "A": "L-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-pele",
+     "files": {
+      "A": [
+       "p08-A-1of2.png",
+       "p08-A-2of2.png"
+      ],
+      "B": [
+       "p08-B-1of2.png",
+       "p08-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b18": {
+   "model": "sonnet",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 10,
+     "pair": "N-ref-arch-checkout-groups-dd~mermaid",
+     "A": "N-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-mermaid",
+     "files": {
+      "A": [
+       "p10-A.png"
+      ],
+      "B": [
+       "p10-B-1of2.png",
+       "p10-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b25": {
+   "model": "opus",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 6,
+     "pair": "L-ref-arch-agent-platform-dd~mermaid",
+     "A": "L-ref-arch-agent-platform-mermaid",
+     "B": "L-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p06-A-1of2.png",
+       "p06-A-2of2.png"
+      ],
+      "B": [
+       "p06-B-1of2.png",
+       "p06-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "pair": "N-ref-arch-checkout-groups-dd~pele",
+     "A": "L-ref-arch-checkout-groups-pele",
+     "B": "N-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p07-A-1of2.png",
+       "p07-A-2of2.png"
+      ],
+      "B": [
+       "p07-B.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b26": {
+   "model": "opus",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 3,
+     "pair": "L-ref-arch-agent-platform-dd~pele",
+     "A": "L-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-pele",
+     "files": {
+      "A": [
+       "p03-A-1of2.png",
+       "p03-A-2of2.png"
+      ],
+      "B": [
+       "p03-B-1of2.png",
+       "p03-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "pair": "N-ref-arch-agent-platform-dd~mermaid",
+     "A": "N-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-mermaid",
+     "files": {
+      "A": [
+       "p05-A-1of2.png",
+       "p05-A-2of2.png"
+      ],
+      "B": [
+       "p05-B-1of2.png",
+       "p05-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b29": {
+   "model": "opus",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 2,
+     "pair": "N-ref-arch-agent-platform-dd~pele",
+     "A": "L-ref-arch-agent-platform-pele",
+     "B": "N-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p02-A-1of2.png",
+       "p02-A-2of2.png"
+      ],
+      "B": [
+       "p02-B-1of2.png",
+       "p02-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "pair": "L-ref-arch-checkout-groups-dd~mermaid",
+     "A": "L-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-mermaid",
+     "files": {
+      "A": [
+       "p05-A.png"
+      ],
+      "B": [
+       "p05-B-1of2.png",
+       "p05-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "pair": "N-ref-arch-checkout-groups-dd~mermaid",
+     "A": "N-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-mermaid",
+     "files": {
+      "A": [
+       "p06-A.png"
+      ],
+      "B": [
+       "p06-B-1of2.png",
+       "p06-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b30": {
+   "model": "opus",
+   "context": "column",
+   "order": 0,
+   "items": [
+    {
+     "n": 3,
+     "pair": "L-ref-arch-checkout-groups-dd~pele",
+     "A": "L-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-pele",
+     "files": {
+      "A": [
+       "p03-A.png"
+      ],
+      "B": [
+       "p03-B-1of2.png",
+       "p03-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b31": {
+   "model": "opus",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 6,
+     "pair": "L-ref-arch-checkout-groups-dd~pele",
+     "A": "L-ref-arch-checkout-groups-pele",
+     "B": "L-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p06-A-1of2.png",
+       "p06-A-2of2.png"
+      ],
+      "B": [
+       "p06-B.png"
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "pair": "L-ref-arch-checkout-groups-dd~mermaid",
+     "A": "L-ref-arch-checkout-groups-mermaid",
+     "B": "L-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p09-A-1of2.png",
+       "p09-A-2of2.png"
+      ],
+      "B": [
+       "p09-B.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b32": {
+   "model": "opus",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 3,
+     "pair": "N-ref-arch-checkout-groups-dd~mermaid",
+     "A": "L-ref-arch-checkout-groups-mermaid",
+     "B": "N-ref-arch-checkout-groups-dd",
+     "files": {
+      "A": [
+       "p03-A-1of2.png",
+       "p03-A-2of2.png"
+      ],
+      "B": [
+       "p03-B.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b34": {
+   "model": "opus",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 8,
+     "pair": "N-ref-arch-agent-platform-dd~pele",
+     "A": "N-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-pele",
+     "files": {
+      "A": [
+       "p08-A-1of2.png",
+       "p08-A-2of2.png"
+      ],
+      "B": [
+       "p08-B-1of2.png",
+       "p08-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "pair": "L-ref-arch-agent-platform-dd~pele",
+     "A": "L-ref-arch-agent-platform-pele",
+     "B": "L-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p09-A-1of2.png",
+       "p09-A-2of2.png"
+      ],
+      "B": [
+       "p09-B-1of2.png",
+       "p09-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 10,
+     "pair": "N-ref-arch-agent-platform-dd~mermaid",
+     "A": "L-ref-arch-agent-platform-mermaid",
+     "B": "N-ref-arch-agent-platform-dd",
+     "files": {
+      "A": [
+       "p10-A-1of2.png",
+       "p10-A-2of2.png"
+      ],
+      "B": [
+       "p10-B-1of2.png",
+       "p10-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  },
+  "b35": {
+   "model": "opus",
+   "context": "column",
+   "order": 1,
+   "items": [
+    {
+     "n": 2,
+     "pair": "N-ref-arch-checkout-groups-dd~pele",
+     "A": "N-ref-arch-checkout-groups-dd",
+     "B": "L-ref-arch-checkout-groups-pele",
+     "files": {
+      "A": [
+       "p02-A.png"
+      ],
+      "B": [
+       "p02-B-1of2.png",
+       "p02-B-2of2.png"
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "pair": "L-ref-arch-agent-platform-dd~mermaid",
+     "A": "L-ref-arch-agent-platform-dd",
+     "B": "L-ref-arch-agent-platform-mermaid",
+     "files": {
+      "A": [
+       "p08-A-1of2.png",
+       "p08-A-2of2.png"
+      ],
+      "B": [
+       "p08-B-1of2.png",
+       "p08-B-2of2.png"
+      ]
+     }
+    }
+   ]
+  }
+ }
+}

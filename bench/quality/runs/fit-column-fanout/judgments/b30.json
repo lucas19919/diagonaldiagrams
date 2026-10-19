@@ -1,0 +1,7 @@
+[
+  {"pair": "p03",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B gives every edge its own line and label (verify, browse, checkout each leave the gateway separately; settled, card, placed each run on their own), with larger text and cylinder shapes for the stores. In A, verify/browse share one horizontal trunk, settled and card share a line out of Payments, and the dashed 'placed' edge detours left through the Checkout core box, so it is harder to tell which arrow goes where.",
+    "looks": "A", "looks_margin": "slight", "looks_why": "A is compact, fits in one view, has a neat card style and an orange accent tracing the checkout-to-charge path. B looks plainer and wireframe-like, with long empty vertical runs (Auth/Catalog down to Redis) that make it twice as tall.",
+    "weak_A": "shared edge trunks and the looping 'placed' dashed edge crossing the core group",
+    "weak_B": "tall and sparse, with long vertical runs spreading over two screens"}
+]
