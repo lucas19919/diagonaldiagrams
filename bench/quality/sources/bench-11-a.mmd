@@ -1,0 +1,13 @@
+flowchart TD
+    S([Request received]) --> A1[1. Load customer account]
+    A1 --> A2[2. Score fraud risk]
+    A2 --> D3{3. Check 1 passed?}
+    D3 -- Yes --> A4[4. Charge card]
+    D3 -- No --> A1
+    A4 --> A5[5. Write ledger entry]
+    A5 --> A6[6. Notify warehouse]
+    A6 --> D7{7. Check 2 passed?}
+    D7 -- Yes --> A8[8. Send receipt]
+    D7 -- No --> E([Done])
+    A8 --> A9[9. Update order status]
+    A9 --> E

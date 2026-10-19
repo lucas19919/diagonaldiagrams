@@ -1,0 +1,21 @@
+---
+title: Tool loop
+---
+sequenceDiagram
+    actor user as User
+    participant agent as Agent
+    participant model as Model
+    participant tools as Tools
+    participant ledger as Ledger
+    user->>agent: Ask
+    agent->>model: Plan
+    model-->>agent: Call tool
+    agent->>tools: Search
+    tools-->>agent: Passages
+    agent->>model: Ground
+    model-->>agent: Draft
+    agent->>ledger: Record
+    ledger-->>agent: Stored
+    agent-->>user: Answer
+    user->>agent: Follow up
+    agent->>model: Revise

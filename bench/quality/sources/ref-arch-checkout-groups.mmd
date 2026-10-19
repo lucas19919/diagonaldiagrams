@@ -1,0 +1,39 @@
+---
+title: Checkout platform, grouped
+---
+flowchart TD
+    subgraph edge [Clients]
+        web["Web app<br/>React"]
+        mobile["Mobile app<br/>Swift"]
+    end
+    gw["API gateway<br/>Envoy:443"]
+    auth["Auth<br/>Go:8081"]
+    catalog["Catalog<br/>Go:8082"]
+    subgraph core [Checkout core]
+        orders["Orders<br/>Kotlin:8083"]
+        pay["Payments<br/>Kotlin:8084"]
+        pg[("Postgres<br/>orders, ledger")]
+    end
+    redis[("Redis<br/>sessions, cache")]
+    bus[["Event bus<br/>Kafka"]]
+    stripe["Stripe<br/>external"]
+    subgraph async [Event consumers]
+        inventory["Inventory<br/>reserve stock"]
+        notify["Notifications<br/>email, push"]
+        analytics[("Analytics<br/>ClickHouse")]
+    end
+    web -->|calls| gw
+    mobile -->|calls| gw
+    gw -->|verify| auth
+    gw -->|browse| catalog
+    gw ==>|checkout| orders
+    orders ==>|charge| pay
+    auth -->|session| redis
+    catalog -->|cache| redis
+    orders -->|write| pg
+    orders -.->|placed| bus
+    pay -->|card| stripe
+    pay -.->|settled| bus
+    bus -.->|reserve| inventory
+    bus -.->|email| notify
+    bus -.->|ingest| analytics

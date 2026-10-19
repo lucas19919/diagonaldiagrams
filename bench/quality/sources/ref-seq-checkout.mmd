@@ -1,0 +1,17 @@
+---
+title: Order Checkout Sequence
+---
+sequenceDiagram
+    actor user as Customer
+    participant fe as Web App
+    participant api as API Gateway
+    participant pay as Payment Svc
+    participant db as Postgres
+    user->>fe: Submit Order
+    fe->>api: POST /checkout
+    api->>pay: Authorize Card
+    pay->>db: Store Ledger TX
+    db-->>pay: TX Committed
+    pay-->>api: Payment Succeeded
+    api-->>fe: 201 Created (Order #491)
+    fe-->>user: Show Confirmation

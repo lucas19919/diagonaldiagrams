@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="database schema" data-legibility="all" viewBox="0 0 1260 462" width="1260">
+<title>Training store</title>
+<desc>Training store</desc>
+<rect width="1260" height="462" fill="#f5f5f5" aria-hidden="true"/>
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#4f5d75"/></marker><marker id="aa" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#eb6c36"/></marker><marker id="al" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#636c82"/></marker></defs>
+<text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Training store</text>
+<rect x="30" y="150" width="240" height="152" rx="6" fill="#ffffff" stroke="#7d8699" stroke-width="1" data-node="datasets" data-label="datasets" role="graphics-symbol" aria-roledescription="table" aria-label="datasets: id (primary key), name, rows, sha256"/>
+<path d="M30,186 L30,156 Q30,150 36,150 L264,150 Q270,150 270,156 L270,186 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="30" y1="186" x2="270" y2="186" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="42" y="173" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">datasets</text>
+<rect x="40" y="199" width="22" height="14" rx="3" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="51" y="209.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#b34212" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="68" y="209" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="258" y="209" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="36" y1="218" x2="264" y2="218" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="40" y="233" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">name</text>
+<text x="258" y="233" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">text</text>
+<line x1="36" y1="242" x2="264" y2="242" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="40" y="257" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">rows</text>
+<text x="258" y="257" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">bigint</text>
+<line x1="36" y1="266" x2="264" y2="266" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="40" y="281" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">sha256</text>
+<text x="258" y="281" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">char(64)</text>
+<rect x="350" y="138" width="240" height="176" rx="6" fill="#ffffff" stroke="#7d8699" stroke-width="1" data-node="runs" data-label="runs" role="graphics-symbol" aria-roledescription="table" aria-label="runs: id (primary key), dataset_id (foreign key), name, status, started_at"/>
+<path d="M350,174 L350,144 Q350,138 356,138 L584,138 Q590,138 590,144 L590,174 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="350" y1="174" x2="590" y2="174" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="362" y="161" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">runs</text>
+<rect x="360" y="187" width="22" height="14" rx="3" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="371" y="197.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#b34212" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="388" y="197" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="578" y="197" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="356" y1="206" x2="584" y2="206" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<rect x="360" y="211" width="22" height="14" rx="3" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
+<text x="371" y="221.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
+<text x="388" y="221" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">dataset_id</text>
+<text x="578" y="221" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="356" y1="230" x2="584" y2="230" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="360" y="245" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">name</text>
+<text x="578" y="245" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">text</text>
+<line x1="356" y1="254" x2="584" y2="254" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="360" y="269" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">status</text>
+<text x="578" y="269" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">text</text>
+<line x1="356" y1="278" x2="584" y2="278" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="360" y="293" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">started_at</text>
+<text x="578" y="293" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">timestamptz</text>
+<rect x="670" y="54" width="240" height="152" rx="6" fill="#ffffff" stroke="#7d8699" stroke-width="1" data-node="checkpoints" data-label="checkpoints" role="graphics-symbol" aria-roledescription="table" aria-label="checkpoints: id (primary key), run_id (foreign key), step, loss"/>
+<path d="M670,90 L670,60 Q670,54 676,54 L904,54 Q910,54 910,60 L910,90 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="670" y1="90" x2="910" y2="90" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="682" y="77" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">checkpoints</text>
+<rect x="680" y="103" width="22" height="14" rx="3" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="691" y="113.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#b34212" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="708" y="113" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="898" y="113" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="676" y1="122" x2="904" y2="122" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<rect x="680" y="127" width="22" height="14" rx="3" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
+<text x="691" y="137.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
+<text x="708" y="137" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">run_id</text>
+<text x="898" y="137" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="676" y1="146" x2="904" y2="146" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="680" y="161" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">step</text>
+<text x="898" y="161" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">integer</text>
+<line x1="676" y1="170" x2="904" y2="170" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="680" y="185" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">loss</text>
+<text x="898" y="185" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">float</text>
+<rect x="670" y="246" width="240" height="152" rx="6" fill="#ffffff" stroke="#7d8699" stroke-width="1" data-node="metrics" data-label="metrics" role="graphics-symbol" aria-roledescription="table" aria-label="metrics: id (primary key), run_id (foreign key), split, score"/>
+<path d="M670,282 L670,252 Q670,246 676,246 L904,246 Q910,246 910,252 L910,282 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="670" y1="282" x2="910" y2="282" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="682" y="269" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">metrics</text>
+<rect x="680" y="295" width="22" height="14" rx="3" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="691" y="305.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#b34212" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="708" y="305" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="898" y="305" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="676" y1="314" x2="904" y2="314" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<rect x="680" y="319" width="22" height="14" rx="3" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
+<text x="691" y="329.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
+<text x="708" y="329" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">run_id</text>
+<text x="898" y="329" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="676" y1="338" x2="904" y2="338" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="680" y="353" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">split</text>
+<text x="898" y="353" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">text</text>
+<line x1="676" y1="362" x2="904" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="680" y="377" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">score</text>
+<text x="898" y="377" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">float</text>
+<rect x="990" y="54" width="240" height="152" rx="6" fill="#ffffff" stroke="#7d8699" stroke-width="1" data-node="evals" data-label="evals" role="graphics-symbol" aria-roledescription="table" aria-label="evals: id (primary key), check_id (foreign key), task, score"/>
+<path d="M990,90 L990,60 Q990,54 996,54 L1224,54 Q1230,54 1230,60 L1230,90 Z" fill="rgba(45,49,66,0.06)" aria-hidden="true"/>
+<line x1="990" y1="90" x2="1230" y2="90" stroke="rgba(45,49,66,0.12)" stroke-width="1" aria-hidden="true"/>
+<text x="1002" y="77" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="table" aria-hidden="true">evals</text>
+<rect x="1000" y="103" width="22" height="14" rx="3" fill="#eb6c36" fill-opacity=".15" aria-hidden="true"/>
+<text x="1011" y="113.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#b34212" text-anchor="middle" aria-hidden="true">PK</text>
+<text x="1028" y="113" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">id</text>
+<text x="1218" y="113" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="996" y1="122" x2="1224" y2="122" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<rect x="1000" y="127" width="22" height="14" rx="3" fill="#2e5aa8" fill-opacity=".15" aria-hidden="true"/>
+<text x="1011" y="137.2" font-size="9" font-weight="700" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2e5aa8" text-anchor="middle" aria-hidden="true">FK</text>
+<text x="1028" y="137" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">check_id</text>
+<text x="1218" y="137" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">uuid</text>
+<line x1="996" y1="146" x2="1224" y2="146" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="1000" y="161" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">task</text>
+<text x="1218" y="161" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">text</text>
+<line x1="996" y1="170" x2="1224" y2="170" stroke="rgba(45,49,66,0.12)" stroke-width="0.5" aria-hidden="true"/>
+<text x="1000" y="185" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" aria-hidden="true">score</text>
+<text x="1218" y="185" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end" aria-hidden="true">float</text>
+<path d="M270,226 L350,226" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="datasets" data-to="runs" data-label="1:N 1:N" data-id="datasets-&gt;runs:1:N 1:N" role="graphics-symbol" aria-roledescription="relation" aria-label="datasets to runs: 1:N 1:N"/>
+<path d="M590,215 L622,215 Q630,215 630,207 L630,150 Q630,142 638,142 L670,142" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="runs" data-to="checkpoints" data-label="1:N 1:N" data-id="runs-&gt;checkpoints:1:N 1:N" role="graphics-symbol" aria-roledescription="relation" aria-label="runs to checkpoints: 1:N 1:N"/>
+<path d="M590,237 L622,237 Q630,237 630,245 L630,302 Q630,310 638,310 L670,310" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="runs" data-to="metrics" data-label="1:N 1:N" data-id="runs-&gt;metrics:1:N 1:N" role="graphics-symbol" aria-roledescription="relation" aria-label="runs to metrics: 1:N 1:N"/>
+<path d="M910,130 L990,130" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="checkpoints" data-to="evals" data-label="1:N 1:N" data-id="checkpoints-&gt;evals:1:N 1:N" role="graphics-symbol" aria-roledescription="relation" aria-label="checkpoints to evals: 1:N 1:N"/>
+<rect x="288" y="206" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="310" y="218" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N 1:N</text>
+<rect x="620" y="122" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="642" y="134" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N 1:N</text>
+<rect x="620" y="314" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="642" y="326" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N 1:N</text>
+<rect x="928" y="110" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="950" y="122" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">1:N 1:N</text>
+<line x1="30" y1="422" x2="1230" y2="422" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="440" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">PK = primary key, FK = foreign key, blue = relation</text>
+</svg>
