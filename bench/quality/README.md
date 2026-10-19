@@ -64,6 +64,41 @@ Text size where each figure lands, bench flows (median px, [measure.py](measure.
 No tool's 20- or 40-step flow is readable on an A4 page; dd's is the least bad. dd's own text is also smaller to
 begin with: 13 px names and 11 px subtitles and sequence messages, against Pele's 16 and Mermaid's 14-16.
 
+## Rerun in the column with `--fit column` (2026-10-19)
+
+Fix 1 below is built on branch `fit-placement` (0216277): `--fit slide|page|column`. The column placement was
+judged again with dd drawn at `--fit column`: no wrapping, at most 640 px wide, wide rows dealt into stacked
+columns, wide schemas stacked. Pele's and Mermaid's figures, the 62 pairs, the 24 batches (same pairs, sides and
+blind names as b07-b18 and b25-b36), the judge prompt and the judge models were the same as before. That makes
+248 judgments; the two orders agree in 96%. Full tables: [runs/fit-column/results.md](runs/fit-column/results.md).
+
+| against | clearer, before → after | better looking, before → after |
+| --- | --- | --- |
+| Pele | 56% → **68%** (84/124) | 84% → **78%** (97/124) |
+| Mermaid | 65% → **77%** (95/124) | 86% → **86%** (107/124) |
+
+Flowcharts (agent figures and same-source figures, 16 judgments a cell), clearer:
+
+| steps | vs Pele | vs Mermaid |
+| --- | --- | --- |
+| 5, 11 | 100% → 100% | 100% → 100% |
+| 20 | 69% → **100%** | 56% → **100%** |
+| 40 | 19% → **100%** | 6% → **100%** |
+
+dd's 20- and 40-step flows now win every column judgment on both questions. As one strip they keep their 13 px
+text; wrapped, they had 5-8 px.
+
+Other types did not gain, and arch lost:
+- **Arch:** N (dd's native specs) fell from 88% and 100% clearer to 50% and 50%, and L stayed at 0% against Pele
+  (25% → 0% against Mermaid). Both checkout-groups figures lost every judgment. Text is larger now (9-13 px
+  against 5.5-10.5), but the narrow layouts run long wrap-around edges, put the labels far from them and take
+  three screens. Judges preferred compact drawings at smaller sizes. `--fit column` should probably
+  leave a wide arch figure's layers whole, since dd's own wide arch won here before.
+- **Schema and ER:** about the same (L 0% → 0% against Pele, N 25% → 38%). Stacked tables keep 11 px text, but
+  every loss names the ER drawing (fix 2): relation lines leave from arbitrary rows (Mermaid ER gives no columns),
+  no crow's feet, and "1:N 1:N" doubled labels. Opus judges add that a single stack hides the tree's fan-out.
+- **Sequence** figures are the same drawings in both runs; their verdicts moved by at most one judgment of four.
+
 ## What to fix, ranked by how often it loses
 
 160 judgments went against dd. Each loss's reason and "dd's weakness" phrase were tagged by keyword
@@ -166,4 +201,33 @@ py -3 bench/quality/report.py
 
 ```bash
 py -3 bench/quality/sheet.py
+```
+
+The `--fit column` rerun, with dd from a checkout of `fit-placement` (the column PNGs are not committed; raster.py
+rebuilds them from runs/fit-column/svg):
+
+```bash
+py -3 bench/quality/render.py --run fit-column --fit column --dd PATH_TO_FIT_PLACEMENT_CHECKOUT
+```
+
+```bash
+py -3 bench/quality/raster.py --run fit-column --context column
+```
+
+```bash
+py -3 bench/quality/pairs.py JUDGE_DIR --run fit-column --context column
+```
+
+```bash
+py -3 bench/quality/prompts.py JUDGE_DIR --run fit-column
+```
+
+Then one judge per batch as above, then:
+
+```bash
+py -3 bench/quality/tally.py JUDGE_DIR --run fit-column
+```
+
+```bash
+py -3 bench/quality/compare.py fit-column
 ```

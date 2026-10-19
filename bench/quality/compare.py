@@ -78,6 +78,7 @@ def main():
     text = "\n".join(out) + "\n"
     with open(os.path.join(HERE, "runs", run, "results.md"), "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
+    sys.stdout.reconfigure(encoding="utf-8")
     print(text)
 
 
