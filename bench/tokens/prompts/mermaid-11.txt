@@ -1,0 +1,7 @@
+Use Mermaid CLI (mmdc). Run it as `D:\Repos\diagonaldiagrams-bench-tools\bin\mmdc.cmd -i IN.mmd -o OUT.svg` (OUT.png also works). Its options: `D:\Repos\diagonaldiagrams-bench-tools\bin\mmdc.cmd --help`.
+
+Draw this process as a flowchart. It has 11 steps, counting the start and the end.
+
+The process starts when a request is received. First, load the customer account (step 1) and score the fraud risk (step 2). Step 3 checks whether check 1 passed: if it did, go on to step 4; if not, go back to step 1. Then charge the card (step 4), write the ledger entry (step 5) and notify the warehouse (step 6). Step 7 checks whether check 2 passed: if it did, go on to step 8; if not, skip straight to the end. Then send the receipt (step 8) and update the order status (step 9). Then the process is done.
+
+Make the figure clean and readable, with no overlapping text. Work in D:\Repos\diagonaldiagrams-bench-runs\mermaid-11-RUN and save the figure there as figure.svg. When you are done, reply with the path to figure.svg and any commands that failed.
