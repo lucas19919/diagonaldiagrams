@@ -304,6 +304,16 @@ class FuzzRegressions(unittest.TestCase):
                            "nodes": [{"id": i, "name": t, "shape": s, "rank": r} for i, t, s, r in nodes],
                            "edges": [dict({"from": a, "to": b}, **({"label": t} if t else {})) for a, b, t in edges]})
 
+    def test_a_decision_side_exit_turning_past_another_boxs_port_item(self):
+        # the decision's second side exit stepped out past two port items, onto the line out to Log's port item
+        nodes = [("n0", "Start", "oval", 0), ("n1", "Valid? (1)", "diamond", 1), ("n2", "Valid? (2)", "diamond", 1),
+                 ("n3", "Log", "rect", 1), ("n4", "Log", "rect", 2), ("n5", "Valid? (5)", "diamond", 2), ("n6", "Log", "rect", 2)]
+        edges = [("n0", "n2", ""), ("n3", "n4", ""), ("n1", "n5", "yes"), ("n2", "n4", "yes"), ("n2", "n6", "no"),
+                 ("n2", "n0", "maybe"), ("n5", "n3", "no")]
+        self.draw("flow", {"title": "Fuzz flow 7", "budget": False,
+                           "nodes": [{"id": i, "name": t, "shape": s, "rank": r} for i, t, s, r in nodes],
+                           "edges": [dict({"from": a, "to": b}, **({"label": t} if t else {})) for a, b, t in edges]})
+
 
 if __name__ == "__main__":
     unittest.main()
