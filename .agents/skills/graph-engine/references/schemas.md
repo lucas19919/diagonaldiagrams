@@ -46,7 +46,7 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
 {
   "input": "JSON spec {title, sub, nodes[], edges[], groups[]}",
   "writes": "diagonaldiagrams flow SPEC.json -o OUT.svg",
-  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, at most 640 px wide (wide rows split, schema tables stack)",
+  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, about 640 px wide (a wide layer splits into rows where that takes less room than shrinking the figure; schema tables stack)",
   "node": {
     "id": "unique",
     "shape": "oval=start/end | rect=step | diamond=decision | dot=merge",
@@ -86,7 +86,7 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
 {
   "input": "JSON spec {title, sub, nodes[], edges[]}",
   "writes": "diagonaldiagrams arch SPEC.json -o OUT.svg",
-  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, at most 640 px wide (wide rows split, schema tables stack)",
+  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, about 640 px wide (a wide layer splits into rows where that takes less room than shrinking the figure; schema tables stack)",
   "node": {
     "id": "unique",
     "layer": "row int (default 0)",
@@ -158,7 +158,7 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
 {
   "input": "JSON spec {title, sub, tables[], relations[]}",
   "writes": "diagonaldiagrams schema SPEC.json -o OUT.svg",
-  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, at most 640 px wide (wide rows split, schema tables stack)",
+  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, about 640 px wide (a wide layer splits into rows where that takes less room than shrinking the figure; schema tables stack)",
   "table": {
     "id": "unique",
     "name": "table_name",

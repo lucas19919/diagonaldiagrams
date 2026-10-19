@@ -56,7 +56,7 @@ The audit reads the finished SVG: labels on labels, labels too wide for their bo
 
 `describe <type>` prints the contract for any type. Long names wrap inside their boxes. Loops are drawn back up the outside. Built-in icons (`describe icons`) cover users, databases, servers, queues, and more; in Mermaid, write `fa:fa-database`.
 
-`--fit` says where a flow, arch or schema figure will be read. `slide`, the default, wraps a long flow into columns that fill a slide. `column` is for a README, docs or notes column: no wrapping, at most 640 px wide, so the text stays full size and the reader scrolls. `page` is for a printed page. In Mermaid, put `fit: column` in the front matter.
+`--fit` says where a flow, arch or schema figure will be read. `slide`, the default, wraps a long flow into columns that fill a slide. `column` is for a README, docs or notes column: no wrapping, about 640 px wide, so the text stays near full size and the reader scrolls. `page` is for a printed page. In Mermaid, put `fit: column` in the front matter.
 
 ## Output
 

@@ -6,7 +6,7 @@ from .charts.catalog import _chart_meta
 # where a figure goes (diagrams.FITS), for flow, arch and schema
 FIT = ("{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. "
        "page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: "
-       "no wrap, at most 640 px wide (wide rows split, schema tables stack)")
+       "no wrap, about 640 px wide (a wide layer splits into rows where that takes less room than shrinking the figure; schema tables stack)")
 
 
 DESCRIBE = {

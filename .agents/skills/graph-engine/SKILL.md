@@ -40,8 +40,8 @@ verdict. Each extra look costs a full round trip.
 Pick `--fit` for where the figure will be read, so its text stays full size there:
 
 - `--fit column` for a README, docs page, wiki, notes app or chat: a column about 700 px wide, read by
-  scrolling. A long flow stays one tall strip, a wide row splits into rows, schema tables stack, and
-  the figure is at most 640 px wide.
+  scrolling. A long flow stays one tall strip, a wide row splits into rows where that takes less room
+  than shrinking the figure, schema tables stack, and the figure is about 640 px wide.
 - `--fit slide` (the default) for a deck or a full-width screen: a long flow wraps into columns.
 - `--fit page` for a printed or PDF page: a long flow wraps toward portrait.
 

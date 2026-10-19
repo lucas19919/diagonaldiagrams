@@ -343,7 +343,7 @@ def main():
                        help="the font for the figure's text: a family name, or a .ttf/.otf/.ttc/.woff file to measure with")
         p.add_argument("--fit", default=None, choices=_FITS,
                        help="where the figure goes: slide (default; a long flow wraps into columns), page (a document "
-                            "page) or column (a docs or notes column: no wrap, at most 640 px wide)")
+                            "page) or column (a docs or notes column: no wrap, about 640 px wide)")
         _render_parsers[name] = p
     _render_parsers["flow"].add_argument("--auto", action="store_true",
                                          help="force longest-path layering (default when no ranks given)")

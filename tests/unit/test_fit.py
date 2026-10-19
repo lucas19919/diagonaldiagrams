@@ -7,7 +7,8 @@ import sys
 import tempfile
 import unittest
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, ROOT)
 
 from diagonaldiagrams import api  # noqa: E402
 from diagonaldiagrams.diagrams import ASPECT, _fit, render_arch, render_flow, render_schema  # noqa: E402
@@ -71,7 +72,8 @@ class Kernel(unittest.TestCase):
         wide = layered.layout(nodes, edges, (), {})
         narrow = layered.layout(nodes, edges, (), {"max_width": 580.0})
         self.assertGreater(wide.size[0], 1400)
-        self.assertLessEqual(narrow.size[0], 580)
+        self.assertLess(narrow.size[0], wide.size[0] / 2)
+        self.assertLess(layered.room(narrow.size, {"max_width": 580.0}), layered.room(wide.size, {"max_width": 580.0}))
         self.assertGreater(len({narrow.rank[f"s{i}"] for i in range(8)}), 1)
         boxes = {n["id"]: (narrow.pos[n["id"]][0] - 80, narrow.pos[n["id"]][1] - 28,
                            narrow.pos[n["id"]][0] + 80, narrow.pos[n["id"]][1] + 28) for n in nodes}
@@ -81,6 +83,15 @@ class Kernel(unittest.TestCase):
         for r in narrow.routes.values():  # and every arrow still runs across or up and down
             for (x0, y0), (x1, y1) in zip(r.points, r.points[1:]):
                 self.assertTrue(abs(x0 - x1) < 0.01 or abs(y0 - y1) < 0.01, r.points)
+
+    def test_a_layer_that_rows_would_only_make_taller_stays_whole(self):
+        # four boxes are a little too wide; two rows of two would add more height than the width they
+        # save (layered.room), so the layer stays one row and the figure is shrunk instead
+        nodes = [{"id": "gw", "w": 150, "h": 56}] + [{"id": f"s{i}", "w": 150, "h": 56} for i in range(4)]
+        edges = [{"id": f"e{i}", "from": "gw", "to": f"s{i}"} for i in range(4)]
+        res = layered.layout(nodes, edges, (), {"max_width": 580.0})
+        self.assertGreater(res.size[0], 580)
+        self.assertEqual({res.rank[f"s{i}"] for i in range(4)}, {1})
 
     def test_a_layer_that_fits_stays_one_row(self):
         nodes = [{"id": "gw", "w": 160, "h": 56}] + [{"id": f"s{i}", "w": 160, "h": 56} for i in range(3)]
@@ -123,6 +134,18 @@ class Renders(unittest.TestCase):
         svg, w, h = render_arch(fan_out("column"), info=info)
         self.assertLessEqual(w, 640)
         self.assertGreater(len(info["layers"]), 3)
+
+    def test_grouped_architecture_keeps_its_layers_where_rows_take_more_of_the_column(self):
+        # dealt into rows it ran three screens tall with arrows wrapping around them, and lost every
+        # blind judgment in a column (bench-quality-fit); whole and shrunk, it takes less of the column
+        with open(os.path.join(ROOT, "examples", "checkout_groups.json"), encoding="utf-8") as f:
+            spec = json.load(f)
+        slide, column = {}, {}
+        render_arch(spec, info=slide)
+        svg, w, h = render_arch(dict(spec, size={"fit": "column"}), info=column)
+        self.assertEqual(column["layers"], slide["layers"])
+        self.assertGreater(w, 640)
+        self.assertLess(h, 1000)
 
     def test_a_schema_too_wide_for_a_column_stacks_its_tables(self):
         info = {}

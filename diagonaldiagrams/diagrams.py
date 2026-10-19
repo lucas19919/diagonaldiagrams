@@ -188,6 +188,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
                same_rank=[s for s in same if len(s) > 1])
     if most:  # narrowed to fit: rows may hold one box, so each frame keeps room for its title
         lay["max_width"] = most - 2 * MARGIN
+        lay["chrome"] = max(MARGIN, head_h + 12) + (64 if legend else MARGIN)  # the heading and legend
         lay["heads"] = {g["id"]: paint.frame_title(g, sty.group(g["id"])["title"])[1] for g in groups}
     res = layered.layout(lnodes, ledges, frames_in, lay)
     if stack and most and res.size[0] + 2 * MARGIN > most:

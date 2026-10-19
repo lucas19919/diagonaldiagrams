@@ -10,7 +10,8 @@
 - groups: [{"id", "members": [node ids], "parent"?}].
 - options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "prev" ({node
   id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room",
-  "min_width" and "max_width" (TB and BT: a layer too wide for it spreads over rows, rows.py).
+  "min_width" and "max_width" (TB and BT: a layer too wide for it spreads over rows, rows.py,
+  where that takes less of the column, room(); "chrome": the height drawn around the layout).
   Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
 
 The steps: break cycles (back_edges), rank (ranks), add a dummy wherever an arrow passes a layer and
@@ -84,8 +85,9 @@ def layout(nodes, edges, groups=(), options=None):
     if not most or str(o["direction"]).upper() not in ("TB", "BT") or res.size[0] <= most:
         return res
     # too wide for where it goes (a fit's column or page): each layer too wide for it on its own
-    # deals its boxes over rows (rows.py), one row more each try, until the figure fits; else the
-    # narrowest try stands
+    # deals its boxes over rows (rows.py), one row more each try, until the figure fits. A try
+    # stands only where it takes less of the column than the layers kept whole (room()): rows
+    # stacked like a comb can cost more height, and longer arrows, than the width they save
     best, tried = res, set()
     for more in range(5):
         res = _layout(nodes, edges, groups, dict(o, more_rows=more))
@@ -93,11 +95,19 @@ def layout(nodes, edges, groups=(), options=None):
         if seen in tried:  # the same rows as a try before
             continue
         tried.add(seen)
-        if res.size[0] < best.size[0] - 0.5:
+        if room(res.size, o) < room(best.size, o):
             best = res
         if res.size[0] <= most:
-            return res
+            break
     return best
+
+
+def room(size, o):
+    """How much of a column o["max_width"] wide a layout of size (w, h) takes with its text at full
+    size: its height, with o["chrome"] (the title and legend around it), times its width in column
+    widths, o["margin"] on each side. A layout narrower than the column still takes all its width."""
+    pad = 2 * o.get("margin", 0.0)
+    return (size[1] + o.get("chrome", 0.0)) * max(size[0] + pad, o["max_width"] + pad) / (o["max_width"] + pad)
 
 
 def _layout(nodes, edges, groups, o):
