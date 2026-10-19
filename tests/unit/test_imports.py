@@ -1,4 +1,4 @@
-"""Import rules (PLAN P2.13, DESIGN 15): the core never reaches the command line, the MCP server,
+"""Import rules: the core never reaches the command line, the MCP server,
 the API or the writers, not even through another module or an import inside a function.
 Run: py -3 -m unittest discover tests/unit"""
 import ast
@@ -7,7 +7,7 @@ import unittest
 
 PKG = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "diagonaldiagrams")
 
-# today's names for DESIGN 15's layers: scene, style (_theme), text (_text), geom, and the display list
+# the layers: scene, style (_theme), text (_text), geom, and the display list
 CORE = ["scene", "scene.model", "scene.normalize", "scene.ids", "scene.patch", "geom", "_text", "_theme",
         "displaylist", "errors", "sanitize", "deco", "config", "style", "style.tokens", "style.parse", "style.select", "style.cascade", "style.encode", "text", "text.markup", "text.measure", "text.fonts", "text.shaper"]
 # emit (_output, export, apply write files), cli, mcp, api, and the process plumbing

@@ -1,4 +1,4 @@
-/* diagonaldiagrams: a story's presenter (DESIGN 21.2, 21.5).
+/* diagonaldiagrams: a story's presenter.
  *
  * The page holds every frame the engine drew: one per view, or one per reveal step. All frames have
  * the same layout, so moving between them changes only looks (opacity, stroke, fill, line width)
@@ -6,7 +6,7 @@
  * Space, Page Up/Down, Home, End; N shows the speaker notes. The address bar keeps the view and
  * step (#view or #view/2), so a link opens the story where it was.
  *
- * A frame with motion (DESIGN 21.2.1) carries its schedule. While it shows, a layer above the
+ * A frame with motion carries its schedule. While it shows, a layer above the
  * figure plays it (web/motion.js evaluates it at each animation frame); P pauses it. It is taken
  * out before a move between frames, so the frames still match element by element. Under reduced
  * motion the layer is one still moment: the path lit, no packets.

@@ -36,7 +36,7 @@ Other diagram types, one Mermaid source drawn by each tool (clearer, slide / col
 
 From dd's own native specs (our reference figures) against Pele and Mermaid drawing the Mermaid translation, dd does
 better: arch 88-100% clearer in both placements, sequence 62-100%, schema 100% on slides but 25-50% in the column.
-Full tables: [results.md](results.md). Every pair, unblinded, with each judge's reasons: [sheet.html](sheet.html).
+Full tables: [results.md](results.md). Every verdict, unblinded, with each judge's reasons: [judgments/all.csv](judgments/all.csv).
 
 **Where each wins.** The owner's guess holds: placement decides it.
 - **Slides, decks, page-wide figures:** dd wins almost everything. Pele and Mermaid draw 20 and 40 steps as one strip
@@ -191,8 +191,8 @@ Found along the way, not judged:
 
 ## Method
 
-**Figures** ([render.py](render.py), 81 SVGs in [svg/](svg)):
-- **A, agent figures (16 pairs):** the token benchmark's figures as each agent left them (D:\Repos\diagonaldiagrams-bench-runs):
+**Figures** ([render.py](render.py) draws them into `svg/`; the images are not committed, so run it first):
+- **A, agent figures (16 pairs):** the token benchmark's figures as each agent left them (kept outside the repository):
   dd against Pele and against Mermaid at 5, 11, 20 and 40 steps, run 1 with run 1 and run 2 with run 2. Content
   differs: each agent wrote its own labels, titles and colours.
 - **L, same source (34 pairs):** 17 Mermaid sources in [sources/](sources), each drawn fresh by all three tools: the
@@ -202,8 +202,7 @@ Found along the way, not judged:
 - **N, native (12 pairs):** dd drawing those six references from their native specs (examples/*.json), against Pele
   and Mermaid drawing the translation.
 
-**Placements** ([raster.py](raster.py), drawn by headless Edge from the SVG, no raster rescaling; images in
-[png/](png)):
+**Placements** ([raster.py](raster.py), drawn by headless Edge from the SVG, no raster rescaling, into `png/`):
 - `slide`: a 1600 x 900 slide, the figure fitted into 1520 x 820 and centred (enlarged up to 2x).
 - `column`: a 700 px column at 1.5x, the figure at its own size or shrunk to 668 px wide. Tall figures were cut into
   1050 x 1100 tiles, which the judge read top to bottom.
@@ -223,8 +222,8 @@ Sonnet and Opus agree within 1-3 points on clarity; Opus favours dd's looks a li
 the column).
 
 **Caveats.**
-- The judges are vision models, and they are not blind to style: dd's look is recognisable across pairs. The human
-  check is [sheet.html](sheet.html), still to do.
+- The judges are vision models, and they are not blind to style: dd's look is recognisable across pairs. A human spot
+  check (`sheet.py` builds a page of every pair) is still to do.
 - Pele was judged without host CSS. In Obsidian it takes the vault's theme, which would change its looks, not its layout.
 - The six translations are mine, and the doubled-label caveat above applies to them.
 - The committed PNGs are 256-colour copies (to keep the repo small); the judges saw the full-colour originals, which

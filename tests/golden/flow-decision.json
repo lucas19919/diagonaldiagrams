@@ -4,7 +4,7 @@
   "examples/flow_decision.json"
  ],
  "exit": 0,
- "html_sha256": "812e7ae68ff057d31278acc8929f02393ff6c7cd51bcda3202818cd8556ac87e",
+ "html_sha256": "d593238c494391b4484d574129b5839b4a598b5641d69065d24950b6a928420c",
  "receipt": {
   "auto": false,
   "cmd": "flow",

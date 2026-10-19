@@ -1,4 +1,4 @@
-"""Font files and measuring (PLAN P3.5, DESIGN 6.1). The fonts are built here, byte by byte, so the
+"""Font files and measuring. The fonts are built here, byte by byte, so the
 test needs nothing installed. Run: py -3 -m unittest discover tests/unit"""
 import os
 import struct

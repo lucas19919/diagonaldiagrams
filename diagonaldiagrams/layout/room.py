@@ -1,4 +1,4 @@
-"""Room for the arrows' labels (PLAN B29).
+"""Room for the arrows' labels.
 
 The layout keeps room for a label between two neighbors in a layer (flat_room), but nothing for a label
 beside an arrow that climbs between layers. Inside a frame the border can stand 16 px from the arrow;

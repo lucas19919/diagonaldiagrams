@@ -1,4 +1,4 @@
-/* diagonaldiagrams: motion from meaning (DESIGN 21.2.1).
+/* diagonaldiagrams: motion from meaning.
  *
  * The engine resolves a view's motion block into a schedule (motion.py): each arrow's route as a
  * polyline with its lengths, and each event's start and end. at(schedule, t) is the motion layer

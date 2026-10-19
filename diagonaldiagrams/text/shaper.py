@@ -1,11 +1,11 @@
-"""Shaping (DESIGN 6.1, PLAN P3.11): an extension point between text and its measured width.
+"""Shaping: an extension point between text and its measured width.
 
 Latin, Greek, Cyrillic and CJK need no shaping: each character has its own width. Right-to-left
 scripts (Hebrew, Arabic) are kept in logical order in SVG, where the viewer's browser applies the
 bidi algorithm. Scripts whose letters change shape with their neighbours (Arabic joining, Indic
 conjuncts, Thai, Khmer, Myanmar, Tibetan) need a real shaper for exact widths. The built-in one
 recognizes them so the figure can say its widths are estimates (the `shaping` warning); a HarfBuzz-
-backed shaper registers here later (P13), and SHAPERS.get("active") is whichever was registered last.
+backed shaper registers here later, and SHAPERS.get("active") is whichever was registered last.
 """
 import unicodedata
 

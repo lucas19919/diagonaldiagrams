@@ -126,7 +126,7 @@ def _svg_model(svg):
 
 
 def _cell_ids(model):
-    """Export ids from the figure's own ids (D15): node:ID, edge:FROM->TO:LABEL, group:ID. The same
+    """Export ids from the figure's own ids: node:ID, edge:FROM->TO:LABEL, group:ID. The same
     element keeps its cell across exports of an edited spec."""
     return ({n["id"]: f"node:{n['id']}" for n in model["nodes"]},
             [f"edge:{e['id']}" for e in model["edges"]],
@@ -237,7 +237,7 @@ def do_export(args):
     cmd, lay = r.get("cmd", "scatter"), LAYOUTS[args.layout]
     theme = get_theme(args.theme or r.get("theme") or "editorial", args.theme_file)
     if not (args.theme or args.theme_file):
-        theme.update(r.get("theme_overrides") or {})  # the colors the figure was drawn with (B11)
+        theme.update(r.get("theme_overrides") or {})  # the colors the figure was drawn with
     notes = r.get("notes") or None
     note = ""
     if cmd == "scatter":

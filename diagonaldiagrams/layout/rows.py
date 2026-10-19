@@ -1,4 +1,4 @@
-"""Rows for a layer too wide for where the figure goes (a fit's max_width: DESIGN 7.3, layered.layout()).
+"""Rows for a layer too wide for where the figure goes (a fit's max_width; see layered.layout()).
 
 In a narrow docs column a layer of eight services side by side shrinks the whole figure. spread()
 deals such a layer's boxes over rows of their own, stacked in columns one box under another, the

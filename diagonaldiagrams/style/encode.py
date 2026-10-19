@@ -1,4 +1,4 @@
-"""Encodings and scales (DESIGN 5.7, PLAN P3.7): style values that come from data.
+"""Encodings and scales: style values that come from data.
 
     "node": {"fill": {"field": "p99", "scale": {"type": "sequential", "scheme": "heat", "domain": [0, 500]}}}
     "edge": {"stroke-width": {"field": "rps", "scale": {"type": "linear", "range": [1, 6]}}}
@@ -9,7 +9,7 @@ categorical, and numbers on a numeric property are linear. Color ranges come fro
 a palette token (sequential, diverging, categorical) or a list of colors. An element without the
 field gets the scale's neutral value: a light grey, or the low end of a numeric range.
 
-Charts (P6) share this code.
+Charts share this code.
 """
 from ..errors import SpecError
 from .parse import Color, color

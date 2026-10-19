@@ -1,4 +1,4 @@
-"""Selectors (DESIGN 5.2): which elements a rule applies to.
+"""Selectors: which elements a rule applies to.
 
     node                     a type: figure, node, edge, group, chart, mark, axis, legend, annotation, *
     #api  .db                an id, a class

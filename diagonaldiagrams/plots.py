@@ -16,7 +16,6 @@ def render_scatter(spec_path, xcol, ycol, title, subtitle, figure, xlabel, xunit
     chrome=False skips the heading. grid draws the tick rules. markers draws the dots.
     highlights (category, x, or group) are drawn larger in accent.
     facet_dir=row (side-by-side) or col (stacked, for social)."""
-    import math
     t = theme or THEME
     rows = []
     with open(spec_path, newline="", encoding="utf-8") as f:

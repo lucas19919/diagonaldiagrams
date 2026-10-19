@@ -1,7 +1,7 @@
-Use Mermaid CLI (mmdc). Run it as `D:\Repos\diagonaldiagrams-bench-tools\bin\mmdc.cmd -i IN.mmd -o OUT.svg` (OUT.png also works). Its options: `D:\Repos\diagonaldiagrams-bench-tools\bin\mmdc.cmd --help`.
+Use Mermaid CLI (mmdc). Run it as `<bench-tools>\bin\mmdc.cmd -i IN.mmd -o OUT.svg` (OUT.png also works). Its options: `<bench-tools>\bin\mmdc.cmd --help`.
 
 Draw this process as a flowchart. It has 5 steps, counting the start and the end.
 
 The process starts when a request is received. First, load the customer account (step 1) and score the fraud risk (step 2). Step 3 checks whether check 1 passed: if it did, the process is done; if not, go back to step 1.
 
-Make the figure clean and readable, with no overlapping text. Work in D:\Repos\diagonaldiagrams-bench-runs\mermaid-05-RUN and save the figure there as figure.svg. When you are done, reply with the path to figure.svg and any commands that failed.
+Make the figure clean and readable, with no overlapping text. Work in <bench-runs>\mermaid-05-RUN and save the figure there as figure.svg. When you are done, reply with the path to figure.svg and any commands that failed.

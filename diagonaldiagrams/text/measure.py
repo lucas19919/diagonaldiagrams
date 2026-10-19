@@ -1,4 +1,4 @@
-"""Text layout for boxes (DESIGN 6.2, PLAN P3.6): wrapping, overflow and line metrics.
+"""Text layout for boxes: wrapping, overflow and line metrics.
 
 wrap() breaks a label into lines that fit a width at its computed size. Its overflow mode decides
 what happens when the lines run past max-lines:

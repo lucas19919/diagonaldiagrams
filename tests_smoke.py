@@ -881,20 +881,20 @@ def _dump(name, obj):
 
 
 def known_bugs():
-    """docs/PLAN.md P1b: one check per bug found while inventorying the engine."""
+    """One check per bug found while inventorying the engine."""
     print("== known bugs (P1b) ==")
     seq = _dump("b1.json", {"actors": [{"id": "api"}, {"id": "db", "name": "Database"}],
                             "messages": [{"from": "api", "to": "db", "label": "query"}]})
     rc, out = run("seq", seq, "-o", os.path.join(WORK, "b1.svg"))
-    check("B1 a seq actor without a name is drawn with its id", rc == 0 and '"ok": true' in out, out[-200:])
+    check("a seq actor without a name is drawn with its id", rc == 0 and '"ok": true' in out, out[-200:])
 
     csv_path = os.path.join(WORK, "b2.csv")
     with open(csv_path, "w", encoding="utf-8") as f:
         f.write("px,py,mass\n1,2,3\n2,3,5\n3,1,2\n")
     rc, out = run("chart", "bubble", csv_path, "--x", "px", "--y", "py", "--size", "mass", "-o", os.path.join(WORK, "b2.svg"))
-    check("B2 chart validation accepts the --size the renderer reads", rc == 0, out[-200:])
+    check("chart validation accepts the --size the renderer reads", rc == 0, out[-200:])
     rc, out = run("validate", csv_path, "--type", "bubble", "--x", "px", "--y", "py", "--size", "mass")
-    check("B2 validate takes every chart role flag", rc == 0, out[-200:])
+    check("validate takes every chart role flag", rc == 0, out[-200:])
 
     flow = _dump("b3.json", {"nodes": [{"id": "s", "name": "Start"}, {"id": "d", "name": "OK?", "shape": "diamond"},
                                        {"id": "a", "name": "A"}, {"id": "b", "name": "B"}, {"id": "e", "name": "End"}],
@@ -902,41 +902,41 @@ def known_bugs():
                                        {"from": "a", "to": "e"}, {"from": "b", "to": "e"}]})
     rc, out = run("validate", flow, "--type", "flow")
     n = out.count("unlabeled exit from diamond 'd'")
-    check("B3 one warning per diamond with unlabeled exits", n == 1, f"{n} warnings")
+    check("one warning per diamond with unlabeled exits", n == 1, f"{n} warnings")
 
     budgets = {}
     for kind in ("arch", "schema", "line"):
         rc, out = run("describe", kind)
         budgets[kind] = json.loads(out).get("budgets", {}) if rc == 0 else {}
     stale = [k for k, b in (("arch", "layers"), ("schema", "relations"), ("line", "points_per_series")) if b in budgets[k]]
-    check("B4 describe lists only budgets the validator checks", not stale, str(stale))
+    check("describe lists only budgets the validator checks", not stale, str(stale))
 
     rc, out = run("flow", "--help")
-    check("B5 help does not offer inline text as the spec argument", rc == 0 and "inline text," not in out, out[-200:])
+    check("help does not offer inline text as the spec argument", rc == 0 and "inline text," not in out, out[-200:])
 
     tall = [{"id": f"t{i}", "name": f"table_{i}", "columns": [{"name": f"c{j}", "type": "int"} for j in range(14)]}
             for i in range(6)]
     schema = _dump("b6.json", {"title": "Wide tables", "tables": tall, "relations": [], "budget": False})
     rc, out = run("schema", schema, "-o", os.path.join(WORK, "b6.svg"))
-    check("B6 a row of tall tables leaves room for the next row", rc == 0 and '"ok": true' in out, out[-300:])
+    check("a row of tall tables leaves room for the next row", rc == 0 and '"ok": true' in out, out[-300:])
 
     er = os.path.join(WORK, "b7.mmd")
     with open(er, "w", encoding="utf-8") as f:
         f.write('erDiagram\n    USER {\n        int id PK\n        string email "PK of the old system"\n    }\n')
     rc, out = run("mermaid", er, "-o", os.path.join(WORK, "b7.svg"))
     pk = open(os.path.join(WORK, "b7.svg"), encoding="utf-8").read().count(">PK</text>") if rc == 0 else -1
-    check("B7 a key word inside an ER comment is not a key", pk == 1, f"{pk} PK badges")
+    check("a key word inside an ER comment is not a key", pk == 1, f"{pk} PK badges")
 
     rc, out = run("mermaid", "-s", "flowchart TD; A[fa:fa-rocket Launch] --> B[Done]", "-o", os.path.join(WORK, "b8.svg"))
-    check("B8 an unknown fa: icon is reported, not dropped silently", rc == 0 and "fa-rocket" in out, out[-300:])
+    check("an unknown fa: icon is reported, not dropped silently", rc == 0 and "fa-rocket" in out, out[-300:])
 
     rs = mcp(['{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18"}}',
               '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'])
     tools = {t["name"]: t for r in rs if r.get("id") == 2 for t in r["result"]["tools"]}
     enum = tools.get("export", {}).get("inputSchema", {}).get("properties", {}).get("to", {}).get("enum", [])
-    check("B9 MCP export offers drawio and excalidraw", {"drawio", "excalidraw"} <= set(enum), str(enum))
+    check("MCP export offers drawio and excalidraw", {"drawio", "excalidraw"} <= set(enum), str(enum))
 
-    # B11: export draws from the receipt, which now keeps theme overrides and notes
+    # export draws from the receipt, which now keeps theme overrides and notes
     theme = _dump("b11-theme.json", {"ink": "#3a1f5d"})
     b11 = os.path.join(WORK, "b11.html")
     run("bar", "examples/bar_latency.csv", "--cat", "service", "--val", "p99_latency_ms", "-o", b11,
@@ -944,7 +944,7 @@ def known_bugs():
     rc, out = run("export", b11, "--to", "svg", "-o", os.path.join(WORK, "b11-export.svg"))
     with open(os.path.join(WORK, "b11-export.svg"), encoding="utf-8") as f:
         exported = f.read()
-    check("B11 export keeps --theme-file overrides and --note", rc == 0 and "#3a1f5d" in exported and "Slowest" in exported,
+    check("export keeps --theme-file overrides and --note", rc == 0 and "#3a1f5d" in exported and "Slowest" in exported,
           out[-200:])
     # receipt v2: a diagram's receipt holds the scene it drew, so export doesn't need the spec file
     spec = _dump("b11-flow.json", json.load(open(os.path.join(HERE, "examples", "flow_decision.json"), encoding="utf-8")))
@@ -959,10 +959,10 @@ def known_bugs():
         same = f.read() == g.read()
     check("a diagram exports from its receipt's scene after the spec file is gone", rc == 0 and same, out[-200:])
 
-    # B14, B15: every theme is named, and corners reach line and scatter (their note callouts)
+    # every theme is named, and corners reach line and scatter (their note callouts)
     p = subprocess.run([sys.executable, "-c", "import diagonaldiagrams._theme as t; print(t.THEME.get('_name'))"],
                        capture_output=True, text=True, cwd=HERE)
-    check("B14 the default theme is named", p.stdout.strip() == "editorial", p.stdout + p.stderr[-200:])
+    check("the default theme is named", p.stdout.strip() == "editorial", p.stdout + p.stderr[-200:])
     callouts = {}
     for corners in ("sharp", "rounded"):
         svg = os.path.join(WORK, f"b15-{corners}.svg")
@@ -971,9 +971,9 @@ def known_bugs():
         with open(svg, encoding="utf-8") as f:
             hit = [part for part in f.read().split("<rect") if 'stroke="rgba(45,49,66,0.12)" stroke-width="1"/>' in part]
         callouts[corners] = hit[0].split('rx="')[1].split('"')[0] if hit else None
-    check("B15 line honors --corners in its note callout", callouts == {"sharp": "0", "rounded": "5"}, str(callouts))
+    check("line honors --corners in its note callout", callouts == {"sharp": "0", "rounded": "5"}, str(callouts))
 
-    # B12: the audit's blind spots, each on a small hand-written SVG
+    # the audit's blind spots, each on a small hand-written SVG
     def audit_svg(name, body):
         path = os.path.join(WORK, name)
         with open(path, "w", encoding="utf-8") as f:
@@ -982,23 +982,23 @@ def known_bugs():
         return run("audit", path)
     rc, out = audit_svg("b12-circle.svg", '<circle cx="200" cy="150" r="30" fill="#fff" stroke="#000"/>'
                                           '<path d="M60,150 L340,150" stroke="#000" marker-end="url(#m)"/>')
-    check("B12 an arrow through a circle is caught", rc == 1 and "through the circle" in out, out[:200])
+    check("an arrow through a circle is caught", rc == 1 and "through the circle" in out, out[:200])
     rc, out = audit_svg("b12-css.svg", '<style>.edge { marker-end: url(#m); }</style>'
                                        '<rect x="170" y="120" width="60" height="60" fill="#fff" stroke="#000"/>'
                                        '<path class="edge" d="M60,150 L340,150" stroke="#000" fill="none"/>')
-    check("B12 an arrowhead set by CSS makes an arrow", rc == 1 and '"through"' in out, out[:200])
+    check("an arrowhead set by CSS makes an arrow", rc == 1 and '"through"' in out, out[:200])
     rc, out = audit_svg("b12-curve.svg", '<rect x="170" y="70" width="60" height="40" fill="#fff" stroke="#000"/>'
                                          '<path d="M60,150 Q200,10 340,150" stroke="#000" fill="none" marker-end="url(#m)"/>')
-    check("B12 a curved arrow is followed along its curve", rc == 1 and '"through"' in out, out[:200])
+    check("a curved arrow is followed along its curve", rc == 1 and '"through"' in out, out[:200])
     rc, out = audit_svg("b12-lean.svg", '<polygon points="140,120 280,120 260,180 120,180" fill="#fff" stroke="#000"/>'
                                         '<path d="M270,40 L270,260" stroke="#000" marker-end="url(#m)"/>')
-    check("B12 a parallelogram blocks arrows across its whole width", rc == 1 and '"through"' in out, out[:200])
+    check("a parallelogram blocks arrows across its whole width", rc == 1 and '"through"' in out, out[:200])
     rc, out = audit_svg("b12-rhombus.svg", '<polygon points="200,100 260,150 200,200 140,150" fill="#fff" stroke="#000"/>'
                                            '<path d="M60,105 L340,105" stroke="#000" marker-end="url(#m)"/>')
-    check("B12 a decision still uses its true outline", rc == 0, out[:200])
+    check("a decision still uses its true outline", rc == 0, out[:200])
     rc, out = audit_svg("b12-tall.svg", '<rect x="100" y="100" width="200" height="30" fill="#fff" stroke="#000"/>'
                                         '<text x="110" y="108" font-size="14">Too tall for its box</text>')
-    check("B12 text spilling out of the top of its box is caught", rc == 1 and '"spill"' in out, out[:200])
+    check("text spilling out of the top of its box is caught", rc == 1 and '"spill"' in out, out[:200])
 
 
 def outline_checks():
@@ -1016,18 +1016,18 @@ def outline_checks():
     o = (json.loads(out) if rc == 0 else {}).get("outline", {})
     check("seq --outline lists actors and messages in order",
           o.get("actors", [None])[0] == "Customer" and o.get("messages", [{}])[0].get("label") == "Submit Order", out[-300:])
-    # B13: the boxes-and-links charts mark their nodes, so they get an outline and an export
+    # the boxes-and-links charts mark their nodes, so they get an outline and an export
     dag = os.path.join(WORK, "ol-dag.svg")
     rc, out = run("chart", "dag", "tests/golden/inputs/charts/dag.json", "-o", dag, "--outline")
     o = (json.loads(out) if rc == 0 else {}).get("outline", {})
-    check("chart dag --outline lists its nodes and edges (B13)",
+    check("chart dag --outline lists its nodes and edges",
           [n["id"] for n in o.get("nodes", [])] == ["a", "b", "c"] and len(o.get("edges", [])) == 2, out[-300:])
     rc, out = run("export", dag, "--to", "drawio", "-o", os.path.join(WORK, "ol-dag.drawio"))
-    check("chart dag exports its boxes and arrows to draw.io (B13)", rc == 0 and "3 boxes, 2 arrows" in out, out[-200:])
+    check("chart dag exports its boxes and arrows to draw.io", rc == 0 and "3 boxes, 2 arrows" in out, out[-200:])
 
 
 def layout_checks():
-    """The layered kernel (P4): flows and arch draw once, a long flow wraps, and schema tables placed
+    """The layered kernel: flows and arch draw once, a long flow wraps, and schema tables placed
     with x and y keep their columns."""
     print("== layout ==")
     import re as _re
@@ -1052,7 +1052,7 @@ def layout_checks():
 
 
 def scene_checks():
-    """A v2 scene file draws through the v1 renderers (P2.3): aliases, both group forms, ordered messages."""
+    """A v2 scene file draws through the v1 renderers: aliases, both group forms, ordered messages."""
     print("== scene ==")
     flow = os.path.join(WORK, "scene-flow.json")
     with open(flow, "w", encoding="utf-8") as f:
@@ -1084,7 +1084,7 @@ def scene_checks():
 
 
 def apply_checks():
-    """apply SPEC PATCH writes a patch into a v1 spec or a scene; conflicts are listed, not dropped (P2.16)."""
+    """apply SPEC PATCH writes a patch into a v1 spec or a scene; conflicts are listed, not dropped."""
     print("== apply ==")
     spec = os.path.join(WORK, "apply-flow.json")
     shutil.copy(os.path.join(HERE, "examples", "flow_decision.json"), spec)
@@ -1116,7 +1116,7 @@ def apply_checks():
 
 def edit_loop_checks():
     """The edit loop: a page's patch is applied, the figure is drawn again at the same path, and the
-    verdict and the new page carry what changed since the last drawing (DESIGN 21.3, P10)."""
+    verdict and the new page carry what changed since the last drawing."""
     print("== edit loop ==")
     home = os.path.join(WORK, "edit-loop")
     shutil.rmtree(home, ignore_errors=True)
@@ -1168,7 +1168,7 @@ def edit_loop_checks():
 
 
 def story_checks():
-    """story STORY -o OUT.html: one figure, several views, in one page (DESIGN 21.2)."""
+    """story STORY -o OUT.html: one figure, several views, in one page."""
     print("== story ==")
     out = os.path.join(WORK, "story", "platform.html")
     rc, text = run("story", os.path.join(HERE, "examples", "story_platform.json"), "-o", out)
@@ -1195,7 +1195,7 @@ def story_checks():
 
 
 def style_checks():
-    """A spec's stylesheet restyles the drawing; a mistake in it is a validate error with a fix (P3.8)."""
+    """A spec's stylesheet restyles the drawing; a mistake in it is a validate error with a fix."""
     print("== style ==")
     spec = os.path.join(WORK, "style-arch.json")
     with open(os.path.join(HERE, "examples", "checkout_platform.json"), encoding="utf-8") as f:
@@ -1258,7 +1258,7 @@ def style_checks():
     check("a font whose license forbids embedding is referenced, with a warning",
           rc == 0 and '"font-embed"' in out and "@font-face" not in open(os.path.join(WORK, "locked.svg"), encoding="utf-8").read(),
           out[-200:])
-    # P3.12: a project's diagonaldiagrams.toml brings house styles and a locked brand policy
+    # a project's diagonaldiagrams.toml brings house styles and a locked brand policy
     proj = os.path.join(WORK, "brandproj")
     os.makedirs(os.path.join(proj, "brand"), exist_ok=True)
     with open(os.path.join(proj, "diagonaldiagrams.toml"), "w", encoding="utf-8") as f:
@@ -1282,13 +1282,13 @@ def style_checks():
     check("overriding the brand policy is an off-brand error naming the rule",
           rc == 1 and '"off-brand"' in out and "rule '#fix' sets stroke" in out, out[-300:])
 
-    # B17: diagrams draw --figure above the title and --caption under the figure, and export keeps them
+    # diagrams draw --figure above the title and --caption under the figure, and export keeps them
     cap = os.path.join(WORK, "b17.svg")
     rc, out = run("seq", "examples/seq_checkout.json", "-o", cap, "--figure", "Fig. 4", "--caption", "Retries are idempotent.")
     body = open(cap, encoding="utf-8").read() if rc == 0 else ""
-    check("B17 diagrams draw --figure and --caption", ">FIG. 4<" in body and ">Retries are idempotent.<" in body, out[-200:])
+    check("diagrams draw --figure and --caption", ">FIG. 4<" in body and ">Retries are idempotent.<" in body, out[-200:])
     rc, out = run("export", cap, "--to", "svg", "-o", os.path.join(WORK, "b17-export.svg"))
-    check("B17 export keeps the figure label and caption",
+    check("export keeps the figure label and caption",
           rc == 0 and open(os.path.join(WORK, "b17-export.svg"), encoding="utf-8").read() == body, out[-200:])
 
 if __name__ == "__main__":

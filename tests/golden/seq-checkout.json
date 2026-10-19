@@ -4,7 +4,7 @@
   "examples/seq_checkout.json"
  ],
  "exit": 0,
- "html_sha256": "e9fd136c6dd6c8616cda5686070917378db94c2c9c7c2581733b6cbd4b8081e0",
+ "html_sha256": "2c2010bcf41705b7d370491573e387ab52df32167fb362f9ec3163ba35818ce6",
  "receipt": {
   "auto": false,
   "cmd": "seq",

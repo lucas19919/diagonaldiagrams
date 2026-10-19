@@ -1,4 +1,4 @@
-"""Internal registries (PLAN P2.12): shapes, checks and export formats are looked up by name, so
+"""Internal registries: shapes, checks and export formats are looked up by name, so
 a new one is added without editing the code that uses it. Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys

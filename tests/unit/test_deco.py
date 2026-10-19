@@ -1,4 +1,4 @@
-"""Named sides and borders (PLAN P3.4, DESIGN 5.5). Run: py -3 -m unittest discover tests/unit"""
+"""Named sides and borders. Run: py -3 -m unittest discover tests/unit"""
 import os
 import re
 import sys

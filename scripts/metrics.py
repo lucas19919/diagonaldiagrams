@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure the engine for the redesign scoreboard (docs/PLAN.md, P0.2).
+"""Measure the engine: render times, layout redraws, audit results and counts.
 
     py -3 scripts/metrics.py                    # golden corpus + counts + startup -> bench/metrics/latest.json/.md
     py -3 scripts/metrics.py --save baseline    # write bench/metrics/baseline.json/.md (committed)
@@ -127,12 +127,11 @@ def figure_metrics(res, hooks):
 def preload():
     """Import every engine module first, so the corpus times rendering, not first-use imports
     (the package loads modules lazily; startup is measured separately)."""
-    try:
-        names = importlib.import_module("diagonaldiagrams._names").NAMES
-    except ImportError:
-        return
-    for mod in sorted(set(names.values())):
-        importlib.import_module("diagonaldiagrams" + ("" if mod == "__init__" else "." + mod))
+    import pkgutil
+    import diagonaldiagrams
+    for mod in pkgutil.walk_packages(diagonaldiagrams.__path__, "diagonaldiagrams."):
+        if not mod.name.endswith(("__main__", ".mcp")):
+            importlib.import_module(mod.name)
 
 
 def measure_corpus(hooks):
@@ -321,7 +320,7 @@ def compare(cur, base_path):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Measure the engine for the redesign scoreboard.")
+    ap = argparse.ArgumentParser(description="Measure the engine: render times, audit results and counts.")
     ap.add_argument("--save", metavar="NAME", help="write bench/metrics/NAME.json and .md (default: latest)")
     ap.add_argument("--quick", action="store_true", help="skip cold-start timings")
     ap.add_argument("--fuzz", type=int, default=0, metavar="N", help="also fuzz N scenes")

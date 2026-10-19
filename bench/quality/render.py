@@ -19,8 +19,8 @@ import argparse, glob, json, os, shutil, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
-TOOLS = os.environ.get("BENCH_TOOLS", r"D:\Repos\diagonaldiagrams-bench-tools")
-RUNS = os.environ.get("BENCH_RUNS", r"D:\Repos\diagonaldiagrams-bench-runs")
+TOOLS = os.environ.get("BENCH_TOOLS", os.path.join(os.path.dirname(REPO), "diagonaldiagrams-bench-tools"))
+RUNS = os.environ.get("BENCH_RUNS", os.path.join(os.path.dirname(REPO), "diagonaldiagrams-bench-runs"))
 PELE = os.path.join(TOOLS, "pele", "node_modules", "pele", "dist", "pele.js")
 MMDC = os.path.join(TOOLS, "mermaid-cli", "node_modules", "@mermaid-js", "mermaid-cli", "src", "cli.js")
 PUPPETEER = os.path.join(TOOLS, "bin", "puppeteer.json")

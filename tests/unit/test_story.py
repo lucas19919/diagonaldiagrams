@@ -1,4 +1,4 @@
-"""Stories: views of one figure (story.py, DESIGN 21.2). Run: py -3 -m unittest discover tests/unit"""
+"""Stories: views of one figure (story.py). Run: py -3 -m unittest discover tests/unit"""
 import json
 import os
 import re

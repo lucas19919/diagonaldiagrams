@@ -1,5 +1,5 @@
-"""Tracks in the gap between two layers (DESIGN 8.2, channel nudging): every sideways run of an arrow
-gets a height of its own, so two arrows never share a line (B21: gaps, not port heights, decide).
+"""Tracks in the gap between two layers (channel nudging): every sideways run of an arrow
+gets a height of its own, so two arrows never share a line (gaps, not port heights, decide).
 
 A run is a horizontal segment with its attachments: where its arrow comes in or leaves, each from the
 top of the gap or the bottom. Two runs that overlap sideways need different tracks. A run that leaves

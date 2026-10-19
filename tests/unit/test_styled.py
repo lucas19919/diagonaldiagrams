@@ -1,4 +1,4 @@
-"""The four diagram types paint from the cascade (PLAN P3.8): one stylesheet restyles them all.
+"""The four diagram types paint from the cascade: one stylesheet restyles them all.
 Run: py -3 -m unittest discover tests/unit"""
 import json
 import os

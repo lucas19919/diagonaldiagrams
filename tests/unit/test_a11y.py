@@ -1,4 +1,4 @@
-"""Accessible structure and attachments (PLAN P2.17, DESIGN 22.3). Run: py -3 -m unittest discover tests/unit"""
+"""Accessible structure and attachments. Run: py -3 -m unittest discover tests/unit"""
 import json
 import os
 import sys

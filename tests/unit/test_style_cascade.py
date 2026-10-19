@@ -1,4 +1,4 @@
-"""Selectors and the cascade (PLAN P3.3, DESIGN 5.1, 5.2). Run: py -3 -m unittest discover tests/unit"""
+"""Selectors and the cascade. Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys
 import unittest

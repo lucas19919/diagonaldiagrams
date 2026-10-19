@@ -111,7 +111,7 @@ def _cli_sheets(a):
 
 
 def _brand_check(a, spec, theme, sheets):
-    """The brand policy (DESIGN 22.4): an override of a locked value, or a color or font the config
+    """The brand policy: an override of a locked value, or a color or font the config
     doesn't allow, stops the render with each one named."""
     cfg = getattr(a, "_config", None)
     if cfg is None or not (cfg.policies or cfg.palette is not None or cfg.fonts is not None):
@@ -124,7 +124,7 @@ def _brand_check(a, spec, theme, sheets):
 
 
 def _receipt(a, theme, payload, notes=None, scene=None, sheets=None):
-    """Receipt v2 (P2.10): what export needs to draw the same figure again. On top of v1's fields:
+    """Receipt v2: what export needs to draw the same figure again. On top of v1's fields:
     the theme keys --theme-file changed, the caption, chart notes, whether the audit ran, and for a
     diagram the scene that was drawn, so export doesn't depend on the spec file staying as it was."""
     base = THEMES.get(theme.get("_name"), THEMES["editorial"])
@@ -623,7 +623,7 @@ def main():
     if a.cmd in ("flow", "arch", "seq", "schema"):
         sheets = _cli_sheets(a)
         spec = load_spec(a.spec, a.cmd)
-        for key in ("caption", "figure"):  # drawn: the caption under the figure, the label above it (B17)
+        for key in ("caption", "figure"):  # drawn: the caption under the figure, the label above it
             if getattr(a, key, None):
                 spec[key] = getattr(a, key)
         if getattr(a, "fit", None):  # where it goes, over the spec's own size.fit

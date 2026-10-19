@@ -1,6 +1,5 @@
-"""Encodings, scales and legends (PLAN P3.7, DESIGN 5.7). Run: py -3 -m unittest discover tests/unit"""
+"""Encodings, scales and legends. Run: py -3 -m unittest discover tests/unit"""
 import os
-import re
 import sys
 import unittest
 

@@ -99,7 +99,7 @@ def _report(root, svg, raw):
         size = len(m.group(1)) * 3 // 4
         if size > 200_000:
             warnings.append({"code": "large-font", "msg": f"an embedded font adds {size // 1024} KB to the file",
-                             "fix": "embed only where the font isn't installed, or wait for subsetting (P8.4)"})
+                             "fix": "embed only where the font isn't installed, or embed a smaller font"})
     restricted = re.search(r'data-font-restricted="([^"]+)"', raw)
     if restricted:
         warnings.append({"code": "font-embed", "msg": f"{restricted.group(1)}: the font's license forbids embedding, "

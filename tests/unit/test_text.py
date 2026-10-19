@@ -1,4 +1,4 @@
-"""Text layout (PLAN P3.6, DESIGN 6.2): markup, wrapping, overflow, boxes that grow.
+"""Text layout: markup, wrapping, overflow, boxes that grow.
 Run: py -3 -m unittest discover tests/unit"""
 import os
 import re

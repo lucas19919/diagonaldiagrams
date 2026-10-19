@@ -4,7 +4,7 @@
   "examples/icons.mmd"
  ],
  "exit": 0,
- "html_sha256": "4aeec7354904aa5bd2edd41c87fa2a5c2fcb69b29ecf77ff24e37b929ae942db",
+ "html_sha256": "3c4ea03e9804b341633be4cdbb03890bbdbb8fcf4405e9f55c0c2ac03380027d",
  "receipt": {
   "auto": false,
   "cmd": "flow",

@@ -1,9 +1,9 @@
-"""What changed between two drawings of one figure, matched by the ids both carry (DESIGN 21.4).
+"""What changed between two drawings of one figure, matched by the ids both carry.
 
     diff(old_svg, new_svg) -> {"nodes": {...}, "edges": {...}, "messages": {...}, "shifted": {...}, "sentences": [...]}
 
-Nodes match by data-node, and edges and a sequence's messages by data-id, so the ids must be stable
-(D15): a render after an edit keeps them. Rows are the layout's layers when both drawings' pages
+Nodes match by data-node, and edges and a sequence's messages by data-id, so the ids must be stable:
+a render after an edit keeps them. Rows are the layout's layers when both drawings' pages
 give them, else boxes whose middles sit within 30 px of each other. A schema's layers are columns,
 so there they are columns, and a sequence's one row is its actors. Each old row is matched to the
 new row that holds most of its boxes, so a box that only rides along when rows shift is not
@@ -213,7 +213,7 @@ def diff(old, new, old_layers=None, new_layers=None):
                   "recolored": recolored},
         "edges": {"added": e_added, "removed": e_removed, "relabeled": relabeled},
         "messages": {"added": m_added, "removed": m_removed, "relabeled": m_relabeled, "moved": m_moved},
-        # layout stability (PLAN scoreboard): how far the boxes the edit did not move went, against the canvas
+        # layout stability: how far the boxes the edit did not move went, against the canvas
         "shifted": {"count": len(shifted), "boxes": shifted,
                     "mean_of_diagonal": round(sum((s["dx"] ** 2 + s["dy"] ** 2) ** 0.5 for s in shifted) / len(both) / diag, 4)
                     if both and diag else 0.0},

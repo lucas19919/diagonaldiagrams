@@ -1,5 +1,5 @@
 """monitor and sync: notice when code and its diagrams drift apart, and fix it."""
-import json, os, sys
+import json, os
 from .errors import SpecError
 from ._proc import _self_cmd
 from ._lazy import lazy

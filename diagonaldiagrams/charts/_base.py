@@ -105,26 +105,6 @@ def _axes(parts, t, ox, oy, pw, ph, xt, yt, grid):
     return X, Y
 
 
-def _cat_axis(parts, t, labels, ox, oy, pw, ph, horizontal=False):
-    n = max(1, len(labels))
-    coords = []
-    if horizontal:
-        for i, lab in enumerate(labels):
-            y = oy + (i + 0.5) * ph / n
-            coords.append(y)
-            parts.append(
-                f'<text x="{ox - 8}" y="{y + 3:.1f}" font-size="11" font-family="{FONT}" fill="{t["ink"]}" text-anchor="end">{esc(lab)}</text>')
-        parts.append(f'<line x1="{ox}" y1="{oy}" x2="{ox}" y2="{oy + ph}" stroke="{t["ink"]}" stroke-width="1"/>')
-    else:
-        for i, lab in enumerate(labels):
-            x = ox + (i + 0.5) * pw / n
-            coords.append(x)
-            parts.append(
-                f'<text x="{x:.1f}" y="{oy + ph + 16}" font-size="11" font-family="{FONT}" fill="{t["ink"]}" text-anchor="middle">{esc(lab)}</text>')
-        parts.append(f'<line x1="{ox}" y1="{oy + ph}" x2="{ox + pw}" y2="{oy + ph}" stroke="{t["ink"]}" stroke-width="1"/>')
-    return coords
-
-
 def _tree_index(rows_or_nodes, name_key="name", parent_key="parent"):
     nodes = []
     for row in rows_or_nodes:

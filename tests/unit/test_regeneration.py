@@ -1,4 +1,4 @@
-"""Edits survive regeneration, or are reported (PLAN P10.2, DESIGN 21.3).
+"""Edits survive regeneration, or are reported.
 
 A person edits a figure in its page, which hands over a patch; apply writes it into the spec. Then
 the agent regenerates the spec from a changed brief, and the patch is applied again. Every
@@ -64,7 +64,7 @@ def shows(spec):
 
 
 def survived_or_reported(spec, ops=PATCH):
-    """The P10.2 check, and the scoreboard's number: each op shows or is a reported conflict."""
+    """The regeneration check: each op shows or is a reported conflict."""
     v1, applied, conflicts = patched(spec, ops)
     seen = shows(v1)
     reported = {int(c["path"][6:-1]) for c in conflicts}

@@ -169,7 +169,7 @@ def render(kind, spec=None, data=None, path=None, out="diagonaldiagrams-out.html
     ok, svg, html, receipt, layout, errors, warnings.
 
     kind: flow, arch, seq, schema, mermaid, bar, line, scatter, geo, or any `chart` kind.
-    spec: a JSON-like dict; scene: a v2 scene dict (DESIGN 4) whose preset is kind; data: CSV,
+    spec: a JSON-like dict; scene: a v2 scene dict whose preset is kind; data: CSV,
     GeoJSON or Mermaid text; path: a file. Pass one.
     options: the command's flags without dashes, e.g. x="month", group="product", grid=False."""
     argv = tool_argv("render", {"type": kind, "spec": spec, "scene": scene, "data": data, "path": path, "out": out,

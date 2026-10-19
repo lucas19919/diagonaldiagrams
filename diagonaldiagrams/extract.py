@@ -1,5 +1,5 @@
 """extract: specs from SQL DDL, Prisma, Python ORMs and web routes."""
-import json, os, sys
+import json, os
 from .errors import SpecError
 
 

@@ -1,4 +1,4 @@
-"""Named sides and border decorations (DESIGN 5.5, PLAN P3.4).
+"""Named sides and border decorations.
 
 Each shape splits its outline into named sides. A rectangle (and so a rounded box, an oval or a
 table card) has top, right, bottom and left; a side's stroke ends at the middle of each corner
@@ -116,7 +116,7 @@ def borders(sides_d, sides, stroke, width, paper, owner, role="node.border"):
     return out
 
 
-# ---------- paint decorations: gradient, shadow, glow, pattern (DESIGN 5.4, 5.5) ----------
+# ---------- paint decorations: gradient, shadow, glow, pattern ----------
 
 def _key(obj):
     import zlib

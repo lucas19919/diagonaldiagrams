@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Golden files: what the engine draws today, byte for byte (docs/PLAN.md, P0.1).
+"""Golden files: what the engine draws today, byte for byte.
 
     py -3 scripts/golden.py                  # --check: render the corpus, compare, exit 1 on any change
     py -3 scripts/golden.py --update         # rewrite tests/golden/ from the current engine

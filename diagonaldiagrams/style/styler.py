@@ -1,4 +1,4 @@
-"""One diagram's computed styles (PLAN P3.8): what the painters read instead of constants.
+"""One diagram's computed styles: what the painters read instead of constants.
 
 Styler(spec, kind, theme, corners, sheets) builds the cascade for a flow, arch, seq or schema spec:
 the theme (with any --theme-file overrides as tokens), the preset's stylesheet (presets/KIND.json,
@@ -97,7 +97,7 @@ class Styler:
         overrides = {token_name(k): v for k, v in theme.items() if not k.startswith("_") and plain.get(k) != v}
         preset = _copied(sheet(kind))
         node_rule = preset.setdefault("rules", {}).setdefault("node", {})
-        node_rule.setdefault("border-radius", CORNER_RX.get(corners, 6))  # --corners, as a rule (B15)
+        node_rule.setdefault("border-radius", CORNER_RX.get(corners, 6))  # --corners, as a rule
         if narrow and isinstance(node_rule.get("max-width"), (int, float)):
             node_rule["max-width"] = min(node_rule["max-width"], narrow)
         scene = self._scene(spec, kind)
@@ -188,7 +188,7 @@ class Styler:
         return self._fonts[key]
 
     def off_brand(self, palette=None, fonts=None):
-        """What breaks the brand policy (DESIGN 22.4): every rule or element style that tries to override
+        """What breaks the brand policy: every rule or element style that tries to override
         a value the policy locks, and every color or font a stylesheet chose outside what the config
         allows. Values the theme and presets set are not judged: the policy controls their tokens."""
         from .parse import Color, color
@@ -243,7 +243,7 @@ class Styler:
     def embed(self, asked=False):
         """(an SVG <style> element embedding the fonts used, or None; families that forbid embedding).
         asked is --embed-fonts; the figure's font-embed property asks too. Each font file goes in whole
-        (subsetting comes in P8.4), so a big one costs file size: the audit's large-font warns."""
+        (fonts are not subset), so a big one costs file size: the audit's large-font warns."""
         if not (asked or self.cascade.computed(self.views["figure"]).get("font-embed")):
             return None, []
         import base64
@@ -263,7 +263,7 @@ class Styler:
         return el("style", "\n".join(faces), role="figure.fonts"), refused
 
     def _encoded(self, v, c):
-        """Computed values with any {field, scale} read against this element's data (DESIGN 5.7),
+        """Computed values with any {field, scale} read against this element's data,
         and its legend text noted."""
         if "legend" in c and isinstance(c["legend"], str):
             self.rule_legends.setdefault(c["legend"], (v.type, c))

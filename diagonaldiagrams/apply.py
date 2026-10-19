@@ -1,4 +1,4 @@
-"""apply SPEC PATCH: write a patch into a spec (DESIGN 21.3, D12).
+"""apply SPEC PATCH: write a patch into a spec.
 
 The patch's operations land in the spec as fields, constraints and style rules, so the next render,
 and the next generation of the spec, keep them. A v2 scene is written back as a scene; a v1 spec

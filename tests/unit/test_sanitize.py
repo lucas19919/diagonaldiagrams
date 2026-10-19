@@ -1,4 +1,4 @@
-"""Raw SVG content is reduced to an allowlist (PLAN P2.18, DESIGN 4.5).
+"""Raw SVG content is reduced to an allowlist.
 Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys

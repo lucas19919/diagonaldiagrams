@@ -4,7 +4,7 @@
   "examples/grammar_arch.json"
  ],
  "exit": 0,
- "html_sha256": "eda46304da50c92dcbed478a9f6176834be6e0b419c8ff7ac4bc9bc46c9f0183",
+ "html_sha256": "2886db3c6a92d6cf31309fa18c5744d51d8cb818737bb99b96774a5dc1cc61fa",
  "receipt": {
   "auto": false,
   "cmd": "arch",

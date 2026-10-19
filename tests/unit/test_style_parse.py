@@ -1,4 +1,4 @@
-"""Style values (PLAN P3.2, DESIGN 5.3). Run: py -3 -m unittest discover tests/unit"""
+"""Style values. Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys
 import unittest

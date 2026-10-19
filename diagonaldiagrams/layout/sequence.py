@@ -1,4 +1,4 @@
-"""The sequence layout (DESIGN 7.2): actors side by side, each with a lifeline, and messages down a
+"""The sequence layout: actors side by side, each with a lifeline, and messages down a
 time axis, one step per message.
 
     res = layout(actors, messages, options)

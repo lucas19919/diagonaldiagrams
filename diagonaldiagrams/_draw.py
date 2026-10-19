@@ -1,6 +1,6 @@
 """SVG building blocks: markers, boxes, diamonds, ports, arrow routing, frames, labels, ticks, icons."""
-from ._text import _text_w, _wrap, _wrap_px, esc
-from ._theme import FONT, MONO, SANS, SERIF
+from ._text import _wrap, esc
+from ._theme import FONT, MONO, SERIF
 
 
 def render_pincallout(t, px, py, text, above=True, top=None, rx=3):
@@ -303,14 +303,6 @@ def route_edge(x1, y1, side1, x2, y2, side2, r=8, stub=16, nudge=0, track=0):
     return _round_poly(pts, r), mx, my, vert, pts
 
 
-def edge_ends(pos, src_id, dst_id):
-    x1, y1, n1 = pos[src_id]
-    x2, y2, n2 = pos[dst_id]
-    px, py, s1 = node_port(x1, y1, n1, x2, y2)
-    qx, qy, s2 = node_port(x2, y2, n2, x1, y1)
-    return px, py, s1, qx, qy, s2
-
-
 def corner_rx(corners):
     return {"sharp": 0, "rounded": 10, "editorial": 6}.get(corners, 6)
 
@@ -373,7 +365,7 @@ _BOXED = {}  # box_text's answers by value: every draft of a figure lays out the
 
 
 def box_text(name, sub="", w=BOX_W, st=None, pad=8):
-    """A box's text laid out in its computed style (P3.6): (name lines, sub lines, label style,
+    """A box's text laid out in its computed style: (name lines, sub lines, label style,
     sub style), each line a list of (text, kind) runs, the styles carrying the size the text ended
     up at and its line pitch. Nothing is cut unless the style asks for overflow: ellipsis. Lines wrap
     at w less pad on each side. The answer is shared between calls with the same text and style: read

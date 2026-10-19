@@ -1,4 +1,4 @@
-"""Patches: an edit as data (DESIGN 21.3, D12).
+"""Patches: an edit as data.
 
 A patch is a list of operations. A human's drag, retype or recolor becomes one, and so can an
 agent's edit; either way it lands in the spec as fields, constraints and style rules, so it survives

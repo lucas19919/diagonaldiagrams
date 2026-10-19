@@ -1,8 +1,8 @@
-"""The scene: what a figure shows, before layout and style decide where and how (DESIGN 4).
+"""The scene: what a figure shows, before layout and style decide where and how.
 
 Plain slotted records. normalize.py builds them from JSON and to_dict() writes them back, so a scene
-round-trips through receipts and patches. A scene is data (D8): nothing in it runs. Every element
-has an id, and generated ids come from content, never from position (D15).
+round-trips through receipts and patches. A scene is data: nothing in it runs. Every element
+has an id, and generated ids come from content, never from position.
 
 Fields a toolkit understands but the core does not are kept in `extra` and written back as given.
 """

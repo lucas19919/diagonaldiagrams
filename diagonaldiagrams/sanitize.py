@@ -1,6 +1,6 @@
-"""Raw SVG from a spec, made safe to draw (DESIGN 4.5, D8).
+"""Raw SVG from a spec, made safe to draw.
 
-A node's `content: {"svg": "<g>...</g>"}` is the lowest level of control (DESIGN 20.3). Specs
+A node's `content: {"svg": "<g>...</g>"}` is the lowest level of control. Specs
 arrive from agents, MCP clients and documents, so the markup is reduced to an allowlist of drawing
 elements and attributes before anything else sees it:
 

@@ -1,4 +1,4 @@
-"""Stories (DESIGN 21.2): one figure, several views of it, presented from one HTML page.
+"""Stories: one figure, several views of it, presented from one HTML page.
 
     {"title": "How a request moves",
      "figure": {"type": "arch", "spec": "platform.json"},   # "spec" a path or an object; Mermaid: "type": "mermaid"
@@ -11,10 +11,10 @@ A view draws the figure with looks of its own and points the camera at part of i
 - highlight: in the accent color with a heavier line, and never dimmed;
 - reveal: elements shown one step at a time, at full strength; an arrow shows once both its ends do;
 - focus: the camera frames those elements;
-- motion: what moves while the view shows (motion.py, DESIGN 21.2.1): a packet tracing a path,
+- motion: what moves while the view shows (motion.py): a packet tracing a path,
   dots flowing along arrows. It draws in a layer above the figure, which itself never changes.
 
-Selectors are the stylesheet's (DESIGN 5.2); a comma lists several. Looks change color and opacity
+Selectors are the stylesheet's; a comma lists several. Looks change color and opacity
 only, so every view and reveal step (a frame) has the same layout, and moving between frames is a
 change of looks and of camera, which the page animates. The engine resolves every selector and says
 when one matches nothing; the page only plays the frames.

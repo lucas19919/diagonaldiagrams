@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Fuzz the layout: render seeded random flow and arch specs, count audit failures (docs/PLAN.md, P0.3).
+"""Fuzz the layout: render seeded random flow and arch specs, count audit failures.
 
     py -3 tests/fuzz/run.py                       # 200 scenes, summary on stdout
     py -3 tests/fuzz/run.py --n 1000 --out f.json # write the full result
     py -3 tests/fuzz/run.py --keep out/fuzz       # also save each failing spec and its SVG
     py -3 tests/fuzz/run.py --one flow 17 33      # render one scene (kind, seed, nodes) and print it
-    py -3 tests/fuzz/run.py --strict              # exit 1 if any scene fails (P4.7 turns this on in CI)
+    py -3 tests/fuzz/run.py --strict              # exit 1 if any scene fails (CI runs it this way)
     py -3 tests/fuzz/run.py --fit column          # the same scenes drawn for a narrow column (--fit)
 
 Scene i uses seed BASE+i; kinds alternate and sizes cycle through the buckets, so the same

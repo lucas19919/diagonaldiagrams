@@ -1,4 +1,4 @@
-"""The order of each layer (DESIGN 7.2): few crossings, groups kept whole.
+"""The order of each layer: few crossings, groups kept whole.
 
 A layer holds nodes, dummies (the points where a long arrow passes a layer) and, for each group that
 spans the layer, a left and a right border item with the group's contents between them. Sorting is

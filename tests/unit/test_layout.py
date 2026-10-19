@@ -1,4 +1,4 @@
-"""The layered layout kernel (PLAN P4.2-P4.4, DESIGN 7-8). Run: py -3 -m unittest discover tests/unit"""
+"""The layered layout kernel. Run: py -3 -m unittest discover tests/unit"""
 import itertools
 import os
 import random
@@ -210,7 +210,7 @@ class Sequence(unittest.TestCase):
 
 
 class SchemaPlaces(unittest.TestCase):
-    """A v1 schema's table x and y: x picks the column, y the place in it (DESIGN 7.3)."""
+    """A v1 schema's table x and y: x picks the column, y the place in it."""
 
     def test_x_groups_columns_and_y_orders_them(self):
         from diagonaldiagrams.diagrams import _xy_places

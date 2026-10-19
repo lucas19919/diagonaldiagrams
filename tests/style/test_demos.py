@@ -1,4 +1,4 @@
-"""The P3 exit suite (docs/PLAN.md, P3): seven style demos, each a stylesheet and nothing else, drawn on
+"""The style demo suite: seven style demos, each a stylesheet and nothing else, drawn on
 flow, arch, seq and schema through the command line. Every demo passes the audit, except the low-
 contrast one, which the contrast check must catch and name. Run: py -3 -m unittest discover tests/style
 """

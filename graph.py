@@ -3,8 +3,7 @@
 
 The engine is the diagonaldiagrams/ package next to this file. This shim keeps
 `py graph.py <command> ...` working, and `import graph` (the browser playground calls
-graph.cli()). Any other attribute, such as graph.render_flow, is found in the package on
-first use.
+graph.cli()).
 """
 import os
 import sys
@@ -13,12 +12,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from diagonaldiagrams import __version__  # noqa: E402
 from diagonaldiagrams.cli import cli  # noqa: E402
-
-
-def __getattr__(name):
-    from diagonaldiagrams._names import find
-    return find(name)
-
 
 if __name__ == "__main__":
     cli()

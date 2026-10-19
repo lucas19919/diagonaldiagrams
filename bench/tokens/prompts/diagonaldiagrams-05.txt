@@ -1,7 +1,7 @@
-Use diagonaldiagrams, an SVG diagram engine for agents. Run it as `D:\Repos\diagonaldiagrams-bench-tools\bin\diagonaldiagrams.cmd` (it takes the arguments its skill describes). Its skill is D:\Repos\diagonaldiagrams\.claude\worktrees\serene-neumann-617706\SKILL.md.
+Use diagonaldiagrams, an SVG diagram engine for agents. Run it as `<bench-tools>\bin\diagonaldiagrams.cmd` (it takes the arguments its skill describes). Its skill is <repo>\.claude\worktrees\serene-neumann-617706\SKILL.md.
 
 Draw this process as a flowchart. It has 5 steps, counting the start and the end.
 
 The process starts when a request is received. First, load the customer account (step 1) and score the fraud risk (step 2). Step 3 checks whether check 1 passed: if it did, the process is done; if not, go back to step 1.
 
-Make the figure clean and readable, with no overlapping text. Work in D:\Repos\diagonaldiagrams-bench-runs\diagonaldiagrams-05-RUN and save the figure there as figure.svg. When you are done, reply with the path to figure.svg and any commands that failed.
+Make the figure clean and readable, with no overlapping text. Work in <bench-runs>\diagonaldiagrams-05-RUN and save the figure there as figure.svg. When you are done, reply with the path to figure.svg and any commands that failed.

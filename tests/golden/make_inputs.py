@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the golden corpus inputs and tests/golden/corpus.json (docs/PLAN.md, P0.1).
+"""Write the golden corpus inputs and tests/golden/corpus.json.
 
     py -3 tests/golden/make_inputs.py
 

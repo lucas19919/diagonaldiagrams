@@ -1,4 +1,4 @@
-"""Legibility checks (PLAN P3.9, DESIGN 9.3): contrast, min-size, colors.
+"""Legibility checks: contrast, min-size, colors.
 Run: py -3 -m unittest discover tests/unit"""
 import json
 import os
@@ -52,7 +52,7 @@ def judged(body, legibility=None):
 
 
 class Translucent(unittest.TestCase):
-    """A translucent fill is read over the paint beneath it, not over white (B25: the dark theme's
+    """A translucent fill is read over the paint beneath it, not over white (the dark theme's
     focal box, accent-tint at 0.12 on dark paper, read 1.0:1 for its white text)."""
     def test_a_tint_over_dark_paper_is_dark(self):
         body = ('<rect width="200" height="100" fill="#16191d"/>'
@@ -80,7 +80,7 @@ class Translucent(unittest.TestCase):
 
 class Defaults(unittest.TestCase):
     """flow, arch, seq and schema write data-legibility="all", so their default text is judged too.
-    Elsewhere (the chart kinds) only text a stylesheet styled is (B25)."""
+    Elsewhere (the chart kinds) only text a stylesheet styled is."""
     BODY = '<text x="20" y="50" font-size="7" fill="#d1d5db">faint</text>'
 
     def test_unmarked_default_text_is_not_judged(self):

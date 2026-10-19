@@ -1,4 +1,4 @@
-"""Ids that come from content, so they stay the same across edits and renders (D15).
+"""Ids that come from content, so they stay the same across edits and renders.
 
 The scene, the renderers, the outline and the exports all name edges through EdgeIds, so the id an
 agent reads in a verdict is the id a patch, an export cell or a diff refers to.

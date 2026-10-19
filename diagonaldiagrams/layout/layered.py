@@ -1,4 +1,4 @@
-"""The layered layout (DESIGN 7.2, PLAN P4.2): flowcharts, architecture, state machines, DAGs.
+"""The layered layout: flowcharts, architecture, state machines, DAGs.
 
     result = layout(nodes, edges, groups, options)
 
@@ -21,9 +21,9 @@ spread along a side, runs straight through its dummies, and turns in the gaps be
 track of its own (channels). The gaps are made as tall as their tracks need, so nothing is moved
 afterwards and nothing is drawn twice: the layout is right by construction, with no repair loop.
 
-Arrows that go back up (B19, B23) leave and enter on the side and climb through their own dummies;
+Arrows that go back up leave and enter on the side and climb through their own dummies;
 arrows within a layer run straight between neighbors or over the top. Groups are frames that hold
-their members and nothing else (B20).
+their members and nothing else.
 """
 from . import bk, channels, order as ordering
 from .order import Layering

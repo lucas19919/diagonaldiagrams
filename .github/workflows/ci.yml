@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Unit tests
         run: python -m unittest discover tests/unit
-      - name: Style demos (the P3 exit suite)
+      - name: Style demos
         run: python -m unittest discover tests/style
       - name: Smoke tests
         run: python tests_smoke.py
@@ -91,7 +91,7 @@ jobs:
         run: python scripts/scene_roundtrip.py --fuzz 40
 
   fuzz:
-    # Two fixed seed sets of 200 scenes each, 5-200 nodes; strict audit gate (PLAN P4.7). The
+    # Two fixed seed sets of 200 scenes each, 5-200 nodes; strict audit gate. The
     # nightly workflow (fuzz-nightly.yml) tries new seeds, which is how bugs past these get found.
     name: fuzz (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

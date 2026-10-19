@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""v1 spec -> scene -> v1 spec draws the same bytes (docs/PLAN.md, P2.3).
+"""v1 spec -> scene -> v1 spec draws the same bytes.
 
     py -3 scripts/scene_roundtrip.py            # the golden corpus's flow, arch, seq, schema and Mermaid inputs
     py -3 scripts/scene_roundtrip.py --fuzz 200 # also that many generated specs, against their direct render

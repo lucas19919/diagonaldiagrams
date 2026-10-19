@@ -1,6 +1,6 @@
-"""The 3D hooks (PLAN P2.14, DESIGN 13): positions take a z, a shape may paint several faces,
+"""The 3D hooks: positions take a z, a shape may paint several faces,
 items carry depth, and the projection stage is the identity in 2D. Everything 3D below is defined
-in this file, as the 3D toolkit (P7) will define it, without touching the core.
+in this file, as the 3D toolkit will define it, without touching the core.
 Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys

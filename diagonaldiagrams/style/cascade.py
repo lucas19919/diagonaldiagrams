@@ -1,4 +1,4 @@
-"""The cascade (DESIGN 5.1): for each element, which declaration wins.
+"""The cascade: for each element, which declaration wins.
 
 Cascade(sheets) takes stylesheets lowest priority first: core defaults, theme, toolkit sheets,
 preset, files from --style or the figure's `style`, inline rules. An element's own `style` (on its
@@ -225,7 +225,7 @@ class Cascade:
 
 def scene_views(scene):
     """Views for a scene: {"figure": View, "nodes": {id: View}, "groups": {...}, "edges": {...}}.
-    Containers follow the scene's group tree (DESIGN 4.5); edges sit in the figure."""
+    Containers follow the scene's group tree; edges sit in the figure."""
     from .select import View
     fig = View("figure", "figure", fields={"title": scene.title, "preset": scene.preset})
     out = {"figure": fig, "nodes": {}, "groups": {}, "edges": {}}

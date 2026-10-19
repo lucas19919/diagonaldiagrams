@@ -1,7 +1,7 @@
 """The audit's checks: collisions an agent cannot see in its own output.
 
 Each check reads the display list and appends issues ({code, msg, fix, at}). CHECKS runs in order,
-and that order is the order issues are reported in. docs/DESIGN.md section 9.6 describes each one.
+and that order is the order issues are reported in.
 """
 import math
 from types import SimpleNamespace
@@ -276,7 +276,7 @@ def _under(t, layers, at):
 def text_contrast(v, issues):
     # WCAG AA: 4.5:1, or 3:1 for large text (18.66 px, or 14 px bold). Judged where a stylesheet chose
     # the color, and everywhere on a figure whose defaults pass (data-legibility="all": flow, arch, seq
-    # and schema). The chart kinds' defaults still fall short (B25), so there only styled text is judged.
+    # and schema). The chart kinds' defaults still fall short, so there only styled text is judged.
     from ..style.parse import color, contrast
     layers = None
     for t in v.texts:

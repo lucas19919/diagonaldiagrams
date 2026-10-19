@@ -1,1 +1,1 @@
-"""Text: inline markup and layout (DESIGN 6). Font files and metrics come in P3.5."""
+"""Text: inline markup, box layout, font files and shaping."""

@@ -1,4 +1,4 @@
-"""Font files, read with struct (DESIGN 6.1, PLAN P3.5): TrueType and OpenType (.ttf, .otf), collections
+"""Font files, read with struct: TrueType and OpenType (.ttf, .otf), collections
 (.ttc) and zlib-compressed WOFF 1. WOFF2 needs Brotli and is not read.
 
 A Font knows its family, weight and style, its units per em, its ascent, descent and cap height, its

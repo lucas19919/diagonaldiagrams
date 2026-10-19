@@ -1,5 +1,5 @@
 """Mermaid input (flowchart, sequenceDiagram, erDiagram) and load_spec."""
-import json, sys
+import json
 from .errors import SpecError
 from ._draw import _FA_ICONS
 from ._issues import _FITS

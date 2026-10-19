@@ -1,4 +1,4 @@
-"""Inline markup in labels (DESIGN 4.2): **bold**, _italic_ and `mono`. Everything else is literal.
+"""Inline markup in labels: **bold**, _italic_ and `mono`. Everything else is literal.
 
 An underscore counts only at a word's edges, so snake_case and user_id stay as written. runs()
 splits a text into (text, kind) pieces, kind being "", "b", "i" or "m"; plain() is the text without

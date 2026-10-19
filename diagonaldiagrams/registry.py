@@ -1,6 +1,6 @@
-"""Private registries (PLAN P2.12): name -> function tables for shapes, audit checks and export
-formats, filled by the built-in parts with a decorator. P5 opens the same tables to toolkits
-(DESIGN 11.1), so a toolkit adds a shape the way the core adds "diamond".
+"""Private registries: name -> function tables for shapes, audit checks and export
+formats, filled by the built-in parts with a decorator. Toolkits can use the same tables later,
+so a toolkit adds a shape the way the core adds "diamond".
 """
 
 

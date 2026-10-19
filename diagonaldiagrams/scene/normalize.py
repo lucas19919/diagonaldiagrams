@@ -1,4 +1,4 @@
-"""JSON in, a checked Scene out (DESIGN 4).
+"""JSON in, a checked Scene out.
 
 Accepts the aliases v1 specs use (label for name, sub for subtitle, layer for rank, nodes for a
 group's members), both forms of group membership, and numbers as ids. Every problem is collected
@@ -180,7 +180,7 @@ def check(raw):
         node = _build(Node, known, extra)
         if "name" not in known:
             node.name = node.id
-        if isinstance(node.content, dict) and "svg" in node.content:  # raw SVG: an allowlist, nothing else (D8)
+        if isinstance(node.content, dict) and "svg" in node.content:  # raw SVG: an allowlist, nothing else
             try:
                 from ..sanitize import sanitize  # only for inline svg: it loads ElementTree
                 clean, removed = sanitize(node.content["svg"])

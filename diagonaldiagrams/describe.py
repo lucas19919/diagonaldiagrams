@@ -169,7 +169,7 @@ DESCRIBE = {
 
 DESCRIBE.update(_chart_meta())
 DESCRIBE["story"] = {  # the command; `chart story`, a user story map, keeps its entry under "also"
-    "input": "Story JSON: one figure and its views (DESIGN 21.2).",
+    "input": "Story JSON: one figure and its views.",
     "writes": "diagonaldiagrams story STORY.json -o OUT.html [--svg OUT.svg] [--gif OUT.gif] [--video OUT.mp4] [--view ID] [--fps 20] "
               "(the figure itself is drawn as OUT.figure.svg)",
     "shape": {"title": "...", "figure": {"type": "flow|arch|seq|schema|mermaid",

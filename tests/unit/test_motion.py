@@ -1,4 +1,4 @@
-"""Motion from meaning (motion.py, web/motion.js; DESIGN 21.2.1).
+"""Motion from meaning (motion.py, web/motion.js).
 Run: py -3 -m unittest discover tests/unit"""
 import copy
 import json

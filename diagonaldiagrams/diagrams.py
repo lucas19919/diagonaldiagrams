@@ -402,7 +402,7 @@ def _more_markers(dr, sty):
 
 def _bottom(t, sty, spec, W):
     """How much the canvas grows at the bottom: legend rows for encodings and rule legends, then the
-    caption (B17), if there is one."""
+    caption, if there is one."""
     rows = paint.legend_height(t, sty.legend_entries(), W - 60)
     lines = paint.caption_lines(spec.get("caption") or "", W - 60, sty.figure()["caption"])
     return rows + ((sty.figure()["caption"]["font-size"] + 4) * len(lines) + 8 if lines else 0)

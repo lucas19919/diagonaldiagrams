@@ -1,4 +1,4 @@
-"""The shaper extension point (PLAN P3.11, DESIGN 6.1). Run: py -3 -m unittest discover tests/unit"""
+"""The shaper extension point. Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys
 import unittest

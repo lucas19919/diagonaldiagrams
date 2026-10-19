@@ -5,7 +5,7 @@
 Two SVGs match when they have the same elements in the same order (tag, attributes, text), with
 numbers equal within a tolerance. Whitespace between elements, attribute order, quoting, and how a
 number is written (120 vs 120.0, 0.5 vs .5) do not matter. Used to check that rewriting how a
-figure is written out did not change what it draws (docs/PLAN.md, P2.6).
+figure is written out did not change what it draws.
 """
 import argparse
 import re

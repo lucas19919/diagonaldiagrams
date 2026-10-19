@@ -9,12 +9,12 @@ audit read owners and roles instead of guessing them back from the SVG.
 Drawing.svg() writes every figure the same way: one top-level element per line, attributes in the
 order given, numbers with at most two decimals (trailing zeros dropped), text escaped once.
 
-Before writing, a drawing passes through the projection stage (DESIGN 13), which is the identity
+Before writing, a drawing passes through the projection stage, which is the identity
 in 2D. An element may carry 3D corner points (pts3d); with a projection set, those faces get their
 2D outline and depth from it and are painted back to front. The core never sets one: the 3D toolkit
-(P7) does, without core edits.
+ does, without core edits.
 
-Accessibility (DESIGN 22.3): the parts a reader navigates (nodes, arrows, messages, tables, groups)
+Accessibility: the parts a reader navigates (nodes, arrows, messages, tables, groups)
 carry a11y = {"name", "kind"}. A drawing with a `kind` ("flow diagram") is written as a WAI-ARIA
 graphics document: those parts become role="graphics-symbol" with an aria-label, and everything
 else a part owns (its texts, pills, tails) is aria-hidden, so nothing is read twice. An edge
@@ -22,7 +22,7 @@ also carries attach: the node and port at each end, written as data-from-port an
 """
 import re
 
-from ._draw import ICONS, _bold, _box_lines, _diamond_h, _diamond_lines, _frame_box, _label_box, _pill_w, box_text, corner_rx, diamond_text
+from ._draw import ICONS, _bold, _diamond_h, _frame_box, _label_box, _pill_w, box_text, corner_rx, diamond_text
 from . import deco
 from .text.markup import plain
 from .registry import Registry
@@ -249,7 +249,7 @@ class Drawing:
     """A figure being painted: its size, its accessible title and description, the elements in
     paint order, the projection (None in 2D), and its kind ("flow diagram"), which makes it a
     navigable graphics document rather than a single image (None: role="img", as charts are).
-    legible: its default colors and sizes pass the legibility checks (B25), so it writes
+    legible: its default colors and sizes pass the legibility checks, so it writes
     data-legibility="all" and the audit judges every text, not only those a stylesheet styled."""
     __slots__ = ("width", "height", "title", "desc", "items", "projection", "kind", "legible", "written")
 
@@ -592,7 +592,7 @@ def arrow_label(t, mx, ay, text, vertical=False, flip=False, owner="", st=None, 
 
 
 def _sides(shape_el, geometry, st, shape, owner):
-    """Border sides (DESIGN 5.5): when a style sets any border-*, the outline is drawn side by side and
+    """Border sides: when a style sets any border-*, the outline is drawn side by side and
     the shape itself keeps only its fill. geometry() gives each side's path, worked out only then."""
     sides = deco.declared(st.get("computed") or {}, shape)
     if not sides:

@@ -1,4 +1,4 @@
-"""Edge label placement (DESIGN 8, PLAN P4.4).
+"""Edge label placement.
 
 Finds the first clear spot along an edge's route where the paper-colored label pill clears
 boxes, group frames, canvas borders and already-placed labels (hard obstacles), while minimizing

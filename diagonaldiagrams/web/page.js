@@ -1,4 +1,4 @@
-/* diagonaldiagrams: a diagram page's change animation (DESIGN 21.4).
+/* diagonaldiagrams: a diagram page's change animation.
  *
  * Settings come from <script id="dd-page" type="application/json">: the figure's kind, the layout's
  * layers (which `diff` reads back from an old page), the drawing before the last edit (or null), and

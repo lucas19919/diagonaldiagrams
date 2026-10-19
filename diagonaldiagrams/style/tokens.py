@@ -1,4 +1,4 @@
-"""Tokens and themes (DESIGN 5.6).
+"""Tokens and themes.
 
 Tokens are named values: colors (paper, ink, accent, ...), type sizes, spacing, strokes and
 palettes. A theme is a stylesheet whose tokens set the colors; it extends `core`, which holds the

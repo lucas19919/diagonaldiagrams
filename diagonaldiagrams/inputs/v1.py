@@ -1,8 +1,8 @@
-"""v1 specs and scenes, both ways (DESIGN 14.6).
+"""v1 specs and scenes, both ways.
 
 from_v1() turns a flow, arch, seq or schema spec into scene JSON with that preset. to_v1() turns a
 scene back into the spec today's renderers draw, which is how a v2 scene renders until the layout
-kernels (P4) read scenes directly. For a v1 spec the round trip draws the same bytes; the golden
+kernels read scenes directly. For a v1 spec the round trip draws the same bytes; the golden
 corpus checks it.
 
 Fields only a scene has (style, class, pin, constraints, ...) are written into the v1 spec under
@@ -145,9 +145,9 @@ def to_v1(scene):
     if scene.budget is False:
         spec["budget"] = False
     if scene.style:
-        spec["style"] = scene.style  # drawn: the renderers read their styles through the cascade (P3.8)
+        spec["style"] = scene.style  # drawn: the renderers read their styles through the cascade
     if scene.caption:
-        spec["caption"] = scene.caption  # drawn under the figure (B17)
+        spec["caption"] = scene.caption  # drawn under the figure
     for key in ("source", "use", "size", "defs", "data", "space"):
         if getattr(scene, key):
             if not (key == "size" and kind in ("flow", "arch", "schema")):  # drawn: its fit, aspect, width (diagrams._fit)

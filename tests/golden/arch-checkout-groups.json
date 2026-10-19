@@ -4,7 +4,7 @@
   "examples/checkout_groups.json"
  ],
  "exit": 0,
- "html_sha256": "17b026846d534694888233cf0246934ec6aa4505642284a8abffe31ce175da25",
+ "html_sha256": "c04afdebb77261f8de74de15e735ba9394cd38f0cde34bd9664f46a40cf0808d",
  "receipt": {
   "auto": false,
   "cmd": "arch",

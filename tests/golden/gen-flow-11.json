@@ -4,7 +4,7 @@
   "tests/golden/inputs/flows/flow-11.json"
  ],
  "exit": 0,
- "html_sha256": "bd71e363108956c8f21cfa4207f8229cd11d4a7e97ab0466d36743bcca1ec272",
+ "html_sha256": "fe78b271fedc815cb91a7f91241e5669639eda5698e6347efb3d840262c1d263",
  "receipt": {
   "auto": false,
   "cmd": "flow",

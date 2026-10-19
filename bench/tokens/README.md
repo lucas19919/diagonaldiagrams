@@ -13,6 +13,8 @@ cd TOOLS/pele && npm install pele@1.6.0
 py -3 scripts/bench_prompts.py --tools TOOLS --runs RUNS --browser "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
 ```
 
+The committed prompts show `<repo>`, `<bench-tools>` and `<bench-runs>` where the run had this machine's folders.
+
 `bench_prompts.py` writes `prompts/TOOL-NN.txt`, one per tool and size (5, 11, 20 and 40 steps), and `TOOLS/bin/`:
 
 | Command | Runs |

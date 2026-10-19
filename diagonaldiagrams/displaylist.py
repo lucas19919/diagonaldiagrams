@@ -1,7 +1,7 @@
 """The display list: everything a figure paints, in paint order, with what each item is.
 
 The audit's checks read a display list, never SVG text. Today the audit builds one from a finished
-SVG (audit.svg_import); the renderers will build theirs directly (docs/DESIGN.md, section 8.3), so
+SVG (audit.svg_import); the renderers will build theirs directly, so
 the same checks see exactly what was drawn.
 """
 
@@ -25,8 +25,8 @@ class Item:
         ("node", None),             # a named node's box
         ("diamond", None),          # (cx, cy, width, height) of a decision's outline
         ("ellipse", None),          # (cx, cy, rx, ry): a circle or ellipse arrows must go around
-        ("depth", 0.0),             # distance from the viewer once projected (DESIGN 13); 0 in 2D
-        ("a11y", None),             # a part a reader navigates: {"name", "kind", "order"} (DESIGN 22.3)
+        ("depth", 0.0),             # distance from the viewer once projected; 0 in 2D
+        ("a11y", None),             # a part a reader navigates: {"name", "kind", "order"}
         ("attach", None),           # arrow: {"from": {"node", "port"}, "to": {...}} when the SVG says
         ("color", None),            # text: its fill
         ("bold", False),            # text: weight 600 or more

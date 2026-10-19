@@ -122,7 +122,7 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
 
 
 def _brand(target, spec, kind):
-    """The project's brand policy (diagonaldiagrams.toml, DESIGN 22.4) checked the way render checks it."""
+    """The project's brand policy (diagonaldiagrams.toml) checked the way render checks it."""
     from . import config
     from .errors import SpecError
     from .inputs.v1 import KINDS, detect
@@ -197,7 +197,7 @@ def _validate_spec_dict(spec, errors, warnings, kind=None):
         if len(set(ids)) != len(ids):
             _vissue(errors, warnings, "E", "duplicate node ids", "make ids unique")
         pinned = [str(n.get("id")) for n in nodes if isinstance(n, dict) and n.get("pin") is not None]
-        if pinned:  # a layered figure's boxes stand in rows: a row and a place say where one goes (DESIGN 4.6)
+        if pinned:  # a layered figure's boxes stand in rows: a row and a place say where one goes
             warnings.append({"code": "not-drawn", "msg": f"pins are not drawn ({', '.join(pinned[:3])}{', ...' if len(pinned) > 3 else ''})",
                              "fix": "to move a node, give it a row with a place patch, or a rank or order; drop the pin if unwanted"})
         for e in edges:

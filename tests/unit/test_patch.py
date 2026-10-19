@@ -1,4 +1,4 @@
-"""Patches (PLAN P2.16, DESIGN 21.3). Run: py -3 -m unittest discover tests/unit"""
+"""Patches. Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys
 import unittest
@@ -144,7 +144,7 @@ def placed(v1, kind, ops):
 
 
 class Place(unittest.TestCase):
-    """A drag in the page becomes a place: the node's new row, in order (DESIGN 21.3)."""
+    """A drag in the page becomes a place: the node's new row, in order."""
     FLOW = {"nodes": [{"id": "a", "name": "A", "rank": 0}, {"id": "b", "name": "B", "rank": 1, "lane": -1},
                       {"id": "c", "name": "C", "rank": 1, "lane": 1}, {"id": "d", "name": "D", "rank": 2}],
             "edges": [{"from": "a", "to": "b"}, {"from": "a", "to": "c"}, {"from": "b", "to": "d"}, {"from": "c", "to": "d"}]}
@@ -207,7 +207,7 @@ def middles(verdict):
 
 class Pins(unittest.TestCase):
     """A pin in flow and arch is not drawn: the boxes stand in rows, and a place, a rank or an order
-    says where one goes (DESIGN 4.6)."""
+    says where one goes."""
 
     def test_a_pin_is_not_drawn_and_names_what_to_use(self):
         spec, n, c, warn = placed(Place.FLOW, "flow", [{"op": "pin", "id": "c", "x": 600, "y": 300}])
@@ -227,7 +227,7 @@ class Pins(unittest.TestCase):
 
 
 class Messages(unittest.TestCase):
-    """A message dragged to another step in the page becomes an order over messages (DESIGN 21.3)."""
+    """A message dragged to another step in the page becomes an order over messages."""
     SEQ = {"actors": [{"id": "u", "name": "User"}, {"id": "api", "name": "API"}, {"id": "db", "name": "DB"}],
            "messages": [{"from": "u", "to": "api", "label": "login"}, {"from": "api", "to": "db", "label": "look up"},
                         {"from": "db", "to": "api", "label": "row"}, {"from": "api", "to": "u", "label": "token"}]}

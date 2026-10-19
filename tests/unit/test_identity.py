@@ -1,4 +1,4 @@
-"""Stable identity (PLAN P2.15, DESIGN D15): an edit keeps the ids of what it didn't touch, in the
+"""Stable identity: an edit keeps the ids of what it didn't touch, in the
 outline, in the SVG and in the editable exports. Run: py -3 -m unittest discover tests/unit"""
 import copy
 import json

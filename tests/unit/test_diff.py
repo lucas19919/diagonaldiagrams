@@ -1,4 +1,4 @@
-"""What changed between two drawings (diff.py, DESIGN 21.4). Run: py -3 -m unittest discover tests/unit"""
+"""What changed between two drawings (diff.py). Run: py -3 -m unittest discover tests/unit"""
 import json
 import os
 import sys

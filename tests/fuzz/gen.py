@@ -1,10 +1,10 @@
-"""Seeded random v1 specs for the fuzz harness (docs/PLAN.md, P0.3, P4.7).
+"""Seeded random v1 specs for the fuzz harness.
 
 Every spec is valid: unique ids, arrows between real nodes, at most 2 focal nodes, at most 3
 exits per decision, each node in at most one group. Validation warnings are allowed; validation
 errors would be a generator bug, and run.py counts them separately.
 
-P4.7: 5-200 nodes, nested groups, lanes, constraints, every shape, long labels, back edges, self-loops.
+5-200 nodes, nested groups, lanes, constraints, every shape, long labels, back edges, self-loops.
 The same (kind, seed, n) always gives the same spec.
 """
 import random
@@ -41,7 +41,7 @@ def _name(rng, i, long_p=0.15):
 
 
 def _groups(rng, n, max_groups=4):
-    """Runs of node indices, optionally nested with a parent (P4.7)."""
+    """Runs of node indices, optionally nested with a parent."""
     groups, used = [], set()
     num_g = rng.randint(1, max_groups)
     parent_cand = None

@@ -10,7 +10,7 @@ used instead: each of them is valid and the constraints are linear, so their mea
 
 Given where items stood in an earlier drawing (prev), any weighted mean of the four is valid for the
 same reason, so the one closest to the earlier places is taken instead: an edit then moves the rest
-of the figure as little as the four allow (PLAN P4.9).
+of the figure as little as the four allow.
 
 A flow's main path (spine) is forced the way borders are, so all four keep it straight. On an edit
 the four without it join the mix, since a path that flips sides would otherwise move every box.

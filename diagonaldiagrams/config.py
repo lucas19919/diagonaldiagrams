@@ -1,4 +1,4 @@
-"""Project and organization config (DESIGN 22.4, PLAN P3.12).
+"""Project and organization config.
 
 A project's diagonaldiagrams.toml is found by walking up from the spec's folder (or the working
 directory). An organization's file is named by the DIAGONALDIAGRAMS_ORG_CONFIG environment variable

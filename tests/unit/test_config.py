@@ -1,4 +1,4 @@
-"""Project config and the brand policy (PLAN P3.12, DESIGN 22.4). Run: py -3 -m unittest discover tests/unit"""
+"""Project config and the brand policy. Run: py -3 -m unittest discover tests/unit"""
 import json
 import os
 import sys

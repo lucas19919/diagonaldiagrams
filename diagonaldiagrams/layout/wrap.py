@@ -1,4 +1,4 @@
-"""Wrapping a tall layered layout into columns (DESIGN 7.3, PLAN P4.2 and P4.8).
+"""Wrapping a tall layered layout into columns.
 
 A 40-step flow drawn in one column is a 4000 px strip. wrap() cuts the layers into chunks of about
 equal height and sets the chunks side by side, so the figure lands near the target aspect ratio.

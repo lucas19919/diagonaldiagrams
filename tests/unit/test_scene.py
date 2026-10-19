@@ -1,4 +1,4 @@
-"""The scene model and normalize (PLAN P2.3). Run: py -3 -m unittest discover tests/unit"""
+"""The scene model and normalize. Run: py -3 -m unittest discover tests/unit"""
 import os
 import sys
 import unittest

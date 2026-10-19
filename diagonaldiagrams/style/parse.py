@@ -1,4 +1,4 @@
-"""Style values (DESIGN 5.3, 5.4): what a stylesheet may say, read into values the painters use.
+"""Style values: what a stylesheet may say, read into values the painters use.
 
 - Colors: #rgb, #rgba, #rrggbb, #rrggbbaa, rgb()/rgba() (commas or spaces, / alpha), hsl()/hsla(),
   CSS named colors, transparent, currentColor, tokens (accent, var(--accent)), and mix(a, b, 30%)
@@ -55,12 +55,12 @@ NAMED = {
 BORDER_STYLES = ("solid", "dashed", "dotted", "double", "none")
 SIDES = ("top", "right", "bottom", "left")
 
-# DESIGN 5.4: every property a stylesheet may set, and what kind of value it takes
+# every property a stylesheet may set, and what kind of value it takes
 _BOX = {"shape": "word", "width": "length", "height": "length", "min-width": "length", "max-width": "length",
         "padding": "padding", "fill": "paint", "background": "paint", "stroke": "paint", "stroke-width": "length",
         "border": "border", "border-top": "border", "border-right": "border", "border-bottom": "border",
         "border-left": "border", "border-top-left": "border", "border-top-right": "border",
-        "border-bottom-right": "border", "border-bottom-left": "border",  # a diamond's sides (DESIGN 5.5)
+        "border-bottom-right": "border", "border-bottom-left": "border",  # a diamond's sides
         "border-style": ("solid", "dashed", "dotted", "double", "none"),
         "border-radius": "radius", "box-shadow": "shadow", "opacity": "number", "glow": "glow",
         "pattern": ("hatch", "dots", "grid", "none"), "sketch": "bool"}
@@ -76,7 +76,7 @@ _EDGE = {"stroke-dasharray": "dasharray",
          "router": "word", "corner-radius": "length", "bundle": "bool"}
 _ICON = {"icon": "word", "icon-position": ("left", "right", "top", "bottom", "top-left", "top-right"),
          "icon-color": "color", "icon-size": "length"}
-_FIGURE = {"font-embed": "bool",  # embed the named fonts the figure uses (P3.5b)
+_FIGURE = {"font-embed": "bool",  # embed the named fonts the figure uses
            "title-align": ("start", "middle", "end", "left", "center", "right"),
            "legend-position": ("bottom", "top", "right", "left", "none")}
 PROPERTIES = {**_BOX, **_TEXT, **_EDGE, **_ICON, **_FIGURE, "legend": "text"}
@@ -107,7 +107,7 @@ class Color:
         return f"rgba({r},{g},{b},{round(self.a, 3):g})"
 
     def luminance(self):
-        """WCAG relative luminance (for the contrast check, P3.9)."""
+        """WCAG relative luminance (for the contrast check)."""
         def lin(c):
             c /= 255
             return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
@@ -367,7 +367,7 @@ def value(prop, raw, tokens=None, font_size=None):
     if kind is None:
         raise error(f"'{prop}' is not a style property", "see `describe style` for the list", _near(prop, PROPERTIES))
     if isinstance(raw, dict) and "field" in raw:
-        return raw  # an encoding: read later, against the data (P3.7)
+        return raw  # an encoding: read later, against the data
     if isinstance(kind, tuple):
         word = str(raw).strip().lower()
         if word not in kind:

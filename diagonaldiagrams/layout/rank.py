@@ -1,4 +1,4 @@
-"""Layers for a layered layout (DESIGN 7.2): which arrows go back up, then which layer each node sits in.
+"""Layers for a layered layout: which arrows go back up, then which layer each node sits in.
 
 back_edges() breaks cycles the way v1 did, so a loop's start stays on top: a depth-first walk from the
 nodes nothing points at (else the first node), in the spec's order, marks each arrow that returns to

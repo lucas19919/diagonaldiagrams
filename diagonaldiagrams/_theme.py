@@ -4,7 +4,7 @@ from .style.tokens import THEME_NAMES, read_theme_file, v1_theme
 
 # The flat theme dicts the renderers read, built from the theme stylesheets (style/themes/*.json).
 THEMES = {name: v1_theme(name) for name in THEME_NAMES}
-THEME = THEMES["editorial"]  # named, like every theme (B14)
+THEME = THEMES["editorial"]  # named, like every theme
 
 
 OKABE_ITO_DARK = ["#56B4E9", "#E69F00", "#2dd4a7", "#CC79A7", "#7cc7ff", "#f08a59", "#F0E442", "#e8e8e8"]

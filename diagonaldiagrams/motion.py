@@ -1,4 +1,4 @@
-"""Motion from meaning (DESIGN 21.2.1): a view says what moves, and the engine works out how.
+"""Motion from meaning: a view says what moves, and the engine works out how.
 
     "motion": [{"trace": "web -> gw -> orders -> pay"},   # a packet runs the path; arrows light up
                {"flow": "edge[async]"}]                    # dots run along those arrows, without end
