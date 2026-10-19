@@ -3,7 +3,6 @@ import json, os
 from ._draw import ICONS
 from ._issues import _SPEC_KEYS, _vissue
 from ._text import _wrap_px
-from .charts.catalog import _CHART_BLURB
 from .mermaid import load_spec
 from ._lazy import lazy
 
@@ -22,6 +21,11 @@ def do_validate(args):
     return 0 if ok else 1
 
 
+def _chart_kinds():
+    from .charts.catalog import _CHART_BLURB
+    return _CHART_BLURB
+
+
 def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=None, kind=None, unbounded=False,
                      roles=None):
     """Every check `validate` runs, as (errors, warnings). Render calls it before drawing.
@@ -35,7 +39,7 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
         return errors, warnings
     if not os.path.isfile(target):
         return [{"msg": f"no file {target}", "fix": "check the path; write the spec or CSV first"}], []
-    if vtype in _CHART_BLURB:
+    if vtype != "spec" and vtype in _chart_kinds():  # a diagram spec never loads the chart catalog
         _validate_chart(vtype, args.target, args, errors, warnings)
         return errors, warnings
     if args.target.endswith(".csv"):

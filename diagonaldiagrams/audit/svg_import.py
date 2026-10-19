@@ -190,7 +190,13 @@ def translucent(el, st):
     return op(el.get("fill-opacity")) < 1 or op(st.get("opacity")) < 1 or op(el.get("opacity")) < 1
 
 
-_INLINE = {k: re.compile(rf"(?:^|;)\s*{k}\s*:\s*([^;]+)") for k in KEEP}  # one property in a style="..." attribute
+_INLINE = {}  # property -> its pattern in a style="..." attribute, compiled the first time one is read
+
+
+def _inline():
+    if not _INLINE:
+        _INLINE.update((k, re.compile(rf"(?:^|;)\s*{k}\s*:\s*([^;]+)")) for k in KEEP)
+    return _INLINE
 
 
 def svg_import(root, width, height):
@@ -208,10 +214,11 @@ def svg_import(root, width, height):
     order = [0]  # reading order: the document order of the parts that have names
 
     def walk(el, st, m):
-        tag = str(el.tag).split("}")[-1]
+        tag = str(el.tag).rpartition("}")[2]
         if tag in SKIP:
             return
-        own = [(k, v) for k in KEEP if (v := el.get(k)) is not None]
+        attrib = el.attrib
+        own = [(k, attrib[k]) for k in KEEP if k in attrib]
         style = el.get("style")
         if own or css or style:  # the inherited style is shared until an element changes it
             st = dict(st)
@@ -219,11 +226,12 @@ def svg_import(root, width, height):
             if css:
                 st.update(css_for(css, el, tag))  # stylesheet rules beat presentation attributes
             if style:  # most elements have none; the regexes are what this walk spends most time on
-                for k, pat in _INLINE.items():
+                for k, pat in _inline().items():
                     hit = pat.search(style)
                     if hit:
                         st[k] = hit.group(1).strip()
-        if st.get("display") == "none" or st.get("visibility") == "hidden" or num(st.get("opacity", 1), 1) <= 0:
+        opacity = st.get("opacity")
+        if st.get("display") == "none" or st.get("visibility") == "hidden" or (opacity is not None and num(opacity, 1) <= 0):
             return
         if el.get("transform"):
             m = compose(m, affine(el.get("transform")))
@@ -231,7 +239,8 @@ def svg_import(root, width, height):
             for item in text_items(el, st, m, z):
                 dl.add(item)
             return
-        marked = any((st.get(k) or "none").strip() != "none" for k in ("marker", "marker-start", "marker-end"))
+        marked = ((st.get("marker") or "none").strip() != "none" or (st.get("marker-start") or "none").strip() != "none"
+                  or (st.get("marker-end") or "none").strip() != "none")
         if tag in ("path", "line", "polyline") and marked:
             if tag == "path":
                 raw = path_pts(el.get("d"))

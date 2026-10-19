@@ -12,7 +12,6 @@ A color keeps the text it was written as (`.css`), unless it was computed (mix),
 with the default stylesheet draws the same bytes. Every error is a SpecError with code "bad-style"
 and a did-you-mean fix where one is close.
 """
-import colorsys
 import re
 
 from ..errors import SpecError
@@ -201,6 +200,7 @@ def color(value, tokens=None, _depth=0):
             else:
                 hue = float(args[0].replace("deg", "")) % 360 / 360
                 s, li = (float(x.rstrip("%")) / 100 for x in args[1:3])  # 50% or 50: half
+                import colorsys
                 r, g, b = (c * 255 for c in colorsys.hls_to_rgb(hue, li, s))
         except ValueError:
             raise error(f"'{text}' is not a valid {m.group(1)}() color", f"write {m.group(1)}(46, 90, 168)") from None

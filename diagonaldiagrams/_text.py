@@ -1,5 +1,4 @@
 """Text: escaping, labels, wrapping, and the width estimate that layout and audit share."""
-import html
 
 
 def _humanize(col):
@@ -48,7 +47,8 @@ def _wrap(text, width=24, max_lines=3):
 
 
 def esc(s):
-    return html.escape(str(s))
+    """html.escape, without loading html: & < > " ' as entities."""
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#x27;")
 
 
 def _wrap_px(text, max_w, fs, bold=False, max_lines=3):

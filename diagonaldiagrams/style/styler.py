@@ -6,8 +6,6 @@ which states today's look as rules, with --corners as its node radius), the spec
 sheets, and any further sheets. node(), edge() and group() read it into small dicts of painting
 values; marker() names the arrowhead for a stroke color.
 """
-import copy
-
 from .cascade import Cascade, scene_views
 from .encode import Scale, is_encoding
 from .select import View
@@ -67,6 +65,15 @@ def check_styles(spec, kind=None):
     return out
 
 
+def _copied(v):
+    """A stylesheet's JSON copied all the way down, as copy.deepcopy would (without loading copy)."""
+    if isinstance(v, dict):
+        return {k: _copied(x) for k, x in v.items()}
+    if isinstance(v, list):
+        return [_copied(x) for x in v]
+    return v
+
+
 def _look(c):
     """The one visual a legend swatch shows for a rule: a side's border color, else the fill, else
     the stroke."""
@@ -86,7 +93,7 @@ class Styler:
         base = name if name in THEME_NAMES else "editorial"
         plain = v1_theme(base)
         overrides = {token_name(k): v for k, v in theme.items() if not k.startswith("_") and plain.get(k) != v}
-        preset = copy.deepcopy(sheet(kind))
+        preset = _copied(sheet(kind))
         node_rule = preset.setdefault("rules", {}).setdefault("node", {})
         node_rule.setdefault("border-radius", CORNER_RX.get(corners, 6))  # --corners, as a rule (B15)
         scene = self._scene(spec, kind)
@@ -123,7 +130,14 @@ class Styler:
         return self.views[kind + "s"].get(str(eid)) or self._generic[kind]
 
     def _text(self, v, pseudo, background=None):
-        c = self._encoded(v, self.cascade.computed(v, pseudo))
+        raw = self.cascade.computed(v, pseudo)
+        # elements whose computed style is one shared dict (Cascade.computed) read the same text style
+        # off it, unless an encoding reads their own data: worked out once, a copy handed to each
+        key = ("text", id(raw), id(background))
+        hit = self._memo.get(key)
+        if hit is not None and hit[0] is raw and hit[1] is background:
+            return dict(hit[2])
+        c = self._encoded(v, raw)
         out = {k: css(c.get(k)) for k in TEXT}
         out["font"], missing = self._font(out)
         if missing:
@@ -134,6 +148,9 @@ class Styler:
         for prop in ("color", "font-size"):  # a stylesheet's choice is marked, so the audit can name it
             if self.cascade.origin(v, pseudo, prop) > self.preset_layer:
                 out[f"{prop}-from"] = self.cascade.source(v, pseudo, prop)
+        if c is raw:
+            self._memo[key] = (raw, background, out)
+            return dict(out)
         return out
 
     def _readable(self, fg, bg):

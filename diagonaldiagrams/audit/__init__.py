@@ -24,15 +24,19 @@ def do_audit(args):
 def _audit_file(p):
     """Every check `audit` runs, as a report dict. Render calls it after drawing."""
     import re, xml.etree.ElementTree as ET
-    errors, warnings = [], []
     if not os.path.isfile(p):
         return {"ok": False, "errors": [{"msg": f"no file {p}", "fix": "render first; audit takes the .svg or .html it wrote"}], "warnings": []}
     raw = open(p, encoding="utf-8", errors="replace").read()
     # the outermost <svg> first (D2 nests one svg in another), then the first whole one (an HTML page)
     a, b = raw.find("<svg"), raw.rfind("</svg>")
-    m = re.search(r"<svg[\s\S]*?</svg>", raw)
+
+    def tries():
+        if a >= 0 and b > a:
+            yield raw[a:b + 6]
+        m = re.search(r"<svg[\s\S]*?</svg>", raw)
+        yield m.group(0) if m else raw
     root, err = None, None
-    for svg in ([raw[a:b + 6]] if a >= 0 and b > a else []) + ([m.group(0)] if m else [raw]):
+    for svg in tries():
         try:
             root = ET.fromstring(svg)
             break
@@ -40,6 +44,20 @@ def _audit_file(p):
             err = err or e
     if root is None:
         return {"ok": False, "errors": [{"msg": f"malformed SVG: {err}"}], "warnings": []}
+    return _report(root, svg, raw)
+
+
+def _audit_drawn(drawing, root):
+    """The report _audit_file gives for a figure just drawn, read in memory: root is the drawing's
+    tree (paint.Drawing.tree: what parsing its file gives) and drawing.written the file's text, so
+    nothing is read back or parsed again."""
+    return _report(root, drawing.written, drawing.written)
+
+
+def _report(root, svg, raw):
+    """The checks over a parsed figure: root, the <svg> text it was parsed from, and the whole file."""
+    import re
+    errors, warnings = [], []
     W = H = 0
     vb = root.get("viewBox", "").split()
     if len(vb) == 4:
