@@ -15,7 +15,7 @@ Status: proposal, 2026-10-12. The architecture is in [DESIGN.md](DESIGN.md); thi
   - **M** = a few days;
   - **L** = one to two weeks of focused work.
 - **Exit criteria.** A phase is done when its exit criteria hold in CI, not when its tasks are ticked.
-- **Deletion.** Every port deletes the code it replaces in the same phase. Nothing old is left running beside its replacement, except the `--layout-engine v1` fallback, which lives from P4 to P8.
+- **Deletion.** Every port deletes the code it replaces in the same phase. Nothing old is left running beside its replacement. The `--layout-engine v1` fallback, kept from P4, was removed early, on 2026-10-19.
 
 ```
 P0 baseline ─► P1 package ─► P1b fixes ─► P2 core seams ─┬─► P3 style + text ─┐
@@ -428,7 +428,7 @@ Built:
 - **P4.3:** its router: ports, a track per run in each gap, back edges (B19, B21, B23), doglegs, frames held by construction (B20). An edge's end can be pinned along its side (`from_at`, `to_at`), as a table's column row is.
 - **P4.4:** label placement lives in `route/labels.py`: candidate search with soft obstacles and paper-colored pills. `layout/room.py` opens room for a label that would find no clear spot (B29).
 - **P4.5:** `layout/sequence.py`, beside `layered`. The other eight kernels (stack, grid, tree, radial, force, manual, table, timeaxis) and the container protocol in `layout/base.py` were added on 2026-10-14 without a renderer to call them, and their tests only counted positions. They were deleted on 2026-10-17. Each comes back with the renderer that first needs it: the container protocol with nested groups in P5, the chart kernels in P6 and P8.
-- **P4.6:** flow, arch and schema draw with the layered kernel once, with no repair loop. Schema runs left to right with its relations pinned to column rows. seq draws from `layout/sequence.py`, byte for byte as before. `--layout-engine v1` keeps the old code until P8, and tables pinned with `x` and `y` still draw with v1's schema.
+- **P4.6:** flow, arch and schema draw with the layered kernel once, with no repair loop. Schema runs left to right with its relations pinned to column rows. seq draws from `layout/sequence.py`, byte for byte as before. `--layout-engine v1` kept the old code until 2026-10-19, when it was removed (P8.6); tables placed with `x` and `y` now draw with v2, as a column and a place in it.
 - **P4.7:** the generator covers 5–200 nodes, lanes, every shape, long labels, back edges and self-loops. It also writes nested groups, but they are not drawn as nested: validation rejects a node in two groups, and the renderers ignore a group's `parent`. CI gates two fixed seed sets (5000 and 20000, 200 scenes each, `--strict`). A nightly workflow (`fuzz-nightly.yml`) draws 1,000 scenes on new seeds and keeps the failures.
 - **P4.8 (`size.aspect`):** wrap targets 4:3 unless the spec sets `size.aspect`.
 
@@ -445,7 +445,7 @@ Exit:
 - 200-node layered ≤ 1 s: met at the median, not for the slowest scene.
 - Corpus crossings and wire ≤ baseline: met.
 - Gallery re-rendered and reviewed: met (2026-10-17).
-- No repair loop outside the v1 fallback: met.
+- No repair loop outside the v1 fallback: met. The fallback itself was removed on 2026-10-19.
 
 Left: P4.1 (the container protocol and nested groups, now with P5); P4.9 (incremental layout), P4.10 (page model), P4.11 (1,000 and 10,000 nodes), P4.12 (verdict metrics, `--preview png`, `--candidates`); constraints beyond rank, lane and order (DESIGN 4.6); LR, BT and RL for flow and arch (the kernel has them; schema uses LR).
 
@@ -551,7 +551,7 @@ Left: P4.1 (the container protocol and nested groups, now with P5); P4.9 (increm
 | P8.3 Annotations and budgets | M | All annotation types (DESIGN 4.7) on every preset. Budgets become warnings plus advice in the outline, with `--strict` to refuse. Today's refusals that tests rely on stay under `budget: true`. |
 | P8.4 Polish | M | Font subsetting for embedding; the `sketch` decoration. |
 | P8.5 Quality benchmark | L | `bench/quality/`: blind pairwise judging of rendered PNGs, before vs after and vs Mermaid, D2 and Graphviz on the README's 5/11/20/40-step task. A vision-model judge with human spot checks. Results go in README next to the token benchmark, which is rerun. Before vs after was first run by hand for the default look (2026-10-17, metrics table): randomized A and B, two judge models, both orders; the owner's review of the before/after sheet was the human check. |
-| P8.6 Remove v1 paths | S | Delete `--layout-engine v1` and anything left unused. Every module ≤ 800 lines. |
+| P8.6 Remove v1 paths | S | Delete `--layout-engine v1` and anything left unused. Every module ≤ 800 lines. Done early for the layout (2026-10-19): `legacy.py`, the flag and the helpers only it used. Left: modules over 800 lines. |
 | P8.7 Docs | M | README, root `SKILL.md`, the graph-engine skill and references, `describe` examples. A gallery showing style, nesting, `defs` and 3D. |
 
 **Exit:**

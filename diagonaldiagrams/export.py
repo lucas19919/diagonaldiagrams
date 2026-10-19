@@ -278,13 +278,10 @@ def do_export(args):
         for key in ("caption", "figure"):
             if r.get(key):
                 spec[key] = r[key]
-        engine = r.get("engine")  # a receipt from --layout-engine v1 redraws with v1
         if cmd == "flow":
-            svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme, sheets, engine=engine)
-        elif cmd == "seq":
-            svg, _, _ = fn(spec, r.get("corners", "editorial"), theme, sheets)
+            svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme, sheets)
         else:
-            svg, _, _ = fn(spec, r.get("corners", "editorial"), theme, sheets, engine=engine)
+            svg, _, _ = fn(spec, r.get("corners", "editorial"), theme, sheets)
         key = {"flow": "nodes", "arch": "nodes", "seq": "actors", "schema": "tables"}[cmd]
         n = len(spec.get(key, []))
         unit, dest, note = "items", args.o or f"{base}.{args.to}", " (diagram: single layout)"

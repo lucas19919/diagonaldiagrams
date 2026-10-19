@@ -7,8 +7,8 @@
     py -3 scripts/metrics.py --quick            # skip the cold-start timings (they start ~40 processes)
     py -3 scripts/metrics.py --compare bench/metrics/baseline.json
 
-Per figure: render time in this process, time spent in the audit, layout redraws (the repair
-loops), canvas size, audit errors by code, truncated texts, arrow crossings and wire length.
+Per figure: render time in this process, time spent in the audit, layout redraws (v1's repair
+loops: 0 since v1 was removed, but an older tree still counts them), canvas size, audit errors by code, truncated texts, arrow crossings and wire length.
 Startup: how long a fresh process takes to import the engine and to render, with and without
 cached bytecode (PYTHONDONTWRITEBYTECODE=1 makes every call recompile graph.py).
 """
@@ -55,7 +55,9 @@ class Hooks:
         the wrapper without being wrapped themselves."""
         g = golden.engine()
         for name in HOOKED:
-            fn = getattr(g, name)  # graph.<name>: in the package, found and imported on first use
+            fn = getattr(g, name, None)  # graph.<name>: in the package, found and imported on first use
+            if fn is None:  # v1's repair loops, in a tree without them
+                continue
             while getattr(fn, "lazy_target", None):
                 module, attr = fn.lazy_target
                 fn = getattr(importlib.import_module(module), attr)

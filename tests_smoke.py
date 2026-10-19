@@ -1011,17 +1011,18 @@ def outline_checks():
 
 
 def layout_checks():
-    """The layered kernel (P4): flows and arch draw once, a long flow wraps, and --layout-engine v1
-    still draws the v1 rows and repair loops."""
+    """The layered kernel (P4): flows and arch draw once, a long flow wraps, and schema tables placed
+    with x and y keep their columns."""
     print("== layout ==")
     import re as _re
     rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "l-v2.svg"))
     v2 = json.loads(out) if rc == 0 else {}
-    rc1, out1 = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "l-v1.svg"), "--layout-engine", "v1")
-    v1 = json.loads(out1) if rc1 == 0 else {}
+    rc1, out1 = run("schema", "examples/show_store.json", "-o", os.path.join(WORK, "l-store.svg"))
+    store = json.loads(out1) if rc1 == 0 else {}
     check("flow draws with the layered kernel and passes the audit", v2.get("ok") is True, out[-300:])
-    check("--layout-engine v1 still draws, and its receipt says so",
-          v1.get("ok") is True and '"engine": "v1"' in open(v1.get("receipt", os.devnull), encoding="utf-8").read(), out1[-300:])
+    check("schema tables placed with x and y draw in those columns, in the order of y",
+          store.get("ok") is True and store.get("layout", [])[1:] == ["column 1: datasets", "column 2: runs | metrics",
+                                                                       "column 3: checkpoints | evals"], out1[-300:])
     long_flow = os.path.join(WORK, "l-long.json")
     with open(long_flow, "w", encoding="utf-8") as f:
         json.dump({"title": "Long", "nodes": [{"id": f"s{i}", "name": f"Step {i}"} for i in range(30)],

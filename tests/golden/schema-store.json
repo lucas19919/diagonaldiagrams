@@ -4,7 +4,7 @@
   "examples/show_store.json"
  ],
  "exit": 0,
- "html_sha256": "0216f32b7786424d24f6cb93dc36d9d38a20a39c46415d08d5692d15bb0aa166",
+ "html_sha256": "db2fbd3d451a2ab02cd82336e5018fa03b1ba5f8bc80fef946c1a88111bddbd8",
  "receipt": {
   "auto": false,
   "cmd": "schema",
@@ -298,7 +298,10 @@
  "verdict": {
   "items": 5,
   "layout": [
-   "tables: datasets, runs, checkpoints, metrics, evals"
+   "tables: datasets, runs, checkpoints, metrics, evals",
+   "column 1: datasets",
+   "column 2: runs | metrics",
+   "column 3: checkpoints | evals"
   ],
   "ok": true
  }

@@ -465,7 +465,9 @@ A `Placement` holds child positions (x, y, and optional z for 3D), container-loc
 - **Pinned ends:** an edge's `from_at` and `to_at` keep its end at that offset along the side. Schema pins each relation to its column rows.
 - **Schema (`table` above):** the layered kernel run left to right (`direction: LR`, `back: "ports"`), so rows become ports on the tables' left and right sides. There is no separate `table` kernel.
 - **Sequence (`sequence.py`):** lifelines a pitch apart that fits the widest label, one step per message. Activations and fragments are not drawn yet.
-- **No repair loop:** flow, arch and schema draw once. The v1 path (`legacy.py`, `--layout-engine v1`) stays until P8; schema tables pinned with `x` and `y` still draw with it.
+- **No repair loop:** flow, arch and schema draw once.
+- **No v1 path.** `legacy.py` (705 lines: v1's rows and repair loops) and `--layout-engine v1` were removed on 2026-10-19. They were to stay until P8, but v2 passed every gate, and the flag never shipped in a release.
+- **Schema tables placed with `x` and `y`** (a v1 spec, or a scene's `pin`) used to draw with v1, at those pixels. They now draw with v2, and keep their arrangement: `x` picks the column (tables less than a card's width apart share one), and `y` the place in it. A table with a `rank`, `order` or `lane` of its own, from an edit, keeps those.
 - **Not built:** the other kernels in 7.2 and the container protocol of 7.1. A first version of each, added without a caller, was deleted in P4; each is built with the renderer that first uses it.
 
 ## 8. Routing, labels, painting
@@ -594,7 +596,7 @@ As built in P3.9:
 
 ### 9.5 Repair
 
-There is no generic redraw loop. A check may attach a `hint` (for example `{"separate": ["a", "b"]}`). A layout may implement `repair(hints)`, capped at 2 iterations. Until the new `layered` kernel lands (PLAN P4), the current repair loops stay but compute their cost from the display list instead of parsing SVG.
+There is no generic redraw loop. A check may attach a `hint` (for example `{"separate": ["a", "b"]}`). A layout may implement `repair(hints)`, capped at 2 iterations. The layered kernel (P4) has no repair loop, and v1's repair loops were deleted with v1 (7.3).
 
 ### 9.6 Existing check reference
 
@@ -615,7 +617,7 @@ Today's behavior in `_svg_geometry` and `_audit_file`, which the port must repro
 
 **Audit-level warnings without a code.** Missing `<title>` (unless a 24 px heading exists); missing `<desc>`; 2+ 24 px titles; negative tick text; more than 400 circles; the first off-canvas start-anchored text; text over 8 characters repeated more than 3 times. A single-quoted `font-family` attribute is an error. These move into the registry as checks with codes (`title`, `desc`, `double-title`, `negative-tick`, `many-points`, `edge-text`, `repeated-text`, `font-quote`), and the verdict keeps the same messages.
 
-**Stats** (the repair loops' cost, today): `crossings` (horizontal × vertical runs of different arrows crossing strictly) and `wire` (total axis-aligned run length, first 300 arrows). `_layout_cost` is `4 × bad + crossings + wire / 400`, and a parse error counts as zero problems; that last case is a bug.
+**Stats** (what v1's repair loops scored; `scripts/metrics.py` still reports them): `crossings` (horizontal × vertical runs of different arrows crossing strictly) and `wire` (total axis-aligned run length, first 300 arrows). `_layout_cost` is `4 × bad + crossings + wire / 400`, and a parse error counts as zero problems; that last case is a bug.
 
 **Blind spots, and what P2.5 did about them.** These change results on purpose. On 203 figures (golden, gallery, 80 fuzz renders) the fixes add two real issues and remove none.
 
@@ -1031,7 +1033,7 @@ A checkout needs care. Importing an uncached module compiles it more slowly than
 | Open styling produces ugly or illegible figures. | House-style defaults; legibility checks that name the rule at fault; no change unless the agent asks. |
 | Font measurement differs by machine. | Bundled metrics by default; named fonts record a hash; fallback warns. |
 | 3D depth sorting fails on intersecting solids. | Documented limit, `face-overlap` warning, three.js output. |
-| Layered layout quality regresses on today's gallery. | Golden review per figure; crossing and bend counts tracked; old layout available behind `--layout-engine v1` until P8. |
+| Layered layout quality regresses on today's gallery. | Golden review per figure; crossing and bend counts tracked; fuzz gates in CI. The old layout (`--layout-engine v1`) was removed on 2026-10-19, once v2 passed every gate. |
 | Scope creep in CSS and Vega-Lite support. | Defined subsets; unsupported features are explicit errors. |
 | The Pyodide playground breaks. | Pyodide smoke test in CI. |
 | The project turns into a document platform and never finishes the engine. | The layers are separable. P0–P8 ship the engine; each later phase is useful on its own. |
@@ -1253,7 +1255,7 @@ As built in P2.16 (`scene/patch.py`):
   - the command exits 1 when anything conflicted, and says how many operations were written.
 - **Identity.** Retexting an edge keeps its id, even though a generated id includes the label: the old id is written into the spec.
 - **`place` (added for edit mode):** `{"op": "place", "id": "x", "row": ["a", "x", "b"]}` puts a node in a row, in that order. With its row-mates in one pinned rank (arch layers, ranked flows) the node takes that rank; else the op writes `{"same-rank": row}`. The row's nodes take its order as `order` and drop their `lane`, and the node drops its `pin`. A drag in the page writes this, never coordinates.
-- **Files.** A v2 scene is written back as a scene, without the edge ids it would get anyway. A v1 spec stays v1, and fields only a scene has keep their scene names there (`style`, `pin`, `class`, `constraints`). The renderers draw what they can of them (styles, `same-rank` and `order`, a schema table's pin) and report the rest as `not-drawn` warnings. In particular, arch's repair loop may still reorder a row an `order` patch fixed, until the layered layout reads constraints (P4).
+- **Files.** A v2 scene is written back as a scene, without the edge ids it would get anyway. A v1 spec stays v1, and fields only a scene has keep their scene names there (`style`, `pin`, `class`, `constraints`). The renderers draw what they can of them (styles, `same-rank` and `order`, a schema table's pin) and report the rest as `not-drawn` warnings.
 
 ### 21.4 Live data and semantic diff
 

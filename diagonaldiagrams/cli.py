@@ -331,8 +331,6 @@ def main():
         p.add_argument("--corners", default="editorial", choices=["sharp", "rounded", "editorial"])
         p.add_argument("--theme", default="editorial", choices=sorted(THEMES))
         p.add_argument("--theme-file", default=None, help="JSON with theme key overrides")
-        p.add_argument("--layout-engine", dest="engine", default="v2", choices=["v2", "v1"],
-                       help="v1: the old rows and repair loops, kept until P8")
         p.add_argument("--no-audit", action="store_true", help="skip the layout check after drawing")
         p.add_argument("--outline", action="store_true", help="add the structured outline to the verdict")
         p.add_argument("--style", action="append", default=[], metavar="FILE",
@@ -560,18 +558,17 @@ def main():
                 old = None
         info = {}  # the layout's layers, which the page's edit mode moves boxes between
         if a.cmd == "flow":
-            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed, engine=a.engine, prev=prev,
-                                    info=info)
+            svg, _, _ = render_flow(spec, a.corners, getattr(a, "auto", False), theme, sheets, embed, prev=prev, info=info)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "arch":
-            svg, _, _ = render_arch(spec, a.corners, theme, sheets, embed, engine=a.engine, prev=prev, info=info)
+            svg, _, _ = render_arch(spec, a.corners, theme, sheets, embed, prev=prev, info=info)
             item_cnt = len(spec.get("nodes", []))
         elif a.cmd == "seq":
             svg, _, _ = render_seq(spec, a.corners, theme, sheets, embed)
             item_cnt = len(spec.get("actors", []))
             info = {"layers": [[str(x.get("id")) for x in spec.get("actors", []) if isinstance(x, dict)]], "across": False}
         elif a.cmd == "schema":
-            svg, _, _ = render_schema(spec, a.corners, theme, sheets, embed, engine=a.engine, info=info)
+            svg, _, _ = render_schema(spec, a.corners, theme, sheets, embed, info=info)
             item_cnt = len(spec.get("tables", []))
         changed = None
         if old is not None:
@@ -584,8 +581,7 @@ def main():
                          caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",
                          source="Self-contained HTML + SVG.", corners=a.corners, theme=theme, page=page)
         save_receipt(o, _receipt(a, theme, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
-                                            "auto": bool(getattr(a, "auto", False)),
-                                            **({"engine": a.engine} if a.engine != "v2" else {})}, scene=_drawn_scene(spec, a.cmd),
+                                            "auto": bool(getattr(a, "auto", False))}, scene=_drawn_scene(spec, a.cmd),
                                  sheets=sheets))
         _finish(a, o, s, item_cnt, "items", pre, changed, info)
     elif a.cmd == "bar":

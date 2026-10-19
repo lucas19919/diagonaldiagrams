@@ -31,7 +31,7 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 
 ## P4 as it stands
 
-- **Layout.** flow, arch and schema draw with the layered kernel (`layout/`) once, with no repair loop. Schema runs it left to right with each relation pinned to its column rows (`from_at`, `to_at`). seq draws from `layout/sequence.py`. `--layout-engine v1` draws with `legacy.py` until P8; schema tables pinned with `x` and `y` still use it.
+- **Layout.** flow, arch and schema draw with the layered kernel (`layout/`) once, with no repair loop. Schema runs it left to right with each relation pinned to its column rows (`from_at`, `to_at`). seq draws from `layout/sequence.py`. The v1 engine (`legacy.py`, `--layout-engine v1`) was removed on `slice-slim`; schema tables placed with `x` and `y` draw with v2, as a column and a place in it (DESIGN 7.3).
 - **Deleted on 2026-10-17:** eight kernels and the container protocol (`layout/base.py`) that no renderer called. DESIGN 7.3 says why and when each comes back. Don't restore them without a caller.
 - **Labels** keep the case the spec gives (B26). Group titles and the figure label stay small caps.
 - **Fuzz.** CI gates seeds 5000 and 20000 (200 scenes each, `--strict`). A nightly workflow fuzzes 1,000 new seeds and uploads the failures. B29 fixed what seeds 0 and 40000 found (about 0.5% of scenes); those sets and seed 20000 now fail 0 of 1,000. New seeds may still find more: add each as a `FuzzRegressions` test in `tests/unit/test_layout.py`.

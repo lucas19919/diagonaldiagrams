@@ -343,13 +343,6 @@ def _seg_boxes(pts):
             for p, q in zip(pts or [], (pts or [])[1:])]
 
 
-def _below_heading(pos, groups, head_h):
-    """Moves every node down when a frame's top band would cross the title or subtitle."""
-    tops = [pos[m][1] - pos[m][2]["_h"] / 2 for g in groups for m in g["members"] if m in pos]
-    dy = (head_h + 6) - (min(tops) - GROUP_HEAD) if tops else 0
-    return {k: (x, y + dy, n) for k, (x, y, n) in pos.items()} if dy > 0 else pos
-
-
 def _frame_box(g, pos):
     """The frame around a group's members, as (x0, y0, x1, y1), or None if none is placed."""
     boxes = []
@@ -362,17 +355,6 @@ def _frame_box(g, pos):
         return None
     return (min(b[0] for b in boxes) - GROUP_PAD, min(b[1] for b in boxes) - GROUP_HEAD,
             max(b[2] for b in boxes) + GROUP_PAD, max(b[3] for b in boxes) + GROUP_PAD - 4)
-
-
-def _frame_edges(groups, pos):
-    """Thin strips along each frame's border, so arrow labels sit inside or outside a frame, not on it."""
-    out = []
-    for g in groups:
-        f = _frame_box(g, pos)
-        if f:
-            x0, y0, x1, y1 = f
-            out += [(x0, y0 - 1, x1, y0 + 1), (x0, y1 - 1, x1, y1 + 1), (x0 - 1, y0, x0 + 1, y1), (x1 - 1, y0, x1 + 1, y1)]
-    return out
 
 
 BOX_W, BOX_H = 160, 56
@@ -429,13 +411,6 @@ def _box_text(name, sub, room, label, subst):
 def _box_lines(name, sub="", w=BOX_W, st=None):
     nl, sl, _, _ = box_text(name, sub, w, st)
     return ["".join(t for t, _ in line) for line in nl], ["".join(t for t, _ in line) for line in sl]
-
-
-def _box_h(name, sub="", tag="", w=BOX_W, st=None):
-    """Height a box needs for its wrapped name and sub. One line each fits the classic 56."""
-    nl, sl, lab, sb = box_text(name, sub, w, st)
-    block = lab["pitch"] * len(nl) + (sb["pitch"] * len(sl) + 2 if sl else 0)
-    return max(BOX_H, block + (30 if tag else 18))
 
 
 # Line glyphs on a 16x16 grid, drawn with the box's stroke. Generic shapes, no brand marks.
@@ -509,12 +484,6 @@ def _label_box(mx, ay, text, vertical=False, flip=False):
         return (x0, ay - 9, x0 + w, ay + 7)
     y0 = ay + 8 if flip else ay - 24
     return (mx - w / 2, y0, mx + w / 2, y0 + 16)
-
-
-def _place_label(mx, my, vertical, text, pts, avoid, soft=()):
-    """The first spot along the route where the label's pill clears everything (route.labels)."""
-    from .route.labels import place_label
-    return place_label(mx, my, vertical, text, pts, avoid, soft)
 
 
 

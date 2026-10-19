@@ -1,8 +1,7 @@
 """flow, arch, seq and schema: each preset's look over the layout kernels (layout/).
 
 flow, arch and schema place their boxes with the layered layout and draw its routes as they are: no
-draft is audited and redrawn. `engine="v1"` (`--layout-engine v1`) draws with the v1 rows and repair
-loops (legacy.py) until P8.
+draft is audited and redrawn.
 """
 from . import paint
 from ._draw import _bold, _groups_of, _round_poly, _seg_boxes, corner_rx
@@ -11,19 +10,14 @@ from .route.labels import GAP, label_box, place_label
 from .scene.ids import edge_ids
 from .style.styler import Styler
 
-ENGINES = ("v2", "v1")
 MARGIN = 30  # between the canvas edge and the nearest box or frame
 
 
-def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, engine=None, prev=None,
-                info=None):
+def render_flow(spec, corners="editorial", auto=False, theme=None, sheets=(), embed=False, prev=None, info=None):
     """Draw a flow: steps in layers top to bottom, decisions branching sideways, loops climbing back
     up the side. auto ranks every node, ignoring the spec's ranks. prev: {node id: x} from the drawing
     before an edit, so the boxes the edit leaves alone stay near their places. info, if a dict, gets the
     layout's layers (_layered), which the page's edit mode moves boxes between."""
-    if engine == "v1":
-        from .legacy import render_flow as v1
-        return v1(spec, corners, auto, theme, sheets, embed)
     t = theme or THEME
     sty = Styler(spec, "flow", t, corners, sheets)
     nodes = []
@@ -100,12 +94,9 @@ def _label_w(text, st):
     return float(int(width(text, st["font-size"], _bold(st), "", st.get("font")) + 8.999))
 
 
-def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None, prev=None, info=None):
+def render_arch(spec, corners="editorial", theme=None, sheets=(), embed=False, prev=None, info=None):
     """Draw an architecture view: one row per layer, calls running down between rows, calls within a
     row running straight between neighbors, groups framed."""
-    if engine == "v1":
-        from .legacy import render_arch as v1
-        return v1(spec, corners, theme, sheets, embed)
     t = theme or THEME
     sty = Styler(spec, "arch", t, corners, sheets)
     nodes = []
@@ -222,7 +213,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
         if paint_node:
             dr.add(*paint_node(nid, n, cx, cy))
             continue
-        painter = paint.SHAPES.get(n.get("shape", "rect")) or paint.SHAPES.get("rect")  # unknown: a box, as v1 draws it
+        painter = paint.SHAPES.get(n.get("shape", "rect")) or paint.SHAPES.get("rect")  # unknown: a box
         dr.add(*painter(t, nid, n, cx, cy, n["_w"], n["_h"], corners, st=sty.node(nid)))
     node_boxes = [(cx - n["_w"] / 2, cy - n["_h"] / 2, cx + n["_w"] / 2, cy + n["_h"] / 2) for cx, cy, n in pos.values()]
     strips = []
@@ -537,23 +528,22 @@ LOOP_W, MIN_ACTOR_H = 32, 40  # how far a self-call's loop stands out; an actor 
 TABLE_W, ROW_H = 240, 24  # a table card's width and the pitch of its column rows (paint.table_card)
 
 
-def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False, engine=None, info=None):
+def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False, info=None):
     """Draw tables and their relations: tables in columns left to right, each relation running from
     a column row of one table to a column row of the other, laid out once by the layered layout.
-    Tables pinned with x and y keep their places, which the v1 path draws."""
+    Tables placed with x and y keep their arrangement: x picks the column, y the place in it."""
     tables = spec.get("tables", [])
-    if engine == "v1" or any(isinstance(tb, dict) and "x" in tb and "y" in tb for tb in tables):
-        from .legacy import render_schema as v1
-        return v1(spec, corners, theme, sheets, embed)
     t = theme or THEME
     sty = Styler(spec, "schema", t, corners, sheets)
     rx = corner_rx(corners)
     nodes, rows = [], {}
+    at = _xy_places(tables)
     for tb in tables:
         cols = tb.get("columns", [])
         h = 44 + len(cols) * ROW_H + 12
         nodes.append({"id": tb["id"], "name": tb.get("name", tb["id"]), "shape": "rect", "_w": TABLE_W, "_h": h, "tbl": tb,
-                      **{k: tb[k] for k in ("rank", "order", "lane") if k in tb}})  # a column and a place in it, from edits
+                      **{k: tb[k] for k in ("rank", "order", "lane") if k in tb},  # a column and a place in it, from edits
+                      **at.get(tb["id"], {})})
         rows[tb["id"]] = {c["name"]: 44 + k * ROW_H + ROW_H / 2 - h / 2 for k, c in enumerate(cols)}
     relations = spec.get("relations", [])
     rids = edge_ids(relations)
@@ -585,3 +575,21 @@ def render_schema(spec, corners="editorial", theme=None, sheets=(), embed=False,
                                a11y_kind="relation", info=info, legend=bool(sentence))
     _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
     return _as_svg((dr, W, H), sty, embed)
+
+
+def _xy_places(tables):
+    """{table id: {"rank": column, "order": place}} for tables a v1 spec placed with x and y (a scene's
+    pin): x picks the column, tables less than a card's width apart sharing one, and y the place in it.
+    A table that carries a rank, order or lane of its own (from an edit) is left to those."""
+    def num(v):
+        return isinstance(v, (int, float)) and not isinstance(v, bool)
+    placed = sorted((tb for tb in tables if isinstance(tb, dict) and num(tb.get("x")) and num(tb.get("y"))
+                     and not any(k in tb for k in ("rank", "order", "lane"))), key=lambda tb: (tb["x"], tb["y"]))
+    cols, start = [], None
+    for tb in placed:
+        if start is None or tb["x"] - start >= TABLE_W:
+            cols.append([])
+            start = tb["x"]
+        cols[-1].append(tb)
+    return {tb["id"]: {"rank": c, "order": k} for c, col in enumerate(cols)
+            for k, tb in enumerate(sorted(col, key=lambda tb: (tb["y"], tb["x"])))}

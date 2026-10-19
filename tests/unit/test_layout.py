@@ -209,6 +209,17 @@ class Sequence(unittest.TestCase):
         self.assertGreater(res.size[1], res.y[-1])
 
 
+class SchemaPlaces(unittest.TestCase):
+    """A v1 schema's table x and y: x picks the column, y the place in it (DESIGN 7.3)."""
+
+    def test_x_groups_columns_and_y_orders_them(self):
+        from diagonaldiagrams.diagrams import _xy_places
+        tables = [{"id": "a", "x": 40, "y": 300}, {"id": "b", "x": 60, "y": 90}, {"id": "c", "x": 400, "y": 0},
+                  {"id": "d", "x": 400, "y": 0, "rank": 0}, {"id": "e"}, {"id": "f", "x": True, "y": 1}]
+        self.assertEqual(_xy_places(tables), {"b": {"rank": 0, "order": 0}, "a": {"rank": 0, "order": 1},
+                                              "c": {"rank": 1, "order": 0}})  # d keeps its edit; e and f have no x and y
+
+
 class LabelsModule(unittest.TestCase):
     def test_longest_segment_and_place_label(self):
         from diagonaldiagrams.route import LabelPlacer, label_box, longest_segment, place_label
