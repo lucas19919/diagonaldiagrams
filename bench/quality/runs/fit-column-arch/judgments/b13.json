@@ -1,0 +1,12 @@
+[
+  {"pair": "p07",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A keeps each edge to its own lane with a label beside it, and the tools and storage groups sit in a clean top-to-bottom flow with a legend. In B four parallel lines leave the Agent bottom edge together and the 'draw' and 'execute' labels collide at the middle, so it is hard to tell which line goes where.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A has a consistent palette, rounded cards with icons, a muted blue and coral accent and tidy group frames. B has grey label chips, mismatched pastel group fills (pink, teal, orange, cyan), thick and thin lines mixed together, and cluttered line bundles.",
+    "weak_A": "Long edges that wrap around the Tools group (svg, execute) and a lot of vertical length",
+    "weak_B": "Overlapping 'draw' and 'execute' labels and a bundle of parallel lines from Agent; garish group colors"},
+  {"pair": "p08",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "B fits the whole system in one compact view, with every label next to its source and the flow readable top to bottom, plus type tags and a legend. A is stretched very tall with long vertical edges (Auth to Redis, Payments to Stripe) whose labels sit far from their endpoints, so the reader has to scroll across the split to follow a link.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has a coherent look: soft frames, blue and coral accents, small caps tags and balanced spacing across the canvas. A is plain grey with a big empty right margin and oversized text, and the Orders-to-Payments links hang awkwardly inside the core frame.",
+    "weak_A": "Very tall, sparse layout with long edges and labels far from where the edges start",
+    "weak_B": "Small text, and the 'settled' and 'placed' dashed lines near Event bus are tight and a bit crowded"}
+]

@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" data-legibility="all" viewBox="0 0 822 970" width="822">
+<title>An AI agent platform</title>
+<desc>Requests come in at the top; the agent calls a model and its tools; results land in storage.</desc>
+<rect width="822" height="970" fill="#f5f5f5" aria-hidden="true"/>
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#4f5d75"/></marker><marker id="aa" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#eb6c36"/></marker><marker id="al" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#636c82"/></marker></defs>
+<text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">An AI agent platform</text>
+<text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">Requests come in at the top; the agent calls a model and its tools; results land in storage.</text>
+<rect x="46" y="72" width="544" height="94" rx="12" fill="rgba(45,49,66,0.12)" fill-opacity=".35" stroke="#7d8699" stroke-opacity=".55" data-group="clients" data-name="Clients" data-members="web,mobile,mail" role="graphics-symbol" aria-roledescription="group" aria-label="Clients: Web chat, Mobile app, Email intake"/>
+<text x="56" y="87" font-size="10" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" letter-spacing="0.6" aria-hidden="true">CLIENTS</text>
+<rect x="218" y="358" width="364" height="94" rx="12" fill="rgba(45,49,66,0.12)" fill-opacity=".35" stroke="#7d8699" stroke-opacity=".55" data-group="runtime" data-name="Agent runtime" data-members="memory,agent" role="graphics-symbol" aria-roledescription="group" aria-label="Agent runtime: Memory, Agent"/>
+<text x="228" y="373" font-size="10" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" letter-spacing="0.6" aria-hidden="true">AGENT RUNTIME</text>
+<rect x="54" y="526" width="416" height="222" rx="12" fill="rgba(45,49,66,0.12)" fill-opacity=".35" stroke="#7d8699" stroke-opacity=".55" data-group="tools" data-name="Tools" data-members="search,sandbox,draw" role="graphics-symbol" aria-roledescription="group" aria-label="Tools: Web search, Code sandbox, diagonaldiagrams"/>
+<text x="64" y="541" font-size="10" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" letter-spacing="0.6" aria-hidden="true">TOOLS</text>
+<rect x="54" y="812" width="360" height="94" rx="12" fill="rgba(45,49,66,0.12)" fill-opacity=".35" stroke="#7d8699" stroke-opacity=".55" data-group="data" data-name="Storage" data-members="blob,pg" role="graphics-symbol" aria-roledescription="group" aria-label="Storage: Object store, Postgres"/>
+<text x="64" y="827" font-size="10" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" letter-spacing="0.6" aria-hidden="true">STORAGE</text>
+<rect x="62" y="96" width="128" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="62" y="96" width="128" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="web" data-label="Web chat" role="graphics-symbol" aria-roledescription="box" aria-label="Web chat, Next.js"/>
+<path d="M1.5 3h13v10h-13zM1.5 6h13M3.5 4.5h1" transform="translate(168,102)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="126" y="119.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Web chat</text>
+<text x="126" y="136.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Next.js</text>
+<rect x="230" y="96" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="230" y="96" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="mobile" data-label="Mobile app" role="graphics-symbol" aria-roledescription="box" aria-label="Mobile app, Swift"/>
+<path d="M5 1.5h6v13H5zM7.5 12.5h1" transform="translate(352,102)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="302" y="119.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Mobile app</text>
+<text x="302" y="136.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Swift</text>
+<rect x="414" y="96" width="160" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="414" y="96" width="160" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="mail" data-label="Email intake" role="graphics-symbol" aria-roledescription="box" aria-label="Email intake, SES"/>
+<path d="M1.5 3.5h13v9h-13zM1.5 4l6.5 5 6.5-5" transform="translate(552,102)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="494" y="119.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Email intake</text>
+<text x="494" y="136.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SES</text>
+<rect x="414" y="240" width="160" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="414" y="240" width="160" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="gw" data-label="API gateway" role="graphics-symbol" aria-roledescription="box" aria-label="API gateway, Envoy:443"/>
+<path d="M8 1.5l5.5 2v4c0 3.5-2.4 6-5.5 7-3.1-1-5.5-3.5-5.5-7v-4z" transform="translate(552,246)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="494" y="263.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">API gateway</text>
+<text x="494" y="280.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Envoy:443</text>
+<rect x="634" y="240" width="112" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="634" y="240" width="112" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="auth" data-label="Auth" role="graphics-symbol" aria-roledescription="box" aria-label="Auth, OIDC"/>
+<path d="M5.5 10.5a3 3 0 1 1 2.1-0.9L14 3.2M11.5 5.5l2 2" transform="translate(724,246)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="690" y="263.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Auth</text>
+<text x="690" y="280.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">OIDC</text>
+<rect x="234" y="382" width="128" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="234" y="382" width="128" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="memory" data-label="Memory" role="graphics-symbol" aria-roledescription="box" aria-label="Memory, pgvector"/>
+<path d="M3 4c0-1.1 2.2-2 5-2s5 0.9 5 2-2.2 2-5 2-5-0.9-5-2zM3 4v8c0 1.1 2.2 2 5 2s5-0.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-0.9 5-2" transform="translate(340,388)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="298" y="405.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Memory</text>
+<text x="298" y="422.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">pgvector</text>
+<rect x="422" y="382" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="422" y="382" width="144" height="54" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="agent" data-label="Agent" role="graphics-symbol" aria-roledescription="box" aria-label="Agent, Python:8000"/>
+<path d="M3 6h10v7H3zM8 3v3M6 9.5h1M9 9.5h1M7 2.5h2" transform="translate(544,388)" fill="none" stroke="#eb6c36" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="494" y="405.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Agent</text>
+<text x="494" y="422.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Python:8000</text>
+<rect x="648" y="382" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="648" y="382" width="144" height="54" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="llm" data-label="Model API" role="graphics-symbol" aria-roledescription="box" aria-label="Model API, external"/>
+<path d="M4.5 12.5h7a3 3 0 0 0 0.4-6A4 4 0 0 0 4.3 7a2.8 2.8 0 0 0 0.2 5.5z" transform="translate(770,388)" fill="none" stroke="#eb6c36" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="720" y="405.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Model API</text>
+<text x="720" y="422.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">external</text>
+<rect x="78" y="550" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="78" y="550" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="search" data-label="Web search" role="graphics-symbol" aria-roledescription="box" aria-label="Web search, tool"/>
+<path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM1.5 8h13M8 1.5c2 2 2.5 4 2.5 6.5S10 12.5 8 14.5M8 1.5C6 3.5 5.5 5.5 5.5 8s0.5 4.5 2.5 6.5" transform="translate(200,556)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="150" y="573.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Web search</text>
+<text x="150" y="590.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">tool</text>
+<rect x="70" y="678" width="160" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="70" y="678" width="160" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="sandbox" data-label="Code sandbox" role="graphics-symbol" aria-roledescription="box" aria-label="Code sandbox, Firecracker"/>
+<path d="M2.5 2.5h11v4h-11zM2.5 9.5h11v4h-11zM5 4.5h1M5 11.5h1" transform="translate(208,684)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="150" y="701.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Code sandbox</text>
+<text x="150" y="718.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Firecracker</text>
+<rect x="262" y="550" width="192" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="262" y="550" width="192" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="draw" data-label="diagonaldiagrams" role="graphics-symbol" aria-roledescription="box" aria-label="diagonaldiagrams, MCP"/>
+<path d="M2.5 13.5h11M4.5 11V8M8 11V4.5M11.5 11V6.5" transform="translate(432,556)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="358" y="573.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">diagonaldiagrams</text>
+<text x="358" y="590.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">MCP</text>
+<rect x="494" y="678" width="144" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="494" y="678" width="144" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="bus" data-label="Event bus" role="graphics-symbol" aria-roledescription="box" aria-label="Event bus, Kafka"/>
+<path d="M2 4.5h12M2 8h12M2 11.5h12M11.5 2.5l2.5 2-2.5 2" transform="translate(616,684)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="566" y="701.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Event bus</text>
+<text x="566" y="718.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Kafka</text>
+<rect x="70" y="836" width="160" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="70" y="836" width="160" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="blob" data-label="Object store" role="graphics-symbol" aria-roledescription="box" aria-label="Object store, files, figures"/>
+<path d="M4 1.5h5.5L12 4v10.5H4zM9.5 1.5V4H12" transform="translate(208,842)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="150" y="859.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Object store</text>
+<text x="150" y="876.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">files, figures</text>
+<rect x="270" y="836" width="128" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="270" y="836" width="128" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="pg" data-label="Postgres" role="graphics-symbol" aria-roledescription="box" aria-label="Postgres, runs, users"/>
+<path d="M3 4c0-1.1 2.2-2 5-2s5 0.9 5 2-2.2 2-5 2-5-0.9-5-2zM3 4v8c0 1.1 2.2 2 5 2s5-0.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-0.9 5-2" transform="translate(376,842)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="334" y="859.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Postgres</text>
+<text x="334" y="876.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">runs, users</text>
+<rect x="486" y="836" width="160" height="54" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="486" y="836" width="160" height="54" rx="6" fill="#ffffff" stroke="#7d8699" data-node="obs" data-label="Traces" role="graphics-symbol" aria-roledescription="box" aria-label="Traces, OpenTelemetry"/>
+<path d="M2.5 13.5h11M4.5 11V8M8 11V4.5M11.5 11V6.5" transform="translate(624,842)" fill="none" stroke="#7d8699" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"/>
+<text x="566" y="859.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Traces</text>
+<text x="566" y="876.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">OpenTelemetry</text>
+<path d="M138,150 L138,188 Q138,196 146,196 L464,196 Q472,196 472,204 L472,240" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="web" data-to="gw" data-label="chat" data-id="web-&gt;gw:chat" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Web chat to API gateway: chat"/>
+<path d="M314,150 L314,202 Q314,210 322,210 L444,210 Q452,210 452,218 L452,240" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="mobile" data-to="gw" data-label="chat" data-id="mobile-&gt;gw:chat" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Mobile app to API gateway: chat"/>
+<path d="M494,150 L494,188 Q494,196 502,196 L508,196 Q516,196 516,204 L516,240" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="mail" data-to="gw" data-label="forward" data-id="mail-&gt;gw:forward" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Email intake to API gateway: forward"/>
+<path d="M574,267 L634,267" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="gw" data-to="auth" data-label="verify" data-id="gw-&gt;auth:verify" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Auth: verify"/>
+<path d="M494,294 L494,382" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="gw" data-to="agent" data-label="run" data-id="gw-&gt;agent:run" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Agent: run"/>
+<path d="M566,409 L648,409" fill="none" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#aa)" data-from="agent" data-to="llm" data-label="prompt" data-id="agent-&gt;llm:prompt" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Agent to Model API: prompt"/>
+<path d="M422,409 L362,409" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="agent" data-to="memory" data-label="recall" data-id="agent-&gt;memory:recall" data-from-port="w" data-to-port="e" role="graphics-symbol" aria-roledescription="arrow" aria-label="Agent to Memory: recall"/>
+<path d="M461,436 L461,474 Q461,482 453,482 L170,482 Q162,482 162,490 L162,550" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="agent" data-to="search" data-label="search" data-id="agent-&gt;search:search" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Agent to Web search: search"/>
+<path d="M498,436 L498,480 Q498,482 496,482 L496,482 Q494,482 494,484 L494,640 Q494,648 486,648 L170,648 Q162,648 162,656 L162,678" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="agent" data-to="sandbox" data-label="execute" data-id="agent-&gt;sandbox:execute" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Agent to Code sandbox: execute"/>
+<path d="M480,436 L480,488 Q480,496 472,496 L378,496 Q370,496 370,504 L370,550" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="agent" data-to="draw" data-label="draw" data-id="agent-&gt;draw:draw" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Agent to diagonaldiagrams: draw"/>
+<path d="M527,436 L527,474.5 Q527,482 519.5,482 L519.5,482 Q512,482 512,489.5 L512,678" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="agent" data-to="bus" data-label="events" data-id="agent-&gt;bus:events" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Agent to Event bus: events"/>
+<path d="M150,732 L150,774.5 Q150,780 155.5,780 L155.5,780 Q161,780 161,785.5 L161,836" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="sandbox" data-to="blob" data-label="files" data-id="sandbox-&gt;blob:files" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Code sandbox to Object store: files"/>
+<path d="M346,604 L346,626 Q346,634 338,634 L38,634 Q30,634 30,642 L30,772 Q30,780 38,780 L128,780 Q136,780 136,788 L136,836" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="draw" data-to="blob" data-label="svg" data-id="draw-&gt;blob:svg" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="diagonaldiagrams to Object store: svg"/>
+<path d="M555,732 L555,772 Q555,780 547,780 L354,780 Q346,780 346,788 L346,836" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="pg" data-label="persist" data-id="bus-&gt;pg:persist" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Postgres: persist"/>
+<path d="M577,732 L577,776 Q577,780 573,780 L573,780 Q569,780 569,784 L569,836" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="obs" data-label="ingest" data-id="bus-&gt;obs:ingest" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Traces: ingest"/>
+<rect x="476" y="209" width="29" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="490.5" y="221" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">chat</text>
+<rect x="368.5" y="214" width="29" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="383" y="226" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">chat</text>
+<rect x="520" y="209" width="45" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="542.5" y="221" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">forward</text>
+<rect x="586" y="247" width="36" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="604" y="259" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">verify</text>
+<rect x="498" y="317" width="23" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="509.5" y="329" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">run</text>
+<rect x="594" y="389" width="42" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="615" y="401" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">prompt</text>
+<rect x="374" y="389" width="36" height="16" rx="2" fill="#ededed" aria-hidden="true"/>
+<text x="392" y="401" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">recall</text>
+<rect x="291.5" y="462" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="311.5" y="474" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">search</text>
+<rect x="293" y="652" width="46" height="16" rx="2" fill="#ededed" aria-hidden="true"/>
+<text x="316" y="664" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">execute</text>
+<rect x="408.5" y="500" width="33" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="425" y="512" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">draw</text>
+<rect x="516" y="571" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="536" y="583" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">events</text>
+<rect x="154" y="755" width="30" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="169" y="767" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">files</text>
+<rect x="187" y="614" width="26" height="16" rx="2" fill="#ededed" aria-hidden="true"/>
+<text x="200" y="626" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">svg</text>
+<rect x="430" y="760" width="41" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="450.5" y="772" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">persist</text>
+<rect x="573" y="799" width="38" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="592" y="811" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ingest</text>
+<line x1="30" y1="930" x2="792" y2="930" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="948" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">blue = HTTP call, dashed = sent in the background, coral = highlighted</text>
+</svg>

@@ -1,0 +1,7 @@
+[
+  {"pair": "p01",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "In A every edge label sits on its own edge with a white halo, and each Agent edge (prompt, search, execute, draw, events) fans out to a distinct target, so you can follow it from source to destination. In B four long parallel vertical lines run down the right side and the labels 'prompt', 'search' and 'events' sit far from their arrowheads. The 'search' label is right beside the orange edge that goes to Model API, which misleads.",
+    "looks": "A", "looks_margin": "slight", "looks_why": "A is compact and balanced with the thick prompt edge as a clear emphasis, group boxes that hug their members, and cylinder and bus shapes. B has a more modern palette and DB tags, but it is tall, with large empty areas and a dense bundle of parallel lines that looks messy. It also hyphenates 'diagonaldi-agrams' and has overlapping edge labels near the Clients box.",
+    "weak_A": "Swoopy S-curve edges from Agent and a dashed persist edge that crosses the svg edge near Storage; small text when shrunk",
+    "weak_B": "Long parallel vertical edge bundle with labels far from their edges (search next to the orange Model API edge), so it is hard to tell which arrow goes where"}
+]

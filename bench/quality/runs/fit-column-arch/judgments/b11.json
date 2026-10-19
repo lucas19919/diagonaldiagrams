@@ -1,0 +1,12 @@
+[
+  {"pair": "p01",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "In B every edge has its own path and label, so verify, browse, card, settled, placed and the three consumer arrows can each be traced from source to target. In A the dashed 'settled' line and the solid 'card' line leave Payments along the same vertical, and 'settled' runs straight into the Event bus and out again as 'email', so it looks like one line passing through the box; the 'placed' dashed line also makes a long detour left around Payments.",
+    "looks": "B", "looks_margin": "slight", "looks_why": "B is clean and evenly routed, with cylinder DB shapes, a distinct Kafka bus shape and larger, easy-to-read text, though it is plain and stretched over two screens. A has a nicer compact palette and title, but the overlapping dashed and solid lines under Payments and around Event bus look like a routing bug, and the 'box = step' footer means nothing.",
+    "weak_A": "overlapping and pass-through edges at Payments and Event bus; long dashed 'placed' detour; meaningless footer",
+    "weak_B": "very tall, stretched layout split over two images with long bare edges and no legend for dashed or bold lines"},
+  {"pair": "p06",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A fits on one screen and adds a legend (blue = HTTP call, dashed = background, coral = highlighted), small type tags (SVC, STORE, API, UI) and a direct Orders to Payments 'charge' arrow, so the structure and edge types can be read at a glance. B has cleaner separate routing and larger text, but it is split in two images with long edges and no explanation of dashed versus bold.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A is compact and deliberate, with a blue and coral accent scheme, a subtitle, uppercase group labels and a legend, so it looks like a finished diagram. B is plain black and grey, sprawls across two screens with large empty areas and long vertical lines, and looks like a default render.",
+    "weak_A": "very small tag and label text, and a few dashed lines bunched under Event bus and Payments",
+    "weak_B": "tall, sprawling two-image layout with no legend and a plain default look"}
+]

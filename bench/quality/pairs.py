@@ -17,7 +17,11 @@ A rerun (render.py --run RUN) reads runs/RUN/png and writes runs/RUN/judgments/k
     py -3 bench/quality/pairs.py JUDGE_DIR --run RUN --context column
 
 --context keeps one placement. Its batches are the first run's: the same pairs, sides, blind names
-and batch numbers (the shuffles for the other placement still happen, unwritten)."""
+and batch numbers (the shuffles for the other placement still happen, unwritten). --only keeps the
+pairs whose id contains one of its words, in the same batches, under the same names (a batch left
+with none is not written):
+
+    py -3 bench/quality/pairs.py JUDGE_DIR --run RUN --context column --only ref-arch"""
 import argparse, json, os, random, shutil, sys
 from PIL import Image
 
@@ -64,6 +68,7 @@ def main():
     ap.add_argument("judge_dir")
     ap.add_argument("--run")
     ap.add_argument("--context", choices=CONTEXTS)
+    ap.add_argument("--only", nargs="+", metavar="WORD", help="keep the pairs whose id contains one of these")
     args = ap.parse_args()
     judge_dir, root = args.judge_dir, os.path.join(HERE, "runs", args.run) if args.run else HERE
     rng = random.Random(20261019)
@@ -84,10 +89,14 @@ def main():
                     bid = f"b{n_batch:02d}"
                     if args.context and ctx != args.context:
                         continue
+                    kept = [(j, p) for j, p in enumerate(chunk, 1)
+                            if not args.only or any(w in p["id"] for w in args.only)]
+                    if not kept:
+                        continue
                     folder = os.path.join(judge_dir, bid)
                     os.makedirs(folder)
                     items = []
-                    for j, p in enumerate(chunk, 1):
+                    for j, p in kept:
                         first = (hash_side(p["id"], model, ctx) + order) % 2  # which of figs is shown as A
                         a, b = p["figs"][first], p["figs"][1 - first]
                         files = {}

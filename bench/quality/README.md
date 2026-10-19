@@ -99,6 +99,42 @@ Other types did not gain, and arch lost:
   no crow's feet, and "1:N 1:N" doubled labels. Opus judges add that a single stack hides the tree's fan-out.
 - **Sequence** figures are the same drawings in both runs; their verdicts moved by at most one judgment of four.
 
+## Arch again: rows only where they take less of the column (2026-10-19)
+
+Branch `fit-arch-whole` (on `fit-placement`) deals a layer into rows only where the result takes less of the
+column than the layers kept whole and shrunk: `layered.room`, the figure's height times its width in column
+widths, which is the area it needs with its text at full size. Each dealing try is measured against the whole
+layout; the least room stands. Of the benchmark's 31 dd figures, only the 4 arch ones draw differently
+(fresh, at `--fit column`); every flow, schema and sequence figure is byte-identical to the fit-column run.
+
+| figure | fit-column | now |
+| --- | --- | --- |
+| N checkout-groups | 638 x 1716, rows | 956 x 886, layers whole (text 9 px in the column) |
+| L checkout-groups | 651 x 1700, rows | 880 x 876, layers whole (10 px) |
+| N agent-platform | 797 x 1264, rows | 822 x 970, the Tools group over two rows (11 px) |
+| L agent-platform | 579 x 1782, rows | 679 x 1314, fewer rows (13 px) |
+
+Only the 8 arch pairs were judged again, in the column: the same batches, pair numbers, sides, prompt and judge
+models as the fit-column run ([pairs.py](pairs.py) `--only ref-arch`), 17 batches, 32 judgments; the two orders
+agree in 84%. Tables: [runs/fit-column-arch/results.md](runs/fit-column-arch/results.md).
+
+| arch, clearer | first run (slide drawing) | fit-column | now |
+| --- | --- | --- | --- |
+| N vs Pele | 88% (7/8) | 50% (4/8) | **88% (7/8)** |
+| N vs Mermaid | 100% (8/8) | 50% (4/8) | **88% (7/8)** |
+| L vs Pele | 0% (0/8) | 0% (0/8) | **0% (0/8)** |
+| L vs Mermaid | 25% (2/8) | 0% (0/8) | **38% (3/8)** |
+
+Better looking, all 8 pairs: 72% (first run), 38% (fit-column), **81%** (26/32) now.
+
+- **Checkout-groups** came back: N won 6 of 8 (0 of 8 in fit-column), L against Mermaid 2 of 4. Judges again cite
+  one screen, Orders beside Payments, and short edges; the losses cite small text (two Opus judgments) and, for L
+  against Pele, shared trunks (settled and card on one segment, verify and browse on one bar: fix 3 below).
+- **Agent-platform, N** won all 8 again. Judges note the `svg` edge looping round the two-row Tools group.
+- **Agent-platform, L** won 1 of 8. Its rows still send a bundle of parallel edges down the side from Agent with
+  their labels away from them, and "diagonaldiagrams" breaks as "diagonaldi-agrams". Kept whole it would be
+  1583 px wide (5.5 px text, which lost every judgment in the first run).
+
 ## What to fix, ranked by how often it loses
 
 160 judgments went against dd. Each loss's reason and "dd's weakness" phrase were tagged by keyword
@@ -212,6 +248,34 @@ py -3 bench/quality/render.py --run fit-column --fit column --dd PATH_TO_FIT_PLA
 
 ```bash
 py -3 bench/quality/raster.py --run fit-column --context column
+```
+
+The arch rerun, with dd from a checkout of `fit-arch-whole`, judging only the arch pairs:
+
+```bash
+py -3 bench/quality/render.py --run fit-column-arch --fit column --dd PATH_TO_FIT_ARCH_WHOLE_CHECKOUT
+```
+
+```bash
+py -3 bench/quality/raster.py ref-arch --run fit-column-arch --context column
+```
+
+```bash
+py -3 bench/quality/pairs.py JUDGE_DIR --run fit-column-arch --context column --only ref-arch
+```
+
+```bash
+py -3 bench/quality/prompts.py JUDGE_DIR --run fit-column-arch
+```
+
+Then one judge per batch, then:
+
+```bash
+py -3 bench/quality/tally.py JUDGE_DIR --run fit-column-arch
+```
+
+```bash
+py -3 bench/quality/compare.py fit-column-arch --base fit-column --only ref-arch
 ```
 
 ```bash

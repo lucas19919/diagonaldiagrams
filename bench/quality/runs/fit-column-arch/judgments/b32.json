@@ -1,0 +1,7 @@
+[
+  {"pair": "p03",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A's text is noticeably larger, so every node and edge label (calls, verify, placed, settled, ingest) is easy to read in the column, and each edge runs in its own clear lane down the page. B fits on one screen and adds type tags and a legend, but at column width its edge labels and subtitles are tiny, and the dashed placed/settled and reserve/email/ingest lines bunch together around Event bus.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B looks like a finished figure: a compact layout, soft framed groups, bold node names with type tags, a coral highlight on Orders to Payments, a subtitle and a legend. A is sparse and very tall, with long empty vertical runs (Auth/Catalog down to Redis), gray label boxes that look crude, and loose group boxes.",
+    "weak_A": "very tall and sparse, with long empty connector runs over two screens",
+    "weak_B": "small text at column width, and dashed edges bunched around Event bus"}
+]

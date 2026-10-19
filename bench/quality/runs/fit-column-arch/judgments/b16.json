@@ -1,0 +1,12 @@
+[
+  {"pair": "p05",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "In A every edge has its own clean orthogonal route with a label chip sitting on it, so verify/browse/checkout and placed/settled/card are unambiguous, and the text is larger. In B, settled and card share one stem out of Payments, the Event bus fan-out lines bunch together, the 'email' arrow cuts through the Event consumers heading, and labels like verify/browse float away from their lines.",
+    "looks": "B", "looks_margin": "slight", "looks_why": "B has a cohesive muted palette, tidy typography, small-caps group labels and orange emphasis on the main path, and it fits in one compact image. A's thick black strokes, grey highlighter-style label chips and unrelated pink/teal/orange group fills look dated, and it is stretched over two screens with long empty vertical runs; B loses some of this to its crowded routing.",
+    "weak_A": "tall, stretched layout with heavy strokes, crude grey label chips and clashing pastel group fills",
+    "weak_B": "crowded, overlapping edges and small text, with floating labels that make some arrows ambiguous"},
+  {"pair": "p08",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A gives each edge a distinct path and a white label chip sitting on the line, with larger text, so session/cache, charge/write, card/settled/placed and reserve/email/ingest are all easy to trace. B packs edges together: settled and card overlap out of Payments, three dashed lines leave the Event bus on top of each other, and the 'email' label sits on the arrow near the group heading.",
+    "looks": "A", "looks_margin": "slight", "looks_why": "A is calm and consistent, a neutral grey with rounded boxes, soft group panels, no collisions, and a thicker stroke that highlights the checkout path. B has a nicer palette and card styling, but its overlapping lines and cramped lower half look messy next to A; A's weakness is the amount of vertical scrolling and the blank space.",
+    "weak_A": "very tall with long empty line runs (Auth/Catalog down to Redis), so it needs a lot of scrolling",
+    "weak_B": "overlapping and bunched edges with small text and floating labels, cramped around Payments and the Event bus"}
+]
