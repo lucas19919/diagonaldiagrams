@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from diagonaldiagrams._text import _wrap_px  # noqa: E402
 from diagonaldiagrams.audit import _svg_geometry  # noqa: E402
-from diagonaldiagrams.diagrams import render_flow, render_seq  # noqa: E402
+from diagonaldiagrams.diagrams import NARROW, render_flow, render_seq  # noqa: E402
 from diagonaldiagrams.text import markup, measure  # noqa: E402
 
 LONG = "Reconcile the settlement batch with the bank statement and escalate any mismatch to finance"
@@ -55,6 +55,13 @@ class Boxes(unittest.TestCase):
         self.assertEqual(h("a"), 40)  # one line fits the least height (paint.MIN_H)
         self.assertGreater(h("b"), 40)
         self.assertNotIn("...", svg)
+
+    def test_a_word_that_fits_a_narrow_box_stays_whole(self):
+        # balancing the lines tried rooms narrower than the word, which split it and still kept two lines
+        spec = {"nodes": [{"id": "a", "name": "diagonaldiagrams MCP"}], "edges": []}
+        texts = re.findall(r'aria-hidden="true">([^<]*)</text>', render_flow(spec, narrow=NARROW)[0])
+        self.assertIn("diagonaldiagrams", texts)
+        self.assertFalse([t for t in texts if t.endswith("-")], texts)
 
     def test_a_bigger_font_grows_the_box_and_the_lines_follow_it(self):
         spec = {"nodes": [{"id": "a", "name": "Payment provider integration"}], "edges": [],

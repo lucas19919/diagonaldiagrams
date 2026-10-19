@@ -292,8 +292,9 @@ def box_size(name, sub="", tag="", icon=None, st=None):
     if not fixed:
         room = w - 2 * pad
         wraps = all((x.get("overflow") or "wrap") == "wrap" for x in (lab, sb))  # text cut to max-lines can't balance
-        if wraps and (len(nl) > 1 or len(sl) > 1):  # balanced lines: the narrowest room that keeps as many
-            short, room = 0, int(room)
+        if wraps and (len(nl) > 1 or len(sl) > 1):  # balanced lines: the narrowest room that keeps as many,
+            # never narrower than the longest word, which would split it mid-word ("diagonaldi-agrams")
+            short, room = max(0, int(-(-word // 1)) - 1), int(room)
             while room - short > 1:
                 mid = (short + room) // 2
                 a, b, _, _ = box_text(name, sub, mid + 2 * pad, st, pad)

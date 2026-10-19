@@ -6,7 +6,7 @@ draft is audited and redrawn.
 from . import paint
 from ._draw import _bold, _groups_of, _round_poly, _seg_boxes, corner_rx
 from ._theme import THEME
-from .route.labels import GAP, label_box, place_label
+from .route.labels import GAP, first_spot, label_box, place_label
 from .scene.ids import edge_ids
 from .style.styler import Styler
 
@@ -273,7 +273,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
         if not e.get("label"):
             continue
         text = paint.transformed(e["label"], es["label"])
-        mx, my, vert = _longest(pts, frames.values())
+        mx, my, vert = first_spot(pts, frames.values(), routes[eid].tooth)
         others = [b for x in drawn for b in x[4]]  # its own arrow too: a label never sits on it
         w = _label_w(text, es["label"])
         lx, ly, vert, flip = place_label(mx, my, vert, text, pts, node_boxes + label_boxes + strips + canvas, others, w, GAP)
@@ -380,14 +380,6 @@ def _narrower(out, spec, narrow, info, again):
         info.clear()
         info.update(alt)
     return other
-
-
-def _longest(pts, frames=()):
-    """A label's first spot: the middle of the longest stretch of the route that no frame border
-    crosses, and whether that stretch runs up and down (route.labels)."""
-    from .route.labels import longest_segment
-    return longest_segment(pts, frames)
-
 
 
 def _edge_name(pos, e, label=None):

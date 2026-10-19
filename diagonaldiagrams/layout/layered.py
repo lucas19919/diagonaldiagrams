@@ -55,10 +55,13 @@ _FLIP = {"n": "w", "s": "e", "w": "n", "e": "s"}
 
 
 class Route:
-    __slots__ = ("id", "points", "sides", "back", "flat", "nodes")
+    __slots__ = ("id", "points", "sides", "back", "flat", "nodes", "tooth")
 
-    def __init__(self, eid, points, sides, back=False, flat=False, nodes=None):
+    def __init__(self, eid, points, sides, back=False, flat=False, nodes=None, tooth=False):
+        """tooth: the arrow runs down a lane beside rows a layer was dealt over (rows.py) to a box in a
+        lower row; its label goes first on its last sideways run, where it leaves the other lanes."""
         self.id, self.points, self.sides, self.back, self.flat, self.nodes = eid, points, sides, back, flat, nodes
+        self.tooth = tooth
 
     def to_dict(self):
         return {"id": self.id, "points": [[round(x, 2), round(y, 2)] for x, y in self.points], "sides": list(self.sides)}
@@ -177,6 +180,9 @@ def _layout(nodes, edges, groups, o):
     if o.get("more_rows") is not None:  # 1b. a layer too wide for max_width spreads over rows of its own
         top = {i: chain(gof.get(i))[-1] if gof.get(i) is not None else None for i in ids}
         rank, first, stack = deal_rows(rank, ids, info, E, lambda i: top[i] if top[i] is not None else ("node", find(i)), o)
+    # the comb's teeth: arrows from above a dealt layer down to a box in one of its lower rows, which
+    # run down lanes beside the rows above it
+    comb = {e["id"] for e in E if e["to"] in first and rank[e["from"]] < first[e["to"]] < rank[e["to"]]}
     res.rank = rank
     nl = max(rank.values()) + 1
 
@@ -369,7 +375,7 @@ def _layout(nodes, edges, groups, o):
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
     band_h = [max((info[it]["h"] for it in layer if L.kind[it] == "node"), default=0.0) for layer in L.layers]
-    plan = _Plan(o, info, xs, rank, L, order_of)
+    plan = _Plan(o, info, xs, rank, L, order_of, comb)
     for (kind, top, bot, ds), e in zip(kinds, E):
         plan.edge(e, kind, top, bot, ds)
     for e in loops:
@@ -506,8 +512,10 @@ def _frame_depths(span, parent):
 class _Plan:
     """Ports and routes in the top-to-bottom frame: what each arrow does, then where."""
 
-    def __init__(self, o, info, xs, rank, L, order_of):
+    def __init__(self, o, info, xs, rank, L, order_of, comb=()):
         self.o, self.info, self.xs, self.rank, self.L, self.order_of = o, info, xs, rank, L, order_of
+        self.comb = set(comb)  # arrows down a comb's lanes (_layout)
+        self.fanned = set()  # (edge id, role): ends _fan placed
         self.items = []  # (edge, kind, [(node, side, role, key)], spec)
         self.slots = {}  # (node, side) -> [(edge id, role, key)]
         self.offset = {}  # (edge id, role) -> offset along the side
@@ -637,9 +645,14 @@ class _Plan:
                     for k, (eid, role, _) in enumerate(seq):
                         self.stub[(eid, role)] = o["stub"] + k * o["track"]
                 continue
-            if lim == 0.0 or (o["trunk"] and inf["shape"] == "box" and len(items) >= 2 and len({it[1] for it in items}) == 1):
+            # arrows out to a comb's lanes: a shared trunk would run them down the lanes as one bundle
+            fan = inf["shape"] == "box" and len(items) >= 2 and not ins and any(t[0] in self.comb for t in outs)
+            if lim == 0.0 or (o["trunk"] and not fan and inf["shape"] == "box" and len(items) >= 2 and len({it[1] for it in items}) == 1):
                 for eid, role, _ in items:
                     self.offset[(eid, role)] = 0.0
+                continue
+            if fan:
+                self._fan(nid, outs, lim)
                 continue
             if inf["shape"] == "diamond":
                 group = outs + ins
@@ -679,6 +692,24 @@ class _Plan:
                     if (eid, role) in self.pins:
                         self.offset[(eid, role)] = self.pins[(eid, role)]
 
+    def _fan(self, nid, outs, lim, gap=12.0):
+        """A side whose arrows go down a comb's lanes: each leaves as near as it can to where it heads
+        (in line with a box right under it, else at the end toward its lane), in order, at least gap
+        apart, so each has a port and a line of its own and none crosses another under the box."""
+        cx = self._x(nid)
+        at = [max(-lim, min(lim, key - cx)) for _, _, key in outs]
+        for k in range(1, len(at)):
+            at[k] = max(at[k], at[k - 1] + gap)
+        if at[-1] > lim:
+            at[-1] = lim
+            for k in range(len(at) - 2, -1, -1):
+                at[k] = min(at[k], at[k + 1] - gap)
+        if at[0] < -lim:  # no room at that gap: spread over the side
+            at = _slots(len(outs), -lim, lim, self.o["slot"])
+        for (eid, role, _), v in zip(outs, at):
+            self.offset[(eid, role)] = v
+            self.fanned.add((eid, role))
+
     def _lone(self, lone):
         """A side with one arrow: in line with its next point when that falls within the side, so
         the arrow runs straight; else leaning toward its far end, so an exit and an entry stacked in
@@ -706,6 +737,10 @@ class _Plan:
                         self.offset[(eid, role)] = x - cx
                         self.offset[(eid, "in" if role == "out" else "out")] = x - ox
                         continue
+                far = (eid, "in" if role == "out" else "out")
+                if far in self.fanned and abs(self._x(other) + self.offset[far] - cx) <= lim:  # in line with it
+                    self.offset[(eid, role)] = self._x(other) + self.offset[far] - cx
+                    continue
                 want = self._x(other)
             dx = (want if want is not None else k) - cx
             if abs(dx) <= lim and peer and peer[0] == "x":
@@ -967,7 +1002,8 @@ class _Plan:
                     legs.append(("pt", x, p[1], a))
                 g = self.rank[a]
                 cols = [self._x(d) for d in ds] + [q[0]]
-                tkey = (a, s1, round(p[0], 1)) if self.o["trunk"] and self.offset.get((eid, "out")) == 0.0 and s1 == "s" else None
+                tkey = (a, s1, round(p[0], 1)) if (self.o["trunk"] and self.offset.get((eid, "out")) == 0.0 and s1 == "s"
+                                                    and (eid, "out") not in self.fanned) else None
                 for k, cx in enumerate(cols):
                     if abs(cx - x) >= 0.5:
                         ends = [(x, "top"), (cx, "bottom")]
@@ -1078,7 +1114,7 @@ class _Plan:
                     _, g, run, x = leg
                     pts.append((x, track_y[(g, run.track)]))
             out.append(Route(eid, _clean(pts), sides, back=kind in ("back", "rise"), flat=kind in ("flat", "over"),
-                             nodes=(a, b)))
+                             nodes=(a, b), tooth=eid in self.comb))
         return out
 
 

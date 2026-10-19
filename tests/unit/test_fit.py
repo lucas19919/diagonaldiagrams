@@ -14,6 +14,7 @@ from diagonaldiagrams import api  # noqa: E402
 from diagonaldiagrams.diagrams import ASPECT, _fit, render_arch, render_flow, render_schema  # noqa: E402
 from diagonaldiagrams.layout import layered  # noqa: E402
 from diagonaldiagrams.mermaid import _mermaid_spec  # noqa: E402
+from diagonaldiagrams.route.labels import first_spot  # noqa: E402
 
 
 def flow(n, fit=None):
@@ -83,6 +84,33 @@ class Kernel(unittest.TestCase):
         for r in narrow.routes.values():  # and every arrow still runs across or up and down
             for (x0, y0), (x1, y1) in zip(r.points, r.points[1:]):
                 self.assertTrue(abs(x0 - x1) < 0.01 or abs(y0 - y1) < 0.01, r.points)
+
+    def test_arrows_down_a_comb_leave_by_ports_and_lanes_of_their_own(self):
+        # a flow's trunk out of one side ran the arrows to a dealt layer's rows down its lanes as one
+        # bundle, their labels on the bar they shared (the Mermaid agent platform, bench-quality-fit-arch)
+        nodes = [{"id": "gw", "w": 160, "h": 56}] + [{"id": f"s{i}", "w": 160, "h": 56} for i in range(8)]
+        edges = [{"id": f"e{i}", "from": "gw", "to": f"s{i}"} for i in range(8)]
+        whole = layered.layout(nodes, edges, (), {"trunk": True})
+        self.assertEqual(len({r.points[0] for r in whole.routes.values()}), 1)  # one layer under it: a trunk
+        res = layered.layout(nodes, edges, (), {"trunk": True, "max_width": 460.0})
+        top = min(res.rank[f"s{i}"] for i in range(8))
+        self.assertGreater(max(res.rank[f"s{i}"] for i in range(8)), top)
+        self.assertEqual(len({round(r.points[0][0], 1) for r in res.routes.values()}), 8)  # a port each
+        segs = {eid: list(zip(r.points, r.points[1:])) for eid, r in res.routes.items()}
+        for a, b in itertools.combinations(segs, 2):  # and a line each: no two arrows run on one line
+            for (p, q), (u, v) in itertools.product(segs[a], segs[b]):
+                k = 0 if abs(p[0] - q[0]) < 0.01 else 1  # a vertical run keeps its x
+                if abs(u[k] - v[k]) < 0.01 and abs(p[k] - u[k]) < 1.0:
+                    lo, hi = max(min(p[1 - k], q[1 - k]), min(u[1 - k], v[1 - k])), min(max(p[1 - k], q[1 - k]), max(u[1 - k], v[1 - k]))
+                    self.assertLess(hi - lo, 1.0, (a, b))
+        for i in range(8):
+            r = res.routes[f"e{i}"]
+            self.assertEqual(r.tooth, res.rank[f"s{i}"] > top)
+            if r.tooth:  # its label goes first where it turns in to its box, under the row above it
+                mx, my, vert = first_spot(r.points, (), True)
+                self.assertFalse(vert)
+                self.assertLess(my, res.pos[f"s{i}"][1] - 28)
+                self.assertGreater(my, max(y + 28 for n, (x, y) in res.pos.items() if res.rank[n] == res.rank[f"s{i}"] - 1))
 
     def test_a_layer_that_rows_would_only_make_taller_stays_whole(self):
         # four boxes are a little too wide; two rows of two would add more height than the width they
