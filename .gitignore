@@ -57,6 +57,10 @@ node_modules/
 bench/*
 !bench/metrics/
 bench/metrics/latest.*
+# The tool comparison (scripts/bench_speed.py, scripts/bench_prompts.py): inputs, prompts and saved results.
+!bench/speed/
+bench/speed/latest.*
+!bench/tokens/
 
 # Context System: Transient scratchpads, session notes & logs
 # (Tier 3: Ignored transient state; Tier 2 specs/ADRs in context/ remain tracked)

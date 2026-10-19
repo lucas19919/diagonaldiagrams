@@ -1,0 +1,13 @@
+steps,tool,tokens,low,high,calls,screenshots,seconds
+5,diagonaldiagrams,4436,4251,4621,8.5,1,44
+5,Mermaid CLI,1756,808,2703,5.5,1.5,30
+5,Pele,2648,1702,3594,7,2,44
+11,diagonaldiagrams,5982,4942,7023,10,1,62
+11,Mermaid CLI,2756,1999,3514,7,2.5,58
+11,Pele,1677,1062,2292,5.5,1,26
+20,diagonaldiagrams,5116,5051,5180,7,1,51
+20,Mermaid CLI,4024,1800,6247,7.5,3.5,70
+20,Pele,1313,1238,1388,6,1,31
+40,diagonaldiagrams,6364,5514,7214,9,1.5,66
+40,Mermaid CLI,15374,13492,17255,19.5,8.5,220
+40,Pele,6306,4067,8544,10,5,57

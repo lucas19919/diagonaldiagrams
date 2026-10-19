@@ -42,6 +42,10 @@ MEASURED = [
                      "--highlight", "diagonaldiagrams", "--title", "Tokens per flowchart",
                      "--subtitle", "diagonaldiagrams stays under 2.1k as the diagram grows; with other tools the agent keeps checking its work",
                      "--xlabel", "Steps in the flowchart", "--ylabel", "Tokens used (average of 2 runs)", "--source", SOURCE]),
+    ("bench-tools-0.8", ["line", "docs/data/bench_tools_0.8.csv", "--x", "steps", "--y", "tokens", "--group", "tool",
+                         "--highlight", "diagonaldiagrams", "--title", "Tokens per flowchart, 0.8.0",
+                         "--subtitle", "diagonaldiagrams pays a fixed cost for its skill and verdict; Mermaid CLI grows fastest with the figure",
+                         "--xlabel", "Steps in the flowchart", "--ylabel", "Tokens used (average of 2 runs)", "--source", SOURCE]),
 ]
 
 

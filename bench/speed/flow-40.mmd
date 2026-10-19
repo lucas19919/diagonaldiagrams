@@ -1,0 +1,89 @@
+flowchart TD
+  s0(["Request received"])
+  s1["Load the customer account (1)"]
+  s2["Score the fraud risk (2)"]
+  s3{"Check 1 passed?"}
+  s4["Charge the card (4)"]
+  s5["Write the ledger entry (5)"]
+  s6["Notify the warehouse (6)"]
+  s7{"Check 2 passed?"}
+  s8["Send the receipt (8)"]
+  s9["Update the order status (9)"]
+  s10["Validate the request (10)"]
+  s11{"Check 3 passed?"}
+  s12["Score the fraud risk (12)"]
+  s13["Reserve the stock (13)"]
+  s14["Charge the card (14)"]
+  s15{"Check 4 passed?"}
+  s16["Notify the warehouse (16)"]
+  s17["Print the shipping label (17)"]
+  s18["Send the receipt (18)"]
+  s19{"Check 5 passed?"}
+  s20["Validate the request (20)"]
+  s21["Load the customer account (21)"]
+  s22["Score the fraud risk (22)"]
+  s23{"Check 6 passed?"}
+  s24["Charge the card (24)"]
+  s25["Write the ledger entry (25)"]
+  s26["Notify the warehouse (26)"]
+  s27{"Check 7 passed?"}
+  s28["Send the receipt (28)"]
+  s29["Update the order status (29)"]
+  s30["Validate the request (30)"]
+  s31{"Check 8 passed?"}
+  s32["Score the fraud risk (32)"]
+  s33["Reserve the stock (33)"]
+  s34["Charge the card (34)"]
+  s35{"Check 9 passed?"}
+  s36["Notify the warehouse (36)"]
+  s37["Print the shipping label (37)"]
+  s38["Send the receipt (38)"]
+  s39(["Done"])
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 -->|no| s1
+  s3 -->|yes| s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 -->|no| s10
+  s7 -->|yes| s8
+  s8 --> s9
+  s9 --> s10
+  s10 --> s11
+  s11 -->|no| s9
+  s11 -->|yes| s12
+  s12 --> s13
+  s13 --> s14
+  s14 --> s15
+  s15 -->|no| s18
+  s15 -->|yes| s16
+  s16 --> s17
+  s17 --> s18
+  s18 --> s19
+  s19 -->|no| s17
+  s19 -->|yes| s20
+  s20 --> s21
+  s21 --> s22
+  s22 --> s23
+  s23 -->|no| s26
+  s23 -->|yes| s24
+  s24 --> s25
+  s25 --> s26
+  s26 --> s27
+  s27 -->|no| s25
+  s27 -->|yes| s28
+  s28 --> s29
+  s29 --> s30
+  s30 --> s31
+  s31 -->|no| s34
+  s31 -->|yes| s32
+  s32 --> s33
+  s33 --> s34
+  s34 --> s35
+  s35 -->|no| s33
+  s35 -->|yes| s36
+  s36 --> s37
+  s37 --> s38
+  s38 --> s39
