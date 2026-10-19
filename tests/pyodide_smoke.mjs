@@ -19,7 +19,7 @@ function said(e) {  // an error's message, short: Pyodide's own stack is one min
 let py;
 try {
   py = await loadPyodide();
-  py.unpackArchive(readFileSync(wheel), "wheel");
+  py.unpackArchive(new Uint8Array(readFileSync(wheel)), "wheel");  // a plain typed array: Pyodide refuses Node's Buffer
 } catch (e) {
   console.error("loading Pyodide or the wheel failed:\n" + said(e));
   process.exit(1);
