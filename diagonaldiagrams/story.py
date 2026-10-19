@@ -267,10 +267,11 @@ def _figure_input(story, base, out_base):
     return kind, path
 
 
-def build(story_path, out, gif=None, video=None, view=None, fps=20):
+def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None):
     """Draws the story: its figure (OUT.figure.svg, .html and receipt, through the usual render), then
-    every frame, into OUT.html. With gif or video, also films one view's motion (the first view that
-    moves, or `view`). Returns the verdict."""
+    every frame, into OUT.html. With anim (an .svg path), gif or video, also exports one view's motion
+    (the first view that moves, or `view`): anim as an animated SVG, gif and video through ffmpeg.
+    Returns the verdict."""
     from . import api
     from ._output import FONT
     from ._theme import THEME
@@ -335,8 +336,10 @@ def build(story_path, out, gif=None, video=None, view=None, fps=20):
                           **({"motion": _moves(moves[i])} if moves.get(i) else {})} for i, v in enumerate(story["views"])],
                "figure": {k: fig[k] for k in ("svg", "ok", "errors", "warnings", "layout") if k in fig},
                **({"warnings": warnings} if warnings else {})}
-    if gif or video:
-        verdict["film"] = _film(story, drawn, moves, view, gif, video, fps)
+    if anim or gif or video:
+        verdict["film"] = _film(story, drawn, moves, view, gif, video, fps, anim)
+        if verdict["film"].get("error"):
+            verdict.setdefault("warnings", []).append({"msg": verdict["film"]["error"], "fix": verdict["film"]["fix"]})
     return verdict
 
 
@@ -344,9 +347,9 @@ def _moves(s):
     return {"loop": s["loop"], "traces": len(s["traces"]), "flows": len(s["flows"])}
 
 
-def _film(story, drawn, moves, view, gif, video, fps):
-    """One view's motion as a GIF and/or a video: the view's last frame (every reveal step shown),
-    with its camera, one loop long."""
+def _film(story, drawn, moves, view, gif, video, fps, anim=None):
+    """One view's motion as an animated SVG, a GIF and/or a video: the view's last frame (every reveal
+    step shown), with its camera, one loop long."""
     from . import motion
     ids = [v["id"] for v in story["views"]]
     if view is not None and view not in ids:
@@ -356,14 +359,23 @@ def _film(story, drawn, moves, view, gif, video, fps):
         raise SpecError(f"view '{ids[vi]}' has no motion" if vi is not None else "no view has motion, so there is nothing to film",
                         'give the view "motion": [{"trace": "a -> b -> c"}]')
     last = [f for f in drawn if f["view"] == vi][-1]
-    out = motion.film(last["svg"], moves[vi], fps=fps, gif=gif, video=video, camera=last["viewBox"])
+    out = {}
+    if anim:
+        text = motion.animated(last["svg"], moves[vi], fps=fps, camera=last["viewBox"])
+        os.makedirs(os.path.dirname(os.path.abspath(anim)) or ".", exist_ok=True)
+        with open(anim, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        n, _ = motion.times(moves[vi]["loop"], fps)
+        out = {"frames": n, "fps": fps, "loop": moves[vi]["loop"], "svg": anim, "svg_bytes": os.path.getsize(anim)}
+    if gif or video:
+        out.update(motion.film(last["svg"], moves[vi], fps=fps, gif=gif, video=video, camera=last["viewBox"]))
     return dict(out, view=ids[vi])
 
 
 def do_story(args):
     try:
         out = build(args.story, args.o, gif=getattr(args, "gif", None), video=getattr(args, "video", None),
-                    view=getattr(args, "view", None), fps=getattr(args, "fps", 20))
+                    view=getattr(args, "view", None), fps=getattr(args, "fps", 20), anim=getattr(args, "anim", None))
     except SpecError as e:
         out = {"ok": False, "stage": "story", "errors": [{"msg": e.msg, "fix": e.fix}]}
     print(json.dumps(out))

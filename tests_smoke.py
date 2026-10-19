@@ -1168,6 +1168,14 @@ def story_checks():
                    "views": [{"id": "x", "dim": "#nope"}, {"id": "y", "dim": "node:hover"}]}, f)
     rc, text = run("story", bad, "-o", os.path.join(WORK, "story", "bad.html"))
     check("a story's bad selector is an error with a fix", rc == 1 and "view 'y' dim" in text and '"fix"' in text, text[-300:])
+    anim = os.path.join(WORK, "story", "checkout.svg")
+    rc, text = run("story", os.path.join(HERE, "examples", "story_checkout.json"), "-o", os.path.join(WORK, "story", "checkout.html"),
+                   "--svg", anim, "--fps", "5")
+    film = (json.loads(text) if text.strip().startswith("{") else {}).get("film", {})
+    body = open(anim, encoding="utf-8").read() if os.path.isfile(anim) else ""
+    check("--svg writes a view's motion as an animated SVG, a frame a fifth of a second",
+          rc == 0 and film.get("view") == "checkout" and body.count('<g data-frame=""') == film.get("frames", -1) > 0
+          and "@keyframes dd-frame" in body, text[-300:])
 
 
 def style_checks():

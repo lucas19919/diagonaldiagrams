@@ -568,7 +568,7 @@ Left: P4.1 (the container protocol and nested groups, now with P5); P4.9 (increm
 
 **Status (2026-10-17):** a first slice of P9.4, P9.5 and P9.6 is built on branch `slice-stories` (stacked on `slice-edit-animate`), ahead of P5. `diagonaldiagrams story` presents one figure as views that focus, dim, hide, highlight and reveal, with titles, text and notes, in one offline HTML page that animates between them. DESIGN 21.2 has the as-built notes. Left: several figures per story, pages and content blocks (P9.1–P9.3), per-view annotations and styles, a presenter view, PDF (P9.7), story presets (P9.8), and the exit's 10-view story from a brief.
 
-A thin prototype of P9.9 is built on this worktree's branch, on `slice-edit-hardening`: a view's `motion` block (`trace` a path, `flow` along arrows) plays in the story page and films as a GIF or video. DESIGN 21.2.1 has the design and the as-built notes.
+A thin prototype of P9.9 is built on `slice-edit-hardening`: a view's `motion` block (`trace` a path, `flow` along arrows) plays in the story page and exports as an animated SVG, a GIF or a video. On 2026-10-19 the pure-Python GIF coder and the DevTools client went: `--svg` needs nothing, and `--gif` and `--video` go through ffmpeg. DESIGN 21.2.1 has the design and the as-built notes.
 
 | Task | Size | Work |
 | --- | --- | --- |
@@ -580,7 +580,7 @@ A thin prototype of P9.9 is built on this worktree's branch, on `slice-edit-hard
 | P9.6 Presenter runtime | L | One self-contained HTML file, offline:<ul><li>keyboard and touch navigation;</li><li>speaker notes and a presenter view;</li><li>step reveals;</li><li>a print stylesheet with one page per view.</li></ul> |
 | P9.7 PDF | M | One page per view, vector, fonts embedded where licenses allow. |
 | P9.8 Story presets | M | Briefing, board update, architecture review, incident review, quarterly business review. Each is a preset of page layouts and view patterns. |
-| P9.9 Motion from meaning | L | A view says what moves (`trace`, `flow`); the engine derives the timing from the drawn routes. The page plays it; `--gif` and `--video` film a seamless loop (DESIGN 21.2.1). |
+| P9.9 Motion from meaning | L | A view says what moves (`trace`, `flow`); the engine derives the timing from the drawn routes. The page plays it; `--svg` writes a seamless loop as an animated SVG, and `--gif` and `--video` film it through ffmpeg (DESIGN 21.2.1). |
 
 **Exit:**
 - An agent turns a written brief and a data file into a 10-view story that passes every page check. The scoreboard records its tokens and time.

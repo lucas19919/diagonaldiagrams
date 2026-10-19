@@ -9,7 +9,7 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
   - `slice-integration`, on `slice-edit-hardening`, is current and holds everything. It merges three stacks built in side sessions, each on its own `claude/...` branch:
     - the default look for flow, arch, seq and schema (B25, DESIGN 8.5), the straight trunk in long flows, and default text judged by the audit (`data-legibility`);
     - pins in flow and arch (DESIGN 4.6), and the router fixes pins exposed (B30);
-    - motion from meaning: a story view's `trace` and `flow`, filmed as a GIF or MP4 (DESIGN 21.2.1).
+    - motion from meaning: a story view's `trace` and `flow`, exported as an animated SVG, or a GIF or MP4 through ffmpeg (DESIGN 21.2.1).
   - The six phase branches are on GitHub since 2026-10-17, as a backup; the slices, `slice-integration`, the `claude/...` branches and `b29-fuzz` are local only. None is merged into `master`, and there is no PR. Anyone who installs from the README still gets 0.5.0.
   - CI runs on pushes to `master` and on PRs, so the phase branches have not run in CI yet.
 - **Version.** 0.8.0 in `diagonaldiagrams/__init__.py`, `.claude-plugin/plugin.json` and `server.json` (they must match). Nothing past 0.5.0 has been released.
@@ -43,7 +43,7 @@ The owner asked for animation and better editing ahead of P5. Three slices are b
 - **Edit loop:** an agent writes a patch (`place`, `order`, `text`, `style`, ...); `apply` writes it into the spec; drawing again at the same path keeps the other boxes near their places, reports `changed`, and animates the old drawing into the new one. `diff` compares any two drawings. A kept patch applied again after the spec is regenerated keeps every edit or reports it (`tests/unit/test_regeneration.py`).
 - **Pins:** removed on `slice-slim` (2026-10-19). A pin on a flow or arch node is `not-drawn` again; `place`, `rank` and `order` say where a box goes (DESIGN 4.6). The router fixes pins exposed (B30) stay.
 - **Stories:** `story STORY.json -o OUT.html` presents one figure as views (focus, dim, hide, highlight, reveal) in one page that animates between them.
-- **Motion:** a view's `motion` block traces a path or sets dots flowing along arrows; the page plays it, and `story ... --gif` or `--video` films it (DESIGN 21.2.1).
+- **Motion:** a view's `motion` block traces a path or sets dots flowing along arrows; the page plays it, `story ... --svg` writes it as an animated SVG, and `--gif` or `--video` film it through ffmpeg (DESIGN 21.2.1).
 - **The default look** (DESIGN 8.5): labels beside their arrows, boxes that fit their text, balanced arch, a straight trunk in long flows, default text that passes contrast and size checks. Blind pairwise judging: 103 of 104 for the new look.
 
 Next is the owner's call: bring the chart kinds up to the new look (P6, P8), a dark product theme and isometric 3D (P7), widen stories, or go back to P5.

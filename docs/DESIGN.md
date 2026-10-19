@@ -1189,10 +1189,9 @@ A view can move. The agent names what moves in a few words. The engine works out
 
 **Export.**
 - Frame k of n is the view's frame SVG plus the motion layer at t = k × loop / n, with n = round(loop × fps). Frame n would be frame 0 again, so the loop is seamless.
-- Frames rasterize at 1× for a GIF. With Edge or Chrome and no cairosvg, one headless browser stays open for the whole loop (`_cdp.py`). Otherwise, or if that fails, frames go through the PNG export path: cairosvg, else a browser launch per sheet of frames.
-- `gif.py` writes the GIF in pure Python. The palette comes from sample frames: the most used colors exactly, the rest by median cut, and one index kept for transparency. Each frame after the first holds only the rectangle that changed, with unchanged pixels transparent, and is LZW-coded. Delays are hundredths of a second; the rounding is spread so the loop keeps its length. A NETSCAPE2.0 block loops it forever.
-- MP4 and WebM go through ffmpeg when it is on the PATH. It is never downloaded.
-- `diagonaldiagrams story STORY.json -o OUT.html --gif OUT.gif [--video OUT.mp4] [--view ID] [--fps 20]`. The verdict gives the loop, the frame count and the file size.
+- `--svg OUT.svg` writes the loop as one animated SVG, in pure Python. It holds the figure once and the motion layer of every frame, the layers the page draws. A CSS animation shows each layer for one frame (`step-end`, delayed by its time), so it plays wherever SVG animates, a browser or a README's image, with no script. Under reduced motion it shows the still moment.
+- `--gif` and `--video` (MP4 or WebM) go through ffmpeg when it is on the PATH. It is never downloaded. The frames rasterize at 1× through the PNG export path (cairosvg, else headless Edge or Chrome), up to 16 stacked in one sheet per raster call, 4 calls at a time. ffmpeg cuts the sheets into frames (`untile`). A GIF takes one palette for the loop and stores each frame only where it changed (`palettegen` and `paletteuse` with their diff modes), and loops forever. Without ffmpeg nothing is filmed: the verdict says so, as a warning, and points to `--svg`.
+- `diagonaldiagrams story STORY.json -o OUT.html [--svg OUT.svg] [--gif OUT.gif] [--video OUT.mp4] [--view ID] [--fps 20]`. The verdict gives the loop, the frame count and the file sizes.
 
 **Checks.**
 - An unknown verb or option is an error, and its fix lists the vocabulary.
@@ -1203,23 +1202,17 @@ A view can move. The agent names what moves in a few words. The engine works out
 
 **Not yet:** a camera that follows the packet; traces that overlap in time; sequences, where a trace would play the messages in order; motion in a spec without a story; a GIF of a whole story, view after view.
 
-**As built (motion prototype, 2026-10-17).** `motion.py`, `_cdp.py`, `gif.py`, `web/motion.js`; demo `examples/story_checkout.json`:
+**As built (motion prototype, 2026-10-17; export cut down on 2026-10-19).** `motion.py`, `web/motion.js`; demo `examples/story_checkout.json`:
 - **The demo.** A checkout traced from Web app through API gateway, Orders and Payments to Stripe, with dots on the five async arrows to and from the Event bus, and the rest dimmed. The loop is 4.95 s (5.54 s on the look before 2026-10-17, whose routes were longer: the timing follows the routes). The schedule takes 3.5 KB of the page.
-- **The GIF.** On the current look: 99 frames at 20 fps, 792 × 742, 264 KB; the MP4 (H.264, through ffmpeg) is 145 KB. On the look before, 111 frames at 1054 × 869 made 364 KB (387 KB from sheets, which carry more raster noise) and an MP4 of 182 KB. Pillow and a plain decoder in the tests both read the GIF back, looping.
-- **Time.** The demo films in about 12 s: a median of 11.6 s over 5 runs (10.4–12.0 s). A launch per sheet took 28.6 s (24.7–38.4 s) in runs taken in turn with those. Drawing and decoding the frames went from about 26 s to 6 s. GIF coding, 7–9 s, is now the largest part. One launch per frame took 4 minutes.
-- **A faster GIF coder.** `gif.encode` on the demo's 111 frames went from a median of 5.8 s to 1.3 s (3 runs each, taken in turn), and writes the same bytes. LZW looks up whole strings, guessing the longest that starts with the same byte, then lengths 2, 4, 8, and halving. Pixels map to palette indices a row span at a time, and spans are found by comparing slices.
-- **One browser, kept open.** `_cdp.py` starts Edge or Chrome once with `--remote-debugging-port=0` and reads the DevTools address from its stderr. It talks DevTools through a small WebSocket client written on the standard library. The figure loads once, with an empty motion layer, in four windows. For each frame, a window swaps in that frame's layer and takes a screenshot (`Page.captureScreenshot`, clipped to the figure). The four windows work at the same time, and each batch of screenshots decodes while the browser draws the next.
-  - The phases: launch 1.4 s, load 0.6 s, 111 screenshots 3.2 s with decoding overlapped, close 0.8 s. One window took 8 s for the screenshots.
-  - Each page needs a window of its own. A background tab is never painted, so its screenshot never returns.
-  - If anything fails, the verdict says why (`devtools_error`), and filming falls back to a launch per sheet: up to 8 frames stacked in one SVG, one raster call per sheet, 4 calls at a time.
-- **Raster noise.** A frame drawn lower in a sheet differs from the same frame drawn alone in a few antialiased pixels along arrows (float precision far from the origin). In the open browser, a window's first frame matches a launch of its own exactly. Later frames repaint only the layer, and 13–16 pixels differ by a level or two, so the GIF can change by a few hundred bytes from run to run. The GIF compares frames by palette index, not RGB, so noise that does not change a pixel's color does not reach the file.
-- **Decoding.** Each frame's rows are compared with the same rows one frame before. A row that matches is reused. The Up and Sub filters run as whole-row integer arithmetic; Average and Paeth run byte by byte. Screenshots taken with `optimizeForSpeed` decode in 1–3 s for the loop; the sheets took 11–12 s.
-- **Parity.** `test_motion.py` runs `web/motion.js` in Node against `motion.at()` at 37 moments of a loop. Their shapes and numbers agree.
+- **Removed on 2026-10-19.** Filming first ran in pure Python: `gif.py` (386 lines) read the browser's PNGs and wrote the GIF (a median-cut palette, changed rectangles only, LZW), and `_cdp.py` (232 lines) kept one browser open over a DevTools WebSocket client written on the standard library, so each frame was a screenshot rather than a launch. With their fallbacks and about 300 lines of tests, they made a GIF with nothing installed. They went because ffmpeg codes GIFs and video better than a coder kept here, and the animated SVG now covers a machine with nothing installed.
+- **Now, on the demo** (99 frames at 20 fps, 792 × 742): the animated SVG is 344 KB, and writing it adds well under a second to the story. Through ffmpeg, with headless Edge drawing 10 sheets, the GIF is 288 KB and the MP4 149 KB. A story with `--gif` took 17.2 s (median of 3, 16.8–18.1 s), against 9.2 s (6.9–11.4 s) and 265 KB for the open browser and the pure-Python coder, in runs taken in turn. The time is the browser launches, one per sheet. ffmpeg's GIF is the same bytes on every run; the open browser's changed by a few hundred bytes from run to run.
+- **Raster noise.** A frame drawn lower in a sheet differs from the same frame drawn alone in a few antialiased pixels along arrows (float precision far from the origin).
+- **Parity.** `test_motion.py` runs `web/motion.js` in Node against `motion.at()` at 37 moments of a loop. Their shapes and numbers agree. The animated SVG's layers are `motion.at()`'s, so it plays what the page plays.
 - **Static figures are untouched.** All 115 golden figures match, and a story's frames are byte-identical with and without motion.
 
 **What production needs:**
-- A faster GIF coder. It is now more than half the time: 7–9 s of the demo's 12 s. A 4K loop or a minute of frames needs ffmpeg or a C coder.
-- WebM with alpha, and an APNG option, for slides and sites that want full color.
+- A raster path that stays open (a browser kept open, or a rasterizer in process), so filming doesn't launch a browser per sheet.
+- WebM with alpha, and an APNG option, for slides and sites that want full color (ffmpeg writes both).
 - A camera that follows the packet. It moves every pixel, so it needs video, not GIF deltas.
 - Motion for sequences (play the messages in order), timed callouts on hops, and overlapping traces.
 - A size budget in the verdict, with advice: lower fps, a cropped camera, or a shorter hold.

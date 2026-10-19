@@ -7,8 +7,8 @@ read() checks a motion block; resolve() turns it into a schedule against a drawn
 arrow's route as a polyline, each event's start and end); at() is the motion layer at a time t.
 The page evaluates the same schedule with web/motion.js, the same arithmetic, so the HTML and the
 exported frames agree. frame() is the figure plus that layer; times() is the frame timing of a
-seamless loop; film() rasterizes the frames, in one browser kept open (_cdp.py) or a sheet at a
-time, and writes a GIF (gif.py) or, through ffmpeg, a video.
+seamless loop. animated() writes the loop as one animated SVG, in pure Python; film() rasterizes
+the frames a sheet at a time and hands them to ffmpeg for a GIF or a video.
 """
 import math
 import os
@@ -404,14 +404,12 @@ def frame(svg, s, t):
 
 
 def times(loop, fps):
-    """(n, [t_k], [delay_k in hundredths of a second]) for a loop at about fps frames a second.
-    Frame n would be frame 0 again, so the loop has no seam; the delays add up to the loop."""
+    """(n, [t_k]) for a loop at about fps frames a second. Frame n would be frame 0 again, so the loop
+    has no seam."""
     if not 1 <= fps <= 50:
         raise SpecError(f"fps is {fps}", "fps is from 1 to 50 (a GIF counts in hundredths of a second)", "bad-motion")
     n = max(2, int(round(loop * fps)))
-    ts = [loop * k / n for k in range(n)]
-    delays = [int(round(100 * loop * (k + 1) / n)) - int(round(100 * loop * k / n)) for k in range(n)]
-    return n, ts, delays
+    return n, [loop * k / n for k in range(n)]
 
 
 # ---- export ---------------------------------------------------------------------------------
@@ -424,6 +422,32 @@ def _crop(svg, box):
     head = re.sub(r'width="[^"]*"', f'width="{_n(w)}"', head, count=1)
     i = svg.rindex("</svg>")
     return head + f'<g transform="translate({_n(-x)},{_n(-y)})">' + svg[head_end:i] + "</g>" + svg[i:]
+
+
+def _s(v):
+    """Seconds or a percentage, to a tenth of a millisecond: frames meet without a gap."""
+    s = f"{v:.4f}".rstrip("0").rstrip(".")
+    return s or "0"
+
+
+def animated(svg, s, fps=20, camera=None):
+    """The view as one animated SVG, in pure Python: the figure, then the motion layer at each frame's
+    time (the layers the page draws), each shown for one frame by CSS. Frame n would be frame 0 again,
+    so the loop has no seam. It plays wherever SVG animates, a browser or a README's image; under
+    reduced motion it holds the still moment, the path lit and no packets."""
+    n, ts = times(s["loop"], fps)
+    body = _crop(svg, camera) if camera else svg
+    css = ("<style>g[data-frame],g[data-still]{visibility:hidden}"
+           f"g[data-frame]{{animation:dd-frame {_s(s['loop'])}s step-end infinite}}"
+           f"@keyframes dd-frame{{0%{{visibility:visible}}{_s(100.0 / n)}%,100%{{visibility:hidden}}}}"
+           "@media (prefers-reduced-motion:reduce){g[data-frame]{animation:none}g[data-still]{visibility:visible}}</style>")
+    parts = [css, '<g data-still="">' + layer(at(s, s["still"])) + "</g>"]
+    for t in ts:
+        parts.append(f'<g data-frame="" style="animation-delay:{_s(t)}s">' + layer(at(s, t)) + "</g>")
+    if camera:  # the layers sit in the figure's frame of reference, as the cropped figure does
+        parts = [parts[0], f'<g transform="translate({_n(-camera[0])},{_n(-camera[1])})">'] + parts[1:] + ["</g>"]
+    i = body.rindex("</svg>")
+    return body[:i] + "".join(parts) + "\n" + body[i:]
 
 
 SHEET = 7800  # px: the tallest sheet of frames one raster call draws
@@ -439,68 +463,26 @@ def sheet(svgs, w, h):
             + "".join(tiles) + "</svg>")
 
 
-def _cairo():
-    try:
-        import cairosvg  # noqa: F401
-        return True
-    except (ImportError, OSError):
-        return False
-
-
-# the frame's motion layer, swapped into a page that shows the still figure
-_SWAP = "(() => { const g = document.querySelectorAll('g[data-motion]'); g[g.length - 1].outerHTML = %s; return true })()"
-
-
-def _shoot(browser, svg, s, ts, camera, W, H, pages, keep=None):
-    """The frames, from one browser kept open (_cdp): the still figure loads once in each of a few
-    windows, and each frame swaps in its motion layer and takes a screenshot. Each batch of frames
-    decodes while the browser draws the next."""
-    import json
-    from . import _cdp, gif as giff
-    from .export import _page
-    i = svg.rindex("</svg>")
-    still = svg[:i] + layer([]) + "\n" + svg[i:]
-    b = _cdp.Browser(browser, W, H, pages=min(pages, len(ts)))
-    try:
-        b.load(_page(_crop(still, camera) if camera else still, W, H), W, H)
-        frames, pngs = [], []
-
-        def decode():
-            for png in pngs:
-                prev = frames[-1] if frames else None
-                frames.append(giff.read_png(png, like=prev, period=H))
-                if prev is not None:
-                    prev.px = prev.filtered = None
-        for k0 in range(0, len(ts), len(b.pages)):
-            ks = range(k0, min(len(ts), k0 + len(b.pages)))
-            b.run([(p, _SWAP % json.dumps(layer(at(s, ts[k])))) for p, k in zip(b.pages, ks)])
-            pngs = b.shots(b.pages[:len(ks)], W, H, meanwhile=decode)
-            for k, png in zip(ks, pngs if keep else ()):
-                with open(os.path.join(keep, f"f{k:04d}.png"), "wb") as fh:
-                    fh.write(png)
-        decode()
-        return frames
-    finally:
-        b.close()
-
-
 def film(svg, s, fps=20, gif=None, video=None, camera=None, workers=4, keep=None):
-    """Draws the loop through the PNG export path, then writes the GIF and/or the video. With Edge
-    or Chrome and no cairosvg, one browser stays open for every frame (_shoot); otherwise, or if
-    that fails, each sheet of frames is one raster call. workers is how many windows or raster
-    calls work at once. Returns what it wrote: {"frames", "fps", "loop", "gif", "gif_bytes", ...}."""
+    """A GIF and/or a video (.mp4 or .webm), through ffmpeg. The frames rasterize through the PNG
+    export path (cairosvg, else headless Edge or Chrome), a sheet of frames to a call and `workers`
+    calls at once; ffmpeg cuts the sheets into frames and encodes them. Without ffmpeg nothing is
+    filmed, and the result says so. Returns {"frames", "fps", "loop", "size", "gif", "gif_bytes", ...}."""
     import shutil
     import subprocess
     import tempfile
     from concurrent.futures import ThreadPoolExecutor
-    from . import gif as giff
-    from .export import _browser, _raster_svg
-    n, ts, delays = times(s["loop"], fps)
+    from .export import _raster_svg
+    n, ts = times(s["loop"], fps)
+    out = {"frames": n, "fps": fps, "loop": s["loop"]}
+    ffmpeg = shutil.which("ffmpeg")
+    if not ffmpeg:
+        return dict(out, error="ffmpeg is not on the PATH, so no GIF or video was written",
+                    fix="install ffmpeg, or write an animated SVG with --svg, which needs nothing else")
     if camera:  # whole pixels, so the frames tile exactly
         x, y, w, h = camera
         camera = [x, y, math.ceil(w), math.ceil(h)]
-    first = _crop(svg, camera) if camera else svg
-    m = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', first)
+    m = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', _crop(svg, camera) if camera else svg)
     if not m:
         raise SpecError("the figure has no viewBox to film", "draw it again; every renderer writes one", "no-raster")
     W, H = int(round(float(m.group(1)))), int(round(float(m.group(2))))
@@ -509,64 +491,35 @@ def film(svg, s, fps=20, gif=None, video=None, camera=None, workers=4, keep=None
     folder = keep or tempfile.mkdtemp(prefix="dd-motion-")
     os.makedirs(folder, exist_ok=True)
 
-    def body(k):
-        out = frame(svg, s, ts[k])
-        return _crop(out, camera) if camera else out
-
-    def one(g):
-        svgs = [body(k) for k in groups[g]]
-        if keep:
-            for k, text in zip(groups[g], svgs):
-                with open(os.path.join(folder, f"f{k:04d}.svg"), "w", encoding="utf-8") as fh:
-                    fh.write(text)
+    def one(g):  # every sheet holds `per` frames, so ffmpeg cuts them alike: the last repeats its last frame
+        ks = groups[g] + [groups[g][-1]] * (per - len(groups[g]))
+        svgs = [_crop(frame(svg, s, ts[k]), camera) if camera else frame(svg, s, ts[k]) for k in ks]
         return _raster_svg(sheet(svgs, W, H), os.path.join(folder, f"sheet{g:03d}.png"), "png", W, scale=1)
     try:
-        out = {"frames": n, "fps": fps, "loop": s["loop"], "size": [W, H]}
-        frames, browser = None, None if _cairo() else _browser()
-        if browser:
-            if keep:
-                for k in range(n):
-                    with open(os.path.join(folder, f"f{k:04d}.svg"), "w", encoding="utf-8") as fh:
-                        fh.write(body(k))
-            try:
-                frames = _shoot(browser, svg, s, ts, camera, W, H, workers, keep and folder)
-                out["raster"] = "devtools"
-            except (OSError, ValueError) as e:
-                out["devtools_error"] = str(e)[-300:]
-        if frames is None:
-            with ThreadPoolExecutor(max(1, workers)) as pool:
-                done = list(pool.map(one, range(len(groups))))
-            bad = [why for how, why in done if not how]
-            if bad:
-                raise SpecError(f"a frame did not rasterize: {bad[0]}", "filming needs cairosvg, Edge or Chrome on this machine",
-                                "no-raster")
-            frames, prev = [], None
-            for g in range(len(groups)):
-                part = giff.read_png(os.path.join(folder, f"sheet{g:03d}.png"), like=prev, period=H)
-                if prev is not None:
-                    prev.px = prev.filtered = None
-                prev = part
-                frames += giff.split(part, H)[:len(groups[g])]
-            out.update(raster=done[0][0], sheets=len(groups))
-        if gif:
-            size, written = giff.write(gif, frames, delays)
-            out.update(gif=gif, gif_bytes=size, gif_frames=written)
+        with ThreadPoolExecutor(max(1, workers)) as pool:
+            done = list(pool.map(one, range(len(groups))))
+        bad = [why for how, why in done if not how]
+        if bad:
+            raise SpecError(f"a frame did not rasterize: {bad[0]}", "filming needs cairosvg, Edge or Chrome on this machine",
+                            "no-raster")
+        out.update(size=[W, H], sheets=len(groups), raster=done[0][0])
+        cut = f"scale={W}:{per * H}:flags=neighbor,untile=1x{per}"
+        src = ["-framerate", f"{n / s['loop'] / per:.6f}", "-i", os.path.join(folder, "sheet%03d.png")]
+        jobs = []
+        if gif:  # one palette for the loop, and each frame only where it changed
+            jobs.append(("gif", gif, ["-vf", cut + ",split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=diff_mode=rectangle",
+                                      "-loop", "0"]))
         if video:
-            ffmpeg = shutil.which("ffmpeg")
-            if not ffmpeg:
-                out["video_error"] = "ffmpeg is not on the PATH (the GIF needs nothing else)"
+            codec = (["-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "32"] if video.lower().endswith(".webm")
+                     else ["-c:v", "libx264", "-crf", "18", "-movflags", "+faststart"])
+            jobs.append(("video", video, ["-vf", cut + ",pad=ceil(iw/2)*2:ceil(ih/2)*2", "-pix_fmt", "yuv420p", *codec]))
+        for key, path, args in jobs:
+            cmd = [ffmpeg, "-y", "-loglevel", "error", *src, *args, "-frames:v", str(n), os.path.abspath(path)]
+            p = subprocess.run(cmd, capture_output=True, text=True, errors="replace", timeout=600)
+            if p.returncode == 0 and os.path.isfile(path):
+                out.update({key: path, key + "_bytes": os.path.getsize(path)})
             else:
-                for k, f in enumerate(frames):
-                    giff.write_png(os.path.join(folder, f"f{k:04d}.png"), f)
-                codec = (["-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "32"] if video.lower().endswith(".webm")
-                         else ["-c:v", "libx264", "-crf", "18", "-movflags", "+faststart"])
-                cmd = [ffmpeg, "-y", "-loglevel", "error", "-framerate", f"{n / s['loop']:.6f}", "-i", os.path.join(folder, "f%04d.png"),
-                       "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", "-pix_fmt", "yuv420p", *codec, os.path.abspath(video)]
-                p = subprocess.run(cmd, capture_output=True, text=True, errors="replace", timeout=600)
-                if p.returncode == 0 and os.path.isfile(video):
-                    out.update(video=video, video_bytes=os.path.getsize(video))
-                else:
-                    out["video_error"] = (p.stderr or p.stdout or f"ffmpeg exit {p.returncode}").strip()[-300:]
+                out[key + "_error"] = (p.stderr or p.stdout or f"ffmpeg exit {p.returncode}").strip()[-300:]
         return out
     finally:
         if not keep:

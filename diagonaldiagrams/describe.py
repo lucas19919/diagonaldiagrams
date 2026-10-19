@@ -161,7 +161,7 @@ DESCRIBE = {
 DESCRIBE.update(_chart_meta())
 DESCRIBE["story"] = {  # the command; `chart story`, a user story map, keeps its entry under "also"
     "input": "Story JSON: one figure and its views (DESIGN 21.2).",
-    "writes": "diagonaldiagrams story STORY.json -o OUT.html [--gif OUT.gif] [--video OUT.mp4] [--view ID] [--fps 20] "
+    "writes": "diagonaldiagrams story STORY.json -o OUT.html [--svg OUT.svg] [--gif OUT.gif] [--video OUT.mp4] [--view ID] [--fps 20] "
               "(the figure itself is drawn as OUT.figure.svg)",
     "shape": {"title": "...", "figure": {"type": "flow|arch|seq|schema|mermaid",
                                          "spec": "a path relative to the story file, or the spec itself"},
@@ -177,7 +177,8 @@ DESCRIBE["story"] = {  # the command; `chart story`, a user story map, keeps its
               "keys: arrows, Space, Home, End; N shows the notes; a link to #view or #view/step opens it; printing gives a page per step",
               "motion (flow, arch, schema): trace runs a packet along the arrows' routes and lights them; a hop may run against "
               "an arrow; flow runs dots along arrows; traces play in order and their total is the loop; P pauses",
-              "--gif films the first view with motion (or --view) as a seamless loop; --video needs ffmpeg"],
+              "--svg writes the first view with motion (or --view) as a seamless animated SVG, in pure Python; "
+              "--gif and --video film it through ffmpeg"],
     "example": "diagonaldiagrams story examples/story_platform.json -o out/story.html",
     "also": {"chart story": DESCRIBE["story"]},
 }
