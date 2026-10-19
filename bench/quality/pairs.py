@@ -10,8 +10,15 @@ Each pair is judged in two placements (slide, column), in both orders, by two ju
 holds one model, one placement and one order of about 21 pairs on slides or 11 in the column (its tall figures come in several tiles), so no
 judge sees a pair twice.
 The images go to JUDGE_DIR/<batch>/ under blind names (pNN-A.png, pNN-B-2of5.png); which figure is
-which is written only to bench/quality/judgments/key.json, outside the judges' folders."""
-import json, os, random, shutil, sys
+which is written only to bench/quality/judgments/key.json, outside the judges' folders.
+
+A rerun (render.py --run RUN) reads runs/RUN/png and writes runs/RUN/judgments/key.json:
+
+    py -3 bench/quality/pairs.py JUDGE_DIR --run RUN --context column
+
+--context keeps one placement. Its batches are the first run's: the same pairs, sides, blind names
+and batch numbers (the shuffles for the other placement still happen, unwritten)."""
+import argparse, json, os, random, shutil, sys
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -53,7 +60,12 @@ def tiles(png):
 
 
 def main():
-    judge_dir = sys.argv[1]
+    ap = argparse.ArgumentParser()
+    ap.add_argument("judge_dir")
+    ap.add_argument("--run")
+    ap.add_argument("--context", choices=CONTEXTS)
+    args = ap.parse_args()
+    judge_dir, root = args.judge_dir, os.path.join(HERE, "runs", args.run) if args.run else HERE
     rng = random.Random(20261019)
     ps = pairs()
     key = {"pairs": {p["id"]: p for p in ps}, "batches": {}}
@@ -70,6 +82,8 @@ def main():
                 for chunk in (todo[i::k] for i in range(k)):
                     n_batch += 1
                     bid = f"b{n_batch:02d}"
+                    if args.context and ctx != args.context:
+                        continue
                     folder = os.path.join(judge_dir, bid)
                     os.makedirs(folder)
                     items = []
@@ -78,8 +92,8 @@ def main():
                         a, b = p["figs"][first], p["figs"][1 - first]
                         files = {}
                         for side, fig in (("A", a), ("B", b)):
-                            ts = tiles(os.path.join(HERE, "png", ctx, fig + ".png")) if ctx == "column" else \
-                                [Image.open(os.path.join(HERE, "png", ctx, fig + ".png"))]
+                            ts = tiles(os.path.join(root, "png", ctx, fig + ".png")) if ctx == "column" else \
+                                [Image.open(os.path.join(root, "png", ctx, fig + ".png"))]
                             names = []
                             for t, im in enumerate(ts, 1):
                                 name = f"p{j:02d}-{side}.png" if len(ts) == 1 else f"p{j:02d}-{side}-{t}of{len(ts)}.png"
@@ -88,15 +102,15 @@ def main():
                             files[side] = names
                         items.append({"n": j, "pair": p["id"], "A": a, "B": b, "files": files})
                     key["batches"][bid] = {"model": model, "context": ctx, "order": order, "items": items}
-    os.makedirs(os.path.join(HERE, "judgments"), exist_ok=True)
-    with open(os.path.join(HERE, "judgments", "key.json"), "w", encoding="utf-8", newline="\n") as f:
+    os.makedirs(os.path.join(root, "judgments"), exist_ok=True)
+    with open(os.path.join(root, "judgments", "key.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(key, f, indent=1)
     tokens = {}
     for bid, b in key["batches"].items():
         px = sum(Image.open(os.path.join(judge_dir, bid, n)).size[0] * Image.open(os.path.join(judge_dir, bid, n)).size[1]
                  for it in b["items"] for side in "AB" for n in it["files"][side])
         tokens[bid] = round(px / 750 / 1000)
-    print(f"{len(ps)} pairs, {n_batch} batches; image k-tokens per batch:", tokens)
+    print(f"{len(ps)} pairs, {len(key['batches'])} batches; image k-tokens per batch:", tokens)
 
 
 def hash_side(pid, model, ctx):

@@ -1,4 +1,4 @@
-r"""Write each judge batch's instructions: python bench/quality/prompts.py JUDGE_DIR
+r"""Write each judge batch's instructions: python bench/quality/prompts.py JUDGE_DIR [--run RUN]
 
 Fills judge_prompt.md for every batch in judgments/key.json and writes JUDGE_DIR/bNN/instructions.md. Each judge
 was then started as a fresh subagent (Sonnet or Opus, as the batch says) with only: "Read the file
@@ -21,7 +21,8 @@ PLACE = {
 
 def main():
     judge_dir = os.path.abspath(sys.argv[1])
-    with open(os.path.join(HERE, "judgments", "key.json"), encoding="utf-8") as f:
+    root = os.path.join(HERE, "runs", sys.argv[3]) if sys.argv[2:3] == ["--run"] else HERE  # a rerun: pairs.py --run
+    with open(os.path.join(root, "judgments", "key.json"), encoding="utf-8") as f:
         key = json.load(f)
     with open(os.path.join(HERE, "judge_prompt.md"), encoding="utf-8") as f:
         tpl = f.read()

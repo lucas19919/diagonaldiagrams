@@ -9,8 +9,13 @@ Every SVG is placed by its viewBox, whatever its origin. export._raster_svg only
 viewBox that starts at "0 0", which Mermaid's (4 4 ..., -50 -50 ...) do not, so it guessed a 4:3 page and
 cropped them; dd's own SVGs always start at 0 0, so the export command is not affected.
 
-Also writes svg/sizes.json: each figure's viewBox size, its scale in each placement, and its text sizes."""
-import concurrent.futures, glob, json, os, re, shutil, subprocess, sys, tempfile, time
+Also writes svg/sizes.json: each figure's viewBox size, its scale in each placement, and its text sizes.
+
+    py -3 bench/quality/raster.py [NAME ...] [--run RUN] [--context slide|column]
+
+NAME keeps the figures whose names contain it; --run reads and writes runs/RUN instead (render.py --run);
+--context draws one placement only."""
+import argparse, concurrent.futures, glob, json, os, re, shutil, subprocess, sys, tempfile, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))
@@ -67,20 +72,21 @@ def shoot(html, dest, w, h, dpr):
     return os.path.isfile(dest)
 
 
-def one(svg_path):
+def one(svg_path, root=HERE, contexts=("slide", "column")):
     name = os.path.splitext(os.path.basename(svg_path))[0]
     with open(svg_path, encoding="utf-8") as f:
         svg = f.read()
     x, y, w, h = viewbox(svg)
     s_slide = min(SLIDE_FIT_W / w, SLIDE_FIT_H / h, SLIDE_MAX)
     sw, sh = w * s_slide, h * s_slide
-    ok1 = shoot(page(svg, SLIDE_W, SLIDE_H, round((SLIDE_W - sw) / 2, 2), round((SLIDE_H - sh) / 2, 2), sw, sh),
-                os.path.join(HERE, "png", "slide", name + ".png"), SLIDE_W, SLIDE_H, 1)
+    ok1 = "slide" not in contexts or shoot(
+        page(svg, SLIDE_W, SLIDE_H, round((SLIDE_W - sw) / 2, 2), round((SLIDE_H - sh) / 2, 2), sw, sh),
+        os.path.join(root, "png", "slide", name + ".png"), SLIDE_W, SLIDE_H, 1)
     s_col = min(1.0, (COL_W - 2 * COL_PAD) / w)
     cw, ch = w * s_col, h * s_col
     page_h = int(ch + 2 * COL_PAD + 0.999)
-    ok2 = shoot(page(svg, COL_W, page_h, round((COL_W - cw) / 2, 2), COL_PAD, cw, ch),
-                os.path.join(HERE, "png", "column", name + ".png"), COL_W, page_h, COL_DPR)
+    ok2 = "column" not in contexts or shoot(page(svg, COL_W, page_h, round((COL_W - cw) / 2, 2), COL_PAD, cw, ch),
+                                            os.path.join(root, "png", "column", name + ".png"), COL_W, page_h, COL_DPR)
     fs = font_sizes(svg)
     return name, {"w": round(w, 1), "h": round(h, 1), "slide_scale": round(s_slide, 3), "column_scale": round(s_col, 3),
                   "font_min": fs[0] if fs else None, "font_median": fs[len(fs) // 2] if fs else None,
@@ -88,19 +94,26 @@ def one(svg_path):
 
 
 def main():
-    for ctx in ("slide", "column"):
-        os.makedirs(os.path.join(HERE, "png", ctx), exist_ok=True)
-    only = sys.argv[1:]
-    svgs = sorted(glob.glob(os.path.join(HERE, "svg", "*.svg")))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("only", nargs="*")
+    ap.add_argument("--run")
+    ap.add_argument("--context", choices=["slide", "column"])
+    a = ap.parse_args()
+    root = os.path.join(HERE, "runs", a.run) if a.run else HERE
+    contexts = (a.context,) if a.context else ("slide", "column")
+    for ctx in contexts:
+        os.makedirs(os.path.join(root, "png", ctx), exist_ok=True)
+    only = a.only
+    svgs = sorted(glob.glob(os.path.join(root, "svg", "*.svg")))
     if only:
         svgs = [p for p in svgs if any(o in os.path.basename(p) for o in only)]
     out = {}
     with concurrent.futures.ThreadPoolExecutor(4) as pool:
-        for name, info in pool.map(one, svgs):
+        for name, info in pool.map(lambda p: one(p, root, contexts), svgs):
             out[name] = info
             if not info["ok"]:
                 print("failed:", name)
-    sizes_path = os.path.join(HERE, "svg", "sizes.json")
+    sizes_path = os.path.join(root, "svg", "sizes.json")
     old = {}
     if only and os.path.isfile(sizes_path):
         with open(sizes_path, encoding="utf-8") as f:

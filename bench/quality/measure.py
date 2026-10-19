@@ -1,4 +1,4 @@
-"""Measure what text size each figure reaches in each placement: python bench/quality/measure.py
+"""Measure what text size each figure reaches in each placement: python bench/quality/measure.py [--run RUN]
 
 Headless Edge or Chrome draws each SVG at its own size and reports every text run's font size
 (SVG text and HTML labels in foreignObject alike, through the transforms above it). The sizes are
@@ -89,10 +89,11 @@ def one(path):
 
 
 def main():
-    svgs = sorted(glob.glob(os.path.join(HERE, "svg", "*.svg")))
+    root = os.path.join(HERE, "runs", sys.argv[2]) if sys.argv[1:2] == ["--run"] else HERE  # a rerun: render.py --run
+    svgs = sorted(glob.glob(os.path.join(root, "svg", "*.svg")))
     with concurrent.futures.ThreadPoolExecutor(4) as pool:
         out = dict(pool.map(one, svgs))
-    with open(os.path.join(HERE, "measure.json"), "w", encoding="utf-8", newline="\n") as f:
+    with open(os.path.join(root, "measure.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(out, f, indent=1, sort_keys=True)
     print(f"measured {len(out)} figures")
 
