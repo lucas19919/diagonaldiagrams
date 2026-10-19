@@ -1,0 +1,12 @@
+flowchart TD
+    start(["Request received"])
+    s1["Step 1: Load customer account"]
+    s2["Step 2: Score fraud risk"]
+    s3{"Step 3: Check 1 passed?"}
+    done(["Done"])
+
+    start --> s1
+    s1 --> s2
+    s2 --> s3
+    s3 -- "Yes" --> done
+    s3 -- "No" --> s1

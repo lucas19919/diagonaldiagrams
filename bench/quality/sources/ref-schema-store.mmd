@@ -1,0 +1,39 @@
+---
+title: Training store
+---
+erDiagram
+    datasets ||--o{ runs : "1:N"
+    runs ||--o{ checkpoints : "1:N"
+    runs ||--o{ metrics : "1:N"
+    checkpoints ||--o{ evals : "1:N"
+    datasets {
+        uuid id PK
+        text name
+        bigint rows
+        char(64) sha256
+    }
+    runs {
+        uuid id PK
+        uuid dataset_id FK
+        text name
+        text status
+        timestamptz started_at
+    }
+    checkpoints {
+        uuid id PK
+        uuid run_id FK
+        integer step
+        float loss
+    }
+    metrics {
+        uuid id PK
+        uuid run_id FK
+        text split
+        float score
+    }
+    evals {
+        uuid id PK
+        uuid check_id FK
+        text task
+        float score
+    }

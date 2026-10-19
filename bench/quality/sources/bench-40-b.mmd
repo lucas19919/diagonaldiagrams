@@ -1,0 +1,77 @@
+flowchart TD
+  start([Request received])
+  s1[1. Load customer account]
+  s2[2. Score fraud risk]
+  s3{3. Check 1 passed?}
+  s4[4. Charge card]
+  s5[5. Write ledger entry]
+  s6[6. Notify warehouse]
+  s7{7. Check 2 passed?}
+  s8[8. Send receipt]
+  s9[9. Update order status]
+  s10[10. Validate request]
+  s11{11. Check 3 passed?}
+  s12[12. Score fraud risk]
+  s13[13. Reserve stock]
+  s14[14. Charge card]
+  s15{15. Check 4 passed?}
+  s16[16. Notify warehouse]
+  s17[17. Print shipping label]
+  s18[18. Send receipt]
+  s19{19. Check 5 passed?}
+  s20[20. Validate request]
+  s21[21. Load customer account]
+  s22[22. Score fraud risk]
+  s23{23. Check 6 passed?}
+  s24[24. Charge card]
+  s25[25. Write ledger entry]
+  s26[26. Notify warehouse]
+  s27{27. Check 7 passed?}
+  s28[28. Send receipt]
+  s29[29. Update order status]
+  s30[30. Validate request]
+  s31{31. Check 8 passed?}
+  s32[32. Score fraud risk]
+  s33[33. Reserve stock]
+  s34[34. Charge card]
+  s35{35. Check 9 passed?}
+  s36[36. Notify warehouse]
+  s37[37. Print shipping label]
+  s38[38. Send receipt]
+  done([Process done])
+
+  start --> s1 --> s2 --> s3
+  s3 -- yes --> s4
+  s3 -- no --> s1
+  s4 --> s5 --> s6 --> s7
+  s7 -- yes --> s8
+  s7 -- no --> s10
+  s8 --> s9 --> s10 --> s11
+  s11 -- yes --> s12
+  s11 -- no --> s9
+  s12 --> s13 --> s14 --> s15
+  s15 -- yes --> s16
+  s15 -- no --> s18
+  s16 --> s17 --> s18 --> s19
+  s19 -- yes --> s20
+  s19 -- no --> s17
+  s20 --> s21 --> s22 --> s23
+  s23 -- yes --> s24
+  s23 -- no --> s26
+  s24 --> s25 --> s26 --> s27
+  s27 -- yes --> s28
+  s27 -- no --> s25
+  s28 --> s29 --> s30 --> s31
+  s31 -- yes --> s32
+  s31 -- no --> s34
+  s32 --> s33 --> s34 --> s35
+  s35 -- yes --> s36
+  s35 -- no --> s33
+  s36 --> s37 --> s38 --> done
+
+  classDef term fill:#d9f2e0,stroke:#2b7a3d,stroke-width:2px;
+  classDef dec fill:#fff3cd,stroke:#b8860b,stroke-width:2px;
+  classDef step fill:#e8f0fe,stroke:#3a5ba0,stroke-width:1.5px;
+  class start,done term;
+  class s3,s7,s11,s15,s19,s23,s27,s31,s35 dec;
+  class s1,s2,s4,s5,s6,s8,s9,s10,s12,s13,s14,s16,s17,s18,s20,s21,s22,s24,s25,s26,s28,s29,s30,s32,s33,s34,s36,s37,s38 step;

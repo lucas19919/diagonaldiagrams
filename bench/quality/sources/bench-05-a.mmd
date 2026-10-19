@@ -1,0 +1,6 @@
+flowchart TD
+    A([Request received]) --> B[Load customer account]
+    B --> C[Score fraud risk]
+    C --> D{Check 1 passed?}
+    D -- Yes --> E([Done])
+    D -- No --> B

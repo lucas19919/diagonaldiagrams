@@ -54,8 +54,10 @@ node_modules/
 
 # Benchmarks & raw profiling traces (example CSVs stay tracked).
 # Saved scoreboard metrics (bench/metrics/NAME.json/.md) are tracked; latest.* is a scratch run.
+# The quality benchmark (bench/quality/: blind judging against Pele and Mermaid) is tracked whole.
 bench/*
 !bench/metrics/
+!bench/quality/
 bench/metrics/latest.*
 # The tool comparison (scripts/bench_speed.py, scripts/bench_prompts.py): inputs, prompts and saved results.
 !bench/speed/

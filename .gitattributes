@@ -1,3 +1,4 @@
 # Golden files are compared byte for byte on every OS, so git must not rewrite their line endings.
 tests/golden/** -text
 bench/metrics/** -text
+bench/quality/** -text

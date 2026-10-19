@@ -1,0 +1,42 @@
+---
+title: An AI agent platform
+---
+flowchart TD
+    subgraph clients [Clients]
+        web["Web chat<br/>Next.js"]
+        mobile["Mobile app<br/>Swift"]
+        mail["Email intake<br/>SES"]
+    end
+    gw["API gateway<br/>Envoy:443"]
+    auth["Auth<br/>OIDC"]
+    subgraph runtime [Agent runtime]
+        memory[("Memory<br/>pgvector")]
+        agent["Agent<br/>Python:8000"]
+    end
+    llm["Model API<br/>external"]
+    subgraph tools [Tools]
+        search["Web search<br/>tool"]
+        sandbox["Code sandbox<br/>Firecracker"]
+        draw["diagonaldiagrams<br/>MCP"]
+    end
+    bus[["Event bus<br/>Kafka"]]
+    subgraph data [Storage]
+        blob[("Object store<br/>files, figures")]
+        pg[("Postgres<br/>runs, users")]
+    end
+    obs["Traces<br/>OpenTelemetry"]
+    web -->|chat| gw
+    mobile -->|chat| gw
+    mail -->|forward| gw
+    gw -->|verify| auth
+    gw -->|run| agent
+    agent ==>|prompt| llm
+    agent -->|recall| memory
+    agent -->|search| search
+    agent -->|execute| sandbox
+    agent -->|draw| draw
+    agent -.->|events| bus
+    sandbox -->|files| blob
+    draw -->|svg| blob
+    bus -.->|persist| pg
+    bus -.->|ingest| obs

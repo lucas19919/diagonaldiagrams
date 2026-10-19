@@ -1,0 +1,70 @@
+flowchart TD
+  S([Request received])
+  N1[Load customer account]
+  N2[Score fraud risk]
+  D3{Check 1 passed?}
+  N4[Charge card]
+  N5[Write ledger entry]
+  N6[Notify warehouse]
+  D7{Check 2 passed?}
+  N8[Send receipt]
+  N9[Update order status]
+  N10[Validate request]
+  D11{Check 3 passed?}
+  N12[Score fraud risk]
+  N13[Reserve stock]
+  N14[Charge card]
+  D15{Check 4 passed?}
+  N16[Notify warehouse]
+  N17[Print shipping label]
+  N18[Send receipt]
+  D19{Check 5 passed?}
+  N20[Validate request]
+  N21[Load customer account]
+  N22[Score fraud risk]
+  D23{Check 6 passed?}
+  N24[Charge card]
+  N25[Write ledger entry]
+  N26[Notify warehouse]
+  D27{Check 7 passed?}
+  N28[Send receipt]
+  N29[Update order status]
+  N30[Validate request]
+  D31{Check 8 passed?}
+  N32[Score fraud risk]
+  N33[Reserve stock]
+  N34[Charge card]
+  D35{Check 9 passed?}
+  N36[Notify warehouse]
+  N37[Print shipping label]
+  N38[Send receipt]
+  E([Done])
+
+  S --> N1 --> N2 --> D3
+  D3 -- yes --> N4
+  D3 -- no --> N1
+  N4 --> N5 --> N6 --> D7
+  D7 -- yes --> N8
+  D7 -- no --> N10
+  N8 --> N9 --> N10 --> D11
+  D11 -- yes --> N12
+  D11 -- no --> N9
+  N12 --> N13 --> N14 --> D15
+  D15 -- yes --> N16
+  D15 -- no --> N18
+  N16 --> N17 --> N18 --> D19
+  D19 -- yes --> N20
+  D19 -- no --> N17
+  N20 --> N21 --> N22 --> D23
+  D23 -- yes --> N24
+  D23 -- no --> N26
+  N24 --> N25 --> N26 --> D27
+  D27 -- yes --> N28
+  D27 -- no --> N25
+  N28 --> N29 --> N30 --> D31
+  D31 -- yes --> N32
+  D31 -- no --> N34
+  N32 --> N33 --> N34 --> D35
+  D35 -- yes --> N36
+  D35 -- no --> N33
+  N36 --> N37 --> N38 --> E
