@@ -270,12 +270,12 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     # the canvas edge, and of other arrows where it can
     canvas = [(-40, 0, 0, H), (W, 0, W + 40, H), (0, -40, W, 0), (0, oy + ch + 22, W, H)]
     label_boxes = []
+    others = [b for x in drawn for b in x[4]]  # every arrow, its own too: a label never sits on it
     for k, (e, eid, es, pts, segs) in enumerate(drawn):
         if not e.get("label"):
             continue
         text = paint.transformed(e["label"], es["label"])
         mx, my, vert = _longest(pts, frames.values())
-        others = [b for x in drawn for b in x[4]]  # its own arrow too: a label never sits on it
         w = _label_w(text, es["label"])
         lx, ly, vert, flip = place_label(mx, my, vert, text, pts, node_boxes + label_boxes + strips + canvas, others, w, GAP)
         box = label_box(lx, ly, text, vert, flip, w, GAP)

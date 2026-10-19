@@ -57,14 +57,24 @@ class QuickArgs(unittest.TestCase):
             with self.subTest(argv=argv):
                 self.assertIsNone(cli._quick(argv))
 
-    def test_a_render_command_does_not_load_argparse(self):
+    def test_a_flow_loads_none_of_what_it_does_not_use(self):
+        """A whole flow call: no argparse (and the help formatter's shutil and _colorize), no xml.etree
+        (the verdict reads the drawing in memory), no describe or chart catalog."""
         import subprocess
-        code = ("import sys, diagonaldiagrams.cli as c; c._quick(['flow', 's.json', '-o', 'o.html']); "
-                "print(sorted(m for m in ('argparse', 'shutil', 'xml.etree.ElementTree', 'diagonaldiagrams.describe', "
-                "'diagonaldiagrams.charts.catalog') if m in sys.modules))")
+        import tempfile
         here = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=here)
-        self.assertEqual(out.stdout.strip(), "[]", out.stderr)
+        spec = os.path.join(here, "tests", "golden", "inputs", "flows", "flow-11.json")
+        with tempfile.TemporaryDirectory() as d:
+            code = ("import io, sys, contextlib\n"
+                    "from diagonaldiagrams.cli import cli\n"
+                    f"sys.argv = ['diagonaldiagrams', 'flow', {spec!r}, '-o', {os.path.join(d, 'o.html')!r}]\n"
+                    "with contextlib.redirect_stdout(io.StringIO()) as out:\n"
+                    "    try:\n        cli()\n    except SystemExit:\n        pass\n"
+                    "print('ok' if '\"ok\": true' in out.getvalue() else out.getvalue())\n"
+                    "print(sorted(m for m in ('argparse', 'shutil', '_colorize', 'xml.etree.ElementTree', "
+                    "'diagonaldiagrams.describe', 'diagonaldiagrams.charts.catalog') if m in sys.modules))")
+            out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=here)
+        self.assertEqual(out.stdout.split(), ["ok", "[]"], out.stderr)
 
 
 if __name__ == "__main__":

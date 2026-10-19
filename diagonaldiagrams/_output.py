@@ -129,7 +129,7 @@ def save_receipt(out, payload):
             except ValueError:  # another drive on Windows
                 payload[k] = os.path.abspath(payload[k])
     with open(base + ".graph.json", "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+        f.write(json.dumps(payload, indent=2))  # one write: json.dump writes each indented piece apart
 
 
 def _receipt_inputs(r, rcpt):

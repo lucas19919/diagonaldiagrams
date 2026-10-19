@@ -188,7 +188,9 @@ def _sort_layer(L, r, pos, nbrs):
             if len(frames) > 1:  # sibling frames keep their rank order, which their hints could contradict
                 for e in frames:
                     e["hint"] = None
-            _constrain(entries, L)
+            bound = bool(frames) or any(e["hint"] is not None for e in entries)  # else _constrain and _repair do nothing
+            if bound:
+                _constrain(entries, L)
             sortable = sorted((e for e in entries if e["bc"] is not None), key=lambda e: (e["bc"], e["at"]))
             fixed = [e for e in entries if e["bc"] is None]
             if not fixed:
@@ -198,7 +200,8 @@ def _sort_layer(L, r, pos, nbrs):
                 rank_of = {id(e): k for k, e in enumerate(entries)}
                 for e in fixed:  # an item with no neighbors keeps its place among its level
                     out.insert(min(rank_of[id(e)], len(out)), e)
-            _repair(out, L)
+            if bound:
+                _repair(out, L)
             flat = [it for e in out for it in e["items"]]
         if g is not None:
             lb = ("L", g, r) if ("L", g, r) in L.kind else next(it for it in layer if L.kind[it] == "left" and L.owner[it] == g)

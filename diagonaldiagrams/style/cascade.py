@@ -98,6 +98,7 @@ class Cascade:
         self._cache = {}
         self._origins = {}  # (view, pseudo) -> {property: the layer (sheet index) that set it}
         self._sources = {}  # (view, pseudo) -> {property: "stylesheet 'brand', rule 'node.db'"}
+        self._same = {}  # (pseudo, the base's id, the rules that matched) -> (computed, origins, sources)
         self.policy_layer = len(self.sheets) + 1
         self._defaults_at = None
         self.attempts = {}  # (rule, property) -> what tried to override the policy: the off-brand check (22.4)
@@ -140,17 +141,21 @@ class Cascade:
             base = self.computed(view, None)
         else:
             base = self.computed(view.parent, None) if view.parent is not None else {}
+        up = (id(view), None) if pseudo is not None else (id(view.parent), None) if view.parent is not None else None
+        matched = [rule for rule in self._candidates(pseudo, view.type) if rule.selector.matches(view)]
+        # an element the same rules pick, over the same base and with no style of its own, computes what
+        # the first one did: shared (read-only, as every computed style is), not worked out again
+        same = (pseudo, id(base), tuple(matched)) if up is not None and not (pseudo is None and view.style) else None
+        hit = self._same.get(same) if same is not None else None
+        if hit is not None:
+            self._cache[key], self._origins[key], self._sources[key] = hit
+            return hit[0]
         out = {p: v for p, v in base.items() if p in INHERITED}
-        base_from = self._origins.get((id(view), None) if pseudo is not None else
-                                      (id(view.parent), None) if view.parent is not None else None, {})
+        base_from = self._origins.get(up, {})
         origin = {p: base_from.get(p, -1) for p in out}
-        src_from = self._sources.get((id(view), None) if pseudo is not None else
-                                     (id(view.parent), None) if view.parent is not None else None, {})
+        src_from = self._sources.get(up, {})
         source = {p: src_from[p] for p in out if p in src_from}
-        decls = []
-        for rule in self._candidates(pseudo, view.type):
-            if rule.selector.matches(view):
-                decls.append((rule.rank, rule.decls, rule.where))
+        decls = [(rule.rank, rule.decls, rule.where) for rule in matched]
         if pseudo is None and view.style:
             where = f"the style of '{view.id}'"
             decls.append(((len(self.sheets), (0, 0, 0), 0), self._read(view.style, where), where))
@@ -176,6 +181,8 @@ class Cascade:
         self._cache[key] = out
         self._origins[key] = origin
         self._sources[key] = source
+        if same is not None:
+            self._same[same] = (out, origin, source)
         return out
 
     def _candidates(self, pseudo, type_):

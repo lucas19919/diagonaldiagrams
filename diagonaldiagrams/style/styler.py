@@ -130,7 +130,14 @@ class Styler:
         return self.views[kind + "s"].get(str(eid)) or self._generic[kind]
 
     def _text(self, v, pseudo, background=None):
-        c = self._encoded(v, self.cascade.computed(v, pseudo))
+        raw = self.cascade.computed(v, pseudo)
+        # elements whose computed style is one shared dict (Cascade.computed) read the same text style
+        # off it, unless an encoding reads their own data: worked out once, a copy handed to each
+        key = ("text", id(raw), id(background))
+        hit = self._memo.get(key)
+        if hit is not None and hit[0] is raw and hit[1] is background:
+            return dict(hit[2])
+        c = self._encoded(v, raw)
         out = {k: css(c.get(k)) for k in TEXT}
         out["font"], missing = self._font(out)
         if missing:
@@ -141,6 +148,9 @@ class Styler:
         for prop in ("color", "font-size"):  # a stylesheet's choice is marked, so the audit can name it
             if self.cascade.origin(v, pseudo, prop) > self.preset_layer:
                 out[f"{prop}-from"] = self.cascade.source(v, pseudo, prop)
+        if c is raw:
+            self._memo[key] = (raw, background, out)
+            return dict(out)
         return out
 
     def _readable(self, fg, bg):

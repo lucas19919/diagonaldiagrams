@@ -43,12 +43,28 @@ def fmt(v):
     return "0" if s in ("-0", "") else s
 
 
+_CANON = {}  # a number as written in a path -> as fmt writes it: paths repeat their numbers
+
+
+def _canon(m):
+    t = m.group(0)
+    out = _CANON.get(t)
+    if out is None:
+        if len(_CANON) > 50000:
+            _CANON.clear()
+        out = _CANON[t] = fmt(float(t))
+    return out
+
+
 def _numbers(s):
-    return _NUM.sub(lambda m: fmt(float(m.group(0))), s)
+    return _NUM.sub(_canon, s)
 
 
 def _attr(v):
-    return str(v).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    s = str(v)
+    if "&" in s or "<" in s or ">" in s or '"' in s:
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    return s
 
 
 def _text(v):
