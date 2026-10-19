@@ -53,7 +53,7 @@ def group(rows, *keys):
     g = defaultdict(list)
     for r in rows:
         g[tuple(r[k] for k in keys)].append(r)
-    return {"|".join(k): rate(v) for k, v in sorted(g.items())}
+    return {"|".join(map(str, k)): rate(v) for k, v in sorted(g.items())}
 
 
 def main():

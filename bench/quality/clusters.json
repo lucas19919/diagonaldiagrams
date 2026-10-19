@@ -1,0 +1,214 @@
+{
+ "losses": 160,
+ "themes": [
+  {
+   "theme": "shrunk",
+   "name": "Figure shrunk to fit the placement, so its text gets too small",
+   "losses": 121,
+   "slide": 6,
+   "column": 115,
+   "clearer": 84,
+   "looks": 37
+  },
+  {
+   "theme": "wrap",
+   "name": "Wrapped into columns: the reading order snakes, long connectors run between columns",
+   "losses": 53,
+   "slide": 0,
+   "column": 53,
+   "clearer": 40,
+   "looks": 13
+  },
+  {
+   "theme": "er",
+   "name": "ER relations: no crow's feet, cardinality only as text, some relations without arrowheads",
+   "losses": 49,
+   "slide": 8,
+   "column": 41,
+   "clearer": 40,
+   "looks": 9
+  },
+  {
+   "theme": "trunk",
+   "name": "Arrows share a trunk, merge or overlap",
+   "losses": 29,
+   "slide": 1,
+   "column": 28,
+   "clearer": 19,
+   "looks": 10
+  },
+  {
+   "theme": "space",
+   "name": "Wasted space: the figure is too wide or sparse for its content",
+   "losses": 28,
+   "slide": 0,
+   "column": 28,
+   "clearer": 18,
+   "looks": 10
+  },
+  {
+   "theme": "text",
+   "name": "Default text too small or too pale at full size",
+   "losses": 27,
+   "slide": 12,
+   "column": 15,
+   "clearer": 25,
+   "looks": 2
+  },
+  {
+   "theme": "dup",
+   "name": "Doubled relation label (1:N 1:N)",
+   "losses": 25,
+   "slide": 6,
+   "column": 19,
+   "clearer": 17,
+   "looks": 8
+  },
+  {
+   "theme": "lost",
+   "name": "Mermaid input dropped: second lines flattened, cylinders, classDef colours",
+   "losses": 25,
+   "slide": 2,
+   "column": 23,
+   "clearer": 13,
+   "looks": 12
+  },
+  {
+   "theme": "actor",
+   "name": "Sequence: a USER tag over 'User' instead of an actor icon; participants not repeated at the bottom",
+   "losses": 16,
+   "slide": 6,
+   "column": 10,
+   "clearer": 15,
+   "looks": 1
+  },
+  {
+   "theme": "detour",
+   "name": "Long detours: loop-backs and skips routed far around the figure",
+   "losses": 14,
+   "slide": 0,
+   "column": 14,
+   "clearer": 9,
+   "looks": 5
+  },
+  {
+   "theme": "label",
+   "name": "Edge labels float away from their arrows or are crossed by lines",
+   "losses": 10,
+   "slide": 7,
+   "column": 3,
+   "clearer": 8,
+   "looks": 2
+  },
+  {
+   "theme": "kink",
+   "name": "Misaligned boxes or kinked arrows",
+   "losses": 7,
+   "slide": 3,
+   "column": 4,
+   "clearer": 5,
+   "looks": 2
+  },
+  {
+   "theme": "numbers",
+   "name": "Steps not numbered",
+   "losses": 4,
+   "slide": 1,
+   "column": 3,
+   "clearer": 4,
+   "looks": 0
+  },
+  {
+   "theme": "legend",
+   "name": "Legend or chrome adds clutter",
+   "losses": 3,
+   "slide": 0,
+   "column": 3,
+   "clearer": 3,
+   "looks": 0
+  }
+ ],
+ "causes": [
+  {
+   "cause": "size",
+   "name": "The figure's size ignores where it goes: wide or wrapped figures shrink in a page or column",
+   "losses": 122,
+   "slide": 6,
+   "column": 116,
+   "clearer": 85,
+   "looks": 37
+  },
+  {
+   "cause": "er",
+   "name": "ER drawing: plain arrowheads and '1:N' text instead of crow's feet, missing arrowheads, doubled labels",
+   "losses": 55,
+   "slide": 10,
+   "column": 45,
+   "clearer": 41,
+   "looks": 14
+  },
+  {
+   "cause": "trunk",
+   "name": "Arrows that share a trunk or merge (arch fan-outs, wrapped flows)",
+   "losses": 29,
+   "slide": 1,
+   "column": 28,
+   "clearer": 19,
+   "looks": 10
+  },
+  {
+   "cause": "text",
+   "name": "Small, pale default text (sequence messages, subtitles) even at full size",
+   "losses": 27,
+   "slide": 12,
+   "column": 15,
+   "clearer": 25,
+   "looks": 2
+  },
+  {
+   "cause": "lost",
+   "name": "No colour coding by node kind; Mermaid input dropped (<br/> second lines, cylinders, classDef colours)",
+   "losses": 25,
+   "slide": 2,
+   "column": 23,
+   "clearer": 13,
+   "looks": 12
+  },
+  {
+   "cause": "actor",
+   "name": "Sequence chrome: USER tag instead of an actor icon, no participant row at the bottom",
+   "losses": 16,
+   "slide": 6,
+   "column": 10,
+   "clearer": 15,
+   "looks": 1
+  },
+  {
+   "cause": "label",
+   "name": "Edge labels float away from their arrows or are crossed by them",
+   "losses": 10,
+   "slide": 7,
+   "column": 3,
+   "clearer": 8,
+   "looks": 2
+  },
+  {
+   "cause": "kink",
+   "name": "Misaligned boxes and kinked arrows",
+   "losses": 7,
+   "slide": 3,
+   "column": 4,
+   "clearer": 5,
+   "looks": 2
+  },
+  {
+   "cause": "other",
+   "name": "Other: legend clutter, unnumbered steps, nothing matched",
+   "losses": 7,
+   "slide": 1,
+   "column": 6,
+   "clearer": 7,
+   "looks": 0
+  }
+ ]
+}
