@@ -1,4 +1,4 @@
-# Handoff: where the redesign stands (2026-10-18)
+# Handoff: where the redesign stands (2026-10-19)
 
 This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md says what the engine should be, PLAN.md says in what order to build it, and the "As built" notes in DESIGN record where the build differs. Read those three. This file adds what they don't: the current state, what's open, how to check your work, and the habits that kept output stable.
 
@@ -6,11 +6,21 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 
 - **Branches.** Each phase is a branch stacked on the one before: `master` (= origin/master, 0.5.0) → `p0-baseline` → `p1-package` → `p1b-bugs` → `p2-core` → `p3-style` → `p4-layout`.
   - Three slices sit on `p4-layout`, ahead of P5, each stacked on the one before: `slice-edit-animate` (edit a diagram in its page, apply the patch, animate the change), `slice-stories` (views of one figure in one page) and `slice-edit-hardening` (keyboard editing, moves along the layout's layers, messages, regeneration). `b29-fuzz` (the B29 fixes, also on `p4-layout`) is merged into `slice-stories`.
-  - `slice-integration`, on `slice-edit-hardening`, is current and holds everything. It merges three stacks built in side sessions, each on its own `claude/...` branch:
+  - `slice-integration`, on `slice-edit-hardening`, holds everything built through 2026-10-18. It merges three stacks built in side sessions, each on its own `claude/...` branch:
     - the default look for flow, arch, seq and schema (B25, DESIGN 8.5), the straight trunk in long flows, and default text judged by the audit (`data-legibility`);
     - pins in flow and arch (DESIGN 4.6), and the router fixes pins exposed (B30);
-    - motion from meaning: a story view's `trace` and `flow`, exported as an animated SVG, or a GIF or MP4 through ffmpeg (DESIGN 21.2.1).
-  - The six phase branches are on GitHub since 2026-10-17, as a backup; the slices, `slice-integration`, the `claude/...` branches and `b29-fuzz` are local only. None is merged into `master`, and there is no PR. Anyone who installs from the README still gets 0.5.0.
+    - motion from meaning: a story view's `trace` and `flow`, filmed as a GIF or MP4 (DESIGN 21.2.1).
+  - `slice-slim`, on `slice-integration`, is current. The owner found the human editing of little use in a tool for agents, and asked what was overcomplicated. With their go-ahead, it cuts four things, one commit each, with the docs:
+
+    | Cut | Package lines | Why |
+    | --- | --- | --- |
+    | Pins in flow and arch: `not-drawn` again (DESIGN 4.6) | −286 | two layouts per figure, still failing some pin fuzz; `place`, `rank` and `order` do it in one |
+    | The v1 engine (`legacy.py`, `--layout-engine v1`); schema `x`/`y` draw with v2 as columns (DESIGN 7.3) | −746 | v2 passes every gate; the flag never shipped |
+    | The page's Edit mode; the change animation stays (DESIGN 21.4) | −407 | about 400 lines of untested page script for people; agents write patches |
+    | `gif.py` and `_cdp.py`; `--svg` writes an animated SVG, and `--gif` and `--video` go through ffmpeg (DESIGN 21.2.1) | −651 | ffmpeg codes GIFs better; the SVG needs nothing |
+
+    Package code went from 22,913 lines (21,948 Python, 965 JavaScript) to 20,823 (20,264 and 559), and tests from 5,257 to 4,891. Every gate passed at d37c304: unit 242, style 7, smoke 264 with `DD_ENTRY` unset and `module`, 115 goldens byte-identical and deterministic, scene round trip 29/29 (69/69 with `--fuzz 40`), fuzz 0 failed at seeds 5000 and 20000 (200, `--strict`) and 0 of 1,000 at seeds 0, 20000 and 40000.
+  - The six phase branches are on GitHub since 2026-10-17, as a backup. `slice-integration` is on GitHub too, as PR #1 against `master` (CI green, not merged). `slice-slim`, the other slices, the `claude/...` branches and `b29-fuzz` are local only. Nothing is merged into `master`: anyone who installs from the README still gets 0.5.0.
   - CI runs on pushes to `master` and on PRs, so the phase branches have not run in CI yet.
 - **Version.** 0.8.0 in `diagonaldiagrams/__init__.py`, `.claude-plugin/plugin.json` and `server.json` (they must match). Nothing past 0.5.0 has been released.
 - **Rules from the owner:**
@@ -39,7 +49,7 @@ This brief is for whoever continues the work in docs/PLAN.md. docs/DESIGN.md say
 
 ## What's next
 
-The owner asked for animation and better editing ahead of P5. Three slices are built (PLAN's P10 and P9 statuses, DESIGN 21.2 and 21.4 as-built):
+The owner asked for animation and better editing ahead of P5. Three slices were built (PLAN's P10 and P9 statuses, DESIGN 21.2 and 21.4 as-built), and `slice-slim` then cut the parts an agent doesn't use:
 - **Edit loop:** an agent writes a patch (`place`, `order`, `text`, `style`, ...); `apply` writes it into the spec; drawing again at the same path keeps the other boxes near their places, reports `changed`, and animates the old drawing into the new one. `diff` compares any two drawings. A kept patch applied again after the spec is regenerated keeps every edit or reports it (`tests/unit/test_regeneration.py`).
 - **Pins:** removed on `slice-slim` (2026-10-19). A pin on a flow or arch node is `not-drawn` again; `place`, `rank` and `order` say where a box goes (DESIGN 4.6). The router fixes pins exposed (B30) stay.
 - **Stories:** `story STORY.json -o OUT.html` presents one figure as views (focus, dim, hide, highlight, reveal) in one page that animates between them.
