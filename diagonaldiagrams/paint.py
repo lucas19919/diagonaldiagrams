@@ -416,8 +416,9 @@ def box_size(name, sub="", tag="", icon=None, st=None):
     if not fixed:
         room = w - 2 * pad
         wraps = all((x.get("overflow") or "wrap") == "wrap" for x in (lab, sb))  # text cut to max-lines can't balance
-        if wraps and (len(nl) > 1 or len(sl) > 1):  # balanced lines: the narrowest room that keeps as many
-            short, room = 0, int(room)
+        if wraps and (len(nl) > 1 or len(sl) > 1):  # balanced lines: the narrowest room that keeps as many,
+            # never narrower than the longest word, which would split it mid-word ("diagonaldi-agrams")
+            short, room = max(0, int(-(-word // 1)) - 1), int(room)
             while room - short > 1:
                 mid = (short + room) // 2
                 a, b, _, _ = box_text(name, sub, mid + 2 * pad, st, pad)
@@ -792,6 +793,12 @@ def readable_on_tint(fg, card, alpha=0.15):
     return c.css
 
 
+def frame_title(g, ts):
+    """(text, width) of a group's title as its frame draws it, ts its title style."""
+    label = transformed((g["tag"] + "  " if g.get("tag") else "") + str(g["name"]), ts)
+    return label, _text_w(label, ts["font-size"], True) + 0.4 * len(label)
+
+
 def group_frames(t, groups, pos, avoid=(), style_of=None, boxes=None):
     """A frame behind each group's members. Its name goes in the top corner (left, else right)
     that no arrow crosses; avoid holds the arrows' segment boxes. style_of(gid) gives a group's
@@ -814,8 +821,7 @@ def group_frames(t, groups, pos, avoid=(), style_of=None, boxes=None):
                       data_group=g["id"], data_name=g["name"], data_members=",".join(g["members"]),
                       a11y={"name": f"{g['name']}: {names}", "kind": "group"}))
         ts = gs["title"]
-        label = transformed((g["tag"] + "  " if g.get("tag") else "") + str(g["name"]), ts)
-        lw = _text_w(label, ts["font-size"], True) + 0.4 * len(label)
+        label, lw = frame_title(g, ts)
 
         def hits(lx):
             b = (lx - 8, y0 + 3, lx + lw + 8, y0 + 19)  # keep clear of arrows, not just off them

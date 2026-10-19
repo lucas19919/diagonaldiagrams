@@ -111,6 +111,11 @@ def _compact(layers, root, align, sep, kind, reverse):
     return {v: xs[root[v]] for layer in layers for v in layer}
 
 
+def valid(layers, xs, sep, forced_up):
+    """True when xs keeps every separation and holds every forced_up chain (group borders) in line."""
+    return _valid(layers, xs, sep, [(a, b) for b, a in forced_up.items()])
+
+
 def _valid(layers, xs, sep, chains):
     for layer in layers:
         for u, v in zip(layer, layer[1:]):

@@ -46,11 +46,12 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
 {
   "input": "JSON spec {title, sub, nodes[], edges[], groups[]}",
   "writes": "diagonaldiagrams flow SPEC.json -o OUT.svg",
+  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, about 640 px wide (a wide layer splits into rows where that takes less room than shrinking the figure; schema tables stack)",
   "node": {
     "id": "unique",
     "shape": "oval=start/end | rect=step | diamond=decision | dot=merge",
     "name": "2-4 words",
-    "tag": "STEP|START|END",
+    "tag": "optional kind, e.g. MANUAL (not STEP/START/END: the shape says it)",
     "sub": "mono sublabel",
     "rank": "row, 0 at the top (default: automatic)",
     "lane": "-1 left|0 center|1 right (default 0)",
@@ -85,6 +86,7 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
 {
   "input": "JSON spec {title, sub, nodes[], edges[]}",
   "writes": "diagonaldiagrams arch SPEC.json -o OUT.svg",
+  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, about 640 px wide (a wide layer splits into rows where that takes less room than shrinking the figure; schema tables stack)",
   "node": {
     "id": "unique",
     "layer": "row int (default 0)",
@@ -110,7 +112,6 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
   "budgets": {
     "nodes": 9,
     "edges": 12,
-    "layers": 6,
     "over": "a warning, not an error; one view per C4 level, or budget false hides it"
   }
 }
@@ -157,6 +158,7 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
 {
   "input": "JSON spec {title, sub, tables[], relations[]}",
   "writes": "diagonaldiagrams schema SPEC.json -o OUT.svg",
+  "size": "{\"fit\": \"slide|page|column\"}, or --fit. slide (default): a long flow wraps into columns near 4:3. page: a document page, wraps toward portrait. column: a docs or notes column, read by scrolling: no wrap, about 640 px wide (a wide layer splits into rows where that takes less room than shrinking the figure; schema tables stack)",
   "table": {
     "id": "unique",
     "name": "table_name",
@@ -187,7 +189,6 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
   ],
   "budgets": {
     "tables": 6,
-    "relations": 10,
     "columns_per_table": 12,
     "over": "a warning, not an error; split by bounded context, or budget false hides it"
   },
@@ -209,6 +210,7 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
   },
   "sequenceDiagram": "participant A as Name | actor U as User | A->>B: call | B-->>A: reply | A-)B: async event",
   "erDiagram": "A ||--o{ B : verb | A { type name PK }",
+  "fit": "where the figure goes, as --fit: a line fit: column (or slide, page) in the front matter between --- lines",
   "not drawn": "classDef/style colors, notes, loop/alt blocks, LR direction (flows draw top-down)",
   "example": "flowchart TD\n  A([Push]) --> B{Risky?}\n  B -->|yes| C[Review]\n  B -->|no| D([Ship])\n  C --> D"
 }
@@ -262,8 +264,8 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
   },
   "budgets": {
     "series": 6,
-    "points_per_series": 200,
-    "over": "downsample or facet"
+    "rows": 400,
+    "over": "a warning, not an error; a series past 600 points is thinned for drawing"
   },
   "rules": [
     "non-negative data floors at 0",

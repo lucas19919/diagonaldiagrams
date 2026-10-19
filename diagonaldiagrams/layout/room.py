@@ -14,7 +14,7 @@ lines. A figure whose labels all fit draws exactly as before.
 
 Everything here is in the layered layout's top-to-bottom frame, after wrap and before any turn.
 """
-from ..route.labels import GAP, label_box, longest_segment, place_label
+from ..route.labels import GAP, first_spot, label_box, place_label
 
 TITLE = 20.0  # a frame's title band, which diagrams.py keeps labels out of
 FAR = 1e9
@@ -71,7 +71,7 @@ def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, marg
                 soft = _segs(routes)
                 canvas = _canvas(pos, info, frames, routes, reach, extra, min_width, margin)
             avoid = fixed + placed + canvas
-            mx, my, vert = longest_segment(r.points, list(frames.values()))
+            mx, my, vert = first_spot(r.points, list(frames.values()), r.tooth)
             c = place_label(mx, my, vert, None, r.points, avoid, soft, w, GAP)
             box = label_box(c[0], c[1], None, c[2], c[3], w, GAP)
             if attempt == 2 or not _hits(box, avoid):

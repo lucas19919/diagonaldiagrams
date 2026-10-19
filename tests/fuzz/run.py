@@ -6,6 +6,7 @@
     py -3 tests/fuzz/run.py --keep out/fuzz       # also save each failing spec and its SVG
     py -3 tests/fuzz/run.py --one flow 17 33      # render one scene (kind, seed, nodes) and print it
     py -3 tests/fuzz/run.py --strict              # exit 1 if any scene fails (P4.7 turns this on in CI)
+    py -3 tests/fuzz/run.py --fit column          # the same scenes drawn for a narrow column (--fit)
 
 Scene i uses seed BASE+i; kinds alternate and sizes cycle through the buckets, so the same
 arguments always render the same scenes. A failure is a render whose audit reports errors.
@@ -39,25 +40,25 @@ def scenes(n, base, kinds):
         yield kind, seed, size, f"{lo}-{hi}"
 
 
-def render_one(kind, seed, size, work):
+def render_one(kind, seed, size, work, fit=None):
     spec = gen.make(kind, seed, size)
     path = os.path.join(work, f"{kind}-{seed}.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(spec, f)
     svg = os.path.join(work, f"{kind}-{seed}.svg")
     t0 = time.perf_counter()
-    code, out, err = golden.run_cli([kind, path, "-o", svg])
+    code, out, err = golden.run_cli([kind, path, "-o", svg] + (["--fit", fit] if fit else []))
     ms = (time.perf_counter() - t0) * 1000.0
     verdict = golden._last_json(out) or {}
     return spec, path, svg, ms, verdict, (out + err)
 
 
-def run(n, base, kinds, keep=None):
+def run(n, base, kinds, keep=None, fit=None):
     work = tempfile.mkdtemp(prefix="fuzz-")
     rows = []
     try:
         for kind, seed, size, bucket in scenes(n, base, kinds):
-            spec, path, svg, ms, verdict, raw = render_one(kind, seed, size, work)
+            spec, path, svg, ms, verdict, raw = render_one(kind, seed, size, work, fit)
             invalid = verdict.get("stage") == "validate" or not verdict
             codes = sorted(e.get("code") or "?" for e in verdict.get("errors", [])) if not invalid else []
             row = {"kind": kind, "seed": seed, "nodes": size, "bucket": bucket, "ms": round(ms, 1),
@@ -125,18 +126,19 @@ def main(argv=None):
     ap.add_argument("--keep", help="save failing specs and SVGs here")
     ap.add_argument("--strict", action="store_true", help="exit 1 if any scene fails or is invalid")
     ap.add_argument("--one", nargs=3, metavar=("KIND", "SEED", "NODES"), help="render one scene and print it")
+    ap.add_argument("--fit", choices=["slide", "page", "column"], help="draw every scene with --fit (default: none)")
     a = ap.parse_args(argv)
 
     if a.one:
         kind, seed, size = a.one[0], int(a.one[1]), int(a.one[2])
         work = a.keep or tempfile.mkdtemp(prefix="fuzz-one-")
         os.makedirs(work, exist_ok=True)
-        spec, path, svg, ms, verdict, raw = render_one(kind, seed, size, work)
+        spec, path, svg, ms, verdict, raw = render_one(kind, seed, size, work, a.fit)
         print(json.dumps({"spec": path, "svg": svg, "ms": round(ms), "verdict": verdict}, indent=1)[:4000])
         return 0
 
     t0 = time.perf_counter()
-    rows = run(a.n, a.seed, a.kinds, a.keep)
+    rows = run(a.n, a.seed, a.kinds, a.keep, a.fit)
     s = summarize(rows)
     s["seconds"] = round(time.perf_counter() - t0, 1)
     print_summary(s)

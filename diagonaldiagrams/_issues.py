@@ -6,3 +6,4 @@ def _vissue(errors, warnings, code, msg, fix=""):
 
 
 _SPEC_KEYS = {"flow": "nodes", "arch": "nodes", "seq": "actors", "schema": "tables"}
+_FITS = ("slide", "page", "column")  # where a figure goes: size.fit, --fit, Mermaid's fit: (diagrams.FITS sizes each)

@@ -9,8 +9,10 @@
   table's column row is (schema).
 - groups: [{"id", "members": [node ids], "parent"?}].
 - options: DEFAULTS, plus "same_rank": [[node ids that share a layer]] (from edits), "prev" ({node
-  id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room" and
-  "min_width". Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
+  id: x} from the drawing before an edit, so the rest stays put), "aspect", "flat_room",
+  "min_width" and "max_width" (TB and BT: a layer too wide for it spreads over rows, rows.py,
+  where that takes less of the column, room(); "chrome": the height drawn around the layout).
+  Sizes are in pixels, direction TB (top to bottom), LR, BT or RL.
 
 The steps: break cycles (back_edges), rank (ranks), add a dummy wherever an arrow passes a layer and
 a left and a right border wherever a group spans one (Layering), order the layers for few crossings
@@ -26,6 +28,7 @@ their members and nothing else (B20).
 from . import bk, channels, order as ordering
 from .order import Layering
 from .rank import back_edges, ranks
+from .rows import spread as deal_rows
 
 DEFAULTS = {
     "direction": "TB",
@@ -46,15 +49,19 @@ DEFAULTS = {
     "wrap_layers": 12,     # fewer layers than this never wrap
     "balance": False,      # center each node over what it calls, after Brandes-Köpf (arch)
     "straight": False,     # the main path runs straight down: each node over its longest branch (flow)
+    "over": False,         # every arrow within a layer runs over the top, neighbors' too (a stacked schema)
 }
 _FLIP = {"n": "w", "s": "e", "w": "n", "e": "s"}
 
 
 class Route:
-    __slots__ = ("id", "points", "sides", "back", "flat", "nodes")
+    __slots__ = ("id", "points", "sides", "back", "flat", "nodes", "tooth")
 
-    def __init__(self, eid, points, sides, back=False, flat=False, nodes=None):
+    def __init__(self, eid, points, sides, back=False, flat=False, nodes=None, tooth=False):
+        """tooth: the arrow runs down a lane beside rows a layer was dealt over (rows.py) to a box in a
+        lower row; its label goes first on its last sideways run, where it leaves the other lanes."""
         self.id, self.points, self.sides, self.back, self.flat, self.nodes = eid, points, sides, back, flat, nodes
+        self.tooth = tooth
 
     def to_dict(self):
         return {"id": self.id, "points": [[round(x, 2), round(y, 2)] for x, y in self.points], "sides": list(self.sides)}
@@ -76,6 +83,37 @@ def _shape(n):
 
 def layout(nodes, edges, groups=(), options=None):
     o = dict(DEFAULTS, **(options or {}))
+    res = _layout(nodes, edges, groups, o)
+    most = o.get("max_width")
+    if not most or str(o["direction"]).upper() not in ("TB", "BT") or res.size[0] <= most:
+        return res
+    # too wide for where it goes (a fit's column or page): each layer too wide for it on its own
+    # deals its boxes over rows (rows.py), one row more each try, until the figure fits. A try
+    # stands only where it takes less of the column than the layers kept whole (room()): rows
+    # stacked like a comb can cost more height, and longer arrows, than the width they save
+    best, tried = res, set()
+    for more in range(5):
+        res = _layout(nodes, edges, groups, dict(o, more_rows=more))
+        seen = tuple(sorted((str(i), r) for i, r in res.rank.items()))
+        if seen in tried:  # the same rows as a try before
+            continue
+        tried.add(seen)
+        if room(res.size, o) < room(best.size, o):
+            best = res
+        if res.size[0] <= most:
+            break
+    return best
+
+
+def room(size, o):
+    """How much of a column o["max_width"] wide a layout of size (w, h) takes with its text at full
+    size: its height, with o["chrome"] (the title and legend around it), times its width in column
+    widths, o["margin"] on each side. A layout narrower than the column still takes all its width."""
+    pad = 2 * o.get("margin", 0.0)
+    return (size[1] + o.get("chrome", 0.0)) * max(size[0] + pad, o["max_width"] + pad) / (o["max_width"] + pad)
+
+
+def _layout(nodes, edges, groups, o):
     direction = str(o["direction"]).upper()
     across = direction in ("LR", "RL")
     res = Result()
@@ -138,6 +176,13 @@ def layout(nodes, edges, groups=(), options=None):
         oriented = [((v, u) if k in back else (u, v)) + (1, 1) for k, (u, v) in enumerate(live)]
         merged = ranks(heads, oriented, {find(i): r for i, r in fixed.items()}, simplex=o["simplex"])
         rank = {i: merged[find(i)] for i in ids}
+    first, stack = {}, {}  # node -> the rank of the first row its layer spread over; the box it stands under (rows.py)
+    if o.get("more_rows") is not None:  # 1b. a layer too wide for max_width spreads over rows of its own
+        top = {i: chain(gof.get(i))[-1] if gof.get(i) is not None else None for i in ids}
+        rank, first, stack = deal_rows(rank, ids, info, E, lambda i: top[i] if top[i] is not None else ("node", find(i)), o)
+    # the comb's teeth: arrows from above a dealt layer down to a box in one of its lower rows, which
+    # run down lanes beside the rows above it
+    comb = {e["id"] for e in E if e["to"] in first and rank[e["from"]] < first[e["to"]] < rank[e["to"]]}
     res.rank = rank
     nl = max(rank.values()) + 1
 
@@ -210,7 +255,9 @@ def layout(nodes, edges, groups=(), options=None):
         key[nid] = float(info[nid]["k"])
     for kind, top, bot, ds in kinds:
         for d in ds:
-            key[d] = key[top] + 0.5
+            # in the rows a layer spread over, an arrow down to a lower row's box passes where that
+            # box stands, between the boxes dealt to the rows above it
+            key[d] = key[bot] if first.get(bot, rank[bot]) <= d[2] < rank[bot] else key[top] + 0.5
     for pt, nid in L.attach.items():
         key[pt] = key[nid] + 0.25
     for r in range(len(L.layers)):
@@ -290,6 +337,20 @@ def layout(nodes, edges, groups=(), options=None):
         return max(width[a] / 2.0 + width[b] / 2.0 + gap(a, b) + extra.get((a, b), 0.0),
                    spread.get(frozenset((a, b)), 0.0))
 
+    # a frame's title (o["heads"]: group -> its width, given where a fit narrows the figure and rows
+    # may hold one box) in a frame with one box in its top layer, or too narrow to find a clear spot
+    # between the arrows coming down into it, gets room before the frame's first item in its top
+    # layer, where no arrow comes in
+    for g, (lo, _) in span.items() if o.get("heads") and direction == "TB" else ():
+        title = o["heads"].get(g, 0.0)
+        layer = L.layers[lo]
+        a, b = layer.index(("L", g, lo)), layer.index(("R", g, lo))
+        boxes = sum(1 for x in layer[a + 1:b] if L.kind[x] == "node")
+        if boxes < 2 or sum(sep(x, y) for x, y in zip(layer[a:b], layer[a + 1:b + 1])) < 2 * (title + 24.0):
+            pair = (layer[a], layer[a + 1])
+            free = sep(*pair) - width[pair[1]] / 2.0  # from the border to the item's left side
+            extra[pair] = extra.get(pair, 0.0) + max(0.0, title + 20.0 - free)
+
     def inner(u, v):
         ku, kv = L.kind[u], L.kind[v]
         lines = ("dummy", "port")
@@ -300,14 +361,21 @@ def layout(nodes, edges, groups=(), options=None):
         straight = bk.spine(L.layers, [(top, ds, bot) for kind, top, bot, ds in kinds if kind == "down"], L.up,
                             lambda u, v: inner(u, v) and u not in climb and v not in climb, forced_up)
     prev = o.get("prev") if direction == "TB" else None  # an earlier drawing's x per node: stay near it
-    xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up,
-                        {k: float(v) for k, v in prev.items() if k in info} if prev else None, straight)
-    if o.get("balance"):  # arch: each node over what it calls (bk.balance)
+    prev = {k: float(v) for k, v in prev.items() if k in info} if prev else None
+    xs = None
+    if stack:  # rows a layer spread over: each box in line with the one above it in its column
+        xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up, prev,
+                            {**(straight or {}), **stack})
+        if not bk.valid(L.layers, xs, sep, forced_up):  # the columns broke a frame or a gap: not in line
+            xs, stack = None, {}
+    if xs is None:
+        xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up, prev, straight)
+    if o.get("balance") and not stack:  # arch: each node over what it calls (bk.balance)
         xs = bk.balance(L.layers, L.up, L.down, L.kind, xs, sep)
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
     band_h = [max((info[it]["h"] for it in layer if L.kind[it] == "node"), default=0.0) for layer in L.layers]
-    plan = _Plan(o, info, xs, rank, L, order_of)
+    plan = _Plan(o, info, xs, rank, L, order_of, comb)
     for (kind, top, bot, ds), e in zip(kinds, E):
         plan.edge(e, kind, top, bot, ds)
     for e in loops:
@@ -444,8 +512,10 @@ def _frame_depths(span, parent):
 class _Plan:
     """Ports and routes in the top-to-bottom frame: what each arrow does, then where."""
 
-    def __init__(self, o, info, xs, rank, L, order_of):
+    def __init__(self, o, info, xs, rank, L, order_of, comb=()):
         self.o, self.info, self.xs, self.rank, self.L, self.order_of = o, info, xs, rank, L, order_of
+        self.comb = set(comb)  # arrows down a comb's lanes (_layout)
+        self.fanned = set()  # (edge id, role): ends _fan placed
         self.items = []  # (edge, kind, [(node, side, role, key)], spec)
         self.slots = {}  # (node, side) -> [(edge id, role, key)]
         self.offset = {}  # (edge id, role) -> offset along the side
@@ -481,7 +551,7 @@ class _Plan:
             between = [it for it in self.L.layers[self.rank[a]]
                        if self.L.kind[it] == "node" and min(self.order_of[a], self.order_of[b]) < self.order_of[it]
                        < max(self.order_of[a], self.order_of[b])]
-            if not between:
+            if not between and not self.o["over"]:
                 s1 = "e" if self._x(b) > self._x(a) else "w"
                 s2 = "w" if s1 == "e" else "e"
                 self._slot(a, s1, eid, "out", 0.0)
@@ -575,9 +645,14 @@ class _Plan:
                     for k, (eid, role, _) in enumerate(seq):
                         self.stub[(eid, role)] = o["stub"] + k * o["track"]
                 continue
-            if lim == 0.0 or (o["trunk"] and inf["shape"] == "box" and len(items) >= 2 and len({it[1] for it in items}) == 1):
+            # arrows out to a comb's lanes: a shared trunk would run them down the lanes as one bundle
+            fan = inf["shape"] == "box" and len(items) >= 2 and not ins and any(t[0] in self.comb for t in outs)
+            if lim == 0.0 or (o["trunk"] and not fan and inf["shape"] == "box" and len(items) >= 2 and len({it[1] for it in items}) == 1):
                 for eid, role, _ in items:
                     self.offset[(eid, role)] = 0.0
+                continue
+            if fan:
+                self._fan(nid, outs, lim)
                 continue
             if inf["shape"] == "diamond":
                 group = outs + ins
@@ -617,6 +692,24 @@ class _Plan:
                     if (eid, role) in self.pins:
                         self.offset[(eid, role)] = self.pins[(eid, role)]
 
+    def _fan(self, nid, outs, lim, gap=12.0):
+        """A side whose arrows go down a comb's lanes: each leaves as near as it can to where it heads
+        (in line with a box right under it, else at the end toward its lane), in order, at least gap
+        apart, so each has a port and a line of its own and none crosses another under the box."""
+        cx = self._x(nid)
+        at = [max(-lim, min(lim, key - cx)) for _, _, key in outs]
+        for k in range(1, len(at)):
+            at[k] = max(at[k], at[k - 1] + gap)
+        if at[-1] > lim:
+            at[-1] = lim
+            for k in range(len(at) - 2, -1, -1):
+                at[k] = min(at[k], at[k + 1] - gap)
+        if at[0] < -lim:  # no room at that gap: spread over the side
+            at = _slots(len(outs), -lim, lim, self.o["slot"])
+        for (eid, role, _), v in zip(outs, at):
+            self.offset[(eid, role)] = v
+            self.fanned.add((eid, role))
+
     def _lone(self, lone):
         """A side with one arrow: in line with its next point when that falls within the side, so
         the arrow runs straight; else leaning toward its far end, so an exit and an entry stacked in
@@ -644,6 +737,10 @@ class _Plan:
                         self.offset[(eid, role)] = x - cx
                         self.offset[(eid, "in" if role == "out" else "out")] = x - ox
                         continue
+                far = (eid, "in" if role == "out" else "out")
+                if far in self.fanned and abs(self._x(other) + self.offset[far] - cx) <= lim:  # in line with it
+                    self.offset[(eid, role)] = self._x(other) + self.offset[far] - cx
+                    continue
                 want = self._x(other)
             dx = (want if want is not None else k) - cx
             if abs(dx) <= lim and peer and peer[0] == "x":
@@ -905,7 +1002,8 @@ class _Plan:
                     legs.append(("pt", x, p[1], a))
                 g = self.rank[a]
                 cols = [self._x(d) for d in ds] + [q[0]]
-                tkey = (a, s1, round(p[0], 1)) if self.o["trunk"] and self.offset.get((eid, "out")) == 0.0 and s1 == "s" else None
+                tkey = (a, s1, round(p[0], 1)) if (self.o["trunk"] and self.offset.get((eid, "out")) == 0.0 and s1 == "s"
+                                                    and (eid, "out") not in self.fanned) else None
                 for k, cx in enumerate(cols):
                     if abs(cx - x) >= 0.5:
                         ends = [(x, "top"), (cx, "bottom")]
@@ -1016,7 +1114,7 @@ class _Plan:
                     _, g, run, x = leg
                     pts.append((x, track_y[(g, run.track)]))
             out.append(Route(eid, _clean(pts), sides, back=kind in ("back", "rise"), flat=kind in ("flat", "over"),
-                             nodes=(a, b)))
+                             nodes=(a, b), tooth=eid in self.comb))
         return out
 
 

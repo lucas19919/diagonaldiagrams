@@ -2,7 +2,7 @@
 import json, os, sys
 from .errors import SpecError
 from . import __version__
-from ._issues import _SPEC_KEYS
+from ._issues import _FITS, _SPEC_KEYS
 from ._output import LAYOUTS, save_receipt, write_out
 from ._theme import THEMES, get_theme
 from ._lazy import lazy
@@ -335,7 +335,8 @@ RENDER = ("flow", "arch", "seq", "schema", "mermaid")
 _VALUES = {"-s": ("spec_text", None), "--string": ("spec_text", None), "--spec-text": ("spec_text", None), "-o": ("o", None),
            "--corners": ("corners", ("sharp", "rounded", "editorial")), "--theme": ("theme", tuple(THEMES)),
            "--theme-file": ("theme_file", None), "--style": ("style", None),
-           "--caption": ("caption", None), "--figure": ("figure", None), "--font": ("font", None)}
+           "--caption": ("caption", None), "--figure": ("figure", None), "--font": ("font", None),
+           "--fit": ("fit", tuple(_FITS))}
 _SWITCHES = {"--no-audit": "no_audit", "--outline": "outline", "--embed-fonts": "embed_fonts"}
 
 
@@ -351,7 +352,7 @@ def _quick(argv):
     cmd = argv[0]
     a = SimpleNamespace(cmd=cmd, spec=None, spec_text=None, o=None, corners="editorial", theme="editorial", theme_file=None,
                         no_audit=False, outline=False, style=[], embed_fonts=False, caption=None, figure=None,
-                        font=None)
+                        font=None, fit=None)
     switches = dict(_SWITCHES, **({"--auto": "auto"} if cmd == "flow" else {}))
     if cmd == "flow":
         a.auto = False
@@ -414,6 +415,9 @@ def _parse():
         p.add_argument("--figure", default=None, help='the figure label drawn above the title, e.g. "Fig. 3"')
         p.add_argument("--font", default=None,
                        help="the font for the figure's text: a family name, or a .ttf/.otf/.ttc/.woff file to measure with")
+        p.add_argument("--fit", default=None, choices=_FITS,
+                       help="where the figure goes: slide (default; a long flow wraps into columns), page (a document "
+                            "page) or column (a docs or notes column: no wrap, about 640 px wide)")
         _render_parsers[name] = p
     _render_parsers["flow"].add_argument("--auto", action="store_true",
                                          help="force longest-path layering (default when no ranks given)")
@@ -622,6 +626,8 @@ def main():
         for key in ("caption", "figure"):  # drawn: the caption under the figure, the label above it (B17)
             if getattr(a, key, None):
                 spec[key] = getattr(a, key)
+        if getattr(a, "fit", None):  # where it goes, over the spec's own size.fit
+            spec["size"] = dict(spec["size"] if isinstance(spec.get("size"), dict) else {}, fit=a.fit)
         theme = _cli_theme(a)
         _brand_check(a, spec, theme, sheets)
         embed = getattr(a, "embed_fonts", False)
@@ -657,9 +663,11 @@ def main():
                          f"{a.cmd} · {os.path.basename(a.spec)}", a.o,
                          caption=spec.get("sub", ""), cap_title=spec.get("title", a.cmd) + ".",
                          source="Self-contained HTML + SVG.", corners=a.corners, theme=theme, page=page)
-        save_receipt(o, _receipt(a, theme, {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
-                                            "auto": bool(getattr(a, "auto", False))}, scene=_drawn_scene(spec, a.cmd),
-                                 sheets=sheets))
+        drawn = {"cmd": a.cmd, "spec": a.spec, "corners": a.corners, "theme": theme.get("_name"),
+                 "auto": bool(getattr(a, "auto", False))}
+        if getattr(a, "fit", None):
+            drawn["fit"] = a.fit
+        save_receipt(o, _receipt(a, theme, drawn, scene=_drawn_scene(spec, a.cmd), sheets=sheets))
         _finish(a, o, s, item_cnt, "items", pre, changed, info)
     elif a.cmd == "bar":
         theme = _cli_theme(a)

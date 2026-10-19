@@ -87,7 +87,9 @@ def _look(c):
 
 
 class Styler:
-    def __init__(self, spec, kind, theme=None, corners="editorial", sheets=()):
+    def __init__(self, spec, kind, theme=None, corners="editorial", sheets=(), narrow=None):
+        """narrow: a box's widest before its text wraps (px), for a figure bound for a narrow place
+        (diagrams.FITS); it lowers the preset's max-width, under every stylesheet's own."""
         theme = theme or v1_theme("editorial")
         name = theme.get("_name")
         base = name if name in THEME_NAMES else "editorial"
@@ -96,6 +98,8 @@ class Styler:
         preset = _copied(sheet(kind))
         node_rule = preset.setdefault("rules", {}).setdefault("node", {})
         node_rule.setdefault("border-radius", CORNER_RX.get(corners, 6))  # --corners, as a rule (B15)
+        if narrow and isinstance(node_rule.get("max-width"), (int, float)):
+            node_rule["max-width"] = min(node_rule["max-width"], narrow)
         scene = self._scene(spec, kind)
         own = spec_sheets(scene.style) if scene is not None else []
         self.cascade = Cascade([base, {"name": "theme-file", "tokens": overrides}, preset, *own, *sheets])

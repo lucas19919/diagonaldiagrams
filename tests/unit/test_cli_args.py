@@ -16,7 +16,7 @@ READ = [
     ["flow", "-o", "o.html", "s.json"],
     ["flow", "s.json", "-o", "o.html", "--auto", "--no-audit", "--outline", "--embed-fonts", "--style", "a.json",
      "--style=b.json", "--caption", "A caption", "--figure=Fig. 2", "--font", "Inter", "--corners", "sharp",
-     "--theme", "ink", "--theme-file", "t.json"],
+     "--theme", "ink", "--theme-file", "t.json", "--fit", "column"],
     ["mermaid", "-", "-o", "out/x.html"],
     ["mermaid", "-o", "-", "a.mmd"],
     ["arch", "-s", '{"nodes": []}', "-o", "o.svg"],

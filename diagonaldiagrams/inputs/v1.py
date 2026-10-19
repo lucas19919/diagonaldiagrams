@@ -150,7 +150,8 @@ def to_v1(scene):
         spec["caption"] = scene.caption  # drawn under the figure (B17)
     for key in ("source", "use", "size", "defs", "data", "space"):
         if getattr(scene, key):
-            warn.append(_not_drawn(f"the figure's '{key}'", key))
+            if not (key == "size" and kind in ("flow", "arch", "schema")):  # drawn: its fit, aspect, width (diagrams._fit)
+                warn.append(_not_drawn(f"the figure's '{key}'", key))
             spec[key] = getattr(scene, key)
     if scene.layout not in (None, LAYOUTS[kind]):
         warn.append(_not_drawn(f"the layout {scene.layout!r} (the {kind} preset lays out its own way until P4)", "layout"))

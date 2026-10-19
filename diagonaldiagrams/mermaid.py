@@ -2,6 +2,7 @@
 import json, sys
 from .errors import SpecError
 from ._draw import _FA_ICONS
+from ._issues import _FITS
 
 
 # ---------- Mermaid input ----------
@@ -65,6 +66,23 @@ def _mermaid_lines(text):
             if not c.startswith("%%"):
                 out.append((k + 1, c))  # the line number in the file, front matter included
     return title, out
+
+
+def _mermaid_front(text):
+    """The front matter's top-level `key: value` lines, keys in lower case ({} when there is none):
+    Mermaid's own title, and fit, where the figure goes (slide, page or column), which Mermaid
+    passes over."""
+    raw = str(text).replace("\r\n", "\n").split("\n")
+    out = {}
+    if raw and raw[0].strip() == "---":
+        for j in range(1, len(raw)):
+            if raw[j].strip() == "---":
+                for fm in raw[1:j]:
+                    if fm[:1] not in (" ", "\t") and ":" in fm:
+                        k, v = fm.split(":", 1)
+                        out[k.strip().lower()] = v.split("#", 1)[0].strip().strip("\"'")
+                break
+    return out
 
 
 def _mermaid_kind(text):
@@ -378,6 +396,13 @@ def _mermaid_spec(text):
         spec, errors, warnings = _mm_seq(lines, title)
     else:
         spec, errors, warnings = _mm_er(lines, title)
+    fit = _mermaid_front(text).get("fit")
+    if fit:  # where the figure goes: front matter's fit, as a JSON spec's size.fit
+        if fit.lower() in _FITS:
+            spec["size"] = {"fit": fit.lower()}
+        else:
+            errors = errors + [{"msg": f"front matter fit: {fit} is not one of {', '.join(_FITS)}",
+                                "fix": "fit: slide (a slide or screen), page (a document page) or column (a docs or notes column)"}]
     spec["_kind"] = kind
     main = {"flow": "nodes", "seq": "messages", "schema": "tables"}[kind]
     if not errors and not spec.get(main):

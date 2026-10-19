@@ -278,6 +278,8 @@ def do_export(args):
         for key in ("caption", "figure"):
             if r.get(key):
                 spec[key] = r[key]
+        if r.get("fit"):  # --fit: where the figure goes
+            spec["size"] = dict(spec["size"] if isinstance(spec.get("size"), dict) else {}, fit=r["fit"])
         if cmd == "flow":
             svg, _, _ = render_flow(spec, r.get("corners", "editorial"), r.get("auto", False), theme, sheets)
         else:

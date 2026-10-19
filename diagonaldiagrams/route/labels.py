@@ -49,6 +49,17 @@ def longest_segment(pts, frames=()):
     return mx, my, vert
 
 
+def first_spot(pts, frames=(), tooth=False):
+    """A label's first spot. An arrow down a comb's lane (layered.Route.tooth) runs beside the other
+    lanes until its last sideways run turns it in to its box: the middle of that run, so the label
+    sits by its own line. Any other arrow, or one with no such run: longest_segment's."""
+    if tooth and len(pts) >= 3:
+        (px, py), (qx, qy) = pts[-3], pts[-2]
+        if abs(qx - px) > abs(qy - py):
+            return (px + qx) / 2.0, py, False
+    return longest_segment(pts, frames)
+
+
 def place_label(mx, my, vertical, text, pts, avoid, soft=(), w=None, gap=8):
     """The first spot along the route where the label's pill clears everything. Tries the
     default, then each segment's middle, on both sides and both orientations. If none is
