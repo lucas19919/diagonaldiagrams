@@ -1,0 +1,10 @@
+{
+  "title": "An AI agent platform at work",
+  "figure": {"type": "arch", "spec": "../agent_platform.json"},
+  "views": [
+    {"id": "request", "title": "A chat message becomes a diagram",
+     "text": "The message passes the gateway to the agent, which asks the model, draws with diagonaldiagrams and stores the SVG. Events stream to Postgres and traces in the background.",
+     "motion": [{"trace": "web -> gw -> agent -> draw -> blob"},
+                {"flow": "edge[async]"}]}
+  ]
+}

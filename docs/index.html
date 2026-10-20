@@ -77,6 +77,31 @@
   pre { background: #1f2330; color: #e8eaf0; padding: 14px 16px; border-radius: 8px; overflow: auto; font: 13.5px/1.55 var(--mono); margin: 10px 0 0; }
   .install { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
   footer { border-top: 1px solid var(--rule); padding: 26px 0 40px; color: var(--soft); font-size: 14px; }
+  .figure img, .gallery img, .out svg { cursor: zoom-in; }
+  .bar button.expand { background: transparent; border: 1px solid var(--rule); color: var(--muted); border-radius: 6px; padding: 4px 10px; font-size: 13px; cursor: pointer; margin-left: 10px; }
+  .bar button.expand:hover { color: var(--ink); border-color: var(--muted); }
+  dialog.viewer { border: 0; padding: 0; margin: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; background: rgba(20, 22, 30, .94); color: #e8eaf0; }
+  dialog.viewer::backdrop { background: rgba(20, 22, 30, .94); }
+  .viewer .stage { position: absolute; inset: 52px 0 44px; overflow: auto; display: flex; }
+  .viewer .stage img { margin: auto; display: block; background: #fff; border-radius: 6px; cursor: zoom-in; user-select: none; -webkit-user-drag: none; }
+  .viewer .stage.fit img { max-width: 96vw; max-height: calc(100vh - 112px); }
+  .viewer .stage.fit img.vector { width: 96vw; height: calc(100vh - 112px); object-fit: contain; background: transparent; }
+  .viewer .stage.zoom img { cursor: grab; max-width: none; max-height: none; background: #fff; }
+  .viewer .stage.zoom.dragging img { cursor: grabbing; }
+  .viewer .top { position: absolute; top: 0; left: 0; right: 0; height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 16px; font-size: 14px; }
+  .viewer .top .cap { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #c9ccd6; }
+  .viewer .top a { color: #c9ccd6; }
+  .viewer button { background: rgba(255,255,255,.08); color: #e8eaf0; border: 1px solid rgba(255,255,255,.18); border-radius: 6px; padding: 6px 12px; font-size: 14px; cursor: pointer; }
+  .viewer button:hover { background: rgba(255,255,255,.16); }
+  .viewer .nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 22px; padding: 10px 14px; }
+  .viewer .nav.prev { left: 12px; } .viewer .nav.next { right: 12px; }
+  .viewer .foot { position: absolute; bottom: 0; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #9aa0b0; }
+  .lead { margin: 30px 0 0; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; box-shadow: 0 10px 30px rgba(45, 49, 66, .08); }
+  .lead img { width: 100%; height: auto; display: block; cursor: zoom-in; }
+  .lead figcaption, .showcase figcaption { font-size: 14px; color: var(--muted); padding: 10px 4px 0; }
+  .showcase { display: grid; gap: 28px; }
+  .showcase figure { margin: 0; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; }
+  .showcase img { width: 100%; height: auto; display: block; border-radius: 6px; cursor: zoom-in; }
 </style>
 </head>
 <body>
@@ -95,7 +120,7 @@
       <a class="btn primary" href="#try">Try it here</a>
       <a class="btn ghost" href="#install">Install</a>
     </div>
-    <div class="figure"><img src="gallery/agent-platform.svg" alt="An architecture diagram of an AI agent platform: apps, an API gateway, the agent with its memory and a model, its tools, and storage, in labelled groups with icons"></div>
+    <figure class="lead"><img src="showcase/hero.svg" alt="An animated architecture diagram of an AI agent platform. A chat message is traced in coral from Web chat through the API gateway to the Agent, on to diagonaldiagrams and into the Object store, while dots stream along the dashed background events to Postgres and Traces."><figcaption>A chat request traced through an agent platform. The motion comes from the diagram itself: one line in a story names the path, and the same story films the GIF.</figcaption></figure>
   </div>
 
   <section>
@@ -110,7 +135,7 @@
   <section id="showcase">
     <h2>Three systems</h2>
     <p class="sub">Drawn, checked, and filmed. The specs are in the repository under examples/showcase.</p>
-    <div class="gallery">
+    <div class="showcase">
       <figure><img src="showcase/nvidia.gif" alt="How an NVIDIA GPU gets made: design, TSMC, CoWoS packaging with memory, then a rack builder and a cloud."><figcaption>How an NVIDIA GPU gets made.</figcaption></figure>
       <figure><img src="showcase/palantir.gif" alt="Palantir, from raw data to an AI decision: data lands, the Ontology is built, and a model writes an action back."><figcaption>Palantir, from raw data to a decision.</figcaption></figure>
       <figure><img src="showcase/falcon9.gif" alt="A Falcon 9 mission: countdown, liftoff, separation, the booster flying home, the second stage going on to orbit."><figcaption>A Falcon 9 mission.</figcaption></figure>
@@ -164,7 +189,7 @@
         <div class="hint">Write Mermaid (a flowchart, sequence diagram or data model) or diagonaldiagrams JSON. The diagram redraws as you type.</div>
       </div>
       <div class="panel">
-        <div class="bar"><strong style="font-size:14px">Result</strong><span class="status" id="status">Loading…</span></div>
+        <div class="bar"><strong style="font-size:14px">Result</strong><span class="status" id="status">Loading…</span><button class="expand" id="expand" type="button" title="Open the result full screen">Expand</button></div>
         <div class="out" id="out"></div>
         <div class="check" id="check">Your diagram and its check appear here.</div>
       </div>
@@ -193,6 +218,14 @@
 </main>
 
 <footer><div class="wrap">MIT licensed · <a href="https://github.com/lucas19919/diagonaldiagrams">github.com/lucas19919/diagonaldiagrams</a></div></footer>
+
+<dialog class="viewer" id="viewer" aria-label="Figure viewer">
+  <div class="top"><span class="cap" id="v-cap"></span><a id="v-open" target="_blank" rel="noopener">Open file</a><button type="button" id="v-zoom">Zoom</button><button type="button" id="v-close" aria-label="Close">Close</button></div>
+  <div class="stage fit" id="v-stage"><img id="v-img" alt=""></div>
+  <button type="button" class="nav prev" id="v-prev" aria-label="Previous figure">&lsaquo;</button>
+  <button type="button" class="nav next" id="v-next" aria-label="Next figure">&rsaquo;</button>
+  <div class="foot" id="v-foot"></div>
+</dialog>
 
 <script>
 const EXAMPLES = {
@@ -362,6 +395,109 @@ fetch("gallery.json").then((r) => r.json()).then((items) => {
     `<figure><a href="${g.file}"><img src="${g.file}" alt="${esc(g.caption)}" loading="lazy"></a>` +
     `<figcaption>${esc(g.caption)}</figcaption></figure>`).join("");
 }).catch(() => {});
+
+// The figure viewer: any figure on the page opens full screen, fit to it; a click zooms in, and dragging pans.
+(() => {
+  const dlg = $("viewer"), stage = $("v-stage"), img = $("v-img");
+  let list = [], at = 0, blobUrl = null;
+  const figures = () => [...document.querySelectorAll(".lead img, .showcase img, .figure img, .gallery img")];
+  const caption = (el) => {
+    const cap = el.closest("figure") && el.closest("figure").querySelector("figcaption");
+    return (cap ? cap.textContent : "") || el.alt || "";
+  };
+  function fit() {
+    stage.className = "stage fit";
+    img.style.width = img.style.height = "";
+    $("v-zoom").textContent = "Zoom";
+  }
+  function show(k) {
+    at = (k + list.length) % list.length;
+    const item = list[at];
+    fit();
+    img.src = item.src;
+    img.alt = item.caption;
+    img.classList.toggle("vector", /\.svg($|\?)/.test(item.src) || item.src.startsWith("blob:"));
+    $("v-cap").textContent = item.caption;
+    $("v-open").href = item.src;
+    $("v-open").hidden = item.src.startsWith("blob:");
+    const many = list.length > 1;
+    $("v-prev").hidden = $("v-next").hidden = !many;
+    $("v-foot").textContent = (many ? (at + 1) + " of " + list.length + " · arrow keys to step · " : "") + "click to zoom · Esc to close";
+    stage.scrollTo(0, 0);
+  }
+  function open(items, k) {
+    list = items;
+    show(k);
+    if (!dlg.open) dlg.showModal();
+  }
+  function zoom(ev) {
+    if (stage.classList.contains("zoom")) { fit(); return; }
+    const box = img.getBoundingClientRect();
+    const fx = ev && box.width ? (ev.clientX - box.left) / box.width : 0.5;
+    const fy = ev && box.height ? (ev.clientY - box.top) / box.height : 0.5;
+    stage.className = "stage zoom";
+    $("v-zoom").textContent = "Fit";
+    // a vector figure zooms to twice the screen's width; a picture to its own pixels, at least the screen
+    const w = img.classList.contains("vector") ? Math.max(window.innerWidth * 2, img.naturalWidth * 2)
+                                                : Math.max(img.naturalWidth, window.innerWidth);
+    img.style.width = w + "px";
+    img.style.height = "auto";
+    requestAnimationFrame(() => {
+      stage.scrollLeft = fx * img.offsetWidth - stage.clientWidth / 2;
+      stage.scrollTop = fy * img.offsetHeight - stage.clientHeight / 2;
+    });
+  }
+  let drag = null, moved = false;
+  stage.addEventListener("pointerdown", (e) => {
+    if (!stage.classList.contains("zoom")) return;
+    drag = { x: e.clientX, y: e.clientY, l: stage.scrollLeft, t: stage.scrollTop };
+    moved = false;
+    stage.classList.add("dragging");
+  });
+  window.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) moved = true;
+    stage.scrollLeft = drag.l - (e.clientX - drag.x);
+    stage.scrollTop = drag.t - (e.clientY - drag.y);
+  });
+  window.addEventListener("pointerup", () => { drag = null; stage.classList.remove("dragging"); });
+  img.addEventListener("click", (e) => { if (!moved) zoom(e); moved = false; });
+  stage.addEventListener("click", (e) => { if (e.target === stage && stage.classList.contains("fit")) dlg.close(); });
+  $("v-zoom").addEventListener("click", () => zoom(null));
+  $("v-close").addEventListener("click", () => dlg.close());
+  $("v-prev").addEventListener("click", () => show(at - 1));
+  $("v-next").addEventListener("click", () => show(at + 1));
+  dlg.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft" && list.length > 1) { e.preventDefault(); show(at - 1); }
+    if (e.key === "ArrowRight" && list.length > 1) { e.preventDefault(); show(at + 1); }
+  });
+  dlg.addEventListener("close", () => {
+    if (dlg.open) return;  // the close event comes a tick late: reopened since, so keep what it shows
+    img.removeAttribute("src");
+    fit();
+    if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; }
+  });
+  // figures in the page and the gallery: a plain click opens the viewer; a ctrl- or middle-click still opens the file
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest(".lead img, .showcase img, .figure img, .gallery img");
+    if (!el || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    const els = figures();
+    open(els.map((x) => ({ src: x.currentSrc || x.src, caption: caption(x) })), els.indexOf(el));
+  });
+  // the playground's result is inline SVG: show a picture of it
+  function openResult() {
+    const svg = $("out").querySelector("svg");
+    if (!svg) return;
+    if (blobUrl) URL.revokeObjectURL(blobUrl);
+    const text = new XMLSerializer().serializeToString(svg);
+    blobUrl = URL.createObjectURL(new Blob([text], { type: "image/svg+xml" }));
+    const t = svg.querySelector("title");
+    open([{ src: blobUrl, caption: (t && t.textContent) || "Your diagram" }], 0);
+  }
+  $("expand").addEventListener("click", openResult);
+  $("out").addEventListener("click", (e) => { if (e.target.closest("svg")) openResult(); });
+})();
 </script>
 </body>
 </html>
