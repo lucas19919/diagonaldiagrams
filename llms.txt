@@ -1,0 +1,50 @@
+# diagonaldiagrams
+
+> Charts and diagrams for agents. One command checks a spec, draws an SVG, and audits the drawing. Do not hand-edit the SVG, and do not screenshot it to check it: the JSON line is the check.
+
+## Draw
+
+```bash
+diagonaldiagrams mermaid - -o out/flow.svg <<'EOF'
+flowchart TD
+  A([Start]) --> B{Ready?}
+  B -->|yes| C([Done])
+  B -->|no| A
+EOF
+```
+
+From a checkout the same arguments work as `py -3 graph.py` (Windows) or `python3 graph.py`.
+
+It prints one JSON line.
+
+- `"ok": true`. The figure is at `svg`. `layout` lists what was drawn. Answer from that.
+- `"ok": false`. Each error has a `fix`. Change the input and run again.
+- `warnings`. The figure is drawn. Act on one only if it matters.
+
+`--fit` says where it will be read. `column` for a README, docs page, or chat (about 640 px wide, read by scrolling). `slide` is the default, for a deck. `page` is for print. In Mermaid, put `fit: column` in the front matter. In JSON, `"size": {"fit": "column"}`.
+
+| Command | Input |
+| --- | --- |
+| `mermaid` | `flowchart`, `sequenceDiagram`, `erDiagram` |
+| `flow`, `arch`, `seq`, `schema` | JSON. `describe <type>` prints the shape |
+| `bar`, `line`, `scatter` | CSV. `--cat`/`--val`, or `--x`/`--y`, and optional `--group` |
+| `geo` | CSV or GeoJSON, on a built-in coastline |
+| `chart <kind>` | About 60 more. `describe` lists them |
+| `story` | One figure, several views. `--gif` films a view when ffmpeg is installed |
+| `apply` | A JSON patch into a spec, then draw again at the same `-o` path |
+| `export` | `png`, `pdf`, `drawio`, `excalidraw` from the receipt |
+
+Titles state the finding. Blue is HTTP. Dashed is async. Coral marks at most two focal items.
+
+## Install
+
+- [Install skill](.agents/skills/diagonaldiagrams-install/SKILL.md): clone, check `describe`, copy the drawing skill.
+- [Drawing skill](.agents/skills/graph-engine/SKILL.md): the full contract. This file is the short version of it.
+- Plugin: `/plugin marketplace add lucas19919/diagonaldiagrams` then `/plugin install diagonaldiagrams@diagonaldiagrams`.
+- Command only: `pip install git+https://github.com/lucas19919/diagonaldiagrams`.
+- MCP: `diagonaldiagrams mcp`.
+
+## Read next
+
+- [README](README.md): what it is, three filmed figures, and the Pele and Mermaid numbers.
+- [Architecture](docs/ARCHITECTURE.md): where the code lives, for contributors.

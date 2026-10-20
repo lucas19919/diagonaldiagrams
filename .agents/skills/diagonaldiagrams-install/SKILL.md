@@ -35,7 +35,7 @@ The drawing contract is the `graph-engine` skill in the clone. This skill only p
 
    If the directory exists and has no `graph.py`, stop. Tell the user what is in it.
 
-4. Check the library. Run `<python> <dir>/graph.py describe`. Require exit 0. The JSON must list `flow`, `arch`, `seq`, `schema`, `bar`, `line`, `scatter`, `geo`, `heatmap`, and `sankey`.
+4. Check the library. Run `<python> <dir>/graph.py describe`. Require exit 0. The JSON's `types` list must include `flow`, `arch`, `seq`, `schema`, `bar`, `line`, `scatter`, `geo`, `heatmap`, and `sankey`.
    Then run `<python> -m compileall -q <dir>/diagonaldiagrams`, so every later call starts from compiled code even where `PYTHONDONTWRITEBYTECODE` is set. Run it again after each update.
 
 5. Copy `<dir>/.agents/skills/graph-engine` to the user skills folder of the agent you are, so later sessions can draw.

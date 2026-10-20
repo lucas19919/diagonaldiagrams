@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 546" width="760"><title>Column flows were judged clearer every time</title>
+<desc>Share of blind judgments diagonaldiagrams won on clarity.</desc>
+<rect width="760" height="546" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Column flows were judged clearer every time</text>
+<text x="36" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">Share of blind judgments diagonaldiagrams won on clarity.</text>
+<line x1="90" y1="400.0" x2="712" y2="400.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="82" y="403.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
+<line x1="90" y1="343.3" x2="712" y2="343.3" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="82" y="346.3" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">20</text>
+<line x1="90" y1="286.7" x2="712" y2="286.7" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="82" y="289.7" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">40</text>
+<line x1="90" y1="230.0" x2="712" y2="230.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="82" y="233.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">60</text>
+<line x1="90" y1="173.3" x2="712" y2="173.3" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="82" y="176.3" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">80</text>
+<line x1="90" y1="116.7" x2="712" y2="116.7" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="82" y="119.7" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">100</text>
+<line x1="90" y1="60.0" x2="712" y2="60.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="82" y="63.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">120</text>
+<line x1="90" y1="400.0" x2="712" y2="400.0" stroke="#2d3142" stroke-width="1.2"/>
+<line x1="90" y1="60" x2="90" y2="400" stroke="#2d3142" stroke-width="1.2"/>
+<path d="M117.8,400.0 L117.8,165.2 Q117.8,159.2 123.8,159.2 L159.8,159.2 Q165.8,159.2 165.8,165.2 L165.8,400.0 Z" fill="#E69F00" fill-opacity="0.85"><title>Pele · Slide: 85</title></path>
+<text x="141.8" y="153.2" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">85</text>
+<path d="M169.8,400.0 L169.8,131.2 Q169.8,125.2 175.8,125.2 L211.8,125.2 Q217.8,125.2 217.8,131.2 L217.8,400.0 Z" fill="#0072B2" fill-opacity="0.85"><title>Mermaid · Slide: 97</title></path>
+<text x="193.8" y="119.2" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">97</text>
+<text x="167.8" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Slide</text>
+<path d="M273.2,400.0 L273.2,122.7 Q273.2,116.7 279.2,116.7 L315.2,116.7 Q321.2,116.7 321.2,122.7 L321.2,400.0 Z" fill="#E69F00" fill-opacity="0.85"><title>Pele · Column flows: 100</title></path>
+<text x="297.2" y="110.7" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">100</text>
+<path d="M325.2,400.0 L325.2,122.7 Q325.2,116.7 331.2,116.7 L367.2,116.7 Q373.2,116.7 373.2,122.7 L373.2,400.0 Z" fill="#0072B2" fill-opacity="0.85"><title>Mermaid · Column flows: 100</title></path>
+<text x="349.2" y="110.7" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">100</text>
+<text x="323.2" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Column flows</text>
+<path d="M428.8,400.0 L428.8,193.5 Q428.8,187.5 434.8,187.5 L470.8,187.5 Q476.8,187.5 476.8,193.5 L476.8,400.0 Z" fill="#E69F00" fill-opacity="0.85"><title>Pele · Native arch: 75</title></path>
+<text x="452.8" y="181.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">75</text>
+<path d="M480.8,400.0 L480.8,156.7 Q480.8,150.7 486.8,150.7 L522.8,150.7 Q528.8,150.7 528.8,156.7 L528.8,400.0 Z" fill="#0072B2" fill-opacity="0.85"><title>Mermaid · Native arch: 88</title></path>
+<text x="504.8" y="144.7" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">88</text>
+<text x="478.8" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Native arch</text>
+<text x="608.2" y="394.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">0</text>
+<path d="M636.2,400.0 L636.2,264.3 Q636.2,258.3 642.2,258.3 L678.2,258.3 Q684.2,258.3 684.2,264.3 L684.2,400.0 Z" fill="#0072B2" fill-opacity="0.85"><title>Mermaid · Translated arch: 50</title></path>
+<text x="660.2" y="252.3" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">50</text>
+<text x="634.2" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Translated arch</text>
+<rect x="90" y="462" width="12" height="12" rx="2" fill="#0072B2"/>
+<text x="108" y="472" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="series">Mermaid</text>
+<rect x="181" y="462" width="12" height="12" rx="2" fill="#E69F00"/>
+<text x="199" y="472" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" data-role="series">Pele</text>
+<text x="401.0" y="448" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Figure</text>
+<text x="22" y="230.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 22,230.0)">Clearer (percent of judgments)</text>
+<text x="36" y="532" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">8 bars · Source: Slide: 496 judgments. Column flows: --fit column. Arch: the later rejudge.</text>
+</svg>

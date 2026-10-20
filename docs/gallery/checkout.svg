@@ -1,154 +1,125 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" viewBox="0 0 1054 869" width="1054">
+<svg xmlns="http://www.w3.org/2000/svg" role="graphics-document" aria-roledescription="architecture diagram" data-legibility="all" viewBox="0 0 792 742" width="792">
 <title>Checkout platform</title>
 <desc>A checkout writes one order row, then everything downstream hangs off events.</desc>
-<rect width="1054" height="869" fill="#f5f5f5" aria-hidden="true"/>
-<defs><marker id="a" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#4f5d75"/></marker><marker id="aa" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#eb6c36"/></marker><marker id="al" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,12 4.5,0 9" fill="#7a8399"/></marker></defs>
+<rect width="792" height="742" fill="#f5f5f5" aria-hidden="true"/>
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#4f5d75"/></marker><marker id="aa" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#eb6c36"/></marker><marker id="al" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#2e5aa8"/></marker><marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0,10 3.5,0 7,2 3.5" fill="#636c82"/></marker></defs>
 <text x="30" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Checkout platform</text>
 <text x="30" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">A checkout writes one order row, then everything downstream hangs off events.</text>
-<rect x="130" y="90" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="130" y="90" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="web" data-label="Web app" role="graphics-symbol" aria-roledescription="box" aria-label="Web app, React"/>
-<rect x="138" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="152" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">UI</text>
-<text x="210" y="122" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Web app</text>
-<text x="210" y="139" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">React</text>
-<rect x="330" y="90" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="330" y="90" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="mobile" data-label="Mobile app" role="graphics-symbol" aria-roledescription="box" aria-label="Mobile app, Swift"/>
-<rect x="338" y="96" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="352" y="105" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">UI</text>
-<text x="410" y="122" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Mobile app</text>
-<text x="410" y="139" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Swift</text>
-<rect x="230" y="249" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="230" y="249" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="gw" data-label="API gateway" role="graphics-symbol" aria-roledescription="box" aria-label="API gateway, Envoy:443"/>
-<rect x="238" y="255" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="252" y="264" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">API</text>
-<text x="310" y="281" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">API gateway</text>
-<text x="310" y="298" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Envoy:443</text>
-<rect x="30" y="408" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="30" y="408" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="auth" data-label="Auth" role="graphics-symbol" aria-roledescription="box" aria-label="Auth, Go:8081"/>
-<rect x="38" y="414" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="52" y="423" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">SVC</text>
-<text x="110" y="440" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Auth</text>
-<text x="110" y="457" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Go:8081</text>
-<rect x="230" y="408" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="230" y="408" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="catalog" data-label="Catalog" role="graphics-symbol" aria-roledescription="box" aria-label="Catalog, Go:8082"/>
-<rect x="238" y="414" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="252" y="423" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">SVC</text>
-<text x="310" y="440" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Catalog</text>
-<text x="310" y="457" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Go:8082</text>
-<rect x="530" y="408" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="530" y="408" width="160" height="59" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="orders" data-label="Orders" role="graphics-symbol" aria-roledescription="box" aria-label="Orders, Kotlin:8083"/>
-<rect x="538" y="414" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="552" y="423" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">SVC</text>
-<text x="610" y="440" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Orders</text>
-<text x="610" y="457" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Kotlin:8083</text>
-<rect x="764" y="408" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="764" y="408" width="160" height="59" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="pay" data-label="Payments" role="graphics-symbol" aria-roledescription="box" aria-label="Payments, Kotlin:8084"/>
-<rect x="772" y="414" width="28" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="786" y="423" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" text-anchor="middle" aria-hidden="true">SVC</text>
-<text x="844" y="440" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Payments</text>
-<text x="844" y="457" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Kotlin:8084</text>
-<rect x="130" y="567" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="130" y="567" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="redis" data-label="Redis" role="graphics-symbol" aria-roledescription="box" aria-label="Redis, sessions, cache"/>
-<rect x="138" y="573" width="35" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="155.5" y="582" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">STORE</text>
-<text x="210" y="599" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Redis</text>
-<text x="210" y="616" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">sessions, cache</text>
-<rect x="430" y="567" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="430" y="567" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="pg" data-label="Postgres" role="graphics-symbol" aria-roledescription="box" aria-label="Postgres, orders, ledger"/>
-<rect x="438" y="573" width="35" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="455.5" y="582" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">STORE</text>
-<text x="510" y="599" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Postgres</text>
-<text x="510" y="616" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">orders, ledger</text>
-<rect x="647" y="567" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="647" y="567" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="bus" data-label="Event bus" role="graphics-symbol" aria-roledescription="box" aria-label="Event bus, Kafka"/>
-<rect x="655" y="573" width="35" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="672.5" y="582" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">STORE</text>
-<text x="727" y="599" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Event bus</text>
-<text x="727" y="616" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Kafka</text>
-<rect x="864" y="567" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="864" y="567" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="stripe" data-label="Stripe" role="graphics-symbol" aria-roledescription="box" aria-label="Stripe, external"/>
-<rect x="872" y="573" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="886" y="582" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">API</text>
-<text x="944" y="599" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Stripe</text>
-<text x="944" y="616" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">external</text>
-<rect x="447" y="726" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="447" y="726" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="inventory" data-label="Inventory" role="graphics-symbol" aria-roledescription="box" aria-label="Inventory, reserve stock"/>
-<rect x="455" y="732" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="469" y="741" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">SVC</text>
-<text x="527" y="758" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Inventory</text>
-<text x="527" y="775" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">reserve stock</text>
-<rect x="647" y="726" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="647" y="726" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="notify" data-label="Notifications" role="graphics-symbol" aria-roledescription="box" aria-label="Notifications, email, push"/>
-<rect x="655" y="732" width="28" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="669" y="741" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">SVC</text>
-<text x="727" y="758" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Notifications</text>
-<text x="727" y="775" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">email, push</text>
-<rect x="847" y="726" width="160" height="59" rx="6" fill="#f5f5f5" aria-hidden="true"/>
-<rect x="847" y="726" width="160" height="59" rx="6" fill="#ffffff" stroke="#2d3142" data-node="analytics" data-label="Analytics" role="graphics-symbol" aria-roledescription="box" aria-label="Analytics, ClickHouse"/>
-<rect x="855" y="732" width="35" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".4" stroke-width=".8" aria-hidden="true"/>
-<text x="872.5" y="741" font-size="8" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">STORE</text>
-<text x="927" y="758" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Analytics</text>
-<text x="927" y="775" font-size="9" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ClickHouse</text>
-<path d="M222,149 L222,191 Q222,199 230,199 L291,199 Q299,199 299,207 L299,249" fill="none" stroke="#2e5aa8" stroke-width="1.8" marker-end="url(#al)" data-from="web" data-to="gw" data-label="calls" data-id="web-&gt;gw:calls" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Web app to API gateway: calls"/>
-<circle cx="222" cy="156" r="2.7" fill="#2e5aa8" aria-hidden="true"/>
-<path d="M398,149 L398,191 Q398,199 390,199 L329,199 Q321,199 321,207 L321,249" fill="none" stroke="#2e5aa8" stroke-width="1.8" marker-end="url(#al)" data-from="mobile" data-to="gw" data-label="calls" data-id="mobile-&gt;gw:calls" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Mobile app to API gateway: calls"/>
-<circle cx="398" cy="156" r="2.7" fill="#2e5aa8" aria-hidden="true"/>
-<path d="M288,308 L288,350 Q288,358 280,358 L130,358 Q122,358 122,366 L122,408" fill="none" stroke="#2e5aa8" stroke-width="1.8" marker-end="url(#al)" data-from="gw" data-to="auth" data-label="verify" data-id="gw-&gt;auth:verify" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Auth: verify"/>
-<circle cx="288" cy="315" r="2.7" fill="#2e5aa8" aria-hidden="true"/>
-<path d="M310,308 L310,408" fill="none" stroke="#2e5aa8" stroke-width="1.8" marker-end="url(#al)" data-from="gw" data-to="catalog" data-label="browse" data-id="gw-&gt;catalog:browse" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Catalog: browse"/>
-<circle cx="310" cy="315" r="2.7" fill="#2e5aa8" aria-hidden="true"/>
-<path d="M332,308 L332,350 Q332,358 340,358 L590,358 Q598,358 598,366 L598,408" fill="none" stroke="#2e5aa8" stroke-width="1.8" marker-end="url(#al)" data-from="gw" data-to="orders" data-label="checkout" data-id="gw-&gt;orders:checkout" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Orders: checkout"/>
-<circle cx="332" cy="315" r="2.7" fill="#2e5aa8" aria-hidden="true"/>
-<path d="M690,437.5 L764,437.5" fill="none" stroke="#eb6c36" stroke-width="1.8" marker-end="url(#aa)" data-from="orders" data-to="pay" data-label="charge" data-id="orders-&gt;pay:charge" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Orders to Payments: charge"/>
-<circle cx="697" cy="437.5" r="2.7" fill="#eb6c36" aria-hidden="true"/>
-<path d="M122,467 L122,509 Q122,517 130,517 L191,517 Q199,517 199,525 L199,567" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="auth" data-to="redis" data-label="session" data-id="auth-&gt;redis:session" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Auth to Redis: session"/>
-<circle cx="122" cy="474" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M298,467 L298,509 Q298,517 290,517 L229,517 Q221,517 221,525 L221,567" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="catalog" data-to="redis" data-label="cache" data-id="catalog-&gt;redis:cache" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Catalog to Redis: cache"/>
-<circle cx="298" cy="474" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M599,467 L599,509 Q599,517 591,517 L530,517 Q522,517 522,525 L522,567" fill="none" stroke="#4f5d75" stroke-width="1.8" marker-end="url(#a)" data-from="orders" data-to="pg" data-label="write" data-id="orders-&gt;pg:write" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Orders to Postgres: write"/>
-<circle cx="599" cy="474" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M621,467 L621,509 Q621,517 629,517 L708,517 Q716,517 716,525 L716,567" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="orders" data-to="bus" data-label="placed" data-id="orders-&gt;bus:placed" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Orders to Event bus: placed"/>
-<circle cx="621" cy="474" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M855,467 L855,509 Q855,517 863,517 L924,517 Q932,517 932,525 L932,567" fill="none" stroke="#2e5aa8" stroke-width="1.8" marker-end="url(#al)" data-from="pay" data-to="stripe" data-label="card" data-id="pay-&gt;stripe:card" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Payments to Stripe: card"/>
-<circle cx="855" cy="474" r="2.7" fill="#2e5aa8" aria-hidden="true"/>
-<path d="M833,467 L833,509 Q833,517 825,517 L746,517 Q738,517 738,525 L738,567" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="pay" data-to="bus" data-label="settled" data-id="pay-&gt;bus:settled" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Payments to Event bus: settled"/>
-<circle cx="833" cy="474" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M705,626 L705,668 Q705,676 697,676 L547,676 Q539,676 539,684 L539,726" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="inventory" data-label="reserve" data-id="bus-&gt;inventory:reserve" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Inventory: reserve"/>
-<circle cx="705" cy="633" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M727,626 L727,726" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="notify" data-label="email" data-id="bus-&gt;notify:email" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Notifications: email"/>
-<circle cx="727" cy="633" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<path d="M749,626 L749,668 Q749,676 757,676 L907,676 Q915,676 915,684 L915,726" fill="none" stroke="#4f5d75" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="analytics" data-label="ingest" data-id="bus-&gt;analytics:ingest" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Analytics: ingest"/>
-<circle cx="749" cy="633" r="2.7" fill="#4f5d75" aria-hidden="true"/>
-<rect x="238.5" y="175" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="260.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">calls</text>
-<rect x="337.5" y="175" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="359.5" y="187" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">calls</text>
-<rect x="180" y="334" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="205" y="346" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">verify</text>
-<rect x="318" y="369" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="343" y="381" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">browse</text>
-<rect x="433.5" y="334" width="63" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="465" y="346" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">checkout</text>
-<rect x="702" y="413.5" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="727" y="425.5" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">charge</text>
-<rect x="132.5" y="493" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="160.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">session</text>
-<rect x="237.5" y="493" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="259.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">cache</text>
-<rect x="538.5" y="493" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="560.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">write</text>
-<rect x="643.5" y="493" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="668.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">placed</text>
-<rect x="873.5" y="493" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="893.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">card</text>
-<rect x="757.5" y="493" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="785.5" y="505" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">settled</text>
-<rect x="594" y="652" width="56" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="622" y="664" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">reserve</text>
-<rect x="735" y="687" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="757" y="699" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">email</text>
-<rect x="807" y="652" width="50" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
-<text x="832" y="664" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ingest</text>
-<line x1="30" y1="821" x2="1024" y2="821" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
-<text x="30" y="837" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">blue = HTTP call, dashed = sent in the background, coral = highlighted</text>
+<rect x="144" y="72" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="144" y="72" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="web" data-label="Web app" role="graphics-symbol" aria-roledescription="box" aria-label="Web app, React"/>
+<text x="200" y="91.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">UI</text>
+<text x="200" y="109.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Web app</text>
+<text x="200" y="126.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">React</text>
+<rect x="296" y="72" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="296" y="72" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="mobile" data-label="Mobile app" role="graphics-symbol" aria-roledescription="box" aria-label="Mobile app, Swift"/>
+<text x="352" y="91.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">UI</text>
+<text x="352" y="109.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Mobile app</text>
+<text x="352" y="126.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Swift</text>
+<rect x="220" y="204" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="220" y="204" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="gw" data-label="API gateway" role="graphics-symbol" aria-roledescription="box" aria-label="API gateway, Envoy:443"/>
+<text x="276" y="223.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">API</text>
+<text x="276" y="241.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">API gateway</text>
+<text x="276" y="258.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Envoy:443</text>
+<rect x="30" y="346" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="30" y="346" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="auth" data-label="Auth" role="graphics-symbol" aria-roledescription="box" aria-label="Auth, Go:8081"/>
+<text x="86" y="365.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SVC</text>
+<text x="86" y="383.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Auth</text>
+<text x="86" y="400.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Go:8081</text>
+<rect x="182" y="346" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="182" y="346" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="catalog" data-label="Catalog" role="graphics-symbol" aria-roledescription="box" aria-label="Catalog, Go:8082"/>
+<text x="238" y="365.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SVC</text>
+<text x="238" y="383.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Catalog</text>
+<text x="238" y="400.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Go:8082</text>
+<rect x="410" y="346" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="410" y="346" width="112" height="68" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="orders" data-label="Orders" role="graphics-symbol" aria-roledescription="box" aria-label="Orders, Kotlin:8083"/>
+<text x="466" y="365.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SVC</text>
+<text x="466" y="383.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Orders</text>
+<text x="466" y="400.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Kotlin:8083</text>
+<rect x="586" y="346" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="586" y="346" width="112" height="68" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" data-node="pay" data-label="Payments" role="graphics-symbol" aria-roledescription="box" aria-label="Payments, Kotlin:8084"/>
+<text x="642" y="365.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SVC</text>
+<text x="642" y="383.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Payments</text>
+<text x="642" y="400.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Kotlin:8084</text>
+<rect x="106" y="478" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="106" y="478" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="redis" data-label="Redis" role="graphics-symbol" aria-roledescription="box" aria-label="Redis, sessions, cache"/>
+<text x="162" y="497.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">STORE</text>
+<text x="162" y="515.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Redis</text>
+<text x="162" y="532.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">sessions, cache</text>
+<rect x="346" y="478" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="346" y="478" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="pg" data-label="Postgres" role="graphics-symbol" aria-roledescription="box" aria-label="Postgres, orders, ledger"/>
+<text x="402" y="497.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">STORE</text>
+<text x="402" y="515.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Postgres</text>
+<text x="402" y="532.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">orders, ledger</text>
+<rect x="498" y="478" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="498" y="478" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="bus" data-label="Event bus" role="graphics-symbol" aria-roledescription="box" aria-label="Event bus, Kafka"/>
+<text x="554" y="497.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">STORE</text>
+<text x="554" y="515.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Event bus</text>
+<text x="554" y="532.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">Kafka</text>
+<rect x="650" y="478" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="650" y="478" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="stripe" data-label="Stripe" role="graphics-symbol" aria-roledescription="box" aria-label="Stripe, external"/>
+<text x="706" y="497.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">API</text>
+<text x="706" y="515.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Stripe</text>
+<text x="706" y="532.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">external</text>
+<rect x="346" y="610" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="346" y="610" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="inventory" data-label="Inventory" role="graphics-symbol" aria-roledescription="box" aria-label="Inventory, reserve stock"/>
+<text x="402" y="629.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SVC</text>
+<text x="402" y="647.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Inventory</text>
+<text x="402" y="664.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">reserve stock</text>
+<rect x="498" y="610" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="498" y="610" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="notify" data-label="Notifications" role="graphics-symbol" aria-roledescription="box" aria-label="Notifications, email, push"/>
+<text x="554" y="629.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">SVC</text>
+<text x="554" y="647.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Notifications</text>
+<text x="554" y="664.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">email, push</text>
+<rect x="650" y="610" width="112" height="68" rx="6" fill="#f5f5f5" aria-hidden="true"/>
+<rect x="650" y="610" width="112" height="68" rx="6" fill="#ffffff" stroke="#7d8699" data-node="analytics" data-label="Analytics" role="graphics-symbol" aria-roledescription="box" aria-label="Analytics, ClickHouse"/>
+<text x="706" y="629.8" font-size="9" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" letter-spacing="0.7" fill="#4f5d75" text-anchor="middle" aria-hidden="true">STORE</text>
+<text x="706" y="647.3" font-size="13" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" aria-hidden="true">Analytics</text>
+<text x="706" y="664.1" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ClickHouse</text>
+<path d="M212,140 L212,164 Q212,172 220,172 L257,172 Q265,172 265,180 L265,204" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="web" data-to="gw" data-label="calls" data-id="web-&gt;gw:calls" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Web app to API gateway: calls"/>
+<path d="M340,140 L340,164 Q340,172 332,172 L295,172 Q287,172 287,180 L287,204" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="mobile" data-to="gw" data-label="calls" data-id="mobile-&gt;gw:calls" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Mobile app to API gateway: calls"/>
+<path d="M254,272 L254,294 Q254,302 246,302 L106,302 Q98,302 98,310 L98,346" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="gw" data-to="auth" data-label="verify" data-id="gw-&gt;auth:verify" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Auth: verify"/>
+<path d="M276,272 L276,308 Q276,316 268,316 L248,316 Q240,316 240,324 L240,346" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="gw" data-to="catalog" data-label="browse" data-id="gw-&gt;catalog:browse" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Catalog: browse"/>
+<path d="M298,272 L298,294 Q298,302 306,302 L446,302 Q454,302 454,310 L454,346" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="gw" data-to="orders" data-label="checkout" data-id="gw-&gt;orders:checkout" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="API gateway to Orders: checkout"/>
+<path d="M522,380 L586,380" fill="none" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#aa)" data-from="orders" data-to="pay" data-label="charge" data-id="orders-&gt;pay:charge" data-from-port="e" data-to-port="w" role="graphics-symbol" aria-roledescription="arrow" aria-label="Orders to Payments: charge"/>
+<path d="M98,414 L98,438 Q98,446 106,446 L143,446 Q151,446 151,454 L151,478" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="auth" data-to="redis" data-label="session" data-id="auth-&gt;redis:session" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Auth to Redis: session"/>
+<path d="M226,414 L226,438 Q226,446 218,446 L181,446 Q173,446 173,454 L173,478" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="catalog" data-to="redis" data-label="cache" data-id="catalog-&gt;redis:cache" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Catalog to Redis: cache"/>
+<path d="M455,414 L455,438 Q455,446 447,446 L422,446 Q414,446 414,454 L414,478" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#a)" data-from="orders" data-to="pg" data-label="write" data-id="orders-&gt;pg:write" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Orders to Postgres: write"/>
+<path d="M477,414 L477,438 Q477,446 485,446 L535,446 Q543,446 543,454 L543,478" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="orders" data-to="bus" data-label="placed" data-id="orders-&gt;bus:placed" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Orders to Event bus: placed"/>
+<path d="M653,414 L653,438 Q653,446 661,446 L686,446 Q694,446 694,454 L694,478" fill="none" stroke="#2e5aa8" stroke-width="1.4" marker-end="url(#al)" data-from="pay" data-to="stripe" data-label="card" data-id="pay-&gt;stripe:card" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Payments to Stripe: card"/>
+<path d="M631,414 L631,438 Q631,446 623,446 L573,446 Q565,446 565,454 L565,478" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="pay" data-to="bus" data-label="settled" data-id="pay-&gt;bus:settled" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Payments to Event bus: settled"/>
+<path d="M532,546 L532,570 Q532,578 524,578 L422,578 Q414,578 414,586 L414,610" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="inventory" data-label="reserve" data-id="bus-&gt;inventory:reserve" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Inventory: reserve"/>
+<path d="M554,546 L554,610" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="notify" data-label="email" data-id="bus-&gt;notify:email" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Notifications: email"/>
+<path d="M576,546 L576,570 Q576,578 584,578 L686,578 Q694,578 694,586 L694,610" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#a)" data-from="bus" data-to="analytics" data-label="ingest" data-id="bus-&gt;analytics:ingest" data-from-port="s" data-to-port="n" role="graphics-symbol" aria-roledescription="arrow" aria-label="Event bus to Analytics: ingest"/>
+<rect x="222.5" y="152" width="32" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="238.5" y="164" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">calls</text>
+<rect x="297.5" y="152" width="32" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="313.5" y="164" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">calls</text>
+<rect x="158" y="282" width="36" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="176" y="294" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">verify</text>
+<rect x="244" y="322" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="266" y="334" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">browse</text>
+<rect x="350" y="282" width="52" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="376" y="294" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">checkout</text>
+<rect x="534" y="360" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="554" y="372" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">charge</text>
+<rect x="101.5" y="426" width="46" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="124.5" y="438" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">session</text>
+<rect x="181" y="426" width="37" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="199.5" y="438" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">cache</text>
+<rect x="418" y="426" width="33" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="434.5" y="438" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">write</text>
+<rect x="490" y="426" width="40" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="510" y="438" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">placed</text>
+<rect x="659" y="426" width="29" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="673.5" y="438" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">card</text>
+<rect x="577.5" y="426" width="41" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="598" y="438" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">settled</text>
+<rect x="451" y="558" width="44" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="473" y="570" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">reserve</text>
+<rect x="558" y="581.8" width="36" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="576" y="593.8" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">email</text>
+<rect x="616" y="558" width="38" height="16" rx="2" fill="#f5f5f5" aria-hidden="true"/>
+<text x="635" y="570" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="middle" aria-hidden="true">ingest</text>
+<line x1="30" y1="702" x2="762" y2="702" stroke="rgba(45,49,66,0.12)" stroke-width=".8" aria-hidden="true"/>
+<text x="30" y="720" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">blue = HTTP call, dashed = sent in the background, coral = highlighted</text>
 </svg>

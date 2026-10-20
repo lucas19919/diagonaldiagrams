@@ -83,14 +83,14 @@
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#">diagonal<span>diagrams</span></a>
-    <nav><a href="#results">Results</a><a href="#try">Try it</a><a href="#gallery">Gallery</a><a href="#install">Install</a><a href="https://github.com/lucas19919/diagonaldiagrams">GitHub</a></nav>
+    <nav><a href="#showcase">Showcase</a><a href="#results">Results</a><a href="#try">Try it</a><a href="#gallery">Gallery</a><a href="#install">Install</a><a href="https://github.com/lucas19919/diagonaldiagrams">GitHub</a></nav>
   </div>
 </header>
 
 <main class="wrap">
   <div class="hero">
     <h1>Diagrams your AI agent gets right the first time.</h1>
-    <p class="lede">Ask your agent for a flowchart, an architecture diagram, a sequence diagram or a chart. diagonaldiagrams draws it and checks it for overlapping text and tangled arrows, so the agent knows it's right without looking at it, and uses far fewer tokens.</p>
+    <p class="lede">Ask your agent for a flowchart, an architecture diagram, a sequence diagram or a chart. diagonaldiagrams draws it and checks it for overlapping text and tangled arrows, then tells the agent the result in one line.</p>
     <div class="cta">
       <a class="btn primary" href="#try">Try it here</a>
       <a class="btn ghost" href="#install">Install</a>
@@ -101,36 +101,46 @@
   <section>
     <div class="three">
       <div class="card"><h3>Checked before you see it</h3><p>Every drawing is checked for text on text, text spilling out of its box, and arrows running through boxes. Most problems are fixed automatically; the rest go back to your agent with a plain fix.</p></div>
-      <div class="card"><h3>Far fewer tokens</h3><p>Your agent doesn't need screenshots to check its work. In our tests that meant 12.7k tokens for eight flowcharts, against 33k to 90k with other tools. <a href="#results">See the results</a>.</p></div>
+      <div class="card"><h3>A verdict, not a screenshot</h3><p>The agent gets a checked result back. At 40 steps that was 6.4k tokens, against 15.4k with Mermaid CLI. Pele, which models already know, used 6.3k there and the fewest overall. <a href="#results">See the results</a>.</p></div>
       <div class="card"><h3>Starts from Mermaid</h3><p>Agents already know how to write Mermaid, so there's nothing new to learn. To edit a diagram by hand, open it in draw.io or Excalidraw.</p></div>
     </div>
     <div class="figure narrow"><img src="gallery/how-it-works.svg" alt="How a diagram gets made: your agent describes the diagram; it is checked, laid out and drawn; the drawing is checked for overlaps and rearranged until clean; then you get the finished diagram"></div>
   </section>
 
+  <section id="showcase">
+    <h2>Three systems</h2>
+    <p class="sub">Drawn, checked, and filmed. The specs are in the repository under examples/showcase.</p>
+    <div class="gallery">
+      <figure><img src="showcase/nvidia.gif" alt="How an NVIDIA GPU gets made: design, TSMC, CoWoS packaging with memory, then a rack builder and a cloud."><figcaption>How an NVIDIA GPU gets made.</figcaption></figure>
+      <figure><img src="showcase/palantir.gif" alt="Palantir, from raw data to an AI decision: data lands, the Ontology is built, and a model writes an action back."><figcaption>Palantir, from raw data to a decision.</figcaption></figure>
+      <figure><img src="showcase/falcon9.gif" alt="A Falcon 9 mission: countdown, liftoff, separation, the booster flying home, the second stage going on to orbit."><figcaption>A Falcon 9 mission.</figcaption></figure>
+    </div>
+  </section>
+
   <section id="results">
     <h2>Results</h2>
-    <p class="sub">We gave AI agents (Claude Sonnet) the same flowcharts to draw, from 5 to 40 steps, with five different tools, twice each, and counted the tokens each one spent.</p>
-    <div class="figure"><img src="gallery/bench-tools.svg" alt="Line chart of tokens per flowchart against its number of steps. diagonaldiagrams stays between 1.3k and 2.1k. At 40 steps, hand-written SVG reaches 8.1k, Graphviz 12.5k, Mermaid 20.5k and D2 28k."></div>
+    <p class="sub">diagonaldiagrams 0.8.0 against Mermaid CLI and Pele, on 2026-10-19. The same four flowcharts, from 5 to 40 steps. Two fresh agents per point.</p>
+    <div class="figure"><img src="gallery/bench-tools-0.8.svg" alt="Line chart of tokens per flowchart. diagonaldiagrams stays between 4.4k and 6.4k. Mermaid CLI climbs from 1.8k to 15.4k. Pele stays under 2.7k until 6.3k at 40 steps."></div>
     <div class="table-wrap">
       <table>
-        <tr><th>All eight flowcharts</th><th class="num">Tokens</th><th class="num">Tool calls</th><th class="num">Screenshots</th><th class="num">Time</th></tr>
-        <tr class="us"><td>diagonaldiagrams</td><td class="num">12.7k</td><td class="num">29</td><td class="num">0</td><td class="num">6 min</td></tr>
-        <tr><td>Agent writes the SVG itself</td><td class="num">33.4k</td><td class="num">51</td><td class="num">2</td><td class="num">26 min</td></tr>
-        <tr><td>Graphviz</td><td class="num">50.1k</td><td class="num">91</td><td class="num">4</td><td class="num">28 min</td></tr>
-        <tr><td>Mermaid</td><td class="num">63.9k</td><td class="num">115</td><td class="num">42</td><td class="num">31 min</td></tr>
-        <tr><td>D2</td><td class="num">90.5k</td><td class="num">170</td><td class="num">23</td><td class="num">38 min</td></tr>
+        <tr><th>All eight flowcharts</th><th class="num">Tokens</th><th class="num">Calls</th><th class="num">Screenshots</th><th class="num">Time</th></tr>
+        <tr><td>Pele</td><td class="num">23.9k</td><td class="num">57</td><td class="num">18</td><td class="num">5 min</td></tr>
+        <tr class="us"><td>diagonaldiagrams</td><td class="num">43.8k</td><td class="num">69</td><td class="num">9</td><td class="num">7 min</td></tr>
+        <tr><td>Mermaid CLI</td><td class="num">47.8k</td><td class="num">79</td><td class="num">32</td><td class="num">13 min</td></tr>
       </table>
     </div>
-    <p class="note">Every tool ended with a readable diagram. The difference is what it cost to get there: with the other tools, the agent renders an image and looks at it, again and again as the diagram grows. With diagonaldiagrams it gets a checked result back and moves on.</p>
-    <p class="note">Where others did better: writing the SVG by hand was cheapest for the smallest flowchart, and at 40 steps the Mermaid agents arranged their diagrams into side-by-side stages, which read better than our single long column.</p>
+    <p class="note">Pele spent the fewest tokens, because the model already knows Mermaid and reads no skill. diagonaldiagrams stays flat as the figure grows: 6.4k at 40 steps, where Mermaid CLI reaches 15.4k, most of it screenshots. Every one of the 24 figures passed the audit.</p>
+    <div class="figure"><img src="gallery/bench-speed.svg" alt="Line chart of milliseconds per call. diagonaldiagrams stays between 136 and 154. Pele stays between 95 and 107. Mermaid CLI takes 2.3 to 2.6 seconds and is not on this chart."></div>
+    <div class="figure"><img src="gallery/bench-quality.svg" alt="Bar chart. Share of blind judgments calling diagonaldiagrams clearer. Column flows are 100 percent against Pele and Mermaid. On a slide, 85 and 97. Native architecture, 75 and 88. Architecture translated from Mermaid, 0 and 50."></div>
+    <p class="note">In a README column, after sizing the figure for that column, every flowchart was judged clearer. Architecture written as our own spec won 6 of 8 against Pele and 7 of 8 against Mermaid. The same architecture translated from Mermaid still loses to Pele.</p>
     <details>
       <summary>How we tested</summary>
       <ul>
-        <li>Every run got the same task: a process described in plain words, "make a clean, readable flowchart", and save it as an SVG. Only the tool changed.</li>
-        <li>The tools were Mermaid, Graphviz, D2, diagonaldiagrams with its agent instructions, and no tool at all, where the agent writes the SVG itself.</li>
-        <li>We counted the tokens spent on the task: what the agent wrote, what came back to it, and the images it looked at. The agent's fixed instructions are the same for every task, so they aren't counted.</li>
-        <li>Each size was run twice, and single runs vary by up to 2×. The agents writing SVG by hand were told not to use any drawing tool, so most never looked at their result, which keeps their count low.</li>
-        <li>The raw data and the counting script are <a href="https://github.com/lucas19919/diagonaldiagrams">in the repository</a>.</li>
+        <li>Speed is a fresh process per figure. diagonaldiagrams was remeasured the same day, the median of 7 calls from bytecode. Pele and Mermaid CLI are the earlier run that day.</li>
+        <li>Tokens count what the agent wrote, what came back, files it read, and screenshots. The harness and thinking are left out. Two runs per point, and single runs differ by up to 3.5 times.</li>
+        <li>Quality is blind: two judges, both orders. The column numbers are the rejudge after <code>--fit column</code>.</li>
+        <li>An earlier run on 2026-10-04, 12.7k tokens against Mermaid's 63.9k, used a different prompt and is not comparable.</li>
+        <li>The tables, the prompts, and the scripts are in the repository under <code>bench/</code>.</li>
       </ul>
     </details>
   </section>

@@ -1,0 +1,12 @@
+{
+  "when": "2026-10-19",
+  "what": "diagonaldiagrams CLI, golden flow-05/11/20/40, a fresh process per call, from bytecode. One warm-up per size, then the median of 7. Pele and Mermaid CLI were not rerun; their medians are bench/speed/v0.8.0.json.",
+  "ms": {"5": 135.5, "11": 142.1, "20": 151.5, "40": 153.8},
+  "rounded_ms": {"5": 136, "11": 142, "20": 152, "40": 154},
+  "samples_ms": {
+    "5": [127.2, 136.4, 135.5, 132.5, 137.9, 139.2, 130.1],
+    "11": [137.5, 136.8, 142.1, 143.0, 142.4, 137.5, 144.9],
+    "20": [147.7, 151.5, 156.7, 151.2, 163.3, 154.7, 131.7],
+    "40": [155.5, 153.8, 159.3, 151.4, 155.1, 148.6, 144.6]
+  }
+}

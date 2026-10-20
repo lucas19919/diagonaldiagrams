@@ -46,6 +46,16 @@ MEASURED = [
                          "--highlight", "diagonaldiagrams", "--title", "Tokens per flowchart, 0.8.0",
                          "--subtitle", "diagonaldiagrams pays a fixed cost for its skill and verdict; Mermaid CLI grows fastest with the figure",
                          "--xlabel", "Steps in the flowchart", "--ylabel", "Tokens used (average of 2 runs)", "--source", SOURCE]),
+    ("bench-speed", ["line", "docs/data/bench_speed_call.csv", "--x", "steps", "--y", "ms", "--group", "tool",
+                      "--highlight", "diagonaldiagrams", "--title", "A call stays under 160 ms as the flowchart grows",
+                      "--subtitle", "Milliseconds for one figure, a new process each time. Mermaid CLI takes 2.3 to 2.6 seconds on these same flows.",
+                      "--xlabel", "Steps in the flowchart", "--ylabel", "Milliseconds per call",
+                      "--source", "diagonaldiagrams remeasured 2026-10-19, median of 7. Pele is that day's benchmark, not rerun."]),
+    ("bench-quality", ["bar", "docs/data/bench_quality.csv", "--cat", "figure", "--val", "clearer", "--group", "tool",
+                        "--title", "Column flows were judged clearer every time",
+                        "--subtitle", "Share of blind judgments diagonaldiagrams won on clarity.",
+                        "--ylabel", "Clearer (percent of judgments)",
+                        "--source", "Slide: 496 judgments. Column flows: --fit column. Arch: the later rejudge."]),
 ]
 
 

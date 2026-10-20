@@ -27,7 +27,7 @@ SIZES = (5, 11, 20, 40)
 TOOLS = {
     "diagonaldiagrams": (
         "Use diagonaldiagrams, an SVG diagram engine for agents. Run it as `{bin}\\diagonaldiagrams.cmd` "
-        "(it takes the arguments its skill describes). Its skill is {repo}\\SKILL.md."),
+        "(it takes the arguments its skill describes). Its skill is {repo}\\.agents\\skills\\graph-engine\\SKILL.md."),
     "mermaid": (
         "Use Mermaid CLI (mmdc). Run it as `{bin}\\mmdc.cmd -i IN.mmd -o OUT.svg` "
         "(OUT.png also works). Its options: `{bin}\\mmdc.cmd --help`."),
