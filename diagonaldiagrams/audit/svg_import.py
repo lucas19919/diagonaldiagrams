@@ -253,7 +253,7 @@ def svg_import(root, width, height):
             real = [q for q in pts if q is not None]
             if len(real) >= 2:
                 z[0] += 1
-                arrow = dl.add(Item("arrow", z=z[0], pts=pts, ends=(real[0], real[-1])))
+                arrow = dl.add(Item("arrow", z=z[0], pts=pts, ends=(real[0], real[-1]), label=el.get("data-label") or ""))
                 if el.get("data-from") is not None and el.get("data-to") is not None:
                     arrow.attach = {end: {"node": el.get(f"data-{end}"), "port": el.get(f"data-{end}-port")}
                                     for end in ("from", "to")}

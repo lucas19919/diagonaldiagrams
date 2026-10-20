@@ -189,7 +189,7 @@ def _layered(spec, kind, nodes, t, sty, corners, options, min_w, label, edges=No
     if most:  # narrowed to fit: rows may hold one box, so each frame keeps room for its title
         lay["max_width"] = most - 2 * MARGIN
         lay["chrome"] = max(MARGIN, head_h + 12) + (64 if legend else MARGIN)  # the heading and legend
-        lay["heads"] = {g["id"]: paint.frame_title(g, sty.group(g["id"])["title"])[1] for g in groups}
+    lay["heads"] = {g["id"]: paint.frame_title(g, sty.group(g["id"])["title"])[1] for g in groups}  # title room
     res = layered.layout(lnodes, ledges, frames_in, lay)
     if stack and most and res.size[0] + 2 * MARGIN > most:
         # too wide for where it goes: the tables in one column, in the order they read side by side
@@ -370,13 +370,14 @@ def _fit(spec):
 
 def _narrower(out, spec, narrow, info, again):
     """out, a drawing (svg, W, H), or if it is wider than where it goes allows (_fit) and its boxes'
-    text could wrap sooner, the drawing again(info) gives with NARROW, when that one is narrower."""
+    text could wrap sooner, the drawing again(info) gives with NARROW, when that one takes less of
+    where it goes: its height once shrunk to fit the width there."""
     most = _fit(spec)[1]
     if narrow is not None or not most or out[1] <= most:
         return out
     alt = {} if info is not None else None
     other = again(alt)
-    if other[1] >= out[1]:
+    if other[2] * max(other[1], most) >= out[2] * max(out[1], most):
         return out
     if info is not None:
         info.clear()

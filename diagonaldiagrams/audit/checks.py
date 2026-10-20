@@ -160,7 +160,9 @@ def arrow_paths(v, issues):
 @check("arrows on one line", "shared")
 def shared_runs(v, issues):
     # Two arrows on one line, or ending within 12px of each other on it, read as one arrow
-    # that forks: nobody can tell where each goes.
+    # that forks: nobody can tell where each goes. Arrows that leave or arrive at one point and
+    # split (a trunk) are drawn so on purpose, unless both carry a label: then the labels sit on
+    # the one bar they share, each far from its own line.
     runs = v.runs
     shared = set()
     # only runs in the same direction within 2px of each other can share a line: find those pairs
@@ -178,6 +180,8 @@ def shared_runs(v, issues):
         sa, ea = v.arrows[ka].ends
         sb, eb = v.arrows[kb].ends
         joint = math.hypot(sa[0] - sb[0], sa[1] - sb[1]) < 3 or math.hypot(ea[0] - eb[0], ea[1] - eb[1]) < 3
+        if joint and v.arrows[ka].label and v.arrows[kb].label:
+            joint = False  # a labelled trunk
         # one arrow ends where the other begins (through a junction dot) and they only meet end to
         # end: that is one path, drawn on purpose
         chained = ((math.hypot(ea[0] - sb[0], ea[1] - sb[1]) < 10 or math.hypot(eb[0] - sa[0], eb[1] - sa[1]) < 10)

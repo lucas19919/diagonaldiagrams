@@ -202,6 +202,51 @@ class Renders(unittest.TestCase):
             self.assertNotEqual(code, 0)
 
 
+class ArchInAColumn(unittest.TestCase):
+    """The arch figures that lost to Pele in a column (bench/quality, fit-column-pack)."""
+
+    def draw(self, source, *flags):
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "fig.svg")
+            code, stdout, _ = api.run(["mermaid", os.path.join(ROOT, "bench", "quality", "sources", source), "-o", out, *flags])
+            self.assertEqual(code, 0, stdout)
+            with open(out, encoding="utf-8") as f:
+                return json.loads(stdout), f.read()
+
+    def test_a_wide_layer_packs_side_by_side_under_what_calls_it(self):
+        # the agent's six targets went one box a row, fed by four long lanes; packed, the tools frame
+        # stands whole in one row and the figure fits the column at full size
+        verdict, svg = self.draw("ref-arch-agent-platform.mmd", "--fit", "column")
+        self.assertTrue(verdict["ok"], verdict)
+        rows = [r for r in verdict["layout"] if r.startswith("row")]
+        self.assertIn("Web search tool | Code sandbox Firecracker | diagonaldiagrams MCP", " ".join(rows))
+        self.assertLessEqual(len(rows), 8)
+        self.assertLessEqual(float(svg.split('viewBox="0 0 ')[1].split()[0]), 720)
+
+    def test_labelled_arrows_out_of_one_side_leave_by_ports_of_their_own(self):
+        # verify and browse rode one bar, settled and card one segment (the flow preset's trunk)
+        verdict, svg = self.draw("ref-arch-checkout-groups.mmd", "--fit", "column")
+        self.assertTrue(verdict["ok"], verdict)
+        self.assertNotIn("shared", [e["code"] for e in verdict.get("errors", [])])
+
+    def test_an_arrow_into_a_frame_box_clears_the_frame_title(self):
+        verdict, _ = self.draw("ref-arch-agent-platform.mmd")  # on a slide 'run' crossed AGENT RUNTIME
+        self.assertNotIn("strike", [e["code"] for e in verdict.get("errors", [])])
+
+    def test_the_audit_flags_a_labelled_trunk(self):
+        from diagonaldiagrams.audit import _audit_file
+        arrow = '<path d="M100,40 L100,80 L{x},80 L{x},140" fill="none" stroke="#333" marker-end="url(#a)" data-label="{t}"/>'
+        for labels, flagged in ((("a", "b"), True), (("", ""), False)):
+            svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">'
+                   + arrow.format(x=300, t=labels[0]) + arrow.format(x=250, t=labels[1]) + "</svg>")
+            with tempfile.TemporaryDirectory() as d:
+                path = os.path.join(d, "t.svg")
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(svg)
+                codes = [e.get("code") for e in _audit_file(path)["errors"]]
+            self.assertEqual("shared" in codes, flagged, codes)
+
+
 class Mermaid(unittest.TestCase):
     def test_front_matter_says_where_the_figure_goes(self):
         spec = _mermaid_spec("---\ntitle: Deploy\nfit: column\n---\nflowchart TD\n  A --> B\n")

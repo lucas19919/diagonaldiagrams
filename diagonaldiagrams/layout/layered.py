@@ -92,7 +92,7 @@ def layout(nodes, edges, groups=(), options=None):
     # stands only where it takes less of the column than the layers kept whole (room()): rows
     # stacked like a comb can cost more height, and longer arrows, than the width they save
     best, tried = res, set()
-    for more in range(5):
+    for more in range(-1, 5):  # -1: units packed side by side in as few rows as fit (rows._pack)
         res = _layout(nodes, edges, groups, dict(o, more_rows=more))
         seen = tuple(sorted((str(i), r) for i, r in res.rank.items()))
         if seen in tried:  # the same rows as a try before
@@ -337,10 +337,11 @@ def _layout(nodes, edges, groups, o):
         return max(width[a] / 2.0 + width[b] / 2.0 + gap(a, b) + extra.get((a, b), 0.0),
                    spread.get(frozenset((a, b)), 0.0))
 
-    # a frame's title (o["heads"]: group -> its width, given where a fit narrows the figure and rows
-    # may hold one box) in a frame with one box in its top layer, or too narrow to find a clear spot
-    # between the arrows coming down into it, gets room before the frame's first item in its top
-    # layer, where no arrow comes in
+    # a frame's title (o["heads"]: group -> its width) in a frame with one box in its top layer, or
+    # too narrow to find a clear spot between the arrows coming down into it, gets room before the
+    # frame's first item in its top layer. Where arrows come down into that item, near its middle a
+    # slot apart, the room keeps the title clear of the leftmost; else, where a fit narrows the figure
+    # (rows may hold one box), the title goes before the item, where no arrow comes in
     for g, (lo, _) in span.items() if o.get("heads") and direction == "TB" else ():
         title = o["heads"].get(g, 0.0)
         layer = L.layers[lo]
@@ -349,7 +350,12 @@ def _layout(nodes, edges, groups, o):
         if boxes < 2 or sum(sep(x, y) for x, y in zip(layer[a:b], layer[a + 1:b + 1])) < 2 * (title + 24.0):
             pair = (layer[a], layer[a + 1])
             free = sep(*pair) - width[pair[1]] / 2.0  # from the border to the item's left side
-            extra[pair] = extra.get(pair, 0.0) + max(0.0, title + 20.0 - free)
+            n = len(L.up.get(pair[1], ())) if L.kind[pair[1]] == "node" else 0
+            if n:
+                need = title + 20.0 - free - max(0.0, width[pair[1]] / 2.0 - o["slot"] * n / 2.0)
+            else:
+                need = title + 20.0 - free if o.get("max_width") else 0.0
+            extra[pair] = extra.get(pair, 0.0) + max(0.0, need)
 
     def inner(u, v):
         ku, kv = L.kind[u], L.kind[v]
@@ -362,16 +368,26 @@ def _layout(nodes, edges, groups, o):
                             lambda u, v: inner(u, v) and u not in climb and v not in climb, forced_up)
     prev = o.get("prev") if direction == "TB" else None  # an earlier drawing's x per node: stay near it
     prev = {k: float(v) for k, v in prev.items() if k in info} if prev else None
+    up, down = L.up, L.down
+    if o.get("more_rows", 0) < 0 and comb:
+        # rows packed side by side (rows._pack): a box in a lower row is not lined up under the lane
+        # that comes down to it, or each lane would pull its box out from under the rows above; the
+        # lane turns to it in the gap over its row
+        cut = {(kd[3][-1], kd[2]) for kd, e in zip(kinds, E) if e["id"] in comb and kd[3]}
+        up = {v: [u for u in us if (u, v) not in cut] for v, us in L.up.items()}
+        down = {u: [v for v in vs if (u, v) not in cut] for u, vs in L.down.items()}
     xs = None
     if stack:  # rows a layer spread over: each box in line with the one above it in its column
-        xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up, prev,
+        xs = bk.coordinates(L.layers, up, down, width, sep, L.kind, inner, forced_up, prev,
                             {**(straight or {}), **stack})
         if not bk.valid(L.layers, xs, sep, forced_up):  # the columns broke a frame or a gap: not in line
             xs, stack = None, {}
     if xs is None:
-        xs = bk.coordinates(L.layers, L.up, L.down, width, sep, L.kind, inner, forced_up, prev, straight)
+        xs = bk.coordinates(L.layers, up, down, width, sep, L.kind, inner, forced_up, prev, straight)
     if o.get("balance") and not stack:  # arch: each node over what it calls (bk.balance)
-        xs = bk.balance(L.layers, L.up, L.down, L.kind, xs, sep)
+        xs = bk.balance(L.layers, up, down, L.kind, xs, sep)
+    if o.get("more_rows", 0) < 0 and comb:
+        _settle(L, xs, width, sep, min(rank[i] for i in first if rank[i] > first[i]), cut, span)
     # 5. ports, routes and the gaps' tracks
     order_of = {it: k for layer in L.layers for k, it in enumerate(layer)}
     band_h = [max((info[it]["h"] for it in layer if L.kind[it] == "node"), default=0.0) for layer in L.layers]
@@ -488,6 +504,61 @@ def _turn(side, direction):
 def _tbox(tf, b):
     a, c = tf(b[0], b[1]), tf(b[2], b[3])
     return (min(a[0], c[0]), min(a[1], c[1]), max(a[0], c[0]), max(a[1], c[1]))
+
+
+def _settle(L, xs, width, sep, top, cut, span):
+    """Packed rows (rows._pack): from the first lower row (layer top) down, each unit slides toward
+    what comes down to it, as far as its layer lets it and no wider than the figure: a box a lane
+    comes down to toward its lane, so a row hangs under the boxes that call it rather than at the
+    figure's edge; a box below toward the middle of its callers; a line's dummy after the one above
+    it. A unit is a node, a dummy or a frame whole; a frame begun above the first lower row stays a
+    rectangle. Changes xs."""
+    above = [v for layer in L.layers[:top] for v in layer]
+    lo = min(xs[v] - width[v] / 2.0 for v in above)
+    hi = max(xs[v] + width[v] / 2.0 for v in above)
+    lane = {v: u for u, v in cut}
+    for r in range(top, len(L.layers)):
+        blocks, depth = [], 0
+        for it in L.layers[r]:
+            if depth == 0:
+                blocks.append([])
+            blocks[-1].append(it)
+            depth += {"left": 1, "right": -1}.get(L.kind[it], 0)
+        offs, vals, ws, o = [], [], [], 0.0
+        for k, b in enumerate(blocks):
+            if k:
+                last = blocks[k - 1]
+                o += xs[last[-1]] - xs[last[0]] + sep(last[-1], b[0])
+            offs.append(o)
+            pulls = []
+            for v in b:
+                ups = [xs[u] for u in L.up.get(v, ())]
+                if v in lane:
+                    pulls.append(xs[lane[v]] - xs[v])
+                elif L.kind[v] in ("node", "dummy") and ups:
+                    pulls.append((min(ups) + max(ups)) / 2.0 - xs[v])
+            pulls.sort()
+            want, w = 0.0, 1.0
+            if any(L.kind[v] in ("left", "right") and span[L.owner[v]][0] < top for v in b):
+                w = 1e9  # a frame begun above stays a rectangle
+            elif pulls:
+                left = min(xs[v] - width[v] / 2.0 for v in b)
+                right = max(xs[v] + width[v] / 2.0 for v in b)
+                want = min(max(pulls[len(pulls) // 2], lo - left), hi - right)
+                w = 4.0 if L.kind[b[0]] == "dummy" else 1.0
+            vals.append(xs[b[0]] + want - o)
+            ws.append(w)
+        for b, y, o in zip(blocks, bk._isotonic(vals, ws), offs):
+            dx = y + o - xs[b[0]]
+            for v in b:
+                xs[v] += dx
+        if max(ws) < 1e9:  # pushed past the figure's side: the layer back in, as far as it goes
+            layer = L.layers[r]
+            over = max(xs[v] + width[v] / 2.0 for v in layer) - hi
+            room = min(xs[v] - width[v] / 2.0 for v in layer) - lo
+            dx = -min(over, room) if over > 0 else min(-over, -room) if room < 0 else 0.0
+            for v in layer:
+                xs[v] += dx
 
 
 def _depth(g, r, span, parent, what):
@@ -645,9 +716,13 @@ class _Plan:
                     for k, (eid, role, _) in enumerate(seq):
                         self.stub[(eid, role)] = o["stub"] + k * o["track"]
                 continue
-            # arrows out to a comb's lanes: a shared trunk would run them down the lanes as one bundle
-            fan = inf["shape"] == "box" and len(items) >= 2 and not ins and any(t[0] in self.comb for t in outs)
-            if lim == 0.0 or (o["trunk"] and not fan and inf["shape"] == "box" and len(items) >= 2 and len({it[1] for it in items}) == 1):
+            # arrows out to a comb's lanes: a shared trunk would run them down the lanes as one bundle;
+            # and two labelled arrows on one side: on a trunk their labels would share one bar, each
+            # far from its own line, so each has a port and a line of its own
+            told = o["trunk"] and sum(1 for t in items if t[0] in (o.get("labels") or {})) >= 2
+            fan = inf["shape"] == "box" and len(items) >= 2 and not ins and (told or any(t[0] in self.comb for t in outs))
+            if lim == 0.0 or (o["trunk"] and not fan and not told and inf["shape"] == "box" and len(items) >= 2
+                              and len({it[1] for it in items}) == 1):
                 for eid, role, _ in items:
                     self.offset[(eid, role)] = 0.0
                 continue
