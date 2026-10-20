@@ -35,18 +35,21 @@ def _assign_colors(groups, pal, highlights=None):
     return out
 
 
-def series_palette(t, highlights=None):
-    """Colorblind-safe series colors fitting the theme (dark gets brightened set). With a highlight,
-    colors close to the accent are left out, so only the highlighted series reads as coral."""
+def series_palette(t, highlights=None, reserve=False):
+    """Colorblind-safe series colors fitting the theme (dark gets brightened set). With a highlight, or
+    reserve (bar and line, where --highlight can give the accent to any series), colors close to the
+    accent are left out, so only a highlighted series reads as coral, and a series keeps its color
+    across figures whether or not one is highlighted."""
     pal = OKABE_ITO_DARK if t.get("_name") == "ink" else OKABE_ITO
-    if not highlights:
+    if not highlights and not reserve:
         return pal
 
     def rgb(c):
         c = str(c).lstrip("#")
         return tuple(int(c[k:k + 2], 16) for k in (0, 2, 4)) if len(c) == 6 else (0, 0, 0)
     acc = rgb(t.get("accent", "#eb6c36"))
-    far = [c for c in pal if sum((a - b) ** 2 for a, b in zip(rgb(c), acc)) ** 0.5 > 70]
+    # 90 drops vermillion and the Okabe-Ito orange beside a coral accent; both read as the accent
+    far = [c for c in pal if sum((a - b) ** 2 for a, b in zip(rgb(c), acc)) ** 0.5 > 90]
     return far or pal
 
 

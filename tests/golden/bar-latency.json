@@ -8,7 +8,7 @@
   "p99_latency_ms"
  ],
  "exit": 0,
- "html_sha256": "dace789b62dd6200b3131ed8065bc6f4c7d7c8c2ed18f040378e1a034fd2f45e",
+ "html_sha256": "f4b4c2131939f77e6c7fb9a8b5e263c7264b0817ee852b5826e301475e5f25a5",
  "receipt": {
   "caption": "Categorical comparison.",
   "cat": "service",
@@ -35,7 +35,8 @@
  "verdict": {
   "bars": 5,
   "layout": [
-   "x axis: Service"
+   "x axis: Service",
+   "y axis: p99 Latency ms"
   ],
   "ok": true
  }

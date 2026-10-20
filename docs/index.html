@@ -130,8 +130,8 @@
       </table>
     </div>
     <p class="note">Pele spent the fewest tokens, because the model already knows Mermaid and reads no skill. diagonaldiagrams stays flat as the figure grows: 6.4k at 40 steps, where Mermaid CLI reaches 15.4k, most of it screenshots. Every one of the 24 figures passed the audit.</p>
-    <div class="figure"><img src="gallery/bench-speed.svg" alt="Line chart of milliseconds per call. diagonaldiagrams stays between 136 and 154. Pele stays between 95 and 107. Mermaid CLI takes 2.3 to 2.6 seconds and is not on this chart."></div>
-    <div class="figure"><img src="gallery/bench-quality.svg" alt="Bar chart. Share of blind judgments calling diagonaldiagrams clearer. Column flows are 100 percent against Pele and Mermaid. On a slide, 85 and 97. Native architecture, 75 and 88. Architecture translated from Mermaid, 0 and 50."></div>
+    <div class="figure"><img src="gallery/bench-speed.svg" alt="Bar chart of one 20-step flowchart, a new process each time: diagonaldiagrams 152 ms, Pele 101 ms, Mermaid CLI 2,340 ms, about 15 times as long."></div>
+    <div class="figure"><img src="gallery/bench-quality.svg" alt="Bar chart of the share of blind judgments calling diagonaldiagrams clearer, with a line at 50 percent. Against Pele: 85 percent on a slide, 100 for column flows, 75 for our architecture, 0 for architecture translated from Mermaid. Against Mermaid CLI: 97, 100, 88 and 50."></div>
     <p class="note">In a README column, after sizing the figure for that column, every flowchart was judged clearer. Architecture written as our own spec won 6 of 8 against Pele and 7 of 8 against Mermaid. The same architecture translated from Mermaid still loses to Pele.</p>
     <details>
       <summary>How we tested</summary>

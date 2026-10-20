@@ -44,7 +44,7 @@ diagonaldiagrams 0.8.0 against [Mermaid CLI](https://github.com/mermaid-js/merma
 
 Milliseconds for one figure, a new process each time. diagonaldiagrams was remeasured the same day: median of 7 calls, from bytecode ([`bench/speed/cli-2026-10-19.json`](bench/speed/cli-2026-10-19.json)). Pele and Mermaid CLI are that day's earlier run, not rerun.
 
-![A call stays under 160 ms as the flowchart grows. Pele stays near 100 ms. Mermaid CLI, about 2.4 seconds, is off this chart.](docs/gallery/bench-speed.svg)
+![Bar chart of one 20-step flowchart, a new process each time: diagonaldiagrams 152 ms, Pele 101 ms, Mermaid CLI 2,340 ms, about 15 times as long.](docs/gallery/bench-speed.svg)
 
 | | 5 steps | 11 steps | 20 steps | 40 steps |
 | --- | ---: | ---: | ---: | ---: |
@@ -58,7 +58,7 @@ A diagonaldiagrams call is about 1.4 times a Pele process, and about 16 times fa
 
 Each point is a fresh Claude Sonnet agent with one prose task and nothing else. Two runs. Tokens are what the agent wrote, what came back, files it read, and screenshots. The harness and thinking are left out.
 
-![Tokens per flowchart. diagonaldiagrams stays between 4.4k and 6.4k. Mermaid CLI climbs from 1.8k to 15.4k. Pele stays under 2.7k until 6.3k at 40 steps.](docs/gallery/bench-tools-0.8.svg)
+![Line chart of tokens per flowchart. diagonaldiagrams stays between 4.4k and 6.4k. Mermaid CLI climbs from 1.8k to 15.4k. Pele stays under 2.7k until 6.3k at 40 steps.](docs/gallery/bench-tools-0.8.svg)
 
 | Steps | diagonaldiagrams | Mermaid CLI | Pele |
 | --- | ---: | ---: | ---: |
@@ -81,9 +81,9 @@ An earlier run, on 0.5.0 (2026-10-04), had different prompts and is not comparab
 
 ### Quality
 
-Blind pairs. Two judges, both orders, two questions: which is clearer, and which looks better. The chart is the share diagonaldiagrams won on clarity.
+Blind pairs. Two judges, both orders, two questions: which is clearer, and which looks better. The chart is the share diagonaldiagrams won on clarity; past the 50% line it won.
 
-![Column flows were judged clearer every time. On a slide, 85 percent against Pele and 97 against Mermaid. Native architecture, 75 and 88. Architecture translated from Mermaid, 0 against Pele and 50 against Mermaid.](docs/gallery/bench-quality.svg)
+![Bar chart of the share of blind judgments calling diagonaldiagrams clearer, with a line at 50 percent. Against Pele: 85 percent on a slide, 100 for column flows, 75 for our architecture, 0 for architecture translated from Mermaid. Against Mermaid CLI: 97, 100, 88 and 50.](docs/gallery/bench-quality.svg)
 
 | | vs Pele | vs Mermaid |
 | --- | ---: | ---: |

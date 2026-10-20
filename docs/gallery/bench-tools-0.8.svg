@@ -1,49 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 480" width="760"><title>Tokens per flowchart, 0.8.0</title>
-<desc>diagonaldiagrams pays a fixed cost for its skill and verdict; Mermaid CLI grows fastest with the figure</desc>
-<rect width="760" height="480" fill="#ffffff"/>
-<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Tokens per flowchart, 0.8.0</text>
-<text x="36" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">diagonaldiagrams pays a fixed cost for its skill and verdict; Mermaid CLI grows fastest with the figure</text>
-<line x1="80" y1="380.0" x2="613" y2="380.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="384.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
-<line x1="80" y1="300.0" x2="613" y2="300.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="304.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">5000</text>
-<line x1="80" y1="220.0" x2="613" y2="220.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="224.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">10k</text>
-<line x1="80" y1="140.0" x2="613" y2="140.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="144.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">15k</text>
-<line x1="80" y1="60.0" x2="613" y2="60.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="64.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">20k</text>
-<line x1="80.0" y1="60" x2="80.0" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="80.0" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">0</text>
-<line x1="213.2" y1="60" x2="213.2" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="213.2" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10</text>
-<line x1="346.5" y1="60" x2="346.5" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="346.5" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">20</text>
-<line x1="479.8" y1="60" x2="479.8" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="479.8" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">30</text>
-<line x1="613.0" y1="60" x2="613.0" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="613.0" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">40</text>
-<line x1="80" y1="380" x2="613" y2="380" stroke="#2d3142" stroke-width="1.2"/>
-<line x1="80" y1="60" x2="80" y2="380" stroke="#2d3142" stroke-width="1.2"/>
-<path d="M146.6,351.9 L226.6,335.9 L346.5,315.6 L613.0,134.0" fill="none" stroke="#0072B2" stroke-width="2.2" stroke-linecap="round"/>
-<circle cx="146.6" cy="351.9" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 5: 1756</title></circle>
-<circle cx="226.6" cy="335.9" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 11: 2756</title></circle>
-<circle cx="346.5" cy="315.6" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 20: 4024</title></circle>
-<circle cx="613.0" cy="134.0" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 40: 15.374k</title></circle>
-<path d="M146.6,337.6 L226.6,353.2 L346.5,359.0 L613.0,279.1" fill="none" stroke="#E69F00" stroke-width="2.2" stroke-linecap="round"/>
-<circle cx="146.6" cy="337.6" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Pele · 5: 2648</title></circle>
-<circle cx="226.6" cy="353.2" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Pele · 11: 1677</title></circle>
-<circle cx="346.5" cy="359.0" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Pele · 20: 1313</title></circle>
-<circle cx="613.0" cy="279.1" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Pele · 40: 6306</title></circle>
-<path d="M146.6,309.0 L226.6,284.3 L346.5,298.1 L613.0,278.2" fill="none" stroke="#eb6c36" stroke-width="2.2" stroke-linecap="round"/>
-<circle cx="146.6" cy="309.0" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 5: 4436</title></circle>
-<circle cx="226.6" cy="284.3" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 11: 5982</title></circle>
-<circle cx="346.5" cy="298.1" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 20: 5116</title></circle>
-<circle cx="613.0" cy="278.2" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 40: 6364</title></circle>
-<text x="623.0" y="138.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#0072B2" data-role="series">Mermaid CLI 15.4k</text>
-<text x="623.0" y="282.2" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" data-role="series">diagonaldiagrams 6,364</text>
-<text x="623.0" y="296.2" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#E69F00" data-role="series">Pele 6,306</text>
-<text x="346.5" y="420" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Steps in the flowchart</text>
-<text x="24" y="220.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 24,220.0)" data-role="yaxis">Tokens used (average of 2 runs)</text>
-<text x="36" y="466" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">12 points · Source: Claude Sonnet agents, two runs per point. Counts the tokens spent on the task, not the agent&#x27;s fixed instructions.</text>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 486" width="760"><title>diagonaldiagrams costs about the same at any size</title>
+<desc>Tokens a fresh agent spent on one flowchart. Pele costs least; Mermaid CLI climbs with the figure.</desc>
+<rect width="760" height="486" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">diagonaldiagrams costs about the same at any size</text>
+<text x="36" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">Tokens a fresh agent spent on one flowchart. Pele costs least; Mermaid CLI climbs with the figure.</text>
+<line x1="62.400000000000006" y1="406.0" x2="613.0" y2="406.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="52.400000000000006" y="410.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
+<line x1="62.400000000000006" y1="326.0" x2="613.0" y2="326.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="52.400000000000006" y="330.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">5k</text>
+<line x1="62.400000000000006" y1="246.0" x2="613.0" y2="246.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="52.400000000000006" y="250.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">10k</text>
+<line x1="62.400000000000006" y1="166.0" x2="613.0" y2="166.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="52.400000000000006" y="170.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">15k</text>
+<line x1="62.400000000000006" y1="86.0" x2="613.0" y2="86.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="52.400000000000006" y="90.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">20k</text>
+<text x="62.4" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">5</text>
+<text x="156.8" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">11</text>
+<text x="298.4" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">20</text>
+<text x="613.0" y="424" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">40</text>
+<line x1="62.400000000000006" y1="406" x2="613.0" y2="406" stroke="#2d3142" stroke-width="1.2"/>
+<path d="M62.4,377.9 L156.8,361.9 L298.4,341.6 L613.0,160.0" fill="none" stroke="#0072B2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="62.4" cy="377.9" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 5: 1756</title></circle>
+<circle cx="156.8" cy="361.9" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 11: 2756</title></circle>
+<circle cx="298.4" cy="341.6" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 20: 4024</title></circle>
+<circle cx="613.0" cy="160.0" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Mermaid CLI · 40: 15.374k</title></circle>
+<path d="M62.4,363.6 L156.8,379.2 L298.4,385.0 L613.0,305.1" fill="none" stroke="#009E73" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="62.4" cy="363.6" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Pele · 5: 2648</title></circle>
+<circle cx="156.8" cy="379.2" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Pele · 11: 1677</title></circle>
+<circle cx="298.4" cy="385.0" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Pele · 20: 1313</title></circle>
+<circle cx="613.0" cy="305.1" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Pele · 40: 6306</title></circle>
+<path d="M62.4,335.0 L156.8,310.3 L298.4,324.1 L613.0,304.2" fill="none" stroke="#eb6c36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="62.4" cy="335.0" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 5: 4436</title></circle>
+<circle cx="156.8" cy="310.3" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 11: 5982</title></circle>
+<circle cx="298.4" cy="324.1" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 20: 5116</title></circle>
+<circle cx="613.0" cy="304.2" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 40: 6364</title></circle>
+<text x="623.0" y="164.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#0072B2" data-role="series">Mermaid CLI 15.4k</text>
+<text x="623.0" y="308.2" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" data-role="series">diagonaldiagrams 6,364</text>
+<text x="623.0" y="322.2" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#009E73" data-role="series">Pele 6,306</text>
+<text x="337.7" y="448.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Steps in the flowchart</text>
+<text x="36.0" y="72.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="start" data-role="yaxis">Tokens per flowchart, average of 2 runs</text>
+<text x="36" y="472" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">12 points · Source: Claude Sonnet agents, two runs per point. Counts the tokens spent on the task, not the agent&#x27;s fixed instructions.</text>
 </svg>

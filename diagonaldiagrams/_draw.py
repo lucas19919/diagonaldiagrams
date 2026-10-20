@@ -518,3 +518,17 @@ def fmt_tick(v):
     if abs(v) >= 1000:
         return f"{v/1000:g}k"
     return f"{v:g}"
+
+
+def tick_labels(ticks, unit=""):
+    """An axis's tick labels in one style: every one past 1,000 in thousands once the axis reaches
+    10,000 (5k, 10k, 15k, not 5000, 10k), commas below that (2,500), and a % on each when the unit is a percent."""
+    big = max((abs(v) for v in ticks), default=0) >= 10000
+    out = []
+    for v in ticks:
+        if big and abs(v) >= 1000:
+            s = f"{v / 1000:g}k"
+        else:
+            s = f"{int(v):,}" if v == int(v) else fmt_tick(v)
+        out.append(s + "%" if unit == "%" else s)
+    return out

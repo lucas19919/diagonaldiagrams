@@ -257,7 +257,7 @@ def do_export(args):
                                   r.get("ylabel"), r.get("unit", ""), r.get("source", ""),
                                   r.get("corners", "editorial"), chrome=True, theme=theme,
                                   grid=r.get("grid", True), markers=r.get("markers", True),
-                                  highlights=r.get("highlights") or None, notes=notes)
+                                  highlights=r.get("highlights") or None, notes=notes, refs=r.get("refs"))
         unit, dest, note = "bars", args.o or f"{base}.{args.to}", " (layouts: scatter only)"
     elif cmd == "line":
         svg, _, _, n = render_line(r["csv"], r.get("x"), r.get("y"), r.get("title", "Line Trend"),
@@ -265,7 +265,7 @@ def do_export(args):
                                    r.get("xlabel"), r.get("xunit", ""), r.get("ylabel"), r.get("yunit", ""),
                                    r.get("source", ""), r.get("corners", "editorial"), chrome=True, theme=theme,
                                    grid=r.get("grid", True), markers=r.get("markers", True),
-                                   highlights=r.get("highlights") or None, notes=notes)
+                                   highlights=r.get("highlights") or None, notes=notes, refs=r.get("refs"))
         unit, dest, note = "points", args.o or f"{base}.{args.to}", " (layouts: scatter only)"
     elif cmd in ("flow", "arch", "seq", "schema"):
         if r.get("scene"):  # v2: the scene that was drawn

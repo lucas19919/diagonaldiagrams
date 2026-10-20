@@ -1,43 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 480" width="760"><title>A call stays under 160 ms as the flowchart grows</title>
-<desc>Milliseconds for one figure, a new process each time. Mermaid CLI takes 2.3 to 2.6 seconds on these same flows.</desc>
-<rect width="760" height="480" fill="#ffffff"/>
-<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">A call stays under 160 ms as the flowchart grows</text>
-<text x="36" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">Milliseconds for one figure, a new process each time. Mermaid CLI takes 2.3 to 2.6 seconds on these same flows.</text>
-<line x1="80" y1="380.0" x2="623" y2="380.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="384.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
-<line x1="80" y1="300.0" x2="623" y2="300.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="304.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">50</text>
-<line x1="80" y1="220.0" x2="623" y2="220.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="224.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">100</text>
-<line x1="80" y1="140.0" x2="623" y2="140.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="144.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">150</text>
-<line x1="80" y1="60.0" x2="623" y2="60.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="70" y="64.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">200</text>
-<line x1="80.0" y1="60" x2="80.0" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="80.0" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">0</text>
-<line x1="215.8" y1="60" x2="215.8" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="215.8" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10</text>
-<line x1="351.5" y1="60" x2="351.5" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="351.5" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">20</text>
-<line x1="487.2" y1="60" x2="487.2" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="487.2" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">30</text>
-<line x1="623.0" y1="60" x2="623.0" y2="380" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
-<text x="623.0" y="398" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">40</text>
-<line x1="80" y1="380" x2="623" y2="380" stroke="#2d3142" stroke-width="1.2"/>
-<line x1="80" y1="60" x2="80" y2="380" stroke="#2d3142" stroke-width="1.2"/>
-<path d="M147.9,228.0 L229.3,213.6 L351.5,218.4 L623.0,208.8" fill="none" stroke="#0072B2" stroke-width="2.2" stroke-linecap="round"/>
-<circle cx="147.9" cy="228.0" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Pele · 5: 95</title></circle>
-<circle cx="229.3" cy="213.6" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Pele · 11: 104</title></circle>
-<circle cx="351.5" cy="218.4" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Pele · 20: 101</title></circle>
-<circle cx="623.0" cy="208.8" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>Pele · 40: 107</title></circle>
-<path d="M147.9,162.4 L229.3,152.8 L351.5,136.8 L623.0,133.6" fill="none" stroke="#eb6c36" stroke-width="2.2" stroke-linecap="round"/>
-<circle cx="147.9" cy="162.4" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 5: 136</title></circle>
-<circle cx="229.3" cy="152.8" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 11: 142</title></circle>
-<circle cx="351.5" cy="136.8" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 20: 152</title></circle>
-<circle cx="623.0" cy="133.6" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 40: 154</title></circle>
-<text x="633.0" y="137.6" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" data-role="series">diagonaldiagrams 154</text>
-<text x="633.0" y="212.8" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#0072B2" data-role="series">Pele 107</text>
-<text x="351.5" y="420" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Steps in the flowchart</text>
-<text x="24" y="220.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 24,220.0)" data-role="yaxis">Milliseconds per call</text>
-<text x="36" y="466" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">8 points · Source: diagonaldiagrams remeasured 2026-10-19, median of 7. Pele is that day&#x27;s benchmark, not rerun.</text>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 260" width="760"><title>A figure in about 150 ms, 15 times faster than Mermaid CLI</title>
+<desc>One 20-step flowchart, a new process each time. Pele only draws; diagonaldiagrams also audits.</desc>
+<rect width="760" height="260" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">A figure in about 150 ms, 15 times faster than Mermaid CLI</text>
+<text x="36" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">One 20-step flowchart, a new process each time. Pele only draws; diagonaldiagrams also audits.</text>
+<line x1="141.2" y1="68" x2="141.2" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="141.2" y="198" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">0</text>
+<line x1="252.2" y1="68" x2="252.2" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="252.2" y="198" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">500</text>
+<line x1="363.1" y1="68" x2="363.1" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="363.1" y="198" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">1,000</text>
+<line x1="474.1" y1="68" x2="474.1" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="474.1" y="198" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">1,500</text>
+<line x1="585.0" y1="68" x2="585.0" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="585.0" y="198" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">2,000</text>
+<line x1="696.0" y1="68" x2="696.0" y2="182" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="696.0" y="198" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">2,500</text>
+<line x1="141.2" y1="68" x2="141.2" y2="182" stroke="#2d3142" stroke-width="1.2"/>
+<text x="129.24" y="91.0" font-size="12" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">diagonaldiagrams</text>
+<path d="M141.2,75.0 L169.0,75.0 Q175.0,75.0 175.0,81.0 L175.0,93.0 Q175.0,99.0 169.0,99.0 L141.2,99.0 Z" fill="#eb6c36" fill-opacity="1"><title>diagonaldiagrams · diagonaldiagrams: 152 ms</title></path>
+<text x="181.0" y="91.0" font-size="10.5" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="start">152 ms</text>
+<text x="129.24" y="129.0" font-size="12" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">Pele</text>
+<path d="M141.2,114.0 L157.7,114.0 Q163.7,114.0 163.7,120.0 L163.7,130.0 Q163.7,136.0 157.7,136.0 L141.2,136.0 Z" fill="#009E73" fill-opacity="0.85"><title>Pele · Pele: 101 ms</title></path>
+<text x="169.7" y="129.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="start">101 ms</text>
+<text x="129.24" y="167.0" font-size="12" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">Mermaid CLI</text>
+<path d="M141.2,152.0 L654.5,152.0 Q660.5,152.0 660.5,158.0 L660.5,168.0 Q660.5,174.0 654.5,174.0 L141.2,174.0 Z" fill="#0072B2" fill-opacity="0.85"><title>Mermaid CLI · Mermaid CLI: 2,340 ms</title></path>
+<text x="666.5" y="167.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="start">2,340 ms</text>
+<text x="418.6" y="222.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Time per call (ms)</text>
+<text x="36" y="246" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">3 bars · Source: medians, 2026-10-19. 5, 11 and 40 steps rank the same (docs/data/bench_speed_call.csv).</text>
 </svg>

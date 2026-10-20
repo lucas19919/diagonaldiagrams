@@ -73,6 +73,8 @@ CSV with a header row:
 
 All take `--title`, `--subtitle` (state the finding), `--xlabel`, `--ylabel`, and `--highlight VALUE`
 (one series or bar in coral). Line charts name each series at its end; that is the legend.
+`bar` and `line` take `--ref VALUE=label` for a dashed reference line (a target, or 50%); `--unit %` ends a
+bar axis at 100.
 `chart <type> INPUT` draws about 60 more (sankey, gantt, heatmap, treemap, pie, radar, math, ...);
 `describe` lists them.
 

@@ -41,6 +41,15 @@ def _cli_theme(args):
     return get_theme(getattr(args, "theme", None) or "editorial", getattr(args, "theme_file", None))
 
 
+def _cli_refs(args):
+    """--ref VALUE or VALUE=label as reference-line dicts, in the order given."""
+    out = []
+    for raw in getattr(args, "ref", None) or []:
+        at, _, text = str(raw).partition("=")
+        out.append({"at": at.strip(), "text": text.strip()})
+    return out
+
+
 def _cli_notes(args, kind):
     texts = getattr(args, "note", None) or []
     ats = getattr(args, "note_at", None) or []
@@ -434,6 +443,8 @@ def _parse():
     p.add_argument("--theme-file", default=None)
     p.add_argument("--note", action="append", default=[], help="callout text (pairs with --note-at)")
     p.add_argument("--note-at", action="append", default=[], help="callout anchor: category value")
+    p.add_argument("--ref", action="append", default=[],
+                   help="dashed reference line: VALUE or VALUE=label (repeatable)")
     p.add_argument("-o", required=True)
     _chart_flags(p)
     p = sub.add_parser("line"); p.add_argument("csv"); p.add_argument("--x", default=None)
@@ -448,6 +459,8 @@ def _parse():
     p.add_argument("--theme-file", default=None)
     p.add_argument("--note", action="append", default=[])
     p.add_argument("--note-at", action="append", default=[], help="callout anchor: x value")
+    p.add_argument("--ref", action="append", default=[],
+                   help="dashed reference line: VALUE or VALUE=label (repeatable)")
     p.add_argument("-o", required=True)
     _chart_flags(p)
     p = sub.add_parser("geo", help="point map from CSV lat/lon, or GeoJSON points and polygons")
@@ -675,7 +688,7 @@ def main():
         svg, _, _, n = render_bar(a.csv, a.cat, a.val, a.title, a.subtitle, a.figure,
                                   a.group, a.orientation, a.sort, a.xlabel, a.ylabel,
                                   a.unit, a.source, a.corners, chrome=True, theme=theme, notes=notes,
-                                  grid=a.grid, markers=a.markers, highlights=a.highlight)
+                                  grid=a.grid, markers=a.markers, highlights=a.highlight, refs=_cli_refs(a))
         o, s = write_out(svg, "bar", a.title, a.subtitle or f"{n} items · {os.path.basename(a.csv)}",
                          f"{a.figure} · bar · {os.path.basename(a.csv)}", a.o,
                          caption=a.caption, cap_title=a.title + ".",
@@ -685,7 +698,7 @@ def main():
                          "orientation": a.orientation, "sort": a.sort, "unit": a.unit,
                          "xlabel": a.xlabel, "ylabel": a.ylabel,
                          "source": a.source, "corners": a.corners, "theme": theme.get("_name"),
-                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight}, notes))
+                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight, **({"refs": _cli_refs(a)} if a.ref else {})}, notes))
         _finish(a, o, s, n, "bars", pre)
     elif a.cmd == "line":
         theme = _cli_theme(a)
@@ -693,7 +706,7 @@ def main():
         svg, _, _, n = render_line(a.csv, a.x, a.y, a.title, a.subtitle, a.figure,
                                    a.group, a.xlabel, a.xunit, a.ylabel, a.yunit,
                                    a.source, a.corners, chrome=True, theme=theme, notes=notes,
-                                   grid=a.grid, markers=a.markers, highlights=a.highlight)
+                                   grid=a.grid, markers=a.markers, highlights=a.highlight, refs=_cli_refs(a))
         o, s = write_out(svg, "line", a.title, a.subtitle or f"{n} points · {os.path.basename(a.csv)}",
                          f"{a.figure} · line · {os.path.basename(a.csv)}", a.o,
                          caption=a.caption, cap_title=a.title + ".",
@@ -702,7 +715,7 @@ def main():
                          "subtitle": a.subtitle, "figure": a.figure, "group": a.group,
                          "xlabel": a.xlabel, "xunit": a.xunit, "ylabel": a.ylabel, "yunit": a.yunit,
                          "source": a.source, "corners": a.corners, "theme": theme.get("_name"),
-                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight}, notes))
+                         "grid": a.grid, "markers": a.markers, "highlights": a.highlight, **({"refs": _cli_refs(a)} if a.ref else {})}, notes))
         _finish(a, o, s, n, "points", pre)
     elif a.cmd == "geo":
         theme = _cli_theme(a)

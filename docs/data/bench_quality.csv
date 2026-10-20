@@ -1,9 +1,9 @@
-figure,tool,clearer
-Slide,Pele,85
-Slide,Mermaid,97
-Column flows,Pele,100
-Column flows,Mermaid,100
-Native arch,Pele,75
-Native arch,Mermaid,88
-Translated arch,Pele,0
-Translated arch,Mermaid,50
+figure,against,clearer
+"On a slide, every figure",vs Pele,85
+"On a slide, every figure",vs Mermaid CLI,97
+"In a column, flows",vs Pele,100
+"In a column, flows",vs Mermaid CLI,100
+"In a column, our architecture",vs Pele,75
+"In a column, our architecture",vs Mermaid CLI,88
+"In a column, translated architecture",vs Pele,0
+"In a column, translated architecture",vs Mermaid CLI,50

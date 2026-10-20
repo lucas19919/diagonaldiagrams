@@ -98,8 +98,9 @@ def main():
         return [el for el in root.iter() if el.tag.split("}")[-1] == name]
     bar_svg = open(f"{WORK}/b.svg", encoding="utf-8").read()
     broot = _ET.fromstring(bar_svg)
-    spines = [el for el in _els(broot, "line") if el.get("stroke-width") == "1.2" and el.get("x1") == el.get("x2")]
-    top = min(float(el.get("y1")) for el in spines)
+    # the plot's top is its highest rule: the gridline at the top tick (there is no vertical spine)
+    rules = [el for el in _els(broot, "line") if el.get("y1") == el.get("y2")]
+    top = min(float(el.get("y1")) for el in rules)
     bars = [el for el in _els(broot, "path") if el.get("d")]
     def _ys(d):
         return [float(y) for y in _re.findall(r"[MLQ]\s*[\d.]+,([\d.]+)", d)]

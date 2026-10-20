@@ -231,7 +231,8 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
     "--title/--subtitle": "drawn on the figure",
     "--grid/--no-grid": "tick rules, on by default",
     "--markers/--no-markers": "value labels, on by default",
-    "--highlight": "category or group, repeatable, drawn in accent"
+    "--highlight": "category or group, repeatable, drawn in accent",
+    "--ref": "VALUE or VALUE=label, repeatable: a dashed reference line, such as a target or 50%"
   },
   "budgets": {
     "bars": 24,
@@ -241,7 +242,8 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
   "rules": [
     "bar charts must start at zero",
     "value labels sit on the bars",
-    "gridlines follow the ticks"
+    "gridlines follow the ticks",
+    "--unit % ends the axis at 100 and writes 85%"
   ],
   "example": "diagonaldiagrams bar examples/bar_latency.csv --cat service --val p99_latency_ms --unit ms -o out/bar.html"
 }
@@ -260,7 +262,8 @@ Source of truth: DESCRIBE in diagonaldiagrams/describe.py. Regenerate with `py -
     "--title/--subtitle": "drawn on the figure",
     "--grid/--no-grid": "tick rules, on by default",
     "--markers/--no-markers": "point dots, on by default",
-    "--highlight": "x value or group, repeatable, drawn larger in accent"
+    "--highlight": "x value or group, repeatable, drawn larger in accent",
+    "--ref": "VALUE or VALUE=label, repeatable: a dashed reference line"
   },
   "budgets": {
     "series": 6,

@@ -10,7 +10,7 @@
   "service"
  ],
  "exit": 0,
- "html_sha256": "ec8cbca990959f3a790291ff0c00b2c318e4553c84fe816a43fdaa06a09bd37a",
+ "html_sha256": "a8d997e525680410cc16d7263faa86468f586009b8efae28df05b85f12fb62c4",
  "receipt": {
   "caption": "Trend over time or continuous variable.",
   "cmd": "line",

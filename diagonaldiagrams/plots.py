@@ -3,6 +3,7 @@ import csv
 from .errors import SpecError
 from ._draw import (
     axis_ticks, bar_path, corner_rx, figure_heading, fmt_tick, fmt_value, nice_ticks, render_pincallout,
+    tick_labels,
 )
 from ._text import _humanize, _text_w, _with_unit, esc
 from ._theme import MONO, SANS, THEME, _assign_colors, _hit, series_palette
@@ -195,10 +196,66 @@ def render_scatter(spec_path, xcol, ycol, title, subtitle, figure, xlabel, xunit
     return "\n".join(s), W, H, n
 
 
+def _val(v, unit):
+    """A value with its unit, as a reader writes it: 85%, 154 ms."""
+    s = fmt_value(v)
+    return s + unit if unit == "%" else (f"{s} {unit}" if unit else s)
+
+
+def _ref_lines(refs):
+    """Reference lines as (value, label) pairs, from dicts with "at" and an optional "text"."""
+    out = []
+    for r in refs or []:
+        try:
+            out.append((float(r["at"]), str(r.get("text") or "")))
+        except (KeyError, TypeError, ValueError):
+            continue
+    return out
+
+
+def _value_ticks(vmin, vmax, unit, spare=True):
+    """A value axis's ticks. Percents that reach past 50 but stay within 0 to 100 run 0, 25, 50, 75,
+    100, so the axis ends at the whole. Otherwise nice ticks, with a spare step above the tallest bar
+    when spare, so its label stays inside the plot."""
+    if unit == "%" and vmin >= 0 and 50 <= vmax <= 100:
+        return [0, 25, 50, 75, 100]
+    return axis_ticks(vmin, vmax, n=5) if spare else nice_ticks(vmin, vmax, n=5)
+
+
+def _key(t, items, top, left, right):
+    """A row of series keys under the heading, a swatch then the name, wrapping before right.
+    Returns (svg bits, height); no items is no key and no height."""
+    if not items:
+        return [], 0
+    bits, x, base = [], left, top + 6
+    for name, col in items:
+        w = 18 + _text_w(name, 11.5) + 22
+        if x > left and x + w - 22 > right:
+            x, base = left, base + 20
+        bits.append(f'<rect x="{x:.1f}" y="{base - 10}" width="12" height="12" rx="2" fill="{col}"/>')
+        bits.append(f'<text x="{x + 18:.1f}" y="{base}" font-size="11.5" font-family="{SANS}" fill="{t["ink"]}" '
+                    f'data-role="series">{esc(name)}</text>')
+        x += w
+    return bits, base - top + 14
+
+
+def _ref_svg(t, x1, y1, x2, y2):
+    return (f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{t["muted"]}" '
+            f'stroke-width="1.2" stroke-dasharray="5 4"/>')
+
+
+def _axis_title(t, text, x, y, role, anchor="start"):
+    return (f'<text x="{x:.1f}" y="{y:.1f}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" '
+            f'text-anchor="{anchor}" data-role="{role}">{esc(text)}</text>')
+
+
 def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
                groupcol=None, orientation="v", sort="none", xlabel="", ylabel="",
                unit="", source="", corners="editorial", chrome=True, width=760, theme=None, notes=None,
-               grid=True, markers=True, highlights=None):
+               grid=True, markers=True, highlights=None, refs=None):
+    """Bars from a CSV: vertical or horizontal (orientation h), grouped by a column, sorted or not.
+    The value axis's title sits above the plot, the key under the heading in the order the bars are
+    drawn, and refs (dicts with at and text) draw dashed reference lines."""
     t = theme or THEME
     rows = []
     with open(spec_path, newline="", encoding="utf-8") as f:
@@ -220,19 +277,20 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
         rows.sort(key=lambda d: d["val"])
     elif sort == "desc":
         rows.sort(key=lambda d: d["val"], reverse=True)
-    vals = [d["val"] for d in rows]
+    lines = _ref_lines(refs)
+    vals = [d["val"] for d in rows] + [v for v, _ in lines]
     vmin, vmax = min(vals), max(vals)
     if vmin >= 0:
         vmin = 0
     if vmin == vmax:
         vmax = vmin + 1
-    ticks = axis_ticks(vmin, vmax, n=5)
+    ticks = _value_ticks(vmin, vmax, unit)
+    tick_txt = tick_labels(ticks, unit)
     span = (ticks[-1] - ticks[0]) or 1
     W = width
     head_bits, head_h = figure_heading(t, title, subtitle, x=36) if chrome else ([], 12)
-    _bpal = series_palette(t, highlights)
-    _bgroups = sorted({d.get("g", "") for d in rows if d.get("g")})
-    _bmap = _assign_colors(_bgroups, _bpal, highlights)
+    groups = sorted({d.get("g", "") for d in rows if d.get("g")})
+    colors = _assign_colors(groups, series_palette(t, highlights, reserve=True), highlights)
     horizontal = orientation == "h"
     cats, buckets = [], {}
     for d in rows:
@@ -240,27 +298,46 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
         if d["cat"] not in cats:
             cats.append(d["cat"])
     # one slot per category when a group column splits it; otherwise one bar per row
-    slot_members = [buckets[c] for c in cats] if _bgroups else [[d] for d in rows]
+    slot_members = [buckets[c] for c in cats] if groups else [[d] for d in rows]
     n = len(slot_members)
     rx = corner_rx(corners)
+
+    def color(d):
+        return t["accent"] if _hit(highlights, d["cat"], d.get("g")) else colors.get(d.get("g", ""), t["link"])
+
+    # the key, in drawing order; left out when it would only repeat the category names
+    key_items = []
+    if groups and not all(len(m) == 1 and m[0].get("g") == m[0]["cat"] for m in slot_members):
+        for d in rows:
+            if d.get("g") and d["g"] not in [k for k, _ in key_items]:
+                key_items.append((d["g"], t["accent"] if _hit(highlights, d["g"]) else colors[d["g"]]))
+    key_bits, key_h = _key(t, key_items, head_h, 36, W - 36)
+    top = head_h + key_h
+    vtitle = _with_unit(ylabel or _humanize(valcol), "" if unit == "%" else unit) if (ylabel or valcol) else ""
+    ctitle = xlabel or (_humanize(catcol) if catcol and not horizontal else "")
+    labelled = any(txt for _, txt in lines)
     if horizontal:
-        label_w = min(200, max(88, max(len(s[0]["cat"]) for s in slot_members) * 6.6 + 18))
-        ox = label_w
-        oy = head_h + 8
-        row_h = 32 if n > 8 else 40
-        ph = max(160, n * row_h + 16)
-        pw = W - ox - 72
-        H = oy + ph + 72 + (26 if _bgroups else 0)
+        most = max(len(m) for m in slot_members)
+        label_w = min(240, max(48, max(_text_w(m[0]["cat"], 12) for m in slot_members)))
+        ox = 36 + label_w + 12
+        oy = top + (24 if ctitle else 0) + (20 if labelled else 8)
+        row_h = (30 if n > 8 else 38) + 18 * (most - 1)
+        ph = max(80, n * row_h)
+        pw = W - ox - 64
+        H = oy + ph + (78 if vtitle else 46)
     else:
-        ox, oy = 90, head_h
-        pw, ph = W - ox - 48, 340
+        oy = top + (26 if vtitle else 10)
+        ox = 36 + max(_text_w(s, 10) for s in tick_txt) + 10
+        pw, ph = W - ox - 36, 320
         slot_w = pw / max(1, n)
-        wide = any(len(m[0]["cat"]) * 6.4 > slot_w * 0.9 for m in slot_members)
-        H = head_h + ph + (128 if wide else 100) + (46 if _bgroups else 0)  # axis title, then the legend
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H}" width="{W}"><title>{esc(title)}</title>',
+        wide = any(_text_w(m[0]["cat"], 10.5) > slot_w * 0.92 for m in slot_members)
+        drop = (max(_text_w(m[0]["cat"], 10.5) for m in slot_members) * 0.65 + 24) if wide else 26
+        H = oy + ph + drop + (28 if ctitle else 0) + 34
+    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H:.0f}" width="{W}"><title>{esc(title)}</title>',
              f'<desc>{esc(subtitle or (cc + " vs " + vc))}</desc>',
-             f'<rect width="{W}" height="{H}" fill="{t["card"]}"/>']
+             f'<rect width="{W}" height="{H:.0f}" fill="{t["card"]}"/>']
     parts.extend(head_bits)
+    parts.extend(key_bits)
 
     def _sx(v):
         return ox + (v - ticks[0]) / span * pw
@@ -270,52 +347,55 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
 
     zero = 0 if ticks[0] <= 0 <= ticks[-1] else ticks[0]
     if horizontal:
-        for v in ticks:
+        for v, txt in zip(ticks, tick_txt):
             x_pos = _sx(v)
             if grid:
                 parts.append(f'<line x1="{x_pos:.1f}" y1="{oy}" x2="{x_pos:.1f}" y2="{oy+ph}" stroke="{t["rule"]}" stroke-width="0.8"/>')
-            parts.append(f'<text x="{x_pos:.1f}" y="{oy+ph+16}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="middle">{esc(fmt_tick(v))}</text>')
-        parts.append(f'<line x1="{ox}" y1="{oy+ph}" x2="{ox+pw}" y2="{oy+ph}" stroke="{t["ink"]}" stroke-width="1.2"/>')
+            parts.append(f'<text x="{x_pos:.1f}" y="{oy+ph+16}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="middle">{esc(txt)}</text>')
         parts.append(f'<line x1="{_sx(zero):.1f}" y1="{oy}" x2="{_sx(zero):.1f}" y2="{oy+ph}" stroke="{t["ink"]}" stroke-width="1.2"/>')
         band = ph / max(1, n)
-        bar_h = min(22, band * 0.62)
         for i, members in enumerate(slot_members):
             cy = oy + (i + 0.5) * band
             gap = 3
-            bh = min(bar_h, (band * 0.72 - gap * (len(members) - 1)) / len(members))
+            bh = min(22, (band * 0.74 - gap * (len(members) - 1)) / len(members))
             top0 = cy - (bh * len(members) + gap * (len(members) - 1)) / 2
-            parts.append(f'<text x="{ox-8}" y="{cy+4:.1f}" font-size="11" font-family="{SANS}" fill="{t["ink"]}" text-anchor="end">{esc(members[0]["cat"])}</text>')
+            parts.append(f'<text x="{ox-12}" y="{cy+4:.1f}" font-size="12" font-family="{SANS}" fill="{t["ink"]}" text-anchor="end">{esc(members[0]["cat"])}</text>')
             for j, d in enumerate(members):
                 by = top0 + j * (bh + gap)
                 x0, x1 = _sx(zero), _sx(d["val"])
                 bx, bw = (x1, x0 - x1) if d["val"] < zero else (x0, x1 - x0)
                 cap = "left" if d["val"] < zero else "right"
                 hit = _hit(highlights, d["cat"], d.get("g"))
-                col = t["accent"] if hit else _bmap.get(d.get("g", ""), t["link"])
                 grow = 2 if hit else 0
                 shape = bar_path(bx, by - grow / 2, bw, bh + grow, rx, cap)
                 if shape:
-                    edge = f' stroke="{t["ink"]}" stroke-width="1.2"' if hit else ""
-                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {fmt_value(d["val"])}' + (f" {unit}" if unit else "")
-                    parts.append(f'{shape} fill="{col}" fill-opacity="{"0.95" if hit else "0.85"}"{edge}><title>{esc(tip)}</title></path>')
+                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {_val(d["val"], unit)}'
+                    parts.append(f'{shape} fill="{color(d)}" fill-opacity="{"1" if hit else "0.85"}"><title>{esc(tip)}</title></path>')
                 if markers:
-                    val_str = fmt_value(d["val"]) + (f" {unit}" if unit else "")
+                    val_str = _val(d["val"], unit)
                     outside = (bx - 6) if d["val"] < zero else (bx + bw + 6)
-                    if d["val"] >= zero and outside > ox + pw - 28:
-                        parts.append(f'<text x="{bx+bw-4:.1f}" y="{by+bh/2+3:.1f}" font-size="10" font-family="{MONO}" fill="{t["card"]}" text-anchor="end">{esc(val_str)}</text>')
+                    weight = ' font-weight="600"' if hit else ""
+                    if d["val"] >= zero and outside + _text_w(val_str, 10.5) > ox + pw + 56:
+                        parts.append(f'<text x="{bx+bw-6:.1f}" y="{by+bh/2+4:.1f}" font-size="10.5"{weight} font-family="{MONO}" fill="{t["card"]}" text-anchor="end">{esc(val_str)}</text>')
                     else:
                         anchor = "end" if d["val"] < zero else "start"
-                        parts.append(f'<text x="{outside:.1f}" y="{by+bh/2+3:.1f}" font-size="10" font-family="{MONO}" fill="{t["ink"]}" text-anchor="{anchor}">{esc(val_str)}</text>')
-        legend_y = oy + ph + 28
+                        parts.append(f'<text x="{outside:.1f}" y="{by+bh/2+4:.1f}" font-size="10.5"{weight} font-family="{MONO}" fill="{t["ink"]}" text-anchor="{anchor}">{esc(val_str)}</text>')
+        for v, txt in lines:
+            parts.append(_ref_svg(t, _sx(v), oy - 4, _sx(v), oy + ph))
+            if txt:
+                parts.append(f'<text x="{_sx(v):.1f}" y="{oy-9:.1f}" font-size="10.5" font-family="{SANS}" fill="{t["muted"]}" text-anchor="middle">{esc(txt)}</text>')
+        if ctitle:
+            parts.append(_axis_title(t, ctitle, 36, top + 14, "yaxis"))
+        if vtitle:
+            parts.append(_axis_title(t, vtitle, ox + pw / 2, oy + ph + 40, "xaxis", "middle"))
     else:
-        for v in ticks:
+        for v, txt in zip(ticks, tick_txt):
             y_pos = _sy(v)
             if grid:
                 parts.append(f'<line x1="{ox}" y1="{y_pos:.1f}" x2="{ox+pw}" y2="{y_pos:.1f}" stroke="{t["rule"]}" stroke-width="0.8"/>')
-            parts.append(f'<text x="{ox-8}" y="{y_pos+3:.1f}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="end">{esc(fmt_tick(v))}</text>')
+            parts.append(f'<text x="{ox-10}" y="{y_pos+3:.1f}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="end">{esc(txt)}</text>')
         base_y = _sy(zero)
         parts.append(f'<line x1="{ox}" y1="{base_y:.1f}" x2="{ox+pw}" y2="{base_y:.1f}" stroke="{t["ink"]}" stroke-width="1.2"/>')
-        parts.append(f'<line x1="{ox}" y1="{oy}" x2="{ox}" y2="{oy+ph}" stroke="{t["ink"]}" stroke-width="1.2"/>')
         for i, members in enumerate(slot_members):
             gap = 4
             inner = slot_w * 0.7
@@ -324,34 +404,39 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
             for j, d in enumerate(members):
                 bx = origin + j * (bw + gap)
                 y_val = _sy(d["val"])
-                y0 = base_y
-                by, bh = (y_val, y0 - y_val) if d["val"] >= zero else (y0, y_val - y0)
+                by, bh = (y_val, base_y - y_val) if d["val"] >= zero else (base_y, y_val - base_y)
                 by = min(max(by, oy), oy + ph)
                 bh = max(0.0, min(bh, oy + ph - by))
                 cap = "bottom" if d["val"] < zero else "top"
                 hit = _hit(highlights, d["cat"], d.get("g"))
-                col = t["accent"] if hit else _bmap.get(d.get("g", ""), t["link"])
                 grow = 3 if hit else 0
                 shape = bar_path(bx - grow / 2, by, bw + grow, bh, rx, cap)
                 if shape:
-                    edge = f' stroke="{t["ink"]}" stroke-width="1.2"' if hit else ""
-                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {fmt_value(d["val"])}' + (f" {unit}" if unit else "")
-                    parts.append(f'{shape} fill="{col}" fill-opacity="{"0.95" if hit else "0.85"}"{edge}><title>{esc(tip)}</title></path>')
+                    tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {_val(d["val"], unit)}'
+                    parts.append(f'{shape} fill="{color(d)}" fill-opacity="{"1" if hit else "0.85"}"><title>{esc(tip)}</title></path>')
                 if markers:
-                    val_str = fmt_value(d["val"]) + (f" {unit}" if unit else "")
-                    tip = by if d["val"] >= zero else by + bh
-                    if d["val"] >= zero and tip < oy + 18:
-                        parts.append(f'<text x="{bx+bw/2:.1f}" y="{tip+13:.1f}" font-size="10" font-family="{MONO}" fill="{t["card"]}" text-anchor="middle">{esc(val_str)}</text>')
+                    val_str = _val(d["val"], unit)
+                    tip_y = by if d["val"] >= zero else by + bh
+                    weight = ' font-weight="600"' if hit else ""
+                    if d["val"] >= zero and tip_y < oy + 18:
+                        parts.append(f'<text x="{bx+bw/2:.1f}" y="{tip_y+13:.1f}" font-size="10"{weight} font-family="{MONO}" fill="{t["card"]}" text-anchor="middle">{esc(val_str)}</text>')
                     else:
-                        ly = tip - 6 if d["val"] >= zero else tip + 14
-                        parts.append(f'<text x="{bx+bw/2:.1f}" y="{ly:.1f}" font-size="10" font-family="{MONO}" fill="{t["ink"]}" text-anchor="middle">{esc(val_str)}</text>')
+                        ly = tip_y - 6 if d["val"] >= zero else tip_y + 14
+                        parts.append(f'<text x="{bx+bw/2:.1f}" y="{ly:.1f}" font-size="10"{weight} font-family="{MONO}" fill="{t["ink"]}" text-anchor="middle">{esc(val_str)}</text>')
             cx = ox + (i + 0.5) * slot_w
             ly = oy + ph + 18
             if wide:
                 parts.append(f'<text x="{cx:.1f}" y="{ly:.1f}" font-size="10.5" font-family="{SANS}" fill="{t["ink"]}" text-anchor="end" transform="rotate(-40 {cx:.1f} {ly:.1f})">{esc(members[0]["cat"])}</text>')
             else:
                 parts.append(f'<text x="{cx:.1f}" y="{ly:.1f}" font-size="10.5" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle">{esc(members[0]["cat"])}</text>')
-        legend_y = oy + ph + (56 if wide else 36)
+        for v, txt in lines:
+            parts.append(_ref_svg(t, ox, _sy(v), ox + pw, _sy(v)))
+            if txt:
+                parts.append(f'<text x="{ox+pw:.1f}" y="{_sy(v)-5:.1f}" font-size="10.5" font-family="{SANS}" fill="{t["muted"]}" text-anchor="end">{esc(txt)}</text>')
+        if vtitle:
+            parts.append(_axis_title(t, vtitle, 36, oy - 14, "yaxis"))
+        if ctitle:
+            parts.append(_axis_title(t, ctitle, ox + pw / 2, oy + ph + drop + 16, "xaxis", "middle"))
     for nt in (notes or [])[:2]:
         hit = next((d for d in rows if d["cat"] == nt.get("at")), None)
         if hit is None:
@@ -364,34 +449,8 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
             idx = next(i for i, m in enumerate(slot_members) if any(d["cat"] == hit["cat"] for d in m))
             cx = ox + (idx + 0.5) * (pw / max(1, n))
             parts.append(render_pincallout(t, cx, _sy(hit["val"]), nt.get("text", ""), top=oy + 4, rx=corner_rx(corners) / 2))
-    # under vertical bars the axis title sits right below the categories, and the legend below it
-    title_row = legend_y + 12 if (_bgroups and not horizontal and (xlabel or catcol)) else None
-    if title_row is not None:
-        legend_y += 26
-    if _bgroups:
-        lx = ox
-        for g in _bgroups:
-            swatch = t["accent"] if _hit(highlights, g) else _bmap[g]
-            parts.append(f'<rect x="{lx}" y="{legend_y}" width="12" height="12" rx="2" fill="{swatch}"/>')
-            parts.append(f'<text x="{lx+18}" y="{legend_y+10}" font-size="11" font-family="{SANS}" fill="{t["ink"]}" data-role="series">{esc(g)}</text>')
-            lx += 18 + len(g) * 7 + 24
-    _fx = (legend_y - (oy + ph) + 28) if horizontal else (legend_y - base_y + 22)
-    if xlabel or catcol:
-        xlab = xlabel or ("" if horizontal else _humanize(catcol))
-        if horizontal and not xlabel:
-            xlab = ""
-        if xlab:
-            xy = title_row if title_row is not None else oy + ph + _fx
-            parts.append(f'<text x="{ox+pw/2}" y="{xy}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" data-role="xaxis">{esc(xlab)}</text>')
-    ylbl = _with_unit(ylabel or (_humanize(valcol) if horizontal else _humanize(valcol)), unit)
-    if horizontal:
-        if ylabel or valcol:
-            # under the tick labels, clear of the source line at the foot
-            parts.append(f'<text x="{ox+pw/2}" y="{oy+ph+40}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" data-role="xaxis">{esc(ylbl)}</text>')
-    elif ylabel or valcol:
-        parts.append(f'<text x="22" y="{oy+ph/2}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" transform="rotate(-90 22,{oy+ph/2})">{esc(ylbl)}</text>')
     src_note = f"{len(rows)} bars" + (f" · Source: {source}" if source else "")  # what it counts, not "n ="
-    parts.append(f'<text x="36" y="{H-14}" font-size="10.5" font-family="{MONO}" fill="{t["soft"]}">{esc(src_note)}</text>')
+    parts.append(f'<text x="36" y="{H-14:.0f}" font-size="10.5" font-family="{MONO}" fill="{t["soft"]}">{esc(src_note)}</text>')
     parts.append("</svg>")
     return "\n".join(parts), W, H, len(rows)
 
@@ -417,7 +476,9 @@ def _lttb(pts, n):
 def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
                 groupcol=None, xlabel="", xunit="", ylabel="", yunit="",
                 source="", corners="editorial", chrome=True, width=760, theme=None, notes=None,
-                grid=True, markers=True, highlights=None):
+                grid=True, markers=True, highlights=None, refs=None):
+    """Lines from a CSV, one per group, each named at its end. The y axis's title sits above the plot;
+    a few numeric x values get a tick each; refs (dicts with at and text) draw dashed reference lines."""
     t = theme or THEME
     rows = []
     with open(spec_path, newline="", encoding="utf-8") as f:
@@ -442,49 +503,51 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
     if not rows:
         raise SpecError(f"{spec_path}: no valid data in {xc}/{yc}")
     groups = sorted({d.get("g", "default") for d in rows})
-    _pal = series_palette(t, highlights)
-    palette = _assign_colors(groups, _pal, highlights)
-    ys = [d["y"] for d in rows]
+    palette = _assign_colors(groups, series_palette(t, highlights, reserve=True), highlights)
+    lines = _ref_lines(refs)
+    ys = [d["y"] for d in rows] + [v for v, _ in lines]
     ymin, ymax = min(ys), max(ys)
     if min(ys) >= 0:
         ymin = 0
     if ymin == ymax:
         ymax = ymin + 1
-    yt = nice_ticks(ymin, ymax, n=5)
+    yt = _value_ticks(ymin, ymax, yunit, spare=False)
+    ytxt = tick_labels(yt, yunit)
     W = width
     head_bits, head_h = figure_heading(t, title, subtitle, x=36) if chrome else ([], 12)
-    H = head_h + 360 + (80 if len(groups) > 1 else 60)
-    ox, oy = 80, head_h
     multi = len(groups) > 1 and groups != ["default"]
     ends = {}
     if multi:
         for g in groups:
             last = [d for d in rows if d.get("g", "default") == g][-1]
-            ends[g] = f"{g} {fmt_value(last['y'])}"
+            ends[g] = f"{g} {_val(last['y'], yunit if yunit == '%' else '')}"
     right = max([40] + [int(_text_w(v, 11, True)) + 24 for v in ends.values()])
-    if multi:
-        H = head_h + 360 + 60  # the end labels name the series; no legend row below the axis
+    oy = head_h + 26
+    ox = 36 + max(_text_w(s, 10) for s in ytxt) + 10
     pw, ph = W - ox - right, 320
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H}" width="{W}"><title>{esc(title)}</title>',
+    H = oy + ph + 80
+    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 {W} {H:.0f}" width="{W}"><title>{esc(title)}</title>',
              f'<desc>{esc(subtitle or (xc + " vs " + yc))}</desc>',
-             f'<rect width="{W}" height="{H}" fill="{t["card"]}"/>']
+             f'<rect width="{W}" height="{H:.0f}" fill="{t["card"]}"/>']
     parts.extend(head_bits)
     sy = lambda v: (oy + ph) - (v - yt[0]) / (yt[-1] - yt[0]) * ph if yt[-1] != yt[0] else oy + ph / 2
-    for v in yt:
+    for v, txt in zip(yt, ytxt):
         y_pos = sy(v)
         if grid:
             parts.append(f'<line x1="{ox}" y1="{y_pos:.1f}" x2="{ox+pw}" y2="{y_pos:.1f}" stroke="{t["rule"]}" stroke-width="0.8"/>')
-        parts.append(f'<text x="{ox-10}" y="{y_pos+4:.1f}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="end">{esc(fmt_tick(v))}</text>')
+        parts.append(f'<text x="{ox-10}" y="{y_pos+4:.1f}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="end">{esc(txt)}</text>')
     is_numeric_x = all(d["x_num"] is not None for d in rows)
     if is_numeric_x:
         x_nums = [d["x_num"] for d in rows]
         xmin, xmax = min(x_nums), max(x_nums)
         if xmin == xmax: xmax = xmin + 1
         xt = nice_ticks(xmin, xmax, n=5)
+        # a handful of x values each get a tick, when they sit far enough apart to label
+        seen = sorted(set(x_nums))
+        if 2 <= len(seen) <= 8 and min(b - a for a, b in zip(seen, seen[1:])) / (seen[-1] - seen[0]) * pw >= 32:
+            xt = seen
         sx = lambda v: ox + (v - xt[0]) / (xt[-1] - xt[0]) * pw if xt[-1] != xt[0] else ox + pw / 2
         for v in xt:
-            if grid:
-                parts.append(f'<line x1="{sx(v):.1f}" y1="{oy}" x2="{sx(v):.1f}" y2="{oy+ph}" stroke="{t["rule"]}" stroke-width="0.8"/>')
             parts.append(f'<text x="{sx(v):.1f}" y="{oy+ph+18}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="middle">{esc(fmt_tick(v))}</text>')
     else:
         x_labels = []
@@ -495,14 +558,15 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
         sx_map = {lbl: ox + (i / max(1, n_xl - 1)) * pw for i, lbl in enumerate(x_labels)}
         sx = lambda lbl: sx_map[lbl]
         for lbl in x_labels:
-            xp = sx(lbl)
-            if grid:
-                parts.append(f'<line x1="{xp:.1f}" y1="{oy}" x2="{xp:.1f}" y2="{oy+ph}" stroke="{t["rule"]}" stroke-width="0.8"/>')
-            parts.append(f'<text x="{xp:.1f}" y="{oy+ph+18}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="middle">{esc(lbl)}</text>')
+            parts.append(f'<text x="{sx(lbl):.1f}" y="{oy+ph+18}" font-size="10" font-family="{MONO}" fill="{t["soft"]}" text-anchor="middle">{esc(lbl)}</text>')
     parts.append(f'<line x1="{ox}" y1="{oy+ph}" x2="{ox+pw}" y2="{oy+ph}" stroke="{t["ink"]}" stroke-width="1.2"/>')
-    parts.append(f'<line x1="{ox}" y1="{oy}" x2="{ox}" y2="{oy+ph}" stroke="{t["ink"]}" stroke-width="1.2"/>')
+    for v, txt in lines:
+        parts.append(_ref_svg(t, ox, sy(v), ox + pw, sy(v)))
+        if txt:
+            parts.append(f'<text x="{ox+pw:.1f}" y="{sy(v)-5:.1f}" font-size="10.5" font-family="{SANS}" fill="{t["muted"]}" text-anchor="end">{esc(txt)}</text>')
     end_marks = []
-    for g in groups:
+    # a highlighted series is drawn last, over the others
+    for g in sorted(groups, key=lambda g: len(groups) > 1 and _hit(highlights, g)):
         g_rows = [d for d in rows if d.get("g", "default") == g]
         if not g_rows:
             continue
@@ -511,14 +575,15 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
             xp = sx(d["x_num"]) if is_numeric_x else sx(d["x_str"])
             yp = sy(d["y"])
             pts.append((xp, yp))
-        # a highlighted series is coral end to end: line, dots, and legend swatch
-        col = t["accent"] if len(groups) > 1 and _hit(highlights, g) else palette[g]
+        # a highlighted series is coral end to end: line, dots, and end label
+        lit = len(groups) > 1 and _hit(highlights, g)
+        col = t["accent"] if lit else palette[g]
         if len(groups) == 1:
             poly_pts = f"{pts[0][0]:.1f},{oy+ph} " + " ".join(f"{p[0]:.1f},{p[1]:.1f}" for p in pts) + f" {pts[-1][0]:.1f},{oy+ph}"
             parts.append(f'<polygon points="{poly_pts}" fill="{col}" fill-opacity="0.08"/>')
         drawn = _lttb(pts, 600)  # a long series keeps its shape at a fraction of the points
         path_d = f"M{drawn[0][0]:.1f},{drawn[0][1]:.1f} " + " ".join(f"L{p[0]:.1f},{p[1]:.1f}" for p in drawn[1:])
-        parts.append(f'<path d="{path_d}" fill="none" stroke="{col}" stroke-width="2.2" stroke-linecap="round"/>')
+        parts.append(f'<path d="{path_d}" fill="none" stroke="{col}" stroke-width="{3 if lit else 2.2}" stroke-linecap="round" stroke-linejoin="round"/>')
         dense = len(pts) > 80  # past this the dots merge into a band; keep the highlighted ones
         for i, (xp, yp) in enumerate(pts):
             d = g_rows[i]
@@ -555,18 +620,10 @@ def render_line(spec_path, xcol, ycol, title, subtitle="", figure="Fig. 1",
         parts.append(f'<text x="{ox + pw + 10:.1f}" y="{ly + 4:.1f}" font-size="11" font-weight="600" font-family="{SANS}" '
                      f'fill="{col}" data-role="series">{esc(ends[g])}</text>')
     xlab = _with_unit(xlabel or _humanize(xc), xunit)
-    ylab = _with_unit(ylabel or _humanize(yc), yunit)
-    parts.append(f'<text x="{ox+pw/2}" y="{oy+ph+40}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" data-role="xaxis">{esc(xlab)}</text>')
-    if multi and not end_marks:
-        lx, ly = ox, oy + ph + 66
-        for g in groups:
-            gcol = t["accent"] if _hit(highlights, g) else palette[g]
-            parts.append(f'<line x1="{lx}" y1="{ly}" x2="{lx+16}" y2="{ly}" stroke="{gcol}" stroke-width="2.5"/>')
-            parts.append(f'<circle cx="{lx+8}" cy="{ly}" r="3.5" fill="{gcol}" stroke="{t["card"]}" stroke-width="1"/>')
-            parts.append(f'<text x="{lx+24}" y="{ly+4}" font-size="11" font-family="{SANS}" fill="{t["ink"]}" data-role="series">{esc(g)}</text>')
-            lx += 24 + len(g) * 7 + 24
-    parts.append(f'<text x="24" y="{oy+ph/2}" font-size="12" font-weight="600" font-family="{SANS}" fill="{t["ink"]}" text-anchor="middle" transform="rotate(-90 24,{oy+ph/2})" data-role="yaxis">{esc(ylab)}</text>')
+    ylab = _with_unit(ylabel or _humanize(yc), "" if yunit == "%" else yunit)
+    parts.append(_axis_title(t, xlab, ox + pw / 2, oy + ph + 42, "xaxis", "middle"))
+    parts.append(_axis_title(t, ylab, 36, oy - 14, "yaxis"))
     src_note = f"{len(rows)} points" + (f" · Source: {source}" if source else "")  # what it counts, not "n ="
-    parts.append(f'<text x="36" y="{H-14}" font-size="10.5" font-family="{MONO}" fill="{t["soft"]}">{esc(src_note)}</text>')
+    parts.append(f'<text x="36" y="{H-14:.0f}" font-size="10.5" font-family="{MONO}" fill="{t["soft"]}">{esc(src_note)}</text>')
     parts.append("</svg>")
     return "\n".join(parts), W, H, len(rows)

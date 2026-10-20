@@ -18,7 +18,7 @@
   "Tokens used (average of 2 runs)"
  ],
  "exit": 0,
- "html_sha256": "2731dc12ad08f35256598a7e4f958365f0739e7f214ddf2c1675877c17e7f091",
+ "html_sha256": "041a8aa7d690b89d018e840e8dd714058f2f5a34ac1b516042340505d0811e88",
  "receipt": {
   "caption": "Trend over time or continuous variable.",
   "cmd": "line",
