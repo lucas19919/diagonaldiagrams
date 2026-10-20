@@ -119,3 +119,5 @@ Exit 0 on the first is the contract an agent relies on. The second compares 115 
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+<!-- mcp-name: io.github.lucas19919/diagonaldiagrams -->
