@@ -1,0 +1,45 @@
+{
+ "argv": [
+  "chart",
+  "flowsheet",
+  "examples/flow_decision.json"
+ ],
+ "exit": 0,
+ "html_sha256": "4ba3d35242e558af199f3657ec9511270bc7ebfc5aeb8ec951625c51fc4ddc8f",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "flowsheet",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "flow_decision.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 6,
+  "layout": [
+   "row 1: Push",
+   "row 2: CI tests",
+   "row 3: Risky? (decision)",
+   "row 4: Fix | Review",
+   "row 5: Ship"
+  ],
+  "ok": true
+ }
+}

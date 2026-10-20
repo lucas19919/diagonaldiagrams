@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "geo",
+  "examples/geo_cities.csv",
+  "--lat",
+  "lat",
+  "--lon",
+  "lon",
+  "--label",
+  "city",
+  "--val",
+  "people_m",
+  "--title",
+  "Cities"
+ ],
+ "exit": 0,
+ "html_sha256": "d2d535dc6d615b36bf1d037c8aab9cd6610b953dfeae3bc0eb7e629142eaa494",
+ "receipt": {
+  "caption": "Locations. Dot size follows the value column when one is set.",
+  "cmd": "geo",
+  "figure": "Fig. 1",
+  "grid": true,
+  "highlights": [],
+  "label": "city",
+  "lat": "lat",
+  "lon": "lon",
+  "markers": true,
+  "receipt": 2,
+  "source": "",
+  "src": "geo_cities.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Cities",
+  "val": "people_m"
+ },
+ "verdict": {
+  "ok": true,
+  "places": 8
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "argv": [
+  "seq",
+  "examples/bad_seq.json"
+ ],
+ "exit": 1,
+ "html_sha256": null,
+ "receipt": null,
+ "verdict": {
+  "errors": [
+   {
+    "fix": "use one of: a, b",
+    "msg": "a message names 'ghost', which is not an actor"
+   }
+  ],
+  "next": "fix the spec or flags and run the same command again; nothing was drawn",
+  "ok": false,
+  "stage": "validate",
+  "warnings": []
+ }
+}

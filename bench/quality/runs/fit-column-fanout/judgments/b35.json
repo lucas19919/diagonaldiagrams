@@ -1,0 +1,12 @@
+[
+  {"pair": "p02",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B's text is much larger at column width and its routes are mostly separate verticals with labels sitting clear of other lines. A fits in one view and has a legend, but its labels and node text are tiny once shrunk to 700px, and the settled/placed/card lines tangle around Event bus.",
+    "looks": "A", "looks_margin": "slight", "looks_why": "A looks more polished: type tags, coral highlight on the checkout core, blue HTTP vs dashed async styling, and a tidy compact layout. B is plain grey boxes with long empty vertical runs and a lot of wasted space.",
+    "weak_A": "small text and crowded crossing edges around Event bus",
+    "weak_B": "very tall, with long empty arrow runs and a plain look"},
+  {"pair": "p08",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "In A each fan-out edge from Agent gets its own lane with a clear label (prompt, search, execute, draw, events) next to its target. In B the execute and draw labels sit on top of each other at a crossing below the Agent runtime box, the bundled parallel lines are hard to tell apart, and the text is small.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A has a consistent, calm style with clean group panels and readable bold labels. B mixes pastel group fills with grey highlighted label chips, thin small text and a messy crossing knot under the Agent node.",
+    "weak_A": "very tall, with long parallel lanes running down the right side",
+    "weak_B": "overlapping draw/execute labels and tangled bundle of edges from Agent"}
+]

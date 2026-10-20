@@ -89,7 +89,7 @@ Source: session 2026-10-02. Canonical list for `graph/` CLI.
 ## E. Geospatial — from GeoJSON/shapefiles
 | # | Type | Use case | Stack |
 |---|------|----------|-------|
-| 67 | Point / Cluster map | PoPs, incidents lat/lon | kepler.gl, deck.gl |
+| 67 | Point / Cluster map | PoPs, incidents lat/lon | `graph geo` (Web Mercator figure: graticule, scale bar, sized dots; GeoJSON polygons if you pass them). kepler/deck only if you need tiles |
 | 68 | Choropleth | region by metric | geopandas + mapclassify |
 | 69 | Heat / Density | request density | deck.gl hexagon |
 | 70 | Flow / OD map | zone-to-zone traffic | deck.gl arc |

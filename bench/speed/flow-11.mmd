@@ -1,0 +1,24 @@
+flowchart TD
+  s0(["Request received"])
+  s1["Load the customer account (1)"]
+  s2["Score the fraud risk (2)"]
+  s3{"Check 1 passed?"}
+  s4["Charge the card (4)"]
+  s5["Write the ledger entry (5)"]
+  s6["Notify the warehouse (6)"]
+  s7{"Check 2 passed?"}
+  s8["Send the receipt (8)"]
+  s9["Update the order status (9)"]
+  s10(["Done"])
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 -->|no| s1
+  s3 -->|yes| s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 -->|no| s10
+  s7 -->|yes| s8
+  s8 --> s9
+  s9 --> s10

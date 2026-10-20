@@ -1,0 +1,35 @@
+flowchart TD
+    S([Request received])
+    N1[1. Load customer account]
+    N2[2. Score fraud risk]
+    N3{3. Check 1 passed?}
+    N4[4. Charge the card]
+    N5[5. Write ledger entry]
+    N6[6. Notify warehouse]
+    N7{7. Check 2 passed?}
+    N8[8. Send receipt]
+    N9[9. Update order status]
+    N10[10. Validate request]
+    N11{11. Check 3 passed?}
+    N12[12. Score fraud risk]
+    N13[13. Reserve stock]
+    N14[14. Charge the card]
+    N15{15. Check 4 passed?}
+    N16[16. Notify warehouse]
+    N17[17. Print shipping label]
+    N18[18. Send receipt]
+    E([Done])
+
+    S --> N1 --> N2 --> N3
+    N3 -- yes --> N4
+    N3 -- no --> N1
+    N4 --> N5 --> N6 --> N7
+    N7 -- yes --> N8
+    N7 -- no --> N10
+    N8 --> N9 --> N10 --> N11
+    N11 -- yes --> N12
+    N11 -- no --> N9
+    N12 --> N13 --> N14 --> N15
+    N15 -- yes --> N16
+    N15 -- no --> N18
+    N16 --> N17 --> N18 --> E

@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    # The CLI contract: every command, flag and verdict an agent relies on.
+    name: smoke (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        run: python -m unittest discover tests/unit
+      - name: Style demos
+        run: python -m unittest discover tests/style
+      - name: Smoke tests
+        run: python tests_smoke.py
+
+  entry-points:
+    # The same contract through `python -m diagonaldiagrams` and through an installed wheel.
+    name: smoke (${{ matrix.entry }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        entry: [module, installed]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the wheel
+        if: matrix.entry == 'installed'
+        run: python -m pip install .
+      - name: Smoke tests
+        env:
+          DD_ENTRY: ${{ matrix.entry }}
+        run: python tests_smoke.py
+
+  pyodide:
+    # The browser playground's path: the wheel unpacked into the Pyodide that docs/index.html loads.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build the wheel
+        run: python -m pip wheel . --no-deps -w dist
+      - name: Render in Pyodide
+        run: |
+          npm install --no-save pyodide@0.27.2
+          node tests/pyodide_smoke.mjs dist/diagonaldiagrams-*.whl
+
+  golden:
+    # Byte-for-byte output on both OSes, and the same output under any hash seed.
+    name: golden (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Golden files
+        run: python scripts/golden.py --check
+      - name: Determinism
+        run: python scripts/golden.py --determinism
+      - name: v1 spec to scene and back draws the same
+        run: python scripts/scene_roundtrip.py --fuzz 40
+
+  fuzz:
+    # Two fixed seed sets of 200 scenes each, 5-200 nodes; strict audit gate. The
+    # nightly workflow (fuzz-nightly.yml) tries new seeds, which is how bugs past these get found.
+    name: fuzz (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Strict fuzz harness
+        run: python tests/fuzz/run.py --n 200 --seed 5000 --strict
+      - name: Strict fuzz harness, second seed set
+        run: python tests/fuzz/run.py --n 200 --seed 20000 --strict
+
+  metrics:
+    # A report, not a gate: CI hardware differs from the machine that recorded the baseline.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Measure
+        run: python scripts/metrics.py --quick --compare bench/metrics/baseline.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: metrics
+          path: bench/metrics/latest.*

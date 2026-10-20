@@ -1,0 +1,14 @@
+---
+title: How a diagram gets made
+---
+flowchart TD
+    A([Your agent describes the diagram]) --> B[Check the description]
+    B --> C{Makes sense?}
+    C -->|no| X[Tell the agent what to fix]
+    C -->|yes| D[Lay out and draw]
+    D --> E[Check the drawing]
+    E --> F{Anything overlapping?}
+    F -- yes --> G[Rearrange]
+    G -.-> E
+    F ==>|no| H([Finished diagram])
+    X -.-> A

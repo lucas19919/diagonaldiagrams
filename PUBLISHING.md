@@ -7,11 +7,13 @@ the MCP registry checks PyPI, and PyPI needs the version on GitHub first.
 
 ```bash
 py -3 tests_smoke.py              # exit 0
-py -3 scripts/build_site.py       # every gallery figure passes its audit
+py -3 scripts/golden.py           # every golden figure matches, or each change is intended
+py -3 scripts/build_site.py       # every gallery figure passes its audit; builds docs/wheels/ for the playground
 ```
 
-Keep the version the same in `graph.py` (`__version__`), `.claude-plugin/plugin.json`, and `server.json` (twice).
-The tests check the first two.
+Keep the version the same in `diagonaldiagrams/__init__.py` (`__version__`), `.claude-plugin/plugin.json`, and
+`server.json` (twice). The tests check the first two. Commit `docs/wheels/` with the release: the playground
+loads the wheel named in `docs/wheels/latest.json`.
 
 ## 1. GitHub: push, and turn on Pages
 

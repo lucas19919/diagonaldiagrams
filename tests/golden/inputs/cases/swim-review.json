@@ -1,0 +1,75 @@
+{
+ "title": "Code review handoff",
+ "lanes": [
+  {
+   "id": "dev",
+   "name": "Developer"
+  },
+  {
+   "id": "rev",
+   "name": "Reviewer"
+  },
+  {
+   "id": "ci",
+   "name": "CI system"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "a",
+   "name": "Open pull request",
+   "lane": "dev"
+  },
+  {
+   "id": "b",
+   "name": "Run tests and lint",
+   "lane": "ci"
+  },
+  {
+   "id": "c",
+   "name": "Review the diff carefully",
+   "lane": "rev"
+  },
+  {
+   "id": "d",
+   "name": "Address comments",
+   "lane": "dev"
+  },
+  {
+   "id": "e",
+   "name": "Approve",
+   "lane": "rev"
+  },
+  {
+   "id": "f",
+   "name": "Merge and deploy",
+   "lane": "ci"
+  }
+ ],
+ "edges": [
+  {
+   "from": "a",
+   "to": "b"
+  },
+  {
+   "from": "b",
+   "to": "c"
+  },
+  {
+   "from": "c",
+   "to": "d"
+  },
+  {
+   "from": "d",
+   "to": "c"
+  },
+  {
+   "from": "c",
+   "to": "e"
+  },
+  {
+   "from": "e",
+   "to": "f"
+  }
+ ]
+}

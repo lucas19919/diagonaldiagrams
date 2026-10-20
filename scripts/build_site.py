@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Build the GitHub Pages site in docs/: render the gallery from examples/ with graph.py itself,
-and copy graph.py next to the page so the in-browser playground runs the same engine.
+"""Build the GitHub Pages site in docs/: render the gallery from examples/ with the engine itself,
+and build the engine's wheel into docs/wheels/ so the in-browser playground runs the same code.
 
     py -3 scripts/build_site.py
 
@@ -17,6 +17,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GRAPH = os.path.join(HERE, "graph.py")
 DOCS = os.path.join(HERE, "docs")
 OUT = os.path.join(DOCS, "gallery")
+WHEELS = os.path.join(DOCS, "wheels")
 
 # (file name, command line after graph.py, caption)
 FIGURES = [
@@ -41,6 +42,20 @@ MEASURED = [
                      "--highlight", "diagonaldiagrams", "--title", "Tokens per flowchart",
                      "--subtitle", "diagonaldiagrams stays under 2.1k as the diagram grows; with other tools the agent keeps checking its work",
                      "--xlabel", "Steps in the flowchart", "--ylabel", "Tokens used (average of 2 runs)", "--source", SOURCE]),
+    ("bench-tools-0.8", ["line", "docs/data/bench_tools_0.8.csv", "--x", "steps", "--y", "tokens", "--group", "tool",
+                         "--highlight", "diagonaldiagrams", "--title", "Tokens per flowchart, 0.8.0",
+                         "--subtitle", "diagonaldiagrams pays a fixed cost for its skill and verdict; Mermaid CLI grows fastest with the figure",
+                         "--xlabel", "Steps in the flowchart", "--ylabel", "Tokens used (average of 2 runs)", "--source", SOURCE]),
+    ("bench-speed", ["line", "docs/data/bench_speed_call.csv", "--x", "steps", "--y", "ms", "--group", "tool",
+                      "--highlight", "diagonaldiagrams", "--title", "A call stays under 160 ms as the flowchart grows",
+                      "--subtitle", "Milliseconds for one figure, a new process each time. Mermaid CLI takes 2.3 to 2.6 seconds on these same flows.",
+                      "--xlabel", "Steps in the flowchart", "--ylabel", "Milliseconds per call",
+                      "--source", "diagonaldiagrams remeasured 2026-10-19, median of 7. Pele is that day's benchmark, not rerun."]),
+    ("bench-quality", ["bar", "docs/data/bench_quality.csv", "--cat", "figure", "--val", "clearer", "--group", "tool",
+                        "--title", "Column flows were judged clearer every time",
+                        "--subtitle", "Share of blind judgments diagonaldiagrams won on clarity.",
+                        "--ylabel", "Clearer (percent of judgments)",
+                        "--source", "Slide: 496 judgments. Column flows: --fit column. Arch: the later rejudge."]),
 ]
 
 
@@ -71,8 +86,27 @@ def main():
         render(name, args)
     with open(os.path.join(DOCS, "gallery.json"), "w", encoding="utf-8") as f:
         json.dump(shown, f, indent=1)
-    shutil.copy(GRAPH, os.path.join(DOCS, "graph.py"))
-    print(f"{len(shown)} figures, graph.py copied for the playground")
+    wheel = build_wheel()
+    print(f"{len(shown)} figures; the playground loads wheels/{wheel}")
+
+
+def build_wheel():
+    """Build the pure-Python wheel the playground unpacks into Pyodide, and name it in latest.json."""
+    shutil.rmtree(WHEELS, ignore_errors=True)
+    os.makedirs(WHEELS)
+    cmd = [sys.executable, "-m", "pip", "wheel", HERE, "--no-deps", "-q", "-w", WHEELS]
+    try:
+        import setuptools  # noqa: F401  (a local setuptools builds offline)
+        cmd.insert(5, "--no-build-isolation")
+    except ImportError:
+        pass
+    subprocess.run(cmd, check=True, cwd=HERE)
+    for leftover in ("build", "diagonaldiagrams.egg-info"):
+        shutil.rmtree(os.path.join(HERE, leftover), ignore_errors=True)
+    wheel = next(n for n in os.listdir(WHEELS) if n.endswith(".whl"))
+    with open(os.path.join(WHEELS, "latest.json"), "w", encoding="utf-8") as f:
+        json.dump({"wheel": wheel}, f)
+    return wheel
 
 
 if __name__ == "__main__":

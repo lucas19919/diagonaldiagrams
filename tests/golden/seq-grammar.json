@@ -1,0 +1,120 @@
+{
+ "argv": [
+  "seq",
+  "examples/grammar_act.json"
+ ],
+ "exit": 0,
+ "html_sha256": "4084c4065e36bf90cc01d3ee1650ff36025cd0e4e139803101ffa305147d9aac",
+ "receipt": {
+  "auto": false,
+  "cmd": "seq",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "caller",
+     "label": "act",
+     "order": 0,
+     "proto": "https",
+     "to": "doors"
+    },
+    {
+     "from": "doors",
+     "label": "decide",
+     "order": 1,
+     "to": "grammar"
+    },
+    {
+     "from": "grammar",
+     "label": "commit",
+     "order": 2,
+     "reply": true,
+     "to": "doors"
+    },
+    {
+     "from": "doors",
+     "label": "effect",
+     "order": 3,
+     "to": "writer"
+    },
+    {
+     "from": "writer",
+     "label": "append",
+     "order": 4,
+     "to": "duck"
+    },
+    {
+     "from": "writer",
+     "label": "written",
+     "order": 5,
+     "reply": true,
+     "to": "doors"
+    },
+    {
+     "from": "doors",
+     "label": "answered",
+     "order": 6,
+     "proto": "https",
+     "reply": true,
+     "to": "caller"
+    }
+   ],
+   "layout": "sequence",
+   "nodes": [
+    {
+     "id": "caller",
+     "name": "Caller",
+     "sub": "bearer",
+     "tag": "USER"
+    },
+    {
+     "focal": true,
+     "id": "doors",
+     "name": "Doors",
+     "sub": "envelope",
+     "tag": "API"
+    },
+    {
+     "focal": true,
+     "id": "grammar",
+     "name": "Grammar",
+     "sub": "decide",
+     "tag": "LIB"
+    },
+    {
+     "id": "writer",
+     "name": "Writer",
+     "sub": "act",
+     "tag": "SVC"
+    },
+    {
+     "id": "duck",
+     "name": "DuckDB",
+     "sub": "history",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "seq",
+   "subtitle": "A door asks the grammar to decide. The writer commits the effect and one audit line.",
+   "title": "One action",
+   "version": 2
+  },
+  "spec": "grammar_act.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: Caller | Doors | Grammar | Writer | DuckDB",
+   "1. Caller -> Doors: act",
+   "2. Doors -> Grammar: decide",
+   "3. Grammar -> Doors: commit",
+   "4. Doors -> Writer: effect",
+   "5. Writer -> DuckDB: append",
+   "6. Writer -> Doors: written",
+   "7. Doors -> Caller: answered"
+  ],
+  "ok": true
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "layers",
+  "tests/golden/inputs/charts/layers.json",
+  "--title",
+  "layers"
+ ],
+ "exit": 0,
+ "html_sha256": "257694a1e3f9ebf72cd18038ba6aada8a4aa86dfb039ec9b9db6a0be19d5487c",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "layers",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "layers.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "layers",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "dtree",
+  "tests/golden/inputs/charts/dtree.json",
+  "--title",
+  "dtree"
+ ],
+ "exit": 0,
+ "html_sha256": "5a6d1ab6ddb74a13df64fcf72c3f09f50c82f4f12430428b507a34de3c0e4dc2",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "dtree",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "dtree.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "dtree",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

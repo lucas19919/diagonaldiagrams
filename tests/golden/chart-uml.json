@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "uml",
+  "tests/golden/inputs/charts/uml.json",
+  "--title",
+  "uml"
+ ],
+ "exit": 0,
+ "html_sha256": "83cfaf3e5681dec0c397ea1a9ae82f6a6d225af12707165e1f2a94f444034133",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "uml",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "uml.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "uml",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

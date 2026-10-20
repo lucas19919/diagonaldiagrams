@@ -1,0 +1,45 @@
+{
+ "argv": [
+  "line",
+  "examples/line_throughput.csv",
+  "--x",
+  "timestamp",
+  "--y",
+  "rps",
+  "--group",
+  "service"
+ ],
+ "exit": 0,
+ "html_sha256": "ec8cbca990959f3a790291ff0c00b2c318e4553c84fe816a43fdaa06a09bd37a",
+ "receipt": {
+  "caption": "Trend over time or continuous variable.",
+  "cmd": "line",
+  "corners": "editorial",
+  "csv": "line_throughput.csv",
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": "service",
+  "highlights": [],
+  "markers": true,
+  "receipt": 2,
+  "source": "",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Line Trend",
+  "x": "timestamp",
+  "xlabel": null,
+  "xunit": "",
+  "y": "rps",
+  "ylabel": null,
+  "yunit": ""
+ },
+ "verdict": {
+  "layout": [
+   "x axis: Timestamp",
+   "y axis: rps",
+   "series: api-gateway 2,400, payment-svc 1,500"
+  ],
+  "ok": true,
+  "points": 14
+ }
+}

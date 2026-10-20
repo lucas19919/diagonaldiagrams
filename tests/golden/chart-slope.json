@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "slope",
+  "tests/golden/inputs/charts/slope.csv",
+  "--title",
+  "slope"
+ ],
+ "exit": 0,
+ "html_sha256": "83c880283552a8bc31d90c3111cd8020a95eeb75bc3b52b01e3d6641e8bfb8fc",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "slope",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "slope.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "slope",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "title": "Split",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "A"
+  },
+  {
+   "id": "b",
+   "name": "B",
+   "parent": "a",
+   "label": "yes"
+  },
+  {
+   "id": "c",
+   "name": "C",
+   "parent": "a",
+   "label": "no"
+  }
+ ]
+}

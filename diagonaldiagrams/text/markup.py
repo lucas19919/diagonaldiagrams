@@ -1,0 +1,42 @@
+"""Inline markup in labels: **bold**, _italic_ and `mono`. Everything else is literal.
+
+An underscore counts only at a word's edges, so snake_case and user_id stay as written. runs()
+splits a text into (text, kind) pieces, kind being "", "b", "i" or "m"; plain() is the text without
+its markers, for names, accessible labels and outlines.
+"""
+import re
+
+_TOKEN = re.compile(r"\*\*(?P<b>.+?)\*\*|(?<![\w])_(?P<i>[^_\s](?:[^_]*?[^_\s])?)_(?![\w])|`(?P<m>[^`]+)`")
+
+
+def _bare(text):
+    """No marker character at all: most labels, answered without the regex."""
+    return "*" not in text and "_" not in text and "`" not in text
+
+
+def has_markup(text):
+    text = str(text)
+    return not _bare(text) and bool(_TOKEN.search(text))
+
+
+def runs(text):
+    """[(text, kind)] in order, adjacent plain text kept together."""
+    text = str(text)
+    if _bare(text):
+        return [(text, "")]
+    out, pos = [], 0
+    for m in _TOKEN.finditer(text):
+        if m.start() > pos:
+            out.append((text[pos:m.start()], ""))
+        kind = m.lastgroup
+        out.append((m.group(kind), kind))
+        pos = m.end()
+    if pos < len(text):
+        out.append((text[pos:], ""))
+    return out or [("", "")]
+
+
+def plain(text):
+    """The text as read aloud: markers removed."""
+    text = str(text)
+    return text if _bare(text) else "".join(t for t, _ in runs(text))

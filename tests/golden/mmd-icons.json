@@ -1,0 +1,104 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/icons.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "3c4ea03e9804b341633be4cdbb03890bbdbb8fcf4405e9f55c0c2ac03380027d",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "_kind": "flow",
+   "budget": false,
+   "edges": [
+    {
+     "from": "U",
+     "to": "W"
+    },
+    {
+     "from": "W",
+     "to": "G"
+    },
+    {
+     "from": "G",
+     "to": "O"
+    },
+    {
+     "from": "O",
+     "to": "D"
+    },
+    {
+     "async": true,
+     "from": "O",
+     "to": "Q"
+    },
+    {
+     "from": "Q",
+     "to": "M"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "icon": "user",
+     "id": "U",
+     "name": "Customer"
+    },
+    {
+     "icon": "web",
+     "id": "W",
+     "name": "Web app"
+    },
+    {
+     "icon": "shield",
+     "id": "G",
+     "name": "API gateway"
+    },
+    {
+     "icon": "gear",
+     "id": "O",
+     "name": "Orders service"
+    },
+    {
+     "icon": "database",
+     "id": "D",
+     "name": "Orders DB",
+     "tag": "DB"
+    },
+    {
+     "icon": "queue",
+     "id": "Q",
+     "name": "Event queue"
+    },
+    {
+     "icon": "mail",
+     "id": "M",
+     "name": "Email sender"
+    }
+   ],
+   "preset": "flow",
+   "title": "An order, end to end",
+   "version": 2
+  },
+  "spec": "icons.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 7,
+  "layout": [
+   "row 1: Customer",
+   "row 2: Web app",
+   "row 3: API gateway",
+   "row 4: Orders service",
+   "row 5: Orders DB | Event queue",
+   "row 6: Email sender"
+  ],
+  "ok": true
+ }
+}

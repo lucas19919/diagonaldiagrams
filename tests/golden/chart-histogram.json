@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "histogram",
+  "tests/golden/inputs/charts/histogram.csv",
+  "--title",
+  "histogram"
+ ],
+ "exit": 0,
+ "html_sha256": "909e8ebcd6a17b8d21cd3e6c921e7f4016325de4b97558bf67bd75dc2a41249f",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "histogram",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "histogram.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "histogram",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 8,
+  "ok": true
+ }
+}

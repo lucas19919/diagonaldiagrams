@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "radial",
+  "tests/golden/inputs/charts/radial.json",
+  "--title",
+  "radial"
+ ],
+ "exit": 0,
+ "html_sha256": "eaa66011facec9454c09083bf5ef874bf00b8b8b4b212d5e9e186a75e3b7dbf3",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "radial",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "radial.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "radial",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

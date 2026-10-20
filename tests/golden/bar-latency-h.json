@@ -1,0 +1,48 @@
+{
+ "argv": [
+  "bar",
+  "examples/bar_latency.csv",
+  "--cat",
+  "service",
+  "--val",
+  "p99_latency_ms",
+  "--orientation",
+  "h",
+  "--sort",
+  "desc",
+  "--unit",
+  "ms"
+ ],
+ "exit": 0,
+ "html_sha256": "02e582282edf43927971f94b9defdaef65137bd91fe53739fd9102ce1e79e118",
+ "receipt": {
+  "caption": "Categorical comparison.",
+  "cat": "service",
+  "cmd": "bar",
+  "corners": "editorial",
+  "csv": "bar_latency.csv",
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": null,
+  "highlights": [],
+  "markers": true,
+  "orientation": "h",
+  "receipt": 2,
+  "sort": "desc",
+  "source": "",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Bar Chart",
+  "unit": "ms",
+  "val": "p99_latency_ms",
+  "xlabel": null,
+  "ylabel": null
+ },
+ "verdict": {
+  "bars": 5,
+  "layout": [
+   "x axis: p99 Latency (ms)"
+  ],
+  "ok": true
+ }
+}

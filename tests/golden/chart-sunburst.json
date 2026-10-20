@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "sunburst",
+  "tests/golden/inputs/charts/sunburst.csv",
+  "--title",
+  "sunburst"
+ ],
+ "exit": 0,
+ "html_sha256": "c0b5ad075f1a43dfcd734768aec8176ec8e7eb0541d4d3a936f08bcd9ad8ba60",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "sunburst",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "sunburst.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "sunburst",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

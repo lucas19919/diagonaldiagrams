@@ -1,0 +1,9 @@
+[
+  {"pair": "p10",
+    "clearer": "A", "clearer_margin": "slight",
+    "clearer_why": "A fits on one screen with a title, a legend (blue = HTTP, dashed = background, coral = highlighted), type tags and a coral Orders-to-Payments charge edge, so the flow and the sync/async split read at a glance. B has larger type, but it splits across two images, has very long Auth/Catalog-to-Redis edges, and an arrow runs through the 'Event consumers' frame title.",
+    "looks": "A", "looks_margin": "clear",
+    "looks_why": "A looks polished: soft grouped frames, consistent card nodes with a restrained blue/coral palette, rounded orthogonal routing and a subtle legend. B looks dated: grey label backgrounds behind every edge label, heavy black strokes of uneven weight, pastel pink/teal/orange frame fills that clash, and a dotted arrow cutting through a frame label.",
+    "weak_A": "small type (tags and edge labels are tiny at column width) and a slight tangle where the placed/settled dashed edges and the card edge run close below Payments",
+    "weak_B": "grey edge-label boxes, a dotted arrow striking through the 'Event consumers' frame title, very long vertical edges, and a tall layout that splits into two images with no legend or colour meaning"}
+]

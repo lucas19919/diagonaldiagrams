@@ -1,0 +1,131 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/how_it_works.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "aef887c8725a0ceebe3d25d067ea1f42bdc1c60780dd282ae83c571fc8129542",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "_kind": "flow",
+   "budget": false,
+   "edges": [
+    {
+     "from": "A",
+     "to": "B"
+    },
+    {
+     "from": "B",
+     "to": "C"
+    },
+    {
+     "from": "C",
+     "label": "no",
+     "to": "X"
+    },
+    {
+     "from": "C",
+     "label": "yes",
+     "to": "D"
+    },
+    {
+     "from": "D",
+     "to": "E"
+    },
+    {
+     "from": "E",
+     "to": "F"
+    },
+    {
+     "from": "F",
+     "label": "yes",
+     "to": "G"
+    },
+    {
+     "async": true,
+     "from": "G",
+     "to": "E"
+    },
+    {
+     "focal": true,
+     "from": "F",
+     "label": "no",
+     "to": "H"
+    },
+    {
+     "async": true,
+     "from": "X",
+     "to": "A"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "A",
+     "name": "Your agent describes the diagram",
+     "shape": "oval"
+    },
+    {
+     "id": "B",
+     "name": "Check the description"
+    },
+    {
+     "id": "C",
+     "name": "Makes sense?",
+     "shape": "diamond"
+    },
+    {
+     "id": "X",
+     "name": "Tell the agent what to fix"
+    },
+    {
+     "id": "D",
+     "name": "Lay out and draw"
+    },
+    {
+     "id": "E",
+     "name": "Check the drawing"
+    },
+    {
+     "id": "F",
+     "name": "Anything overlapping?",
+     "shape": "diamond"
+    },
+    {
+     "id": "G",
+     "name": "Rearrange"
+    },
+    {
+     "id": "H",
+     "name": "Finished diagram",
+     "shape": "oval"
+    }
+   ],
+   "preset": "flow",
+   "title": "How a diagram gets made",
+   "version": 2
+  },
+  "spec": "how_it_works.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 9,
+  "layout": [
+   "row 1: Your agent describes the diagram",
+   "row 2: Check the description",
+   "row 3: Makes sense? (decision)",
+   "row 4: Lay out and draw | Tell the agent what to fix",
+   "row 5: Check the drawing",
+   "row 6: Anything overlapping? (decision)",
+   "row 7: Rearrange | Finished diagram"
+  ],
+  "ok": true
+ }
+}

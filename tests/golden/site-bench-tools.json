@@ -1,0 +1,55 @@
+{
+ "argv": [
+  "line",
+  "docs/data/bench_tools.csv",
+  "--x",
+  "steps",
+  "--y",
+  "tokens",
+  "--group",
+  "tool",
+  "--highlight",
+  "diagonaldiagrams",
+  "--title",
+  "Tokens per flowchart",
+  "--xlabel",
+  "Steps in the flowchart",
+  "--ylabel",
+  "Tokens used (average of 2 runs)"
+ ],
+ "exit": 0,
+ "html_sha256": "2731dc12ad08f35256598a7e4f958365f0739e7f214ddf2c1675877c17e7f091",
+ "receipt": {
+  "caption": "Trend over time or continuous variable.",
+  "cmd": "line",
+  "corners": "editorial",
+  "csv": "bench_tools.csv",
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": "tool",
+  "highlights": [
+   "diagonaldiagrams"
+  ],
+  "markers": true,
+  "receipt": 2,
+  "source": "",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Tokens per flowchart",
+  "x": "steps",
+  "xlabel": "Steps in the flowchart",
+  "xunit": "",
+  "y": "tokens",
+  "ylabel": "Tokens used (average of 2 runs)",
+  "yunit": ""
+ },
+ "verdict": {
+  "layout": [
+   "x axis: Steps in the flowchart",
+   "y axis: Tokens used (average of 2 runs)",
+   "series: D2 28k, Mermaid 20.5k, Graphviz 12.5k, Hand-written SVG 8,136, diagonaldiagrams 2,099"
+  ],
+  "ok": true,
+  "points": 20
+ }
+}

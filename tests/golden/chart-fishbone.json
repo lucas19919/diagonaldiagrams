@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "fishbone",
+  "tests/golden/inputs/charts/fishbone.json",
+  "--title",
+  "fishbone"
+ ],
+ "exit": 0,
+ "html_sha256": "ecb6cae83640ef3f0ce6af10dc8b7e056b04d7e1be9f7f361a67cdda42c8de53",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "fishbone",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "fishbone.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "fishbone",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "force",
+  "tests/golden/inputs/charts/force.json",
+  "--title",
+  "force"
+ ],
+ "exit": 0,
+ "html_sha256": "502051ed024f35e406e203bc05df444d65eb776261223166e8a1886debec4803",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "force",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "force.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "force",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

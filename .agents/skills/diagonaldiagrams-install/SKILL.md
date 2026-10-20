@@ -35,7 +35,8 @@ The drawing contract is the `graph-engine` skill in the clone. This skill only p
 
    If the directory exists and has no `graph.py`, stop. Tell the user what is in it.
 
-4. Check the library. Run `<python> <dir>/graph.py describe`. Require exit 0. The JSON must list `flow`, `arch`, `seq`, `schema`, `bar`, `line`, `scatter`, `geo`, `heatmap`, and `sankey`.
+4. Check the library. Run `<python> <dir>/graph.py describe`. Require exit 0. The JSON's `types` list must include `flow`, `arch`, `seq`, `schema`, `bar`, `line`, `scatter`, `geo`, `heatmap`, and `sankey`.
+   Then run `<python> -m compileall -q <dir>/diagonaldiagrams`, so every later call starts from compiled code even where `PYTHONDONTWRITEBYTECODE` is set. Run it again after each update.
 
 5. Copy `<dir>/.agents/skills/graph-engine` to the user skills folder of the agent you are, so later sessions can draw.
    - Claude Code: `~/.claude/skills/graph-engine`
@@ -48,10 +49,10 @@ The drawing contract is the `graph-engine` skill in the clone. This skill only p
 
 7. Report the absolute path of `<dir>/graph.py`. Later draws use that path: `py -3 <path>` on Windows, `python3 <path>` elsewhere. Point the user at the `graph-engine` skill for the draw loop.
 
-To update later: `git -C <dir> pull`.
+To update later: `git -C <dir> pull`, then the `compileall` line from step 4.
 
 Run `<python> <dir>/tests_smoke.py` only when the user asks for a full check.
 
 ## Leave alone
 
-Do not edit `graph.py`. Do not hand-edit an SVG the library wrote. Do not run `sync --commit` as part of install.
+Do not edit `graph.py` or the `diagonaldiagrams/` package next to it. Do not hand-edit an SVG the library wrote. Do not run `sync --commit` as part of install.

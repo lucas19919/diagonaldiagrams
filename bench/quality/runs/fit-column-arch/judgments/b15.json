@@ -1,0 +1,7 @@
+[
+  {"pair": "p03",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "In A the edge labels (prompt, search, recall, files, svg) sit next to the arrowheads of their targets, and the layout is compact, so each arrow is easy to match to its label. In B the prompt/search labels sit at the start of a long bundle of five parallel lines far from their targets, so the 'search' label appears beside the orange Model API line, which is ambiguous.",
+    "looks": "B", "looks_margin": "slight", "looks_why": "B has a calmer, more modern look: neutral grey groups with small-caps titles, bold larger text, one orange accent edge and rounded boxes. A's grey highlighted label chips, pastel pink/teal/orange group fills and small text look dated and busier, though B's long line bundle and the hyphenated 'diagonaldi-agrams' hurt it.",
+    "weak_A": "small text, grey highlighted label chips, and the 'execute'/'draw' labels crowded on top of the vertical lines",
+    "weak_B": "a long bundle of five near-identical parallel lines from Agent with labels far from their arrowheads, plus the awkward 'diagonaldi-agrams' word break"}
+]

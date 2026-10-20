@@ -1,0 +1,152 @@
+{
+ "argv": [
+  "seq",
+  "examples/show_toolloop.json"
+ ],
+ "exit": 0,
+ "html_sha256": "1fd80e64cf829349bc609151db574b3397556c0983dcfefa2e13f17e9c65f163",
+ "receipt": {
+  "auto": false,
+  "cmd": "seq",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "user",
+     "label": "Ask",
+     "order": 0,
+     "to": "agent"
+    },
+    {
+     "focal": true,
+     "from": "agent",
+     "label": "Plan",
+     "order": 1,
+     "to": "model"
+    },
+    {
+     "from": "model",
+     "label": "Call tool",
+     "order": 2,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Search",
+     "order": 3,
+     "proto": "https",
+     "to": "tools"
+    },
+    {
+     "from": "tools",
+     "label": "Passages",
+     "order": 4,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Ground",
+     "order": 5,
+     "to": "model"
+    },
+    {
+     "focal": true,
+     "from": "model",
+     "label": "Draft",
+     "order": 6,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Record",
+     "order": 7,
+     "to": "ledger"
+    },
+    {
+     "from": "ledger",
+     "label": "Stored",
+     "order": 8,
+     "reply": true,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Answer",
+     "order": 9,
+     "reply": true,
+     "to": "user"
+    },
+    {
+     "from": "user",
+     "label": "Follow up",
+     "order": 10,
+     "to": "agent"
+    },
+    {
+     "from": "agent",
+     "label": "Revise",
+     "order": 11,
+     "to": "model"
+    }
+   ],
+   "layout": "sequence",
+   "nodes": [
+    {
+     "id": "user",
+     "name": "User",
+     "tag": "USER"
+    },
+    {
+     "focal": true,
+     "id": "agent",
+     "name": "Agent",
+     "tag": "SVC"
+    },
+    {
+     "id": "model",
+     "name": "Model",
+     "tag": "SVC"
+    },
+    {
+     "id": "tools",
+     "name": "Tools",
+     "tag": "GATEWAY"
+    },
+    {
+     "id": "ledger",
+     "name": "Ledger",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "seq",
+   "subtitle": "The model asks, the tool answers, the ledger keeps the trace.",
+   "title": "Tool loop",
+   "version": 2
+  },
+  "spec": "show_toolloop.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: User | Agent | Model | Tools | Ledger",
+   "1. User -> Agent: Ask",
+   "2. Agent -> Model: Plan",
+   "3. Model -> Agent: Call tool",
+   "4. Agent -> Tools: Search",
+   "5. Tools -> Agent: Passages",
+   "6. Agent -> Model: Ground",
+   "7. Model -> Agent: Draft",
+   "8. Agent -> Ledger: Record",
+   "9. Ledger -> Agent: Stored",
+   "10. Agent -> User: Answer",
+   "11. User -> Agent: Follow up",
+   "12. Agent -> Model: Revise"
+  ],
+  "ok": true
+ }
+}

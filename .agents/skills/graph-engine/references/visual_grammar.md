@@ -30,6 +30,6 @@ Over → split (overview+detail, sub-sequences, bounded contexts, top-N+Other).
 
 ## Connectors
 
-Orthogonal elbows only (r=8). Labels masked with 6px gap, ≤14 chars uppercase.
+Orthogonal elbows only (r=8). Labels masked with 6px gap, ≤14 chars, in the case the spec gives.
 No shared attach points (≥12px fan). No line behind a non-endpoint box
 (dashed if unavoidable). Ratio data never shows a negative axis.

@@ -1,0 +1,12 @@
+[
+  {"pair": "p02",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A fits the whole system on one screen with short, labelled edges and a legend explaining blue/dashed/coral, so the gateway -> core -> event bus -> consumers flow reads at a glance. B has larger text, but it runs across two images with very long vertical edges (Auth/Catalog to Redis, Payments to Stripe) whose labels sit far from both ends.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A is polished: consistent rounded cards with small type tags (SVC, STORE, API), a restrained blue palette with the coral Orders/Payments highlight, and tidy group frames. B looks like a default flowchart, plain gray boxes and thin black lines, with a lot of empty space from its stretched layout.",
+    "weak_A": "small secondary text (type tags, ports) once shrunk to the column",
+    "weak_B": "overly tall layout with long edges and distant edge labels"},
+  {"pair": "p08",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B places the tools side by side and puts most edge labels right above their targets (prompt->Model API, search->Web search, files/svg->Object store, persist/ingest), so each arrow is easy to match. A runs five parallel lines down the right side from Agent, and its 'prompt' and 'search' labels sit clustered near the Agent rather than on the Model API and Web search edges, which makes them ambiguous; B's main flaw is the 'draw' and 'execute' labels stacked on top of each other at a line crossing.",
+    "looks": "A", "looks_margin": "slight", "looks_why": "A has cleaner, larger type, consistent white cards on soft gray group frames, and a single coral accent. B has the dated look of gray label chips, thin small text, mismatched pastel group fills (pink, cyan, orange) and a tangle of lines leaving Agent. A is let down by its lopsided layout with long wires and empty space.",
+    "weak_A": "bundle of long parallel edges from Agent with ambiguous 'prompt'/'search' labels",
+    "weak_B": "overlapping 'draw'/'execute' labels and small, cramped text"}
+]

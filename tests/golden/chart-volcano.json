@@ -1,0 +1,46 @@
+{
+ "argv": [
+  "chart",
+  "volcano",
+  "tests/golden/inputs/charts/volcano.csv",
+  "--title",
+  "volcano"
+ ],
+ "exit": 0,
+ "html_sha256": "39f49c9c65ca743022334e31b59e6d9d47828fd968d04e428efa57cb3fd8fe2c",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "volcano",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "volcano.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "volcano",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "verify intended; ratio data floors at 0",
+    "msg": "negative ticks ['-2', '-1']"
+   }
+  ]
+ }
+}

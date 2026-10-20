@@ -1,0 +1,124 @@
+{
+ "argv": [
+  "seq",
+  "examples/seq_checkout.json"
+ ],
+ "exit": 0,
+ "html_sha256": "2c2010bcf41705b7d370491573e387ab52df32167fb362f9ec3163ba35818ce6",
+ "receipt": {
+  "auto": false,
+  "cmd": "seq",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "user",
+     "label": "Submit Order",
+     "order": 0,
+     "to": "fe"
+    },
+    {
+     "from": "fe",
+     "label": "POST /checkout",
+     "order": 1,
+     "proto": "https",
+     "to": "api"
+    },
+    {
+     "focal": true,
+     "from": "api",
+     "label": "Authorize Card",
+     "order": 2,
+     "to": "pay"
+    },
+    {
+     "from": "pay",
+     "label": "Store Ledger TX",
+     "order": 3,
+     "to": "db"
+    },
+    {
+     "from": "db",
+     "label": "TX Committed",
+     "order": 4,
+     "reply": true,
+     "to": "pay"
+    },
+    {
+     "focal": true,
+     "from": "pay",
+     "label": "Payment Succeeded",
+     "order": 5,
+     "reply": true,
+     "to": "api"
+    },
+    {
+     "from": "api",
+     "label": "201 Created (Order #491)",
+     "order": 6,
+     "reply": true,
+     "to": "fe"
+    },
+    {
+     "from": "fe",
+     "label": "Show Confirmation",
+     "order": 7,
+     "reply": true,
+     "to": "user"
+    }
+   ],
+   "eyebrow": "sequence · checkout",
+   "layout": "sequence",
+   "nodes": [
+    {
+     "id": "user",
+     "name": "Customer",
+     "tag": "USER"
+    },
+    {
+     "id": "fe",
+     "name": "Web App",
+     "tag": "UI"
+    },
+    {
+     "focal": true,
+     "id": "api",
+     "name": "API Gateway",
+     "tag": "GATEWAY"
+    },
+    {
+     "id": "pay",
+     "name": "Payment Svc",
+     "tag": "SVC"
+    },
+    {
+     "id": "db",
+     "name": "Postgres",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "seq",
+   "subtitle": "Synchronous payment authorization with asynchronous receipt notification",
+   "title": "Order Checkout Sequence",
+   "version": 2
+  },
+  "spec": "seq_checkout.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: Customer | Web App | API Gateway | Payment Svc | Postgres",
+   "1. Customer -> Web App: Submit Order",
+   "2. Web App -> API Gateway: POST /checkout",
+   "3. API Gateway -> Payment Svc: Authorize Card",
+   "4. Payment Svc -> Postgres: Store Ledger TX",
+   "5. Postgres -> Payment Svc: TX Committed",
+   "6. Payment Svc -> API Gateway: Payment Succeeded",
+   "7. API Gateway -> Web App: 201 Created (Order #491)",
+   "8. Web App -> Customer: Show Confirmation"
+  ],
+  "ok": true
+ }
+}

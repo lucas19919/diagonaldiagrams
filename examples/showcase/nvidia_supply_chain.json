@@ -1,0 +1,44 @@
+{
+  "title": "How an NVIDIA GPU gets made",
+  "sub": "NVIDIA designs it. TSMC makes and packages it with HBM from SK hynix and Micron. ODMs build the racks the clouds buy. Simplified, from public reporting.",
+  "budget": false,
+  "nodes": [
+    {"id": "eda", "name": "Synopsys · Cadence", "sub": "chip design tools", "tag": "EDA", "layer": 0},
+    {"id": "nvidia", "name": "NVIDIA", "sub": "Blackwell GPU design", "tag": "DESIGN", "layer": 0, "focal": true},
+    {"id": "arm", "name": "Arm", "sub": "Grace CPU cores", "tag": "IP", "layer": 0},
+    {"id": "asml", "name": "ASML", "sub": "EUV lithography", "tag": "TOOLS", "layer": 0},
+    {"id": "abf", "name": "Ibiden · Unimicron", "sub": "ABF substrates", "tag": "PARTS", "layer": 1},
+    {"id": "tsmc", "name": "TSMC fab", "sub": "4NP wafers", "tag": "FOUNDRY", "layer": 1, "focal": true},
+    {"id": "hynix", "name": "SK hynix", "sub": "HBM3E stacks", "tag": "MEMORY", "layer": 1},
+    {"id": "micron", "name": "Micron · Samsung", "sub": "HBM3E stacks", "tag": "MEMORY", "layer": 1},
+    {"id": "cowos", "name": "TSMC CoWoS-L", "sub": "GPU and HBM on one interposer", "tag": "PACKAGING", "layer": 2},
+    {"id": "net", "name": "NVIDIA networking", "sub": "NVLink, InfiniBand", "tag": "NETWORK", "layer": 3},
+    {"id": "foxconn", "name": "Foxconn", "sub": "GB200 NVL72 racks", "tag": "ODM", "layer": 3},
+    {"id": "quanta", "name": "Quanta · Wistron", "sub": "HGX servers", "tag": "ODM", "layer": 3},
+    {"id": "msft", "name": "Microsoft", "sub": "Azure", "tag": "CLOUD", "layer": 4},
+    {"id": "meta", "name": "Meta", "sub": "training clusters", "tag": "BUYER", "layer": 4},
+    {"id": "google", "name": "Google · Amazon", "sub": "GCP, AWS", "tag": "CLOUD", "layer": 4},
+    {"id": "oracle", "name": "Oracle · CoreWeave", "sub": "GPU clouds", "tag": "CLOUD", "layer": 4}
+  ],
+  "edges": [
+    {"from": "eda", "to": "nvidia", "label": "tools"},
+    {"from": "arm", "to": "nvidia", "label": "CPU cores"},
+    {"from": "nvidia", "to": "tsmc", "label": "tape-out"},
+    {"from": "asml", "to": "tsmc", "label": "scanners"},
+    {"from": "tsmc", "to": "cowos", "label": "GPU dies"},
+    {"from": "hynix", "to": "cowos", "label": "HBM"},
+    {"from": "micron", "to": "cowos", "label": "HBM"},
+    {"from": "abf", "to": "cowos", "label": "substrates"},
+    {"from": "cowos", "to": "foxconn", "label": "GPUs"},
+    {"from": "cowos", "to": "quanta", "label": "GPUs"},
+    {"from": "net", "to": "foxconn", "label": "switches"},
+    {"from": "foxconn", "to": "msft", "label": "racks"},
+    {"from": "foxconn", "to": "meta", "label": "racks"},
+    {"from": "quanta", "to": "google", "label": "servers"},
+    {"from": "quanta", "to": "oracle", "label": "servers"}
+  ],
+  "groups": [
+    {"id": "taiwan", "name": "TSMC, Taiwan", "nodes": ["tsmc", "cowos"]},
+    {"id": "memory", "name": "HBM memory", "nodes": ["hynix", "micron"]}
+  ]
+}

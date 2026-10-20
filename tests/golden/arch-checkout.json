@@ -1,0 +1,261 @@
+{
+ "argv": [
+  "arch",
+  "examples/checkout_platform.json"
+ ],
+ "exit": 0,
+ "html_sha256": "f0be87b0dfdc19fd2cc397073a2bd12395230bb037c2a83738829df0d55724b1",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "budget": false,
+   "constraints": [
+    {
+     "order": [
+      "web",
+      "mobile"
+     ]
+    },
+    {
+     "order": [
+      "auth",
+      "catalog",
+      "orders",
+      "pay"
+     ]
+    },
+    {
+     "order": [
+      "redis",
+      "pg",
+      "bus",
+      "stripe"
+     ]
+    },
+    {
+     "order": [
+      "inventory",
+      "notify",
+      "analytics"
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "web",
+     "label": "calls",
+     "proto": "https",
+     "to": "gw"
+    },
+    {
+     "from": "mobile",
+     "label": "calls",
+     "proto": "https",
+     "to": "gw"
+    },
+    {
+     "from": "gw",
+     "label": "verify",
+     "proto": "https",
+     "to": "auth"
+    },
+    {
+     "from": "gw",
+     "label": "browse",
+     "proto": "https",
+     "to": "catalog"
+    },
+    {
+     "focal": true,
+     "from": "gw",
+     "label": "checkout",
+     "proto": "https",
+     "to": "orders"
+    },
+    {
+     "focal": true,
+     "from": "orders",
+     "label": "charge",
+     "to": "pay"
+    },
+    {
+     "from": "auth",
+     "label": "session",
+     "to": "redis"
+    },
+    {
+     "from": "catalog",
+     "label": "cache",
+     "to": "redis"
+    },
+    {
+     "from": "orders",
+     "label": "write",
+     "to": "pg"
+    },
+    {
+     "async": true,
+     "from": "orders",
+     "label": "placed",
+     "to": "bus"
+    },
+    {
+     "from": "pay",
+     "label": "card",
+     "proto": "https",
+     "to": "stripe"
+    },
+    {
+     "async": true,
+     "from": "pay",
+     "label": "settled",
+     "to": "bus"
+    },
+    {
+     "async": true,
+     "from": "bus",
+     "label": "reserve",
+     "to": "inventory"
+    },
+    {
+     "async": true,
+     "from": "bus",
+     "label": "email",
+     "to": "notify"
+    },
+    {
+     "async": true,
+     "from": "bus",
+     "label": "ingest",
+     "to": "analytics"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "web",
+     "name": "Web app",
+     "rank": 0,
+     "sub": "React",
+     "tag": "UI"
+    },
+    {
+     "id": "mobile",
+     "name": "Mobile app",
+     "rank": 0,
+     "sub": "Swift",
+     "tag": "UI"
+    },
+    {
+     "id": "gw",
+     "name": "API gateway",
+     "rank": 1,
+     "sub": "Envoy:443",
+     "tag": "API"
+    },
+    {
+     "id": "auth",
+     "name": "Auth",
+     "rank": 2,
+     "sub": "Go:8081",
+     "tag": "SVC"
+    },
+    {
+     "id": "catalog",
+     "name": "Catalog",
+     "rank": 2,
+     "sub": "Go:8082",
+     "tag": "SVC"
+    },
+    {
+     "focal": true,
+     "id": "orders",
+     "name": "Orders",
+     "rank": 2,
+     "sub": "Kotlin:8083",
+     "tag": "SVC"
+    },
+    {
+     "focal": true,
+     "id": "pay",
+     "name": "Payments",
+     "rank": 2,
+     "sub": "Kotlin:8084",
+     "tag": "SVC"
+    },
+    {
+     "id": "redis",
+     "name": "Redis",
+     "rank": 3,
+     "sub": "sessions, cache",
+     "tag": "STORE"
+    },
+    {
+     "id": "pg",
+     "name": "Postgres",
+     "rank": 3,
+     "sub": "orders, ledger",
+     "tag": "STORE"
+    },
+    {
+     "id": "bus",
+     "name": "Event bus",
+     "rank": 3,
+     "sub": "Kafka",
+     "tag": "STORE"
+    },
+    {
+     "id": "stripe",
+     "name": "Stripe",
+     "rank": 3,
+     "sub": "external",
+     "tag": "API"
+    },
+    {
+     "id": "inventory",
+     "name": "Inventory",
+     "rank": 4,
+     "sub": "reserve stock",
+     "tag": "SVC"
+    },
+    {
+     "id": "notify",
+     "name": "Notifications",
+     "rank": 4,
+     "sub": "email, push",
+     "tag": "SVC"
+    },
+    {
+     "id": "analytics",
+     "name": "Analytics",
+     "rank": 4,
+     "sub": "ClickHouse",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "arch",
+   "subtitle": "A checkout writes one order row, then everything downstream hangs off events.",
+   "title": "Checkout platform",
+   "version": 2
+  },
+  "spec": "checkout_platform.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 14,
+  "layout": [
+   "row 1: Web app | Mobile app",
+   "row 2: API gateway",
+   "row 3: Auth | Catalog | Orders | Payments",
+   "row 4: Redis | Postgres | Event bus | Stripe",
+   "row 5: Inventory | Notifications | Analytics"
+  ],
+  "ok": true
+ }
+}

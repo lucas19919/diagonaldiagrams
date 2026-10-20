@@ -1,0 +1,109 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/checkout_sequence.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "98161baef4e56dba1d19667bd295405e3d5341f0951375c7eee017801f600804",
+ "receipt": {
+  "auto": false,
+  "cmd": "seq",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "_kind": "seq",
+   "budget": false,
+   "edges": [
+    {
+     "from": "U",
+     "label": "POST /checkout",
+     "order": 0,
+     "to": "GW"
+    },
+    {
+     "from": "GW",
+     "label": "verify token",
+     "order": 1,
+     "to": "A"
+    },
+    {
+     "from": "A",
+     "label": "ok",
+     "order": 2,
+     "reply": true,
+     "to": "GW"
+    },
+    {
+     "from": "GW",
+     "label": "create order",
+     "order": 3,
+     "to": "O"
+    },
+    {
+     "async": true,
+     "from": "O",
+     "label": "OrderCreated",
+     "order": 4,
+     "to": "P"
+    },
+    {
+     "from": "O",
+     "label": "201 Created",
+     "order": 5,
+     "reply": true,
+     "to": "GW"
+    },
+    {
+     "from": "GW",
+     "label": "201 Created",
+     "order": 6,
+     "reply": true,
+     "to": "U"
+    }
+   ],
+   "layout": "sequence",
+   "nodes": [
+    {
+     "id": "U",
+     "name": "User",
+     "tag": "USER"
+    },
+    {
+     "id": "GW",
+     "name": "API Gateway"
+    },
+    {
+     "id": "A",
+     "name": "Auth"
+    },
+    {
+     "id": "O",
+     "name": "Orders"
+    },
+    {
+     "id": "P",
+     "name": "Payments"
+    }
+   ],
+   "preset": "seq",
+   "title": "Checkout, one request",
+   "version": 2
+  },
+  "spec": "checkout_sequence.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "actors: User | API Gateway | Auth | Orders | Payments",
+   "1. User -> API Gateway: POST /checkout",
+   "2. API Gateway -> Auth: verify token",
+   "3. Auth -> API Gateway: ok",
+   "4. API Gateway -> Orders: create order",
+   "5. Orders -> Payments: OrderCreated",
+   "6. Orders -> API Gateway: 201 Created",
+   "7. API Gateway -> User: 201 Created"
+  ],
+  "ok": true
+ }
+}

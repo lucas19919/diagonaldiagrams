@@ -1,0 +1,17 @@
+[
+  {"pair": "p02",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B keeps related nodes adjacent (Auth beside the gateway, Model API and Memory beside the Agent) and a legend explains blue/dashed/coral, so the structure reads in one pass; A spreads Auth and Model API far from their sources and has the dashed persist edge crossing the svg edge above Storage. B's svg edge does take a long detour around the left of the Tools group, which keeps the margin slight.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has a titled header with a one-line summary, bold node names with small icons, colour-coded edges and a highlighted Agent/Model API pair; A is plain grey boxes with large empty areas on the left and a heavy black prompt line.",
+    "weak_A": "related nodes far apart with lots of empty space; persist edge crosses svg edge",
+    "weak_B": "svg edge detours around the Tools group and its label sits next to Web search"},
+  {"pair": "p05",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A fits the whole system in one compact view, with Redis tucked under Auth/Catalog and the event consumers right under Kafka, so any step is found at a glance; B is about twice as tall, with long empty verticals from Auth/Catalog to Redis that span the scroll break. B's grey-chipped labels are larger and unambiguous, while A's verify/browse labels share one trunk and its placed edge loops out of the core box, so the margin is slight.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A is a consistent, restrained card style with neat orthogonal routing and a coral checkout path; B uses default-looking pink/cyan/orange container fills, grey label chips and lots of dead whitespace.",
+    "weak_A": "small edge labels; placed edge loops outside the core box; meaningless 'box = step' legend",
+    "weak_B": "very tall with long empty connector runs; garish container colours"},
+  {"pair": "p06",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A shows everything in one screen with Orders->Payments side by side, Postgres under Orders, and type tags (SVC, STORE, API) plus a legend that tell what each box is; B needs scrolling and has long bare connectors from Auth/Catalog down to Redis. A's text is small and the placed/settled/card edges under Payments run very close together, so B's large, chipped labels keep this slight.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A looks like a finished, designed figure with a subtitle, typed cards, a coral highlighted path and a legend; B's pink/cyan/orange group fills, grey label boxes and sparse layout look like an unstyled default render.",
+    "weak_A": "small type tags and sublabels; crowded parallel edges between Payments and Event bus",
+    "weak_B": "tall and sparse with long empty connectors; clashing container colours"}
+]

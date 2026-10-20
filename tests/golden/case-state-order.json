@@ -1,0 +1,79 @@
+{
+ "argv": [
+  "chart",
+  "state",
+  "tests/golden/inputs/cases/state-order.json"
+ ],
+ "exit": 1,
+ "html_sha256": "11d9abde02d386c786afd1ec058b352014db12ebef91740afa652b7f1884d4f4",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "state",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "state-order.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "errors": [
+   {
+    "at": [
+     760,
+     192
+    ],
+    "code": "through",
+    "fix": "move one node so the arrow goes around it",
+    "msg": "an arrow runs through the circle at [760, 192]"
+   }
+  ],
+  "items": 6,
+  "next": "the files are written so you can look; change the spec or flags and render again (--no-audit accepts the figure as it is)",
+  "ok": false,
+  "warnings": [
+   {
+    "at": [
+     234,
+     229
+    ],
+    "code": "truncated",
+    "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+    "msg": "'Payment authori…' was cut short"
+   },
+   {
+    "at": [
+     395,
+     229
+    ],
+    "code": "truncated",
+    "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+    "msg": "'Picking in ware…' was cut short"
+   },
+   {
+    "at": [
+     876,
+     229
+    ],
+    "code": "truncated",
+    "fix": "let it wrap: make the box wider or the text shorter, or drop overflow: ellipsis",
+    "msg": "'Returned to sen…' was cut short"
+   }
+  ]
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "title": "ER",
+ "entities": [
+  {
+   "id": "u",
+   "name": "User",
+   "attrs": [
+    {
+     "name": "id",
+     "key": "pk"
+    },
+    {
+     "name": "name"
+    }
+   ]
+  },
+  {
+   "id": "o",
+   "name": "Order",
+   "attrs": [
+    {
+     "name": "id",
+     "key": "pk"
+    }
+   ]
+  }
+ ],
+ "relations": [
+  {
+   "from": "u",
+   "to": "o",
+   "from_card": "1",
+   "to_card": "*"
+  }
+ ]
+}

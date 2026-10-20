@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "kanban",
+  "tests/golden/inputs/charts/kanban.json",
+  "--title",
+  "kanban"
+ ],
+ "exit": 0,
+ "html_sha256": "1b71bd0f3c0d00a5609a1b38fac4cb2b4af2d8044972d610940ab3fbeb55d9f2",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "kanban",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "kanban.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "kanban",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

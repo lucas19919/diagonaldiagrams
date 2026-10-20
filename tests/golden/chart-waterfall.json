@@ -1,0 +1,46 @@
+{
+ "argv": [
+  "chart",
+  "waterfall",
+  "tests/golden/inputs/charts/waterfall.csv",
+  "--title",
+  "waterfall"
+ ],
+ "exit": 0,
+ "html_sha256": "e0a4299e485f65aaa0b532843edbab02f15027524cb06c3f160f0b45bf0ece52",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "waterfall",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "waterfall.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "waterfall",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "verify intended; ratio data floors at 0",
+    "msg": "negative ticks ['-2']"
+   }
+  ]
+ }
+}

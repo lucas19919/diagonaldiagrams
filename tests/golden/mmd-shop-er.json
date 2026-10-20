@@ -1,0 +1,179 @@
+{
+ "argv": [
+  "mermaid",
+  "examples/shop_er.mmd"
+ ],
+ "exit": 0,
+ "html_sha256": "166e92280b657923ae76a731eb597c2bd210e2d74815a426e55f8b689d25b4fe",
+ "receipt": {
+  "auto": false,
+  "cmd": "schema",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "_kind": "schema",
+   "budget": false,
+   "edges": [
+    {
+     "from": "CUSTOMER",
+     "label": "1:N places",
+     "to": "ORDER"
+    },
+    {
+     "from": "ORDER",
+     "label": "1:N contains",
+     "to": "LINE_ITEM"
+    },
+    {
+     "from": "PRODUCT",
+     "label": "1:N ordered in",
+     "to": "LINE_ITEM"
+    }
+   ],
+   "layout": "table",
+   "nodes": [
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "name": "email",
+         "type": "string",
+         "unique": true
+        }
+       ]
+      }
+     },
+     "id": "CUSTOMER",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "email"
+      }
+     ],
+     "shape": "table"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "customer_id",
+         "type": "uuid"
+        },
+        {
+         "name": "total_cents",
+         "type": "int"
+        }
+       ]
+      }
+     },
+     "id": "ORDER",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "customer_id"
+      },
+      {
+       "id": "total_cents"
+      }
+     ],
+     "shape": "table"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "fk": true,
+         "name": "order_id",
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "product_id",
+         "type": "uuid"
+        },
+        {
+         "name": "quantity",
+         "type": "int"
+        }
+       ]
+      }
+     },
+     "id": "LINE_ITEM",
+     "ports": [
+      {
+       "id": "order_id"
+      },
+      {
+       "id": "product_id"
+      },
+      {
+       "id": "quantity"
+      }
+     ],
+     "shape": "table"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "name": "sku",
+         "type": "string",
+         "unique": true
+        }
+       ]
+      }
+     },
+     "id": "PRODUCT",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "sku"
+      }
+     ],
+     "shape": "table"
+    }
+   ],
+   "preset": "schema",
+   "title": "Shop data model",
+   "version": 2
+  },
+  "spec": "shop_er.mmd",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 4,
+  "layout": [
+   "tables: CUSTOMER, ORDER, LINE_ITEM, PRODUCT",
+   "column 1: CUSTOMER",
+   "column 2: ORDER | PRODUCT",
+   "column 3: LINE_ITEM"
+  ],
+  "ok": true
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "title": "Layers",
+ "layers": [
+  {
+   "name": "API",
+   "sub": "http"
+  },
+  {
+   "name": "Core",
+   "sub": "rules"
+  },
+  {
+   "name": "Store",
+   "sub": "sql"
+  }
+ ]
+}

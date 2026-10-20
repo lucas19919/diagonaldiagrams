@@ -1,0 +1,46 @@
+{
+ "argv": [
+  "chart",
+  "math",
+  "tests/golden/inputs/charts/math.json",
+  "--title",
+  "math"
+ ],
+ "exit": 0,
+ "html_sha256": "9297d9ce2e578df347afca4934faefd9d4ae2e8713ed0cd233f08715943a0211",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "math",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "math.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "math",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 1,
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "verify intended; ratio data floors at 0",
+    "msg": "negative ticks ['-6', '-4', '-2', '-1.5', '-1', '-0.5']"
+   }
+  ]
+ }
+}

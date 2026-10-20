@@ -1,0 +1,55 @@
+{
+ "argv": [
+  "scatter",
+  "examples/scatter_groups.csv",
+  "--x",
+  "dose",
+  "--y",
+  "expr",
+  "--yerr",
+  "expr_err",
+  "--group",
+  "tissue",
+  "--facet",
+  "cohort",
+  "--title",
+  "Dose response",
+  "--subtitle",
+  "Expression rises with dose in every tissue."
+ ],
+ "exit": 0,
+ "html_sha256": "d498d6d6c9e78ef98ac5ba985bab5deb052aa1567ab0bddf1f7faed4e134dcbd",
+ "receipt": {
+  "caption": "Relationship between the two variables. Points show individual observations.",
+  "cmd": "scatter",
+  "corners": "editorial",
+  "csv": "scatter_groups.csv",
+  "facet": "cohort",
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": "tissue",
+  "highlights": [],
+  "markers": true,
+  "receipt": 2,
+  "source": "",
+  "subtitle": "Expression rises with dose in every tissue.",
+  "theme": "editorial",
+  "title": "Dose response",
+  "x": "dose",
+  "xlabel": "dose",
+  "xunit": "",
+  "y": "expr",
+  "yerr": "expr_err",
+  "ylabel": "expr",
+  "yunit": ""
+ },
+ "verdict": {
+  "layout": [
+   "x axis: dose",
+   "y axis: expr",
+   "series: kidney, liver"
+  ],
+  "ok": true,
+  "points": 24
+ }
+}

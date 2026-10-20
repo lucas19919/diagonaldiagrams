@@ -1,0 +1,5 @@
+row,col,state
+web,mon,ok
+web,tue,warn
+db,mon,down
+db,tue,ok

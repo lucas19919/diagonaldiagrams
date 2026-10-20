@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "od",
+  "tests/golden/inputs/charts/od.csv",
+  "--title",
+  "od"
+ ],
+ "exit": 0,
+ "html_sha256": "ecf56fd6dc95659d42d020620381393d48c5f26e23c2a936e7b21090cff4226b",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "od",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "od.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "od",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

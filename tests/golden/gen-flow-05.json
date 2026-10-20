@@ -1,0 +1,87 @@
+{
+ "argv": [
+  "flow",
+  "tests/golden/inputs/flows/flow-05.json"
+ ],
+ "exit": 0,
+ "html_sha256": "4290945005166ee94eccc3ecae183d58e6478f8c7866695f5c4affafceb61f7f",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "budget": false,
+   "edges": [
+    {
+     "from": "s0",
+     "to": "s1"
+    },
+    {
+     "from": "s1",
+     "to": "s2"
+    },
+    {
+     "from": "s2",
+     "to": "s3"
+    },
+    {
+     "from": "s3",
+     "label": "no",
+     "to": "s1"
+    },
+    {
+     "from": "s3",
+     "label": "yes",
+     "to": "s4"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "s0",
+     "name": "Request received",
+     "shape": "oval"
+    },
+    {
+     "id": "s1",
+     "name": "Load the customer account (1)"
+    },
+    {
+     "id": "s2",
+     "name": "Score the fraud risk (2)"
+    },
+    {
+     "id": "s3",
+     "name": "Check 1 passed?",
+     "shape": "diamond"
+    },
+    {
+     "id": "s4",
+     "name": "Done",
+     "shape": "oval"
+    }
+   ],
+   "preset": "flow",
+   "subtitle": "Generated for the golden corpus.",
+   "title": "A 5-step process",
+   "version": 2
+  },
+  "spec": "flow-05.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 5,
+  "layout": [
+   "row 1: Request received",
+   "row 2: Load the customer account (1)",
+   "row 3: Score the fraud risk (2)",
+   "row 4: Check 1 passed? (decision)",
+   "row 5: Done"
+  ],
+  "ok": true
+ }
+}

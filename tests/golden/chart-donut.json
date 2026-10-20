@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "donut",
+  "tests/golden/inputs/charts/donut.csv",
+  "--title",
+  "donut"
+ ],
+ "exit": 0,
+ "html_sha256": "ec4b7df06fe1d07af1d339f72feaf761185311ea2bc131f8e46cce9e96ad34c4",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "donut",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "donut.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "donut",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

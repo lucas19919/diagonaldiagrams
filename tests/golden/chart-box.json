@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "box",
+  "tests/golden/inputs/charts/box.csv",
+  "--title",
+  "box"
+ ],
+ "exit": 0,
+ "html_sha256": "73637b8064d25639af676359649cb985b49b5b904463fa04813b8358dc64e65b",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "box",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "box.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "box",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 9,
+  "ok": true
+ }
+}

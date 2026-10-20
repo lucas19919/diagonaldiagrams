@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 462" width="760"><title>Line Trend</title>
+<desc>timestamp vs rps</desc>
+<rect width="760" height="462" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Line Trend</text>
+<line x1="80" y1="362.0" x2="635" y2="362.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="366.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
+<line x1="80" y1="298.0" x2="635" y2="298.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="302.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">1000</text>
+<line x1="80" y1="234.0" x2="635" y2="234.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="238.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">2000</text>
+<line x1="80" y1="170.0" x2="635" y2="170.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="174.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">3000</text>
+<line x1="80" y1="106.0" x2="635" y2="106.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="110.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">4000</text>
+<line x1="80" y1="42.0" x2="635" y2="42.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="46.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">5000</text>
+<line x1="80.0" y1="42" x2="80.0" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="80.0" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10:00</text>
+<line x1="172.5" y1="42" x2="172.5" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="172.5" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10:05</text>
+<line x1="265.0" y1="42" x2="265.0" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="265.0" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10:10</text>
+<line x1="357.5" y1="42" x2="357.5" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="357.5" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10:15</text>
+<line x1="450.0" y1="42" x2="450.0" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="450.0" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10:20</text>
+<line x1="542.5" y1="42" x2="542.5" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="542.5" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10:25</text>
+<line x1="635.0" y1="42" x2="635.0" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="635.0" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10:30</text>
+<line x1="80" y1="362" x2="635" y2="362" stroke="#2d3142" stroke-width="1.2"/>
+<line x1="80" y1="42" x2="80" y2="362" stroke="#2d3142" stroke-width="1.2"/>
+<path d="M80.0,285.2 L172.5,269.2 L265.0,227.6 L357.5,118.8 L450.0,93.2 L542.5,112.4 L635.0,208.4" fill="none" stroke="#0072B2" stroke-width="2.2" stroke-linecap="round"/>
+<circle cx="80.0" cy="285.2" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>api-gateway · 10:00: 1200</title></circle>
+<circle cx="172.5" cy="269.2" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>api-gateway · 10:05: 1450</title></circle>
+<circle cx="265.0" cy="227.6" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>api-gateway · 10:10: 2100</title></circle>
+<circle cx="357.5" cy="118.8" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>api-gateway · 10:15: 3800</title></circle>
+<circle cx="450.0" cy="93.2" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>api-gateway · 10:20: 4200</title></circle>
+<circle cx="542.5" cy="112.4" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>api-gateway · 10:25: 3900</title></circle>
+<circle cx="635.0" cy="208.4" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>api-gateway · 10:30: 2400</title></circle>
+<path d="M80.0,310.8 L172.5,303.1 L265.0,278.8 L357.5,221.2 L450.0,205.2 L542.5,214.8 L635.0,266.0" fill="none" stroke="#E69F00" stroke-width="2.2" stroke-linecap="round"/>
+<circle cx="80.0" cy="310.8" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>payment-svc · 10:00: 800</title></circle>
+<circle cx="172.5" cy="303.1" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>payment-svc · 10:05: 920</title></circle>
+<circle cx="265.0" cy="278.8" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>payment-svc · 10:10: 1300</title></circle>
+<circle cx="357.5" cy="221.2" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>payment-svc · 10:15: 2200</title></circle>
+<circle cx="450.0" cy="205.2" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>payment-svc · 10:20: 2450</title></circle>
+<circle cx="542.5" cy="214.8" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>payment-svc · 10:25: 2300</title></circle>
+<circle cx="635.0" cy="266.0" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>payment-svc · 10:30: 1500</title></circle>
+<text x="645.0" y="212.4" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#0072B2" data-role="series">api-gateway 2,400</text>
+<text x="645.0" y="270.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#E69F00" data-role="series">payment-svc 1,500</text>
+<text x="357.5" y="402" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Timestamp</text>
+<text x="24" y="202.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 24,202.0)" data-role="yaxis">rps</text>
+<text x="36" y="448" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">14 points</text>
+</svg>

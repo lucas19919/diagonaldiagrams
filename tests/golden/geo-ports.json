@@ -1,0 +1,38 @@
+{
+ "argv": [
+  "geo",
+  "examples/show_ports.csv",
+  "--lat",
+  "lat",
+  "--lon",
+  "lon",
+  "--label",
+  "port",
+  "--val",
+  "calls_k"
+ ],
+ "exit": 0,
+ "html_sha256": "21ae329db7bc0c03b6252ed857a61cfcd4364df1cf88f60fe38c63b5622b4ed8",
+ "receipt": {
+  "caption": "Locations. Dot size follows the value column when one is set.",
+  "cmd": "geo",
+  "figure": "Fig. 1",
+  "grid": true,
+  "highlights": [],
+  "label": "port",
+  "lat": "lat",
+  "lon": "lon",
+  "markers": true,
+  "receipt": 2,
+  "source": "",
+  "src": "show_ports.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Map",
+  "val": "calls_k"
+ },
+ "verdict": {
+  "ok": true,
+  "places": 12
+ }
+}

@@ -1,0 +1,65 @@
+{
+ "argv": [
+  "flow",
+  "examples/flow_cross.json"
+ ],
+ "exit": 0,
+ "html_sha256": "1a7168f2503651f765a449dba26fab2d3c079f6705b63d40eb200a811a8afea8",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "l",
+     "label": "a",
+     "to": "y"
+    },
+    {
+     "from": "r",
+     "label": "b",
+     "to": "x"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "l",
+     "name": "Left src",
+     "shape": "oval"
+    },
+    {
+     "id": "r",
+     "name": "Right src",
+     "shape": "oval"
+    },
+    {
+     "id": "x",
+     "name": "X"
+    },
+    {
+     "id": "y",
+     "name": "Y"
+    }
+   ],
+   "preset": "flow",
+   "title": "Cross test",
+   "version": 2
+  },
+  "spec": "flow_cross.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 4,
+  "layout": [
+   "row 1: Left src | Right src",
+   "row 2: Y | X"
+  ],
+  "ok": true
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "title": "Now",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "Billing",
+   "group": "Finance"
+  },
+  {
+   "id": "b",
+   "name": "Ledger",
+   "group": "Finance"
+  },
+  {
+   "id": "c",
+   "name": "Site",
+   "group": "Web"
+  }
+ ]
+}

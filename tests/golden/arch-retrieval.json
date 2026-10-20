@@ -1,0 +1,182 @@
+{
+ "argv": [
+  "arch",
+  "examples/show_retrieval.json"
+ ],
+ "exit": 0,
+ "html_sha256": "c7a022ad95d5c338837d8d73857b63fcd9b3c2dfe38747d89be01fc4c92a6ed9",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "constraints": [
+    {
+     "order": [
+      "app",
+      "note",
+      "batch"
+     ]
+    },
+    {
+     "order": [
+      "gw",
+      "work"
+     ]
+    },
+    {
+     "order": [
+      "embed",
+      "model"
+     ]
+    },
+    {
+     "order": [
+      "index",
+      "ledger"
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "app",
+     "label": "ask",
+     "proto": "https",
+     "to": "gw"
+    },
+    {
+     "from": "note",
+     "label": "ask",
+     "proto": "https",
+     "to": "gw"
+    },
+    {
+     "async": true,
+     "from": "batch",
+     "label": "enqueue",
+     "to": "work"
+    },
+    {
+     "from": "gw",
+     "label": "encode",
+     "to": "embed"
+    },
+    {
+     "from": "gw",
+     "label": "complete",
+     "proto": "https",
+     "to": "model"
+    },
+    {
+     "async": true,
+     "from": "work",
+     "label": "complete",
+     "to": "model"
+    },
+    {
+     "from": "embed",
+     "label": "upsert",
+     "to": "index"
+    },
+    {
+     "from": "model",
+     "label": "search",
+     "to": "index"
+    },
+    {
+     "async": true,
+     "from": "model",
+     "label": "trace",
+     "to": "ledger"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "app",
+     "name": "App",
+     "rank": 0,
+     "sub": ":3000",
+     "tag": "UI"
+    },
+    {
+     "id": "note",
+     "name": "Notebook",
+     "rank": 0,
+     "sub": "batch",
+     "tag": "UI"
+    },
+    {
+     "id": "batch",
+     "name": "Nightly",
+     "rank": 0,
+     "sub": "cron",
+     "tag": "SVC"
+    },
+    {
+     "focal": true,
+     "id": "gw",
+     "name": "Gateway",
+     "rank": 1,
+     "sub": "Go :8080",
+     "tag": "API"
+    },
+    {
+     "id": "work",
+     "name": "Worker",
+     "rank": 1,
+     "sub": "queue",
+     "tag": "SVC"
+    },
+    {
+     "id": "embed",
+     "name": "Embedder",
+     "rank": 2,
+     "sub": "bge",
+     "tag": "SVC"
+    },
+    {
+     "id": "model",
+     "name": "Model",
+     "rank": 2,
+     "sub": "8k ctx",
+     "tag": "SVC"
+    },
+    {
+     "id": "index",
+     "name": "Index",
+     "rank": 3,
+     "sub": "qdrant",
+     "tag": "STORE"
+    },
+    {
+     "id": "ledger",
+     "name": "Ledger",
+     "rank": 3,
+     "sub": "traces",
+     "tag": "STORE"
+    }
+   ],
+   "preset": "arch",
+   "subtitle": "Two clients in. The index is hit from both the embedder and the model.",
+   "title": "Retrieval path",
+   "version": 2
+  },
+  "spec": "show_retrieval.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 9,
+  "layout": [
+   "row 1: App | Notebook | Nightly",
+   "row 2: Gateway | Worker",
+   "row 3: Embedder | Model",
+   "row 4: Index | Ledger"
+  ],
+  "ok": true
+ }
+}

@@ -1,134 +1,121 @@
 # diagonaldiagrams
 
-Diagrams and charts your agent can draw, and check before it shows you. One command takes a short spec, Mermaid, or a CSV, lays it out, draws an SVG, and audits the drawing for labels on labels, arrows through boxes, and text that spills.
+Diagrams and charts an agent can draw, and check, before it shows you. One command takes Mermaid, a short JSON spec, or a CSV, lays it out, draws an SVG, and audits the drawing for labels on labels, arrows through boxes, and text that spills.
 
-**[Try it in the browser](https://lucas19919.github.io/diagonaldiagrams/)**: the real engine, running in your browser.
+**[Try it in the browser](https://lucas19919.github.io/diagonaldiagrams/)**. The real engine, running in the page.
 
-![An AI agent platform with framed groups and icons, drawn and audited by diagonaldiagrams](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/agent-platform.svg)
+## Three figures
 
-## Install
+Each one passed its audit, then was filmed. The specs are in [`examples/showcase/`](examples/showcase).
 
-Claude Code, as a plugin. This adds the drawing skill:
+![How an NVIDIA GPU gets made: the design goes to TSMC, the dies meet their memory in CoWoS packaging, a builder racks the machine, and a cloud buys it](docs/showcase/nvidia.gif)
+
+![Palantir, from raw data to an AI decision: data lands, the Ontology is built, and AIP Logic calls a model and writes an action back](docs/showcase/palantir.gif)
+
+![A Falcon 9 mission: countdown, liftoff, separation, then the booster flying home while the second stage goes on to orbit](docs/showcase/falcon9.gif)
+
+## Quick start
+
+Claude Code, as a plugin:
 
 ```text
 /plugin marketplace add lucas19919/diagonaldiagrams
 /plugin install diagonaldiagrams@diagonaldiagrams
 ```
 
-Any agent, as a command. This puts `diagonaldiagrams` on PATH:
+Any agent, as a command:
 
 ```bash
 pip install git+https://github.com/lucas19919/diagonaldiagrams
-```
-
-As MCP tools (`render`, `describe`, `validate`, `audit`, `export`, `infer`):
-
-```bash
-claude mcp add --scope user diagonaldiagrams -- diagonaldiagrams mcp
-```
-
-Or clone it and run `py -3 graph.py describe` (Windows) or `python3 graph.py describe`. Agents can follow [`.agents/skills/diagonaldiagrams-install/SKILL.md`](.agents/skills/diagonaldiagrams-install/SKILL.md) to install, and [`.agents/skills/graph-engine/SKILL.md`](.agents/skills/graph-engine/SKILL.md) to draw.
-
-## One command
-
-```text
 diagonaldiagrams mermaid flow.mmd -o out/flow.svg
-{"ok": true, "svg": "out/flow.svg", "html": "out/flow.html", "receipt": "out/flow.graph.json", "items": 9,
- "layout": ["row 1: Your agent describes the diagram", "row 2: Check the description", "row 3: Makes sense? (decision)", ...]}
 ```
 
-It checks the input, draws, audits the drawing, and prints one line of JSON. `ok: false` comes with errors, each with a `fix`; change the input and run it again. `layout` describes the drawn structure, so an agent can confirm it without looking at a picture.
+The command prints one line of JSON. `ok: true` means the audit passed, and `layout` says what was drawn, so the agent can check the figure without a screenshot. `ok: false` comes with errors, each with a `fix`.
 
-The audit reads the finished SVG: labels on labels, labels too wide for their box or off the canvas, boxes on boxes, arrows through a box or across a label, two arrows on one line, and nodes inside a frame they don't belong to. When it finds a problem it can fix, the layout repairs itself. It reads any SVG, so `diagonaldiagrams audit` also checks a figure an agent wrote by hand.
+`--fit column` is the size for a README or a docs page. `slide`, the default, wraps a long flow for a deck. `page` is for print.
 
-## Input
-
-| Command | Input | Draws |
-| --- | --- | --- |
-| `mermaid` | Mermaid `flowchart`, `sequenceDiagram`, or `erDiagram` | Picks `flow`, `seq`, or `schema` |
-| `flow` | JSON | A decision flow, with frames (`groups`) and icons |
-| `arch` | JSON | Services and the calls between them |
-| `seq` | JSON | A sequence of messages |
-| `schema` | JSON | Tables and their relations |
-| `bar`, `line`, `scatter` | CSV | Comparisons, trends, relationships |
-| `geo` | CSV or GeoJSON | Places on a built-in coastline |
-| `chart <type>` | CSV or JSON | About 60 more: sankey, gantt, heatmap, treemap, box, radar, math, ... |
-
-`describe <type>` prints the contract for any type. Long names wrap inside their boxes. Loops are drawn back up the outside. Built-in icons (`describe icons`) cover users, databases, servers, queues, and more; in Mermaid, write `fa:fa-database`.
-
-## Output
-
-| File | Contents |
-| --- | --- |
-| `OUT.svg` | The drawing. Title and subtitle are on the figure; points and bars have hover tooltips. |
-| `OUT.html` | The same figure, plus Copy SVG, Export SVG, and Export PNG. |
-| `OUT.graph.json` | The receipt. `export` redraws from it. |
-
-`export OUT --to png|pdf|svg|drawio|excalidraw` writes other formats. draw.io and Excalidraw exports keep boxes, frames, and the routed arrows attached to their boxes, so a person can open the figure and drag things around. PNG and PDF use cairosvg if installed, else headless Edge or Chrome.
+From a checkout, `py -3 graph.py` takes the same arguments. Agents install with [`.agents/skills/diagonaldiagrams-install/SKILL.md`](.agents/skills/diagonaldiagrams-install/SKILL.md) and draw with [`.agents/skills/graph-engine/SKILL.md`](.agents/skills/graph-engine/SKILL.md). The short version is [`llms.txt`](llms.txt).
 
 ## Measured
 
-Five ways for an agent to draw the same flowchart, at 5, 11, 20 and 40 steps, two runs each, each run a fresh Claude Sonnet agent.
+diagonaldiagrams 0.8.0 against [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) and [Pele](https://pele.run), on 2026-10-19. The same four flowcharts, 5, 11, 20 and 40 steps. The method is in [`bench/`](bench).
 
-![Tokens per flowchart for five approaches: diagonaldiagrams stays between 1.3k and 2.1k, the others climb to 8k to 28k at 40 steps](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/bench-tools.svg)
+### Speed
 
-Tokens per flowchart, mean of two runs:
+Milliseconds for one figure, a new process each time. diagonaldiagrams was remeasured the same day: median of 7 calls, from bytecode ([`bench/speed/cli-2026-10-19.json`](bench/speed/cli-2026-10-19.json)). Pele and Mermaid CLI are that day's earlier run, not rerun.
 
-| Steps | diagonaldiagrams | Hand-written SVG | Graphviz | Mermaid CLI | D2 |
-| --- | --- | --- | --- | --- | --- |
-| 5 | **1.3k** | 0.9k | 2.5k | 2.7k | 2.5k |
-| 11 | **1.5k** | 2.0k | 5.7k | 5.6k | 5.3k |
-| 20 | **1.5k** | 5.7k | 4.4k | 3.2k | 9.5k |
-| 40 | **2.1k** | 8.1k | 12.5k | 20.5k | 28.0k |
+![A call stays under 160 ms as the flowchart grows. Pele stays near 100 ms. Mermaid CLI, about 2.4 seconds, is off this chart.](docs/gallery/bench-speed.svg)
 
-All eight runs per approach:
+| | 5 steps | 11 steps | 20 steps | 40 steps |
+| --- | ---: | ---: | ---: | ---: |
+| Pele, a new process | 95 | 104 | 101 | 107 |
+| diagonaldiagrams | 136 | 142 | 152 | 154 |
+| Mermaid CLI | 2,333 | 2,399 | 2,340 | 2,556 |
+
+A diagonaldiagrams call is about 1.4 times a Pele process, and about 16 times faster than Mermaid CLI. Mermaid starts Node and a browser on every call. Pele only draws. diagonaldiagrams also audits the drawing and writes the page and the receipt.
+
+### Tokens
+
+Each point is a fresh Claude Sonnet agent with one prose task and nothing else. Two runs. Tokens are what the agent wrote, what came back, files it read, and screenshots. The harness and thinking are left out.
+
+![Tokens per flowchart. diagonaldiagrams stays between 4.4k and 6.4k. Mermaid CLI climbs from 1.8k to 15.4k. Pele stays under 2.7k until 6.3k at 40 steps.](docs/gallery/bench-tools-0.8.svg)
+
+| Steps | diagonaldiagrams | Mermaid CLI | Pele |
+| --- | ---: | ---: | ---: |
+| 5 | 4.4k | 1.8k | 2.6k |
+| 11 | 6.0k | 2.8k | 1.7k |
+| 20 | 5.1k | 4.0k | 1.3k |
+| 40 | 6.4k | 15.4k | 6.3k |
+
+All eight runs:
 
 | | Tokens | Calls | Screenshots | Time |
-| --- | --- | --- | --- | --- |
-| diagonaldiagrams | **12.7k** | **29** | **0** | **6 min** |
-| Hand-written SVG | 33.4k | 51 | 2 | 26 min |
-| Graphviz | 50.1k | 91 | 4 | 28 min |
-| Mermaid CLI | 63.9k | 115 | 42 | 31 min |
-| D2 | 90.5k | 170 | 23 | 38 min |
+| --- | ---: | ---: | ---: | ---: |
+| Pele | 23.9k | 57 | 18 | 5 min |
+| diagonaldiagrams | 43.8k | 69 | 9 | 7 min |
+| Mermaid CLI | 47.8k | 79 | 32 | 13 min |
 
-What the runs show:
+Pele cost the least, because the model already knows Mermaid and reads no skill. diagonaldiagrams stays about the same at every size. Of its tokens, about 1.4k a run is reading the skill. Mermaid CLI grows fastest, and at 40 steps most of its tokens are screenshots of a figure several thousand pixels tall. Every one of the 24 figures passed this audit. Two runs is a small sample: single runs differed by up to 3.5 times.
 
-- Every approach produced a figure without overlapping text; the difference is what it cost to get there. With another tool the agent renders a PNG and looks, or writes its own geometry checks, and that cost grows with the figure. With diagonaldiagrams it reads the verdict and the outline, and took no screenshots in any run.
-- Hand-written SVG is cheapest at 5 steps, because those agents mostly never looked at their output (see below).
-- Where others do better: at 20 and 40 steps diagonaldiagrams draws one tall column. The Mermaid agents spent much of their extra tokens rearranging 40 steps into side-by-side stages, which reads better.
+An earlier run, on 0.5.0 (2026-10-04), had different prompts and is not comparable. It is in [`docs/data/bench_tools.csv`](docs/data/bench_tools.csv).
 
-How it was run:
+### Quality
 
-- Every run got the same task: a process described in prose, the number of steps, "clean, readable, no overlapping text", save `figure.svg`, and reply with the path and any failed commands. Only the first lines differ: which tool, and the command to run it.
-- Tools: mermaid-cli 12 using the system Edge; Graphviz 16.1 as the official WebAssembly build; D2 0.7 from its official npm package (dagre layout); diagonaldiagrams with its skill; and no tool at all.
-- Counted: the run's own tokens, meaning what the agent wrote, what came back to it, and screenshots at Claude's image rate. Left out: the harness (system prompt, tool definitions, reminders), which is the same whatever the task; the final report; and thinking, which transcripts hide. `scripts/bench_tokens.py` recounts any run from its transcript.
-- Caveats. Two runs per point, and single runs differ by up to 2×. The no-tool prompt said not to use any renderer, and most agents took that to mean they should not look either. Graphviz and D2, as installed, wrote SVG only and there was no image viewer, so several agents spent calls looking for one. Twenty agents ran at once and shared one browser pane. All agents were Claude Sonnet.
+Blind pairs. Two judges, both orders, two questions: which is clearer, and which looks better. The chart is the share diagonaldiagrams won on clarity.
 
-## Gallery
+![Column flows were judged clearer every time. On a slide, 85 percent against Pele and 97 against Mermaid. Native architecture, 75 and 88. Architecture translated from Mermaid, 0 against Pele and 50 against Mermaid.](docs/gallery/bench-quality.svg)
 
-Every figure was drawn from a file in [`examples/`](examples) and passed its own audit. Rebuild them with `py -3 scripts/build_site.py`.
+| | vs Pele | vs Mermaid |
+| --- | ---: | ---: |
+| On a slide, every figure | 85% (106/124) | 97% (120/124) |
+| In a column, flows, each of 5, 11, 20, 40 steps | 100% (16/16) | 100% (16/16) |
+| In a column, architecture we wrote | 75% (6/8) | 88% (7/8) |
+| In a column, that architecture translated from Mermaid | 0% (0/8) | 50% (4/8) |
 
-![How a figure is made](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/how-it-works.svg)
+The column numbers are after `--fit column`, which keeps a README column near full-size text. The translated-architecture loss is one figure: the agent platform won 4 of 4 against Mermaid, and the checkout groups won none against either tool.
 
-![Checkout platform with frames](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/checkout-grouped.svg)
+## Draw
 
-![Checkout request, a sequence diagram](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/sequence.svg)
+| Command | Input | Draws |
+| --- | --- | --- |
+| `mermaid` | `flowchart`, `sequenceDiagram`, or `erDiagram` | A flow, a sequence, or a schema |
+| `flow`, `arch`, `seq`, `schema` | JSON | The same four, from a spec |
+| `bar`, `line`, `scatter` | CSV | A comparison, a trend, a relationship |
+| `geo` | CSV or GeoJSON | Places on a built-in coastline |
+| `chart <type>` | CSV or JSON | About 60 more |
 
-![Shop data model](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/data-model.svg)
-
-![Signups line chart](https://raw.githubusercontent.com/lucas19919/diagonaldiagrams/master/docs/gallery/signups.svg)
+`describe <type>` prints the contract. `diagonaldiagrams story SPEC.json -o out/story.html` walks through one figure. `--gif OUT.gif` films a view when ffmpeg is on the PATH. An edit is a JSON patch (`apply`), and `export OUT --to png|pdf|drawio|excalidraw` writes other formats.
 
 ## Tests
 
 ```bash
 py -3 tests_smoke.py
+py -3 scripts/golden.py
+py -3 scripts/build_site.py
 ```
 
-Exit 0 means every check passed.
+Exit 0 on the first is the contract an agent relies on. The second compares 115 figures. The third rebuilds the site, and refuses a figure that fails its audit. How the engine is put together, for contributors: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## License
 
-[MIT](LICENSE)
-
-<!-- mcp-name: io.github.lucas19919/diagonaldiagrams -->
-
+MIT. See [LICENSE](LICENSE).

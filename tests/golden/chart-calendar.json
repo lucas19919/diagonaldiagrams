@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "calendar",
+  "tests/golden/inputs/charts/calendar.csv",
+  "--title",
+  "calendar"
+ ],
+ "exit": 0,
+ "html_sha256": "aa4b56e3f03963057804672e4113c3d4f85439e7b324f4fce0078914777466ac",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "calendar",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "calendar.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "calendar",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

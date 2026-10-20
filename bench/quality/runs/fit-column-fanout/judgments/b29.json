@@ -1,0 +1,17 @@
+[
+  {"pair": "p02",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B places Auth beside the gateway and Memory/Model API beside the Agent, so the whole flow fits more compactly with a subtitle and legend explaining line styles; A's five-line fan-out from the Agent bundles parallel strands that are hard to tell apart until they split far below. B is held back by the long 'svg' route that loops left around the Tools group and the 'execute' line crossing through Tools.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has consistent card styling, icons, a coral highlight on the Agent/Model API path and tidy group headers; A is plain grey boxes with large empty areas (left of Agent runtime) and wavy curved edges.",
+    "weak_A": "bundled fan-out strands from Agent and wasted whitespace",
+    "weak_B": "long detour of the svg edge around and through the Tools group"},
+  {"pair": "p05",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "In B every label sits on a shaded chip directly on its own line (placed, settled, card, ingest/email/reserve), so which label belongs to which arrow is unambiguous; in A 'verify' and 'browse' share one horizontal run, 'settled' and 'card' sit side by side, and the dashed 'placed' edge loops oddly through the Checkout core frame.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A is compact, fits in one image with a calm grey palette and coral highlight on the checkout path; B is tall with long empty vertical runs from Auth/Catalog and garish magenta/teal/orange group frames with centred titles.",
+    "weak_A": "ambiguous label placement on shared line runs (verify/browse, settled/card)",
+    "weak_B": "tall, sparse layout with long empty vertical edges and clashing group colours"},
+  {"pair": "p06",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A fits in a single view with Orders->Payments side by side, type tags (SVC/STORE/API) and a legend for line styles, so the structure is graspable at once; B spreads the same graph over two tall images with long empty vertical edges from Auth and Catalog that force scrolling to connect them to Redis.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A is polished and balanced with consistent cards, restrained blue/coral colour and tidy groups; B uses heavy black boxes, grey label chips and loud pink/teal/orange frames over a mostly empty canvas.",
+    "weak_A": "dashed placed/settled edges to Event bus run close together and cross",
+    "weak_B": "tall, sparse layout split over two images with long empty edges"}
+]

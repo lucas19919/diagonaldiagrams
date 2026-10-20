@@ -1,0 +1,10 @@
+{
+ "title": "Sine",
+ "xmin": -6.28,
+ "xmax": 6.28,
+ "ymin": -1.5,
+ "ymax": 1.5,
+ "equations": [
+  "y = sin(x)"
+ ]
+}

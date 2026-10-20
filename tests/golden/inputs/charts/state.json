@@ -1,0 +1,34 @@
+{
+ "title": "State",
+ "nodes": [
+  {
+   "id": "n",
+   "name": "New"
+  },
+  {
+   "id": "p",
+   "name": "Paid"
+  },
+  {
+   "id": "s",
+   "name": "Shipped"
+  }
+ ],
+ "edges": [
+  {
+   "from": "n",
+   "to": "p",
+   "label": "pay"
+  },
+  {
+   "from": "p",
+   "to": "s",
+   "label": "ship"
+  },
+  {
+   "from": "s",
+   "to": "n",
+   "label": "return"
+  }
+ ]
+}

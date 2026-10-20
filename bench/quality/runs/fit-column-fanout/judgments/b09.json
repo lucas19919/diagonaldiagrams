@@ -1,0 +1,7 @@
+[
+  {"pair": "p08",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "B is compact with colour-coded arrows, a legend and a highlighted Agent/Model API path, so the flow reads at a glance. A's five parallel lines fanning out of Agent run long, cross and bend sharply, and the Model API link is hard to trace.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has icons, a subtitle, a calm palette and tidy grouping in a compact layout. A is plain grey and tall, with a tangle of long parallel lines below Agent.",
+    "weak_A": "tall layout with a dense bundle of long, tangled arrows from Agent; plain grey with no emphasis",
+    "weak_B": "some edge labels (svg, execute, search) float away from their lines, and the long svg detour runs around the Tools box"}
+]

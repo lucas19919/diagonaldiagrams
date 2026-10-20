@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "funnel",
+  "tests/golden/inputs/charts/funnel.csv",
+  "--title",
+  "funnel"
+ ],
+ "exit": 0,
+ "html_sha256": "94293d688befc5a22c43ddc0a5b9692cdbce76f50234ef50937493314a9f4a5b",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "funnel",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "funnel.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "funnel",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

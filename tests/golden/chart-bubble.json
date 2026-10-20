@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "bubble",
+  "tests/golden/inputs/charts/bubble.csv",
+  "--title",
+  "bubble"
+ ],
+ "exit": 0,
+ "html_sha256": "568d34c3f697a1d22dcfe55348e8e17e83666f6fb0fa543273c1184c147c8d6f",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "bubble",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "bubble.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "bubble",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "ok": true
+ }
+}

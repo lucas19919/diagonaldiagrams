@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "violin",
+  "tests/golden/inputs/charts/violin.csv",
+  "--title",
+  "violin"
+ ],
+ "exit": 0,
+ "html_sha256": "bb4280af906000c4de7f725d9d87bcc26fe885284746b343ab83495027a02a7a",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "violin",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "violin.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "violin",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 10,
+  "ok": true
+ }
+}

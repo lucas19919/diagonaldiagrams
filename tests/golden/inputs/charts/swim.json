@@ -1,0 +1,31 @@
+{
+ "title": "Swim",
+ "lanes": [
+  {
+   "id": "d",
+   "name": "Dev"
+  },
+  {
+   "id": "r",
+   "name": "Review"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "a",
+   "name": "Write",
+   "lane": "d"
+  },
+  {
+   "id": "b",
+   "name": "Check",
+   "lane": "r"
+  }
+ ],
+ "edges": [
+  {
+   "from": "a",
+   "to": "b"
+  }
+ ]
+}

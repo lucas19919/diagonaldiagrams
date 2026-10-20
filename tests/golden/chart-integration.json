@@ -1,0 +1,43 @@
+{
+ "argv": [
+  "chart",
+  "integration",
+  "tests/golden/inputs/charts/integration.json",
+  "--title",
+  "integration"
+ ],
+ "exit": 0,
+ "html_sha256": "a7975536f0bdecf358875095cddc14390bd9dd76f5aa030082582da579506070",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "integration",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "integration.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "integration",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 3,
+  "layout": [
+   "row 1: CRM | Core | App"
+  ],
+  "ok": true
+ }
+}

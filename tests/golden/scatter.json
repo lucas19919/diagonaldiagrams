@@ -1,0 +1,44 @@
+{
+ "argv": [
+  "scatter",
+  "examples/scatter.csv",
+  "--x",
+  "dose",
+  "--y",
+  "expr"
+ ],
+ "exit": 0,
+ "html_sha256": "364a41625444b9437b1b81cef8434f0b855cc7467569d84c46365244ec87fe2a",
+ "receipt": {
+  "caption": "Relationship between the two variables. Points show individual observations.",
+  "cmd": "scatter",
+  "corners": "editorial",
+  "csv": "scatter.csv",
+  "facet": null,
+  "figure": "Fig. 1",
+  "grid": true,
+  "group": null,
+  "highlights": [],
+  "markers": true,
+  "receipt": 2,
+  "source": "",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "Scatter",
+  "x": "dose",
+  "xlabel": "dose",
+  "xunit": "",
+  "y": "expr",
+  "yerr": null,
+  "ylabel": "expr",
+  "yunit": ""
+ },
+ "verdict": {
+  "layout": [
+   "x axis: dose",
+   "y axis: expr"
+  ],
+  "ok": true,
+  "points": 8
+ }
+}

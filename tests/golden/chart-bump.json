@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "bump",
+  "tests/golden/inputs/charts/bump.csv",
+  "--title",
+  "bump"
+ ],
+ "exit": 0,
+ "html_sha256": "920e7d2e0148f36adfe8fc5102723497044a7f1f5ff05b2f360921a63b536e2b",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "bump",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "bump.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "bump",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

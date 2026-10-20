@@ -5,18 +5,29 @@ Renders into the system temp dir; the workspace is never polluted.
 """
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GRAPH = os.path.join(HERE, "graph.py")
+# Which entry point runs the checks: the checkout shim (default), the package as a module, or an
+# installed `diagonaldiagrams` command. CI runs all three.
+ENTRY = os.environ.get("DD_ENTRY", "shim")
+if ENTRY == "module":
+    ENGINE = [sys.executable, "-m", "diagonaldiagrams"]
+    os.environ["PYTHONPATH"] = HERE + (os.pathsep + os.environ["PYTHONPATH"] if os.environ.get("PYTHONPATH") else "")
+elif ENTRY == "installed":
+    ENGINE = [shutil.which("diagonaldiagrams") or sys.exit("DD_ENTRY=installed, but no diagonaldiagrams on PATH")]
+else:
+    ENGINE = [sys.executable, GRAPH]
 WORK = os.path.join(tempfile.gettempdir(), "graph_smoke")
 PASS, FAIL = [], []
 
 
 def run(*cmd, expect=0):
-    p = subprocess.run([sys.executable, GRAPH, *cmd], capture_output=True, text=True, cwd=HERE)
+    p = subprocess.run([*ENGINE, *cmd], capture_output=True, text=True, cwd=HERE)
     return p.returncode, (p.stdout or "") + (p.stderr or "")
 
 
@@ -26,13 +37,14 @@ def check(name, cond, detail=""):
 
 
 def mcp(messages):
-    p = subprocess.run([sys.executable, GRAPH, "mcp"], input="\n".join(messages),
+    p = subprocess.run([*ENGINE, "mcp"], input="\n".join(messages),
                        capture_output=True, text=True, cwd=HERE)
     return [json.loads(l) for l in p.stdout.splitlines() if l.strip()]
 
 
 def main():
     os.makedirs(WORK, exist_ok=True)
+    print(f"engine: {' '.join(ENGINE)} (DD_ENTRY={ENTRY})")
     print("== cli ==")
     rc, _ = run("--help")
     check("help exits 0", rc == 0)
@@ -120,13 +132,13 @@ def main():
         cy = sum(p[1] for p in pts) / 4
         hw = max(p[0] for p in pts) - cx
         hh = max(p[1] for p in pts) - cy
-        right = max(pts, key=lambda p: p[0])
+        sides = [max(pts, key=lambda p: p[0]), min(pts, key=lambda p: p[0])]
         starts = [(float(x), float(y)) for x, y in _re.findall(r"M\s*([\d.]+),([\d.]+)", flow_svg)]
         def _inside(x, y):
             return abs(x - cx) / hw + abs(y - cy) / hh < 0.92
-        check("flow arrow leaves the diamond's right point",
-              any(abs(x - right[0]) < 1.5 and abs(y - right[1]) < 1.5 for x, y in starts),
-              str(right))
+        check("flow arrow leaves by a side point of the diamond",
+              any(abs(x - px) < 1.5 and abs(y - py) < 1.5 for x, y in starts for px, py in sides),
+              str(sides))
         check("flow arrows do not start inside the diamond",
               not any(_inside(x, y) for x, y in starts))
     def _terminals(svg):
@@ -289,6 +301,7 @@ def main():
     import shutil as _sh
     if _sh.which("git"):
         gp = os.path.join(WORK, "gitproj")
+        _sh.rmtree(gp, ignore_errors=True)  # a repository left by an earlier run would change what sync sees
         os.makedirs(gp + "/models", exist_ok=True)
         open(gp + "/models/s.sql", "w").write("CREATE TABLE t (id UUID PRIMARY KEY);\n")
         open(gp + "/graph.monitor.json", "w").write(
@@ -302,6 +315,7 @@ def main():
         subprocess.run(["git", "-C", gp, "add", "-A"], check=True)
         subprocess.run(["git", "-C", gp, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "s"], check=True)
         open(gp + "/models/s.sql", "w").write("CREATE TABLE t (id UUID PRIMARY KEY, x INT);\n")
+        open(gp + "/notes.txt", "w").write("someone's unrelated work\n")
         rc, out = run("sync", "--path", gp, "--map", gp + "/graph.monitor.json", "--commit")
         try:
             rep = json.loads(out)
@@ -310,6 +324,10 @@ def main():
                   and "+column 'x'" in rep["synced"][0]["diff"], out[:300])
         except (json.JSONDecodeError, KeyError, IndexError):
             check("sync fixes drift+commits", False, out[:300])
+        shown = subprocess.run(["git", "-C", gp, "show", "--name-only", "--format=", "HEAD"], capture_output=True, text=True).stdout.split()
+        left = subprocess.run(["git", "-C", gp, "status", "--porcelain"], capture_output=True, text=True).stdout
+        check("sync commits only what it wrote", shown == ["docs/s.graph.json"] and "notes.txt" in left
+              and "models/s.sql" in left, f"{shown} / {left}")
         rc, out = run("monitor", "--path", gp, "--map", gp + "/graph.monitor.json", "--ci")
         check("monitor clean after sync", rc == 0 and json.loads(out)["drift"] is False, out[:200])
     else:
@@ -317,6 +335,14 @@ def main():
 
     charts()
     agent_loop()
+    known_bugs()
+    outline_checks()
+    scene_checks()
+    apply_checks()
+    edit_loop_checks()
+    story_checks()
+    style_checks()
+    layout_checks()
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed" + (f": {FAIL}" if FAIL else ""))
     raise SystemExit(1 if FAIL else 0)
@@ -607,8 +633,8 @@ def agent_loop():
     check("-o NAME.svg writes the SVG there and the page beside it",
           rc == 0 and head == "<svg " and os.path.exists(os.path.join(WORK, "loop-svg.html")), out[:200])
     root = ET.parse(os.path.join(WORK, "loop.svg")).getroot()
-    rx = [r.get("rx") for r in _els(root, "rect") if r.get("width") == "160"]
-    check("oval start and end are drawn round", rx.count("20") >= 4, str(rx))
+    rx = [r.get("rx") for r in _els(root, "rect") if r.get("data-node") in ("a", "c")]
+    check("oval start and end are drawn round", rx.count("20") == 2, str(rx))
 
     junk = {"list.json": "[1, 2, 3]", "nodes_str.json": '{"nodes": "abc"}', "noid.json": '{"nodes": [{"name": "A"}]}',
             "broken.json": '{"nodes": [', "seq_in_flow.json": '{"actors": [{"id": "a"}], "messages": []}'}
@@ -671,7 +697,7 @@ def agent_loop():
 
     far = os.path.join(WORK, "far")
     os.makedirs(far, exist_ok=True)
-    p = subprocess.run([sys.executable, GRAPH, "export", os.path.join(WORK, "loop"), "--to", "svg",
+    p = subprocess.run([*ENGINE, "export", os.path.join(WORK, "loop"), "--to", "svg",
                         "-o", os.path.join(far, "loop.svg")], capture_output=True, text=True, cwd=far)
     check("export works from another directory", p.returncode == 0, (p.stdout + p.stderr)[:200])
 
@@ -777,6 +803,22 @@ def agent_loop():
         f.write("\n".join(["---", "title: T", "---", "flowchart TD", "  A[open --> B", ""]))
     rc, out = run("mermaid", fm, "-o", os.path.join(WORK, "frontmatter.svg"))
     check("a Mermaid error names its line in the file, front matter counted", rc == 1 and "line 5" in out, out[:200])
+    steps = [f"  S{i}[Step {i}] --> S{i + 1}[Step {i + 1}]" for i in range(24)]
+    for fit, wraps in (("slide", True), ("column", False)):  # where it goes: Mermaid front matter, as --fit
+        long = os.path.join(WORK, f"long-{fit}.mmd")
+        with open(long, "w", encoding="utf-8") as f:
+            f.write("\n".join(["---", "title: Long", f"fit: {fit}", "---", "flowchart TD"] + steps + [""]))
+        rc, out = run("mermaid", long, "-o", os.path.join(WORK, f"long-{fit}.svg"))
+        lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
+        check(f"fit: {fit} {'wraps a long flow into columns' if wraps else 'keeps a long flow one strip'}",
+              rc == 0 and any(r.startswith("wrapped into") for r in lay) == wraps, out[-300:])
+    rc, out = run("schema", os.path.join(HERE, "examples", "schema_ecommerce.json"), "--fit", "column",
+                  "-o", os.path.join(WORK, "schema-column.svg"))
+    lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
+    head = open(os.path.join(WORK, "schema-column.svg"), encoding="utf-8").read(400) if rc == 0 else ""
+    width = float(head.split('viewBox="0 0 ', 1)[1].split()[0]) if 'viewBox="0 0 ' in head else 1e9
+    check("--fit column stacks a wide schema's tables in one column, 640 px at most",
+          rc == 0 and "column 1: users | orders | order_items" in lay and width <= 640, out[-300:])
     rc, out = run("mermaid", os.path.join(HERE, "examples", "checkout_sequence.mmd"), "-o", os.path.join(WORK, "outline_seq.svg"))
     lay = (json.loads(out) if rc == 0 else {}).get("layout") or []
     check("a sequence's verdict lists its actors and each message",
@@ -818,7 +860,7 @@ def agent_loop():
     rep = json.loads(out) if rc == 0 else {}
     check("flow -s inline json spec renders", rc == 0 and rep.get("ok"), out[:200])
 
-    p = subprocess.Popen([sys.executable, os.path.join(HERE, "graph.py"), "mermaid", "-", "-o", os.path.join(WORK, "pipe_test.svg")],
+    p = subprocess.Popen([*ENGINE, "mermaid", "-", "-o", os.path.join(WORK, "pipe_test.svg")],
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8")
     pipe_out, _ = p.communicate("flowchart TD; X[Start]-->Y[Café → Finish]")
     check("piped stdin to mermaid renders cleanly", p.returncode == 0 and '"ok": true' in pipe_out, pipe_out[:200])
@@ -830,6 +872,424 @@ def agent_loop():
     rc, out = run("--version")
     check("plugin.json version matches graph.py", plugin_v in out, f"{plugin_v} vs {out.strip()}")
 
+
+def _dump(name, obj):
+    path = os.path.join(WORK, name)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f)
+    return path
+
+
+def known_bugs():
+    """One check per bug found while inventorying the engine."""
+    print("== known bugs (P1b) ==")
+    seq = _dump("b1.json", {"actors": [{"id": "api"}, {"id": "db", "name": "Database"}],
+                            "messages": [{"from": "api", "to": "db", "label": "query"}]})
+    rc, out = run("seq", seq, "-o", os.path.join(WORK, "b1.svg"))
+    check("a seq actor without a name is drawn with its id", rc == 0 and '"ok": true' in out, out[-200:])
+
+    csv_path = os.path.join(WORK, "b2.csv")
+    with open(csv_path, "w", encoding="utf-8") as f:
+        f.write("px,py,mass\n1,2,3\n2,3,5\n3,1,2\n")
+    rc, out = run("chart", "bubble", csv_path, "--x", "px", "--y", "py", "--size", "mass", "-o", os.path.join(WORK, "b2.svg"))
+    check("chart validation accepts the --size the renderer reads", rc == 0, out[-200:])
+    rc, out = run("validate", csv_path, "--type", "bubble", "--x", "px", "--y", "py", "--size", "mass")
+    check("validate takes every chart role flag", rc == 0, out[-200:])
+
+    flow = _dump("b3.json", {"nodes": [{"id": "s", "name": "Start"}, {"id": "d", "name": "OK?", "shape": "diamond"},
+                                       {"id": "a", "name": "A"}, {"id": "b", "name": "B"}, {"id": "e", "name": "End"}],
+                             "edges": [{"from": "s", "to": "d"}, {"from": "d", "to": "a"}, {"from": "d", "to": "b"},
+                                       {"from": "a", "to": "e"}, {"from": "b", "to": "e"}]})
+    rc, out = run("validate", flow, "--type", "flow")
+    n = out.count("unlabeled exit from diamond 'd'")
+    check("one warning per diamond with unlabeled exits", n == 1, f"{n} warnings")
+
+    budgets = {}
+    for kind in ("arch", "schema", "line"):
+        rc, out = run("describe", kind)
+        budgets[kind] = json.loads(out).get("budgets", {}) if rc == 0 else {}
+    stale = [k for k, b in (("arch", "layers"), ("schema", "relations"), ("line", "points_per_series")) if b in budgets[k]]
+    check("describe lists only budgets the validator checks", not stale, str(stale))
+
+    rc, out = run("flow", "--help")
+    check("help does not offer inline text as the spec argument", rc == 0 and "inline text," not in out, out[-200:])
+
+    tall = [{"id": f"t{i}", "name": f"table_{i}", "columns": [{"name": f"c{j}", "type": "int"} for j in range(14)]}
+            for i in range(6)]
+    schema = _dump("b6.json", {"title": "Wide tables", "tables": tall, "relations": [], "budget": False})
+    rc, out = run("schema", schema, "-o", os.path.join(WORK, "b6.svg"))
+    check("a row of tall tables leaves room for the next row", rc == 0 and '"ok": true' in out, out[-300:])
+
+    er = os.path.join(WORK, "b7.mmd")
+    with open(er, "w", encoding="utf-8") as f:
+        f.write('erDiagram\n    USER {\n        int id PK\n        string email "PK of the old system"\n    }\n')
+    rc, out = run("mermaid", er, "-o", os.path.join(WORK, "b7.svg"))
+    pk = open(os.path.join(WORK, "b7.svg"), encoding="utf-8").read().count(">PK</text>") if rc == 0 else -1
+    check("a key word inside an ER comment is not a key", pk == 1, f"{pk} PK badges")
+
+    rc, out = run("mermaid", "-s", "flowchart TD; A[fa:fa-rocket Launch] --> B[Done]", "-o", os.path.join(WORK, "b8.svg"))
+    check("an unknown fa: icon is reported, not dropped silently", rc == 0 and "fa-rocket" in out, out[-300:])
+
+    rs = mcp(['{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18"}}',
+              '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'])
+    tools = {t["name"]: t for r in rs if r.get("id") == 2 for t in r["result"]["tools"]}
+    enum = tools.get("export", {}).get("inputSchema", {}).get("properties", {}).get("to", {}).get("enum", [])
+    check("MCP export offers drawio and excalidraw", {"drawio", "excalidraw"} <= set(enum), str(enum))
+
+    # export draws from the receipt, which now keeps theme overrides and notes
+    theme = _dump("b11-theme.json", {"ink": "#3a1f5d"})
+    b11 = os.path.join(WORK, "b11.html")
+    run("bar", "examples/bar_latency.csv", "--cat", "service", "--val", "p99_latency_ms", "-o", b11,
+        "--theme-file", theme, "--note", "Slowest", "--note-at", "Catalog API")
+    rc, out = run("export", b11, "--to", "svg", "-o", os.path.join(WORK, "b11-export.svg"))
+    with open(os.path.join(WORK, "b11-export.svg"), encoding="utf-8") as f:
+        exported = f.read()
+    check("export keeps --theme-file overrides and --note", rc == 0 and "#3a1f5d" in exported and "Slowest" in exported,
+          out[-200:])
+    # receipt v2: a diagram's receipt holds the scene it drew, so export doesn't need the spec file
+    spec = _dump("b11-flow.json", json.load(open(os.path.join(HERE, "examples", "flow_decision.json"), encoding="utf-8")))
+    b11f = os.path.join(WORK, "b11-flow.svg")
+    for ext in (".svg", ".html", ".graph.json"):  # a drawing left by an earlier run would make this an edit
+        if os.path.exists(os.path.join(WORK, "b11-flow" + ext)):
+            os.remove(os.path.join(WORK, "b11-flow" + ext))
+    run("flow", spec, "-o", b11f)
+    os.remove(spec)
+    rc, out = run("export", b11f, "--to", "svg", "-o", os.path.join(WORK, "b11-flow-export.svg"))
+    with open(b11f, encoding="utf-8") as f, open(os.path.join(WORK, "b11-flow-export.svg"), encoding="utf-8") as g:
+        same = f.read() == g.read()
+    check("a diagram exports from its receipt's scene after the spec file is gone", rc == 0 and same, out[-200:])
+
+    # every theme is named, and corners reach line and scatter (their note callouts)
+    p = subprocess.run([sys.executable, "-c", "import diagonaldiagrams._theme as t; print(t.THEME.get('_name'))"],
+                       capture_output=True, text=True, cwd=HERE)
+    check("the default theme is named", p.stdout.strip() == "editorial", p.stdout + p.stderr[-200:])
+    callouts = {}
+    for corners in ("sharp", "rounded"):
+        svg = os.path.join(WORK, f"b15-{corners}.svg")
+        run("line", "examples/line_throughput.csv", "--x", "timestamp", "--y", "rps", "--note", "Peak", "--note-at", "10:05",
+            "--corners", corners, "-o", svg)
+        with open(svg, encoding="utf-8") as f:
+            hit = [part for part in f.read().split("<rect") if 'stroke="rgba(45,49,66,0.12)" stroke-width="1"/>' in part]
+        callouts[corners] = hit[0].split('rx="')[1].split('"')[0] if hit else None
+    check("line honors --corners in its note callout", callouts == {"sharp": "0", "rounded": "5"}, str(callouts))
+
+    # the audit's blind spots, each on a small hand-written SVG
+    def audit_svg(name, body):
+        path = os.path.join(WORK, name)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><title>t</title><desc>d</desc>'
+                    '<defs><marker id="m"><path d="M0,0 L6,3 L0,6 Z"/></marker></defs>' + body + "</svg>")
+        return run("audit", path)
+    rc, out = audit_svg("b12-circle.svg", '<circle cx="200" cy="150" r="30" fill="#fff" stroke="#000"/>'
+                                          '<path d="M60,150 L340,150" stroke="#000" marker-end="url(#m)"/>')
+    check("an arrow through a circle is caught", rc == 1 and "through the circle" in out, out[:200])
+    rc, out = audit_svg("b12-css.svg", '<style>.edge { marker-end: url(#m); }</style>'
+                                       '<rect x="170" y="120" width="60" height="60" fill="#fff" stroke="#000"/>'
+                                       '<path class="edge" d="M60,150 L340,150" stroke="#000" fill="none"/>')
+    check("an arrowhead set by CSS makes an arrow", rc == 1 and '"through"' in out, out[:200])
+    rc, out = audit_svg("b12-curve.svg", '<rect x="170" y="70" width="60" height="40" fill="#fff" stroke="#000"/>'
+                                         '<path d="M60,150 Q200,10 340,150" stroke="#000" fill="none" marker-end="url(#m)"/>')
+    check("a curved arrow is followed along its curve", rc == 1 and '"through"' in out, out[:200])
+    rc, out = audit_svg("b12-lean.svg", '<polygon points="140,120 280,120 260,180 120,180" fill="#fff" stroke="#000"/>'
+                                        '<path d="M270,40 L270,260" stroke="#000" marker-end="url(#m)"/>')
+    check("a parallelogram blocks arrows across its whole width", rc == 1 and '"through"' in out, out[:200])
+    rc, out = audit_svg("b12-rhombus.svg", '<polygon points="200,100 260,150 200,200 140,150" fill="#fff" stroke="#000"/>'
+                                           '<path d="M60,105 L340,105" stroke="#000" marker-end="url(#m)"/>')
+    check("a decision still uses its true outline", rc == 0, out[:200])
+    rc, out = audit_svg("b12-tall.svg", '<rect x="100" y="100" width="200" height="30" fill="#fff" stroke="#000"/>'
+                                        '<text x="110" y="108" font-size="14">Too tall for its box</text>')
+    check("text spilling out of the top of its box is caught", rc == 1 and '"spill"' in out, out[:200])
+
+
+def outline_checks():
+    """--outline adds the structured outline; without it the verdict stays as short as before."""
+    print("== outline ==")
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "ol-flow.svg"), "--outline")
+    v = json.loads(out) if rc == 0 else {}
+    o = v.get("outline", {})
+    check("flow --outline lists nodes with rows and edges with labels",
+          any(n.get("id") == "risk?" and n.get("shape") == "diamond" and n.get("row") == 3 for n in o.get("nodes", []))
+          and {"id": "tests->fix:fail", "from": "tests", "to": "fix", "label": "fail"} in o.get("edges", []), out[-300:])
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "ol-plain.svg"))
+    check("without --outline the verdict has no outline", rc == 0 and '"outline"' not in out, out[-200:])
+    rc, out = run("seq", "examples/seq_checkout.json", "-o", os.path.join(WORK, "ol-seq.svg"), "--outline")
+    o = (json.loads(out) if rc == 0 else {}).get("outline", {})
+    check("seq --outline lists actors and messages in order",
+          o.get("actors", [None])[0] == "Customer" and o.get("messages", [{}])[0].get("label") == "Submit Order", out[-300:])
+    # the boxes-and-links charts mark their nodes, so they get an outline and an export
+    dag = os.path.join(WORK, "ol-dag.svg")
+    rc, out = run("chart", "dag", "tests/golden/inputs/charts/dag.json", "-o", dag, "--outline")
+    o = (json.loads(out) if rc == 0 else {}).get("outline", {})
+    check("chart dag --outline lists its nodes and edges",
+          [n["id"] for n in o.get("nodes", [])] == ["a", "b", "c"] and len(o.get("edges", [])) == 2, out[-300:])
+    rc, out = run("export", dag, "--to", "drawio", "-o", os.path.join(WORK, "ol-dag.drawio"))
+    check("chart dag exports its boxes and arrows to draw.io", rc == 0 and "3 boxes, 2 arrows" in out, out[-200:])
+
+
+def layout_checks():
+    """The layered kernel: flows and arch draw once, a long flow wraps, and schema tables placed
+    with x and y keep their columns."""
+    print("== layout ==")
+    import re as _re
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "l-v2.svg"))
+    v2 = json.loads(out) if rc == 0 else {}
+    rc1, out1 = run("schema", "examples/show_store.json", "-o", os.path.join(WORK, "l-store.svg"))
+    store = json.loads(out1) if rc1 == 0 else {}
+    check("flow draws with the layered kernel and passes the audit", v2.get("ok") is True, out[-300:])
+    check("schema tables placed with x and y draw in those columns, in the order of y",
+          store.get("ok") is True and store.get("layout", [])[1:] == ["column 1: datasets", "column 2: runs | metrics",
+                                                                       "column 3: checkpoints | evals"], out1[-300:])
+    long_flow = os.path.join(WORK, "l-long.json")
+    with open(long_flow, "w", encoding="utf-8") as f:
+        json.dump({"title": "Long", "nodes": [{"id": f"s{i}", "name": f"Step {i}"} for i in range(30)],
+                   "edges": [{"from": f"s{i}", "to": f"s{i + 1}"} for i in range(29)]}, f)
+    rc, out = run("flow", long_flow, "-o", os.path.join(WORK, "l-long.svg"))
+    svg = open(os.path.join(WORK, "l-long.svg"), encoding="utf-8").read() if rc == 0 else ""
+    m = _re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg)
+    aspect = float(m.group(1)) / float(m.group(2)) if m else 0.0
+    check("a 30-step flow wraps into columns near 4:3 and passes the audit",
+          rc == 0 and json.loads(out).get("ok") and 0.9 < aspect < 2.0, f"aspect {aspect:.2f}")
+
+
+def scene_checks():
+    """A v2 scene file draws through the v1 renderers: aliases, both group forms, ordered messages."""
+    print("== scene ==")
+    flow = os.path.join(WORK, "scene-flow.json")
+    with open(flow, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "preset": "flow", "title": "Gate",
+                   "nodes": [{"id": "a", "label": "Push", "shape": "oval"}, {"id": "b", "label": "Risky?", "shape": "diamond"},
+                             {"id": "c", "label": "Review", "group": "gate"}],
+                   "edges": [{"from": "a", "to": "b"}, {"from": "b", "to": "c", "label": "yes"}],
+                   "groups": [{"id": "gate", "label": "Gate", "members": ["b"]}]}, f)
+    rc, out = run("flow", flow, "-o", os.path.join(WORK, "scene-flow.svg"))
+    v = json.loads(out) if rc == 0 else {}
+    check("a v2 flow scene draws, with labels as names and both group forms merged",
+          v.get("layout", [])[:1] == ["row 1: Push"] and "frame Gate: Risky?, Review" in v.get("layout", []), out[-300:])
+    seq = os.path.join(WORK, "scene-seq.json")
+    with open(seq, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "preset": "seq", "nodes": [{"id": "u", "label": "User"}, {"id": "api"}],
+                   "edges": [{"from": "api", "to": "u", "label": "token", "order": 1}, {"from": "u", "to": "api", "label": "login", "order": 0}]}, f)
+    rc, out = run("seq", seq, "-o", os.path.join(WORK, "scene-seq.svg"))
+    v = json.loads(out) if rc == 0 else {}
+    check("a v2 sequence scene draws its edges in their order", v.get("layout", [])[1:] == ["1. User -> api: login", "2. api -> User: token"], out[-300:])
+    rc, out = run("arch", seq, "-o", os.path.join(WORK, "scene-x.svg"))
+    check("a scene drawn with another preset's command is refused with a fix",
+          rc == 1 and "preset is 'seq'" in out and "draw it with the seq command" in out, out[-300:])
+    bad = os.path.join(WORK, "scene-bad.json")
+    with open(bad, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "nodes": [{"id": "a"}, {"id": "a"}], "edges": [{"from": "a", "to": "ghost"}]}, f)
+    rc, out = run("validate", bad)
+    check("validate lists every scene error with its path",
+          rc == 1 and '"path": "nodes[1].id"' in out and '"path": "edges[0].to"' in out, out[-300:])
+
+
+def apply_checks():
+    """apply SPEC PATCH writes a patch into a v1 spec or a scene; conflicts are listed, not dropped."""
+    print("== apply ==")
+    spec = os.path.join(WORK, "apply-flow.json")
+    shutil.copy(os.path.join(HERE, "examples", "flow_decision.json"), spec)
+    patch = os.path.join(WORK, "apply-patch.json")
+    with open(patch, "w", encoding="utf-8") as f:
+        json.dump([{"op": "text", "id": "fix", "name": "Patch it"}, {"op": "remove", "id": "ghost"}], f)
+    rc, out = run("apply", spec, patch)
+    v = json.loads(out) if out.strip().startswith("{") else {}
+    with open(spec, encoding="utf-8") as f:
+        written = json.load(f)
+    check("apply writes what fits into the v1 spec and lists the conflict",
+          rc == 1 and v.get("applied") == 1 and [c["path"] for c in v.get("conflicts", [])] == ["patch[1]"]
+          and any(n.get("name") == "Patch it" for n in written.get("nodes", [])) and "version" not in written, out[-300:])
+    rc, out = run("flow", spec, "-o", os.path.join(WORK, "apply-flow.svg"))
+    check("the patched spec renders with the new text", rc == 0 and "Patch it" in out, out[-200:])
+    scene = os.path.join(WORK, "apply-scene.json")
+    with open(scene, "w", encoding="utf-8") as f:
+        json.dump({"version": 2, "preset": "seq", "nodes": [{"id": "u"}, {"id": "api"}],
+                   "edges": [{"from": "u", "to": "api", "label": "login"}]}, f)
+    out_path = os.path.join(WORK, "apply-scene-out.json")
+    p = subprocess.run([*ENGINE, "apply", scene, "-", "-o", out_path], input='[{"op": "text", "id": "u", "name": "User"}]',
+                       capture_output=True, text=True, cwd=HERE)
+    with open(out_path, encoding="utf-8") as f:
+        written = json.load(f)
+    check("apply reads the patch from stdin and writes a scene back as a scene, to -o",
+          p.returncode == 0 and written.get("version") == 2 and written["nodes"][0].get("name") == "User"
+          and "id" not in written["edges"][0], p.stdout[-300:] + p.stderr[-200:])
+
+
+def edit_loop_checks():
+    """The edit loop: a page's patch is applied, the figure is drawn again at the same path, and the
+    verdict and the new page carry what changed since the last drawing."""
+    print("== edit loop ==")
+    home = os.path.join(WORK, "edit-loop")
+    shutil.rmtree(home, ignore_errors=True)
+    os.makedirs(home)
+    spec, out = os.path.join(home, "deploy.json"), os.path.join(home, "deploy.svg")
+    shutil.copy(os.path.join(HERE, "examples", "flow_decision.json"), spec)
+
+    def page():
+        with open(os.path.join(home, "deploy.html"), encoding="utf-8") as f:
+            text = f.read()
+        data = text.split('<script type="application/json" id="dd-page">', 1)[1].split("</script>", 1)[0]
+        return text, json.loads(data)
+    rc, first = run("flow", spec, "-o", out)
+    text, cfg = page()
+    check("a first drawing has no changes, and its page carries the change animation",
+          rc == 0 and '"changed"' not in first and cfg["previous"] is None and cfg["kind"] == "flow" and "ddPage" in text, first[-200:])
+    patch = os.path.join(home, "patch.json")
+    with open(patch, "w", encoding="utf-8") as f:
+        json.dump([{"op": "place", "id": "fix", "row": ["review", "fix"]}, {"op": "text", "id": "review", "name": "Peer review"}], f)
+    rc, applied = run("apply", spec, patch)
+    rc2, again = run("flow", spec, "-o", out)
+    v = json.loads(again)
+    _, cfg = page()
+    check("drawing it again after the patch says what changed and animates from the last drawing",
+          rc == 0 and rc2 == 0 and "row 4: Peer review | Fix" in v.get("layout", [])
+          and "Row 4 now reads Peer review | Fix" in v.get("changed", []) and 'Renamed "Review" to "Peer review"' in v["changed"]
+          and (cfg["previous"] or "").startswith("<svg") and cfg["changed"] == v["changed"], applied[-200:] + again[-300:])
+    other = os.path.join(home, "other.json")
+    shutil.copy(os.path.join(HERE, "examples", "flow_cross.json"), other)
+    rc, over = run("flow", other, "-o", out)
+    check("another spec drawn at the same path is not an edit of it", rc == 0 and '"changed"' not in over, over[-200:])
+    seq, seq_out = os.path.join(home, "seq.json"), os.path.join(home, "seq.svg")
+    shutil.copy(os.path.join(HERE, "examples", "seq_checkout.json"), seq)
+    run("seq", seq, "-o", seq_out)
+    with open(patch, "w", encoding="utf-8") as f:  # what the page writes: a message moved down two steps, relabeled, an actor colored
+        json.dump([{"op": "order", "ids": ["fe->api:POST /checkout", "api->pay:Authorize Card", "user->fe:Submit Order"]},
+                   {"op": "text", "id": "pay->db:Store Ledger TX", "label": "Write the ledger entry", "was": "Store Ledger TX"},
+                   {"op": "style", "selector": "#db", "set": {"fill": "#fff1d6"}}], f)
+    rc, applied = run("apply", seq, patch)
+    rc2, again = run("seq", seq, "-o", seq_out)
+    v = json.loads(again) if rc2 == 0 else {}
+    check("a sequence's messages move between steps and take new labels, and its actors new colors",
+          rc == 0 and v.get("layout", [])[1:4] == ["1. Web App -> API Gateway: POST /checkout",
+                                                     "2. API Gateway -> Payment Svc: Authorize Card",
+                                                     "3. Customer -> Web App: Submit Order"]
+          and v.get("changed") == ['Recolored "Postgres"', 'Moved the message "Submit Order" from step 1 to step 3',
+                                   'The message from Payment Svc to Postgres now reads "Write the ledger entry"'],
+          applied[-200:] + again[-400:])
+
+
+def story_checks():
+    """story STORY -o OUT.html: one figure, several views, in one page."""
+    print("== story ==")
+    out = os.path.join(WORK, "story", "platform.html")
+    rc, text = run("story", os.path.join(HERE, "examples", "story_platform.json"), "-o", out)
+    v = json.loads(text) if text.strip().startswith("{") else {}
+    page = open(out, encoding="utf-8").read() if os.path.isfile(out) else ""
+    check("a story draws its figure and a page with every frame",
+          rc == 0 and v.get("frames") == 7 and [x["steps"] for x in v.get("views", [])] == [1, 1, 4, 1]
+          and os.path.isfile(os.path.join(WORK, "story", "platform.figure.svg")) and 'id="dd-story"' in page
+          and "ddStory" in page, text[-300:])
+    bad = os.path.join(WORK, "story", "bad.json")
+    with open(bad, "w", encoding="utf-8") as f:
+        json.dump({"figure": {"type": "arch", "spec": os.path.join(HERE, "examples", "agent_platform.json")},
+                   "views": [{"id": "x", "dim": "#nope"}, {"id": "y", "dim": "node:hover"}]}, f)
+    rc, text = run("story", bad, "-o", os.path.join(WORK, "story", "bad.html"))
+    check("a story's bad selector is an error with a fix", rc == 1 and "view 'y' dim" in text and '"fix"' in text, text[-300:])
+    anim = os.path.join(WORK, "story", "checkout.svg")
+    rc, text = run("story", os.path.join(HERE, "examples", "story_checkout.json"), "-o", os.path.join(WORK, "story", "checkout.html"),
+                   "--svg", anim, "--fps", "5")
+    film = (json.loads(text) if text.strip().startswith("{") else {}).get("film", {})
+    body = open(anim, encoding="utf-8").read() if os.path.isfile(anim) else ""
+    check("--svg writes a view's motion as an animated SVG, a frame a fifth of a second",
+          rc == 0 and film.get("view") == "checkout" and body.count('<g data-frame=""') == film.get("frames", -1) > 0
+          and "@keyframes dd-frame" in body, text[-300:])
+
+
+def style_checks():
+    """A spec's stylesheet restyles the drawing; a mistake in it is a validate error with a fix."""
+    print("== style ==")
+    spec = os.path.join(WORK, "style-arch.json")
+    with open(os.path.join(HERE, "examples", "checkout_platform.json"), encoding="utf-8") as f:
+        d = json.load(f)
+    d["style"] = {"tokens": {"link": "#0e7490"}, "rules": {"node": {"stroke-width": 2}, "node::label": {"font-family": "Georgia"}}}
+    with open(spec, "w", encoding="utf-8") as f:
+        json.dump(d, f)
+    svg = os.path.join(WORK, "style-arch.svg")
+    rc, out = run("arch", spec, "-o", svg)
+    body = open(svg, encoding="utf-8").read() if rc == 0 else ""
+    check("a spec's style restyles nodes, labels and token-bound arrows",
+          'stroke-width="2" data-node' in body and 'font-family="Georgia"' in body and 'stroke="#0e7490"' in body, out[-200:])
+    d["style"] = {"rules": {"node": {"stroke": "acent"}}}
+    with open(spec, "w", encoding="utf-8") as f:
+        json.dump(d, f)
+    rc, out = run("validate", spec)
+    check("a typo in a style rule is a validate error with a did-you-mean", rc == 1 and "did you mean 'accent'" in out,
+          out[-200:])
+    brand = os.path.join(WORK, "brand.json")
+    with open(brand, "w", encoding="utf-8") as f:
+        json.dump({"tokens": {"accent": "#7c3aed"}, "rules": {"node": {"border-top": "3px solid accent"}}}, f)
+    tops = {}
+    for kind, name in (("flow", "flow_decision"), ("arch", "checkout_platform"), ("seq", "seq_checkout"),
+                       ("schema", "schema_ecommerce")):
+        svg = os.path.join(WORK, f"brand-{kind}.svg")
+        rc, out = run(kind, f"examples/{name}.json", "-o", svg, "--style", brand, "--font", "Georgia, serif")
+        body = open(svg, encoding="utf-8").read() if rc == 0 else ""
+        tops[kind] = body.count('stroke="#7c3aed" stroke-width="3"') > 0 and 'font-family="Georgia, serif"' in body
+    check("--style and --font restyle flow, arch, seq and schema alike", all(tops.values()), str(tops))
+    rc, out = run("export", os.path.join(WORK, "brand-flow.svg"), "--to", "svg", "-o", os.path.join(WORK, "brand-export.svg"))
+    same = rc == 0 and open(os.path.join(WORK, "brand-flow.svg"), encoding="utf-8").read() ==         open(os.path.join(WORK, "brand-export.svg"), encoding="utf-8").read()
+    check("export redraws a styled figure from its receipt", same, out[-200:])
+    rc, out = run("describe", "style")
+    check("describe style lists properties, selectors and tokens",
+          rc == 0 and '"border-top"' in out and '":focal"' in out and '"accent-tint"' in out, out[:200])
+    # fonts: a font file measured from its own widths; a named font that isn't installed warns
+    sys.path.insert(0, os.path.join(HERE, "tests", "unit"))
+    from test_fonts import make_font
+    font = os.path.join(WORK, "wide.ttf")
+    with open(font, "wb") as f:
+        f.write(make_font({c: 700 for c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ :-"}, family="Wide Test"))
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "font-file.svg"), "--font", font)
+    body = open(os.path.join(WORK, "font-file.svg"), encoding="utf-8").read() if rc == 0 else ""
+    check("--font FILE draws in that family and measures with it", "font-family=\"'Wide Test', sans-serif\"" in body,
+          out[-200:])
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "font-missing.svg"), "--font",
+                  "Nowhere Grotesk 9000, sans-serif")
+    check("a named font that isn't installed is a font-fallback warning", rc == 0 and '"font-fallback"' in out, out[-200:])
+    # P3.5b: --embed-fonts puts the measured font in the file; a font that forbids embedding is only referenced
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "embed.svg"), "--font", font, "--embed-fonts")
+    body = open(os.path.join(WORK, "embed.svg"), encoding="utf-8").read() if rc == 0 else ""
+    check("--embed-fonts embeds the font the figure measured with",
+          "@font-face { font-family: 'Wide Test'" in body and "base64," in body, out[-200:])
+    locked = os.path.join(WORK, "locked.ttf")
+    with open(locked, "wb") as f:
+        f.write(make_font({c: 600 for c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ?:-"}, family="Locked Test",
+                          fstype=2))
+    rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "locked.svg"), "--font", locked,
+                  "--embed-fonts")
+    check("a font whose license forbids embedding is referenced, with a warning",
+          rc == 0 and '"font-embed"' in out and "@font-face" not in open(os.path.join(WORK, "locked.svg"), encoding="utf-8").read(),
+          out[-200:])
+    # a project's diagonaldiagrams.toml brings house styles and a locked brand policy
+    proj = os.path.join(WORK, "brandproj")
+    os.makedirs(os.path.join(proj, "brand"), exist_ok=True)
+    with open(os.path.join(proj, "diagonaldiagrams.toml"), "w", encoding="utf-8") as f:
+        f.write('[style]\nsheets = ["brand/house.json"]\npolicy = "brand/policy.json"\n[defaults]\ncorners = "sharp"\n')
+    with open(os.path.join(proj, "brand", "house.json"), "w", encoding="utf-8") as f:
+        json.dump({"rules": {"node": {"border-top": "3px solid accent"}}}, f)
+    with open(os.path.join(proj, "brand", "policy.json"), "w", encoding="utf-8") as f:
+        json.dump({"name": "policy", "tokens": {"accent": "#7c3aed"}, "rules": {"node": {"stroke": "ink"}}}, f)
+    good = os.path.join(proj, "good.json")
+    shutil.copy(os.path.join(HERE, "examples", "flow_decision.json"), good)
+    rc, out = run("flow", good, "-o", os.path.join(proj, "good.svg"))
+    body = open(os.path.join(proj, "good.svg"), encoding="utf-8").read() if rc == 0 else ""
+    check("the project config's house sheet, policy tokens and defaults apply",
+          'stroke="#7c3aed" stroke-width="3"' in body and 'data-node="tests" data-label' in body and ' rx="0" ' in body, out[-200:])
+    bad = os.path.join(proj, "bad.json")
+    with open(bad, "w", encoding="utf-8") as f:
+        d = json.load(open(good, encoding="utf-8"))
+        d["style"] = {"name": "agent", "rules": {"#fix": {"stroke": "#e11d48"}}}
+        json.dump(d, f)
+    rc, out = run("flow", bad, "-o", os.path.join(proj, "bad.svg"))
+    check("overriding the brand policy is an off-brand error naming the rule",
+          rc == 1 and '"off-brand"' in out and "rule '#fix' sets stroke" in out, out[-300:])
+
+    # diagrams draw --figure above the title and --caption under the figure, and export keeps them
+    cap = os.path.join(WORK, "b17.svg")
+    rc, out = run("seq", "examples/seq_checkout.json", "-o", cap, "--figure", "Fig. 4", "--caption", "Retries are idempotent.")
+    body = open(cap, encoding="utf-8").read() if rc == 0 else ""
+    check("diagrams draw --figure and --caption", ">FIG. 4<" in body and ">Retries are idempotent.<" in body, out[-200:])
+    rc, out = run("export", cap, "--to", "svg", "-o", os.path.join(WORK, "b17-export.svg"))
+    check("export keeps the figure label and caption",
+          rc == 0 and open(os.path.join(WORK, "b17-export.svg"), encoding="utf-8").read() == body, out[-200:])
 
 if __name__ == "__main__":
     main()

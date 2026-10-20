@@ -1,0 +1,37 @@
+{
+  "title": "Palantir, from raw data to an AI decision",
+  "sub": "Foundry lands and builds the data, the Ontology turns it into objects and actions, and AIP reasons and acts on them. Simplified, from Palantir's public documentation.",
+  "budget": false,
+  "nodes": [
+    {"id": "models", "name": "Models", "sub": "registered LLMs", "tag": "LLM", "layer": 0},
+    {"id": "logic", "name": "AIP Logic", "sub": "LLM plus tools", "tag": "AGENT", "layer": 0, "focal": true},
+    {"id": "evals", "name": "AIP Evals", "sub": "tests the agents", "tag": "EVAL", "layer": 0},
+    {"id": "workshop", "name": "Workshop", "sub": "operational apps", "tag": "APP", "layer": 1},
+    {"id": "ontology", "name": "Ontology", "sub": "objects, links, actions", "tag": "ONTOLOGY", "layer": 1, "focal": true},
+    {"id": "automate", "name": "Automate", "sub": "rules that act", "tag": "APP", "layer": 1},
+    {"id": "functions", "name": "Functions", "sub": "logic on objects", "tag": "CODE", "layer": 2},
+    {"id": "funnel", "name": "Object storage", "sub": "indexed objects", "tag": "INDEX", "layer": 2},
+    {"id": "builder", "name": "Pipeline Builder", "sub": "Spark and Flink", "tag": "PIPELINE", "layer": 2},
+    {"id": "sources", "name": "Sources", "sub": "ERP, files, sensors", "tag": "SOURCE", "layer": 3},
+    {"id": "connect", "name": "Data Connection", "sub": "syncs and agents", "tag": "INGEST", "layer": 3},
+    {"id": "datasets", "name": "Datasets", "sub": "tables and streams", "tag": "DATA", "layer": 3}
+  ],
+  "edges": [
+    {"from": "sources", "to": "connect", "label": "sync"},
+    {"from": "connect", "to": "datasets", "label": "land"},
+    {"from": "datasets", "to": "builder", "label": "build"},
+    {"from": "builder", "to": "funnel", "label": "index"},
+    {"from": "funnel", "to": "ontology", "label": "hydrate"},
+    {"from": "functions", "to": "workshop", "label": "logic"},
+    {"from": "ontology", "to": "workshop", "label": "run"},
+    {"from": "ontology", "to": "logic", "label": "ground"},
+    {"from": "ontology", "to": "automate", "label": "watch"},
+    {"from": "logic", "to": "models", "label": "call"},
+    {"from": "logic", "to": "evals", "label": "score"},
+    {"from": "logic", "to": "ontology", "label": "act", "async": true}
+  ],
+  "groups": [
+    {"id": "aip", "name": "AIP", "nodes": ["models", "logic", "evals"]},
+    {"id": "foundry", "name": "Foundry", "nodes": ["funnel", "builder", "connect", "datasets"]}
+  ]
+}

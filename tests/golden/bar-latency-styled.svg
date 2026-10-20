@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 500" width="760"><title>Latency</title>
+<desc>p99</desc>
+<rect width="760" height="500" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Latency</text>
+<text x="36" y="44" font-size="13" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">p99</text>
+<text x="82" y="403.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
+<text x="82" y="318.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">100</text>
+<text x="82" y="233.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">200</text>
+<text x="82" y="148.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">300</text>
+<text x="82" y="63.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">400</text>
+<line x1="90" y1="400.0" x2="712" y2="400.0" stroke="#2d3142" stroke-width="1.2"/>
+<line x1="90" y1="60" x2="90" y2="400" stroke="#2d3142" stroke-width="1.2"/>
+<path d="M128.2,400.0 L128.2,370.3 Q128.2,364.3 134.2,364.3 L170.2,364.3 Q176.2,364.3 176.2,370.3 L176.2,400.0 Z" fill="#2e5aa8" fill-opacity="0.85"><title>Auth Service: 42</title></path>
+<text x="152.2" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Auth Service</text>
+<path d="M252.6,400.0 L252.6,331.2 Q252.6,325.2 258.6,325.2 L294.6,325.2 Q300.6,325.2 300.6,331.2 L300.6,400.0 Z" fill="#2e5aa8" fill-opacity="0.85"><title>Catalog API: 88</title></path>
+<text x="276.6" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Catalog API</text>
+<path d="M377.0,400.0 L377.0,291.2 Q377.0,285.2 383.0,285.2 L419.0,285.2 Q425.0,285.2 425.0,291.2 L425.0,400.0 Z" fill="#2e5aa8" fill-opacity="0.85"><title>Search Gateway: 135</title></path>
+<text x="401.0" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Search Gateway</text>
+<path d="M499.9,400.0 L499.9,227.5 Q499.9,221.5 505.9,221.5 L544.9,221.5 Q550.9,221.5 550.9,227.5 L550.9,400.0 Z" fill="#eb6c36" fill-opacity="0.95" stroke="#2d3142" stroke-width="1.2"><title>Payment Pipeline: 210</title></path>
+<text x="525.4" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Payment Pipeline</text>
+<path d="M625.8,400.0 L625.8,117.0 Q625.8,111.0 631.8,111.0 L667.8,111.0 Q673.8,111.0 673.8,117.0 L673.8,400.0 Z" fill="#2e5aa8" fill-opacity="0.85"><title>Analytics Ingest: 340</title></path>
+<text x="649.8" y="418.0" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle">Analytics Ingest</text>
+<text x="401.0" y="458.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Service</text>
+<text x="22" y="230.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 22,230.0)">p99 Latency ms</text>
+<text x="36" y="486" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">5 bars</text>
+</svg>

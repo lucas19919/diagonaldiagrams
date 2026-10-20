@@ -1,0 +1,242 @@
+{
+ "argv": [
+  "flow",
+  "tests/golden/inputs/flows/flow-20.json"
+ ],
+ "exit": 0,
+ "html_sha256": "c8f7e4d4aad6239f6797b46aa667982525bdfc75da699bb468081f114268b1d2",
+ "receipt": {
+  "auto": false,
+  "cmd": "flow",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "budget": false,
+   "edges": [
+    {
+     "from": "s0",
+     "to": "s1"
+    },
+    {
+     "from": "s1",
+     "to": "s2"
+    },
+    {
+     "from": "s2",
+     "to": "s3"
+    },
+    {
+     "from": "s3",
+     "label": "no",
+     "to": "s1"
+    },
+    {
+     "from": "s3",
+     "label": "yes",
+     "to": "s4"
+    },
+    {
+     "from": "s4",
+     "to": "s5"
+    },
+    {
+     "from": "s5",
+     "to": "s6"
+    },
+    {
+     "from": "s6",
+     "to": "s7"
+    },
+    {
+     "from": "s7",
+     "label": "no",
+     "to": "s10"
+    },
+    {
+     "from": "s7",
+     "label": "yes",
+     "to": "s8"
+    },
+    {
+     "from": "s8",
+     "to": "s9"
+    },
+    {
+     "from": "s9",
+     "to": "s10"
+    },
+    {
+     "from": "s10",
+     "to": "s11"
+    },
+    {
+     "from": "s11",
+     "label": "no",
+     "to": "s9"
+    },
+    {
+     "from": "s11",
+     "label": "yes",
+     "to": "s12"
+    },
+    {
+     "from": "s12",
+     "to": "s13"
+    },
+    {
+     "from": "s13",
+     "to": "s14"
+    },
+    {
+     "from": "s14",
+     "to": "s15"
+    },
+    {
+     "from": "s15",
+     "label": "no",
+     "to": "s18"
+    },
+    {
+     "from": "s15",
+     "label": "yes",
+     "to": "s16"
+    },
+    {
+     "from": "s16",
+     "to": "s17"
+    },
+    {
+     "from": "s17",
+     "to": "s18"
+    },
+    {
+     "from": "s18",
+     "to": "s19"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit-then-index",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "s0",
+     "name": "Request received",
+     "shape": "oval"
+    },
+    {
+     "id": "s1",
+     "name": "Load the customer account (1)"
+    },
+    {
+     "id": "s2",
+     "name": "Score the fraud risk (2)"
+    },
+    {
+     "id": "s3",
+     "name": "Check 1 passed?",
+     "shape": "diamond"
+    },
+    {
+     "id": "s4",
+     "name": "Charge the card (4)"
+    },
+    {
+     "id": "s5",
+     "name": "Write the ledger entry (5)"
+    },
+    {
+     "id": "s6",
+     "name": "Notify the warehouse (6)"
+    },
+    {
+     "id": "s7",
+     "name": "Check 2 passed?",
+     "shape": "diamond"
+    },
+    {
+     "id": "s8",
+     "name": "Send the receipt (8)"
+    },
+    {
+     "id": "s9",
+     "name": "Update the order status (9)"
+    },
+    {
+     "id": "s10",
+     "name": "Validate the request (10)"
+    },
+    {
+     "id": "s11",
+     "name": "Check 3 passed?",
+     "shape": "diamond"
+    },
+    {
+     "id": "s12",
+     "name": "Score the fraud risk (12)"
+    },
+    {
+     "id": "s13",
+     "name": "Reserve the stock (13)"
+    },
+    {
+     "id": "s14",
+     "name": "Charge the card (14)"
+    },
+    {
+     "id": "s15",
+     "name": "Check 4 passed?",
+     "shape": "diamond"
+    },
+    {
+     "id": "s16",
+     "name": "Notify the warehouse (16)"
+    },
+    {
+     "id": "s17",
+     "name": "Print the shipping label (17)"
+    },
+    {
+     "id": "s18",
+     "name": "Send the receipt (18)"
+    },
+    {
+     "id": "s19",
+     "name": "Done",
+     "shape": "oval"
+    }
+   ],
+   "preset": "flow",
+   "subtitle": "Generated for the golden corpus.",
+   "title": "A 20-step process",
+   "version": 2
+  },
+  "spec": "flow-20.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 20,
+  "layout": [
+   "row 1: Request received",
+   "row 2: Load the customer account (1)",
+   "row 3: Score the fraud risk (2)",
+   "row 4: Check 1 passed? (decision)",
+   "row 5: Charge the card (4)",
+   "row 6: Write the ledger entry (5)",
+   "row 7: Notify the warehouse (6)",
+   "row 8: Check 2 passed? (decision)",
+   "row 9: Send the receipt (8) | Validate the request (10)",
+   "row 10: Check 3 passed? (decision)",
+   "row 11: Update the order status (9) | Score the fraud risk (12)",
+   "row 12: Reserve the stock (13)",
+   "row 13: Charge the card (14)",
+   "row 14: Check 4 passed? (decision)",
+   "row 15: Notify the warehouse (16)",
+   "row 16: Print the shipping label (17)",
+   "row 17: Send the receipt (18)",
+   "row 18: Done",
+   "wrapped into 3 columns: rows 1-7, rows 8-12, rows 13-18"
+  ],
+  "ok": true
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "stack",
+  "tests/golden/inputs/charts/stack.csv",
+  "--title",
+  "stack"
+ ],
+ "exit": 0,
+ "html_sha256": "2c9f8757c42ceef9dedf92c0ef99374b84f337ed1bfe46ee41f81157492ba09b",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "stack",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "stack.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "stack",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

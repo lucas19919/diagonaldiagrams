@@ -1,0 +1,74 @@
+{
+ "L-ref-arch-agent-platform-dd": {
+  "column_scale": 0.984,
+  "font_median": 11.0,
+  "font_min": 9.0,
+  "h": 1370.0,
+  "ok": true,
+  "slide_scale": 0.599,
+  "w": 679.0
+ },
+ "L-ref-arch-agent-platform-mermaid": {
+  "column_scale": 0.598,
+  "font_median": 14.0,
+  "font_min": 12.0,
+  "h": 1455.3,
+  "ok": true,
+  "slide_scale": 0.563,
+  "w": 1116.2
+ },
+ "L-ref-arch-agent-platform-pele": {
+  "column_scale": 0.713,
+  "font_median": 16.0,
+  "font_min": 14.0,
+  "h": 1329.0,
+  "ok": true,
+  "slide_scale": 0.617,
+  "w": 937.0
+ },
+ "L-ref-arch-checkout-groups-dd": {
+  "column_scale": 0.759,
+  "font_median": 13.0,
+  "font_min": 9.0,
+  "h": 876.0,
+  "ok": true,
+  "slide_scale": 0.936,
+  "w": 880.0
+ },
+ "L-ref-arch-checkout-groups-mermaid": {
+  "column_scale": 0.816,
+  "font_median": 14.0,
+  "font_min": 12.0,
+  "h": 1351.4,
+  "ok": true,
+  "slide_scale": 0.607,
+  "w": 819.0
+ },
+ "L-ref-arch-checkout-groups-pele": {
+  "column_scale": 0.894,
+  "font_median": 16.0,
+  "font_min": 14.0,
+  "h": 1167.0,
+  "ok": true,
+  "slide_scale": 0.703,
+  "w": 747.0
+ },
+ "N-ref-arch-agent-platform-dd": {
+  "column_scale": 0.813,
+  "font_median": 11.0,
+  "font_min": 10.0,
+  "h": 960.0,
+  "ok": true,
+  "slide_scale": 0.854,
+  "w": 822.0
+ },
+ "N-ref-arch-checkout-groups-dd": {
+  "column_scale": 0.699,
+  "font_median": 11.0,
+  "font_min": 9.0,
+  "h": 886.0,
+  "ok": true,
+  "slide_scale": 0.926,
+  "w": 956.0
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "title": "Classes",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "Animal",
+   "attrs": [
+    "age"
+   ],
+   "methods": [
+    "speak"
+   ]
+  },
+  {
+   "id": "d",
+   "name": "Dog",
+   "attrs": [
+    "breed"
+   ],
+   "methods": [
+    "bark"
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "from": "d",
+   "to": "a",
+   "kind": "inherit"
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "argv": [
+  "chart",
+  "container",
+  "examples/arch.json"
+ ],
+ "exit": 0,
+ "html_sha256": "a5a02f8d24e93cebe21e4ebcf602dbc3413012938737c5203a19cde99c067a3d",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "container",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "arch.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 4,
+  "layout": [
+   "row 1: Web App",
+   "row 2: API | Auth",
+   "row 3: Postgres"
+  ],
+  "ok": true
+ }
+}

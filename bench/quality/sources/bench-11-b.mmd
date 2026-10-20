@@ -1,0 +1,20 @@
+flowchart TD
+    start([Start: request received])
+    s1[1. Load customer account]
+    s2[2. Score fraud risk]
+    s3{3. Check 1 passed?}
+    s4[4. Charge card]
+    s5[5. Write ledger entry]
+    s6[6. Notify warehouse]
+    s7{7. Check 2 passed?}
+    s8[8. Send receipt]
+    s9[9. Update order status]
+    done([End: process done])
+
+    start --> s1 --> s2 --> s3
+    s3 -- yes --> s4
+    s3 -- no --> s1
+    s4 --> s5 --> s6 --> s7
+    s7 -- yes --> s8
+    s7 -- no --> done
+    s8 --> s9 --> done

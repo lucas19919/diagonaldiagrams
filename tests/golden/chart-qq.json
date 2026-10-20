@@ -1,0 +1,46 @@
+{
+ "argv": [
+  "chart",
+  "qq",
+  "tests/golden/inputs/charts/qq.csv",
+  "--title",
+  "qq"
+ ],
+ "exit": 0,
+ "html_sha256": "73665f985e3fd90c0e11068b13c170fff6132afbfaa8b95285586494e23f81bb",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "qq",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "qq.csv",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "qq",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 7,
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "verify intended; ratio data floors at 0",
+    "msg": "negative ticks ['-2', '-1']"
+   }
+  ]
+ }
+}

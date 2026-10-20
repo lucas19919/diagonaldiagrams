@@ -1,0 +1,23 @@
+{
+ "title": "Wardley",
+ "nodes": [
+  {
+   "id": "a",
+   "name": "Compute",
+   "visibility": 0.8,
+   "evolution": 0.7
+  },
+  {
+   "id": "b",
+   "name": "Custom app",
+   "visibility": 0.4,
+   "evolution": 0.2
+  }
+ ],
+ "edges": [
+  {
+   "from": "b",
+   "to": "a"
+  }
+ ]
+}

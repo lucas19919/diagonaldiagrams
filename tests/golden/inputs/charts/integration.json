@@ -1,0 +1,32 @@
+{
+ "title": "Flow",
+ "nodes": [
+  {
+   "id": "s",
+   "name": "CRM",
+   "col": "source"
+  },
+  {
+   "id": "c",
+   "name": "Core",
+   "col": "core"
+  },
+  {
+   "id": "k",
+   "name": "App",
+   "col": "consumer"
+  }
+ ],
+ "edges": [
+  {
+   "from": "s",
+   "to": "c",
+   "label": "in"
+  },
+  {
+   "from": "c",
+   "to": "k",
+   "label": "out"
+  }
+ ]
+}

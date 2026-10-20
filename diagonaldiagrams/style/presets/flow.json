@@ -1,0 +1,58 @@
+{
+  "name": "flow",
+  "extends": [
+    "diagram"
+  ],
+  "rules": {
+    "node": {
+      "fill": "card",
+      "stroke": "line",
+      "min-width": 112,
+      "max-width": 192
+    },
+    "node:focal": {
+      "fill": "accent-tint",
+      "stroke": "accent"
+    },
+    "node[shape=oval]": {
+      "border-radius": 20
+    },
+    "node[shape=dot]": {
+      "fill": "ink"
+    },
+    "node::label": {
+      "font-family": "font",
+      "font-size": 13,
+      "font-weight": 600,
+      "color": "ink"
+    },
+    "node::sub": {
+      "font-family": "font-mono",
+      "font-size": 11,
+      "color": "muted"
+    },
+    "node::tag": {
+      "font-family": "font",
+      "font-size": 9,
+      "font-weight": 600,
+      "color": "muted",
+      "text-transform": "uppercase",
+      "letter-spacing": 0.7
+    },
+    "edge": {
+      "stroke": "muted",
+      "stroke-width": 1.4
+    },
+    "edge:focal": {
+      "stroke": "accent"
+    },
+    "edge[async]": {
+      "stroke-dasharray": "5 4"
+    },
+    "edge::label": {
+      "font-family": "font",
+      "font-size": 11,
+      "color": "muted"
+    }
+  }
+}

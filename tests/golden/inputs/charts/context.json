@@ -1,0 +1,23 @@
+{
+ "title": "Context",
+ "nodes": [
+  {
+   "id": "u",
+   "name": "User",
+   "kind": "person"
+  },
+  {
+   "id": "s",
+   "name": "System",
+   "kind": "system",
+   "focal": true
+  }
+ ],
+ "edges": [
+  {
+   "from": "u",
+   "to": "s",
+   "label": "uses"
+  }
+ ]
+}

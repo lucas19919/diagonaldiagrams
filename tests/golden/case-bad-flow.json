@@ -1,0 +1,30 @@
+{
+ "argv": [
+  "flow",
+  "examples/bad.json"
+ ],
+ "exit": 1,
+ "html_sha256": null,
+ "receipt": null,
+ "verdict": {
+  "errors": [
+   {
+    "fix": "add a node with id 'ghost', or use one of: a, b, c, d, e, f, g, h, i, j",
+    "msg": "an arrow goes to 'ghost', but there is no node with that id"
+   },
+   {
+    "fix": "keep 1-2 focal, demote rest",
+    "msg": "focal on >2 nodes erases signal"
+   }
+  ],
+  "next": "fix the spec or flags and run the same command again; nothing was drawn",
+  "ok": false,
+  "stage": "validate",
+  "warnings": [
+   {
+    "fix": "split it into overview and detail views if it does; budget false hides this",
+    "msg": "10 nodes: past 9 a figure gets hard to read"
+   }
+  ]
+ }
+}

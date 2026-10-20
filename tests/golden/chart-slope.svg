@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 384" width="760"><title>slope</title>
+<desc>slope</desc>
+<rect width="760" height="384" fill="#f5f5f5"/>
+<text x="28" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">slope</text>
+<text x="122" y="46" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="end">A</text>
+<text x="628" y="46" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75" text-anchor="start">B</text>
+<line x1="130" y1="332.0" x2="620" y2="332.0" stroke="rgba(45,49,66,0.12)"/>
+<line x1="130" y1="276.0" x2="620" y2="276.0" stroke="rgba(45,49,66,0.12)"/>
+<line x1="130" y1="220.0" x2="620" y2="220.0" stroke="rgba(45,49,66,0.12)"/>
+<line x1="130" y1="164.0" x2="620" y2="164.0" stroke="rgba(45,49,66,0.12)"/>
+<line x1="130" y1="108.0" x2="620" y2="108.0" stroke="rgba(45,49,66,0.12)"/>
+<line x1="130" y1="52.0" x2="620" y2="52.0" stroke="rgba(45,49,66,0.12)"/>
+<line x1="130" y1="220.0" x2="620" y2="52.0" stroke="#0072B2" stroke-width="1.6"/>
+<circle cx="130.0" cy="220.0" r="3.4" fill="#0072B2" stroke="#ffffff" stroke-width="1"/>
+<circle cx="620.0" cy="52.0" r="3.4" fill="#0072B2" stroke="#ffffff" stroke-width="1"/>
+<text x="120" y="223.0" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">Alpha</text>
+<text x="630" y="55.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">5</text>
+<line x1="130" y1="108.0" x2="620" y2="164.0" stroke="#E69F00" stroke-width="1.6"/>
+<circle cx="130.0" cy="108.0" r="3.4" fill="#E69F00" stroke="#ffffff" stroke-width="1"/>
+<circle cx="620.0" cy="164.0" r="3.4" fill="#E69F00" stroke="#ffffff" stroke-width="1"/>
+<text x="120" y="111.0" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">Beta</text>
+<text x="630" y="167.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">3</text>
+<line x1="130" y1="276.0" x2="620" y2="276.0" stroke="#009E73" stroke-width="1.6"/>
+<circle cx="130.0" cy="276.0" r="3.4" fill="#009E73" stroke="#ffffff" stroke-width="1"/>
+<circle cx="620.0" cy="276.0" r="3.4" fill="#009E73" stroke="#ffffff" stroke-width="1"/>
+<text x="120" y="279.0" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="end">Gamma</text>
+<text x="630" y="279.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">1</text>
+<text x="28" y="368" font-size="11" font-family="system-ui, 'Segoe UI', sans-serif" fill="#4f5d75">n=3</text>
+</svg>

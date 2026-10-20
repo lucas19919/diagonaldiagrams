@@ -1,0 +1,22 @@
+{
+ "title": "Map",
+ "backbone": [
+  "Browse",
+  "Buy"
+ ],
+ "releases": [
+  {
+   "name": "R1",
+   "stories": [
+    "Search",
+    "Cart"
+   ]
+  },
+  {
+   "name": "R2",
+   "stories": [
+    "Pay"
+   ]
+  }
+ ]
+}

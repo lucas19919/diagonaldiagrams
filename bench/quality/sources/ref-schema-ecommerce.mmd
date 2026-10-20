@@ -1,0 +1,26 @@
+---
+title: E-Commerce Core Schema
+---
+erDiagram
+    users ||--o{ orders : "1:N"
+    orders ||--o{ order_items : "1:N"
+    users {
+        uuid id PK
+        varchar(255) email UK
+        varchar(100) full_name
+        timestamptz created_at
+    }
+    orders {
+        uuid id PK
+        uuid user_id FK
+        varchar(32) status
+        integer total_cents
+        timestamptz created_at
+    }
+    order_items {
+        uuid id PK
+        uuid order_id FK
+        varchar(64) sku
+        integer quantity
+        integer price_cents
+    }

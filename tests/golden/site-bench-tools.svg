@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 760 462" width="760"><title>Tokens per flowchart</title>
+<desc>steps vs tokens</desc>
+<rect width="760" height="462" fill="#ffffff"/>
+<text x="36" y="26" font-size="18" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142">Tokens per flowchart</text>
+<line x1="80" y1="362.0" x2="611" y2="362.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="366.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">0</text>
+<line x1="80" y1="255.3" x2="611" y2="255.3" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="259.3" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">10k</text>
+<line x1="80" y1="148.7" x2="611" y2="148.7" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="152.7" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">20k</text>
+<line x1="80" y1="42.0" x2="611" y2="42.0" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="70" y="46.0" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="end">30k</text>
+<line x1="80.0" y1="42" x2="80.0" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="80.0" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">0</text>
+<line x1="212.8" y1="42" x2="212.8" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="212.8" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">10</text>
+<line x1="345.5" y1="42" x2="345.5" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="345.5" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">20</text>
+<line x1="478.2" y1="42" x2="478.2" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="478.2" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">30</text>
+<line x1="611.0" y1="42" x2="611.0" y2="362" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="611.0" y="380" font-size="10" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82" text-anchor="middle">40</text>
+<line x1="80" y1="362" x2="611" y2="362" stroke="#2d3142" stroke-width="1.2"/>
+<line x1="80" y1="42" x2="80" y2="362" stroke="#2d3142" stroke-width="1.2"/>
+<path d="M146.4,335.8 L226.0,305.8 L345.5,261.0 L611.0,63.0" fill="none" stroke="#0072B2" stroke-width="2.2" stroke-linecap="round"/>
+<circle cx="146.4" cy="335.8" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>D2 · 5: 2454</title></circle>
+<circle cx="226.0" cy="305.8" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>D2 · 11: 5273</title></circle>
+<circle cx="345.5" cy="261.0" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>D2 · 20: 9472</title></circle>
+<circle cx="611.0" cy="63.0" r="3.5" fill="#0072B2" stroke="#ffffff" stroke-width="1.2"><title>D2 · 40: 28.035k</title></circle>
+<path d="M146.4,335.3 L226.0,301.3 L345.5,315.3 L611.0,229.2" fill="none" stroke="#E69F00" stroke-width="2.2" stroke-linecap="round"/>
+<circle cx="146.4" cy="335.3" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Graphviz · 5: 2502</title></circle>
+<circle cx="226.0" cy="301.3" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Graphviz · 11: 5689</title></circle>
+<circle cx="345.5" cy="315.3" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Graphviz · 20: 4382</title></circle>
+<circle cx="611.0" cy="229.2" r="3.5" fill="#E69F00" stroke="#ffffff" stroke-width="1.2"><title>Graphviz · 40: 12.452k</title></circle>
+<path d="M146.4,352.1 L226.0,340.8 L345.5,301.6 L611.0,275.2" fill="none" stroke="#009E73" stroke-width="2.2" stroke-linecap="round"/>
+<circle cx="146.4" cy="352.1" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Hand-written SVG · 5: 932</title></circle>
+<circle cx="226.0" cy="340.8" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Hand-written SVG · 11: 1984</title></circle>
+<circle cx="345.5" cy="301.6" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Hand-written SVG · 20: 5663</title></circle>
+<circle cx="611.0" cy="275.2" r="3.5" fill="#009E73" stroke="#ffffff" stroke-width="1.2"><title>Hand-written SVG · 40: 8136</title></circle>
+<path d="M146.4,333.7 L226.0,302.1 L345.5,327.8 L611.0,143.4" fill="none" stroke="#CC79A7" stroke-width="2.2" stroke-linecap="round"/>
+<circle cx="146.4" cy="333.7" r="3.5" fill="#CC79A7" stroke="#ffffff" stroke-width="1.2"><title>Mermaid · 5: 2651</title></circle>
+<circle cx="226.0" cy="302.1" r="3.5" fill="#CC79A7" stroke="#ffffff" stroke-width="1.2"><title>Mermaid · 11: 5620</title></circle>
+<circle cx="345.5" cy="327.8" r="3.5" fill="#CC79A7" stroke="#ffffff" stroke-width="1.2"><title>Mermaid · 20: 3204</title></circle>
+<circle cx="611.0" cy="143.4" r="3.5" fill="#CC79A7" stroke="#ffffff" stroke-width="1.2"><title>Mermaid · 40: 20.492k</title></circle>
+<path d="M146.4,348.5 L226.0,346.3 L345.5,345.8 L611.0,339.6" fill="none" stroke="#eb6c36" stroke-width="2.2" stroke-linecap="round"/>
+<circle cx="146.4" cy="348.5" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 5: 1270</title></circle>
+<circle cx="226.0" cy="346.3" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 11: 1474</title></circle>
+<circle cx="345.5" cy="345.8" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 20: 1520</title></circle>
+<circle cx="611.0" cy="339.6" r="5.6" fill="#eb6c36" stroke="#ffffff" stroke-width="1.2"><title>diagonaldiagrams · 40: 2099</title></circle>
+<text x="621.0" y="67.0" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#0072B2" data-role="series">D2 28k</text>
+<text x="621.0" y="147.4" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#CC79A7" data-role="series">Mermaid 20.5k</text>
+<text x="621.0" y="233.2" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#E69F00" data-role="series">Graphviz 12.5k</text>
+<text x="621.0" y="279.2" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#009E73" data-role="series">Hand-written SVG 8,136</text>
+<text x="621.0" y="343.6" font-size="11" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#eb6c36" data-role="series">diagonaldiagrams 2,099</text>
+<text x="345.5" y="402" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" data-role="xaxis">Steps in the flowchart</text>
+<text x="24" y="202.0" font-size="12" font-weight="600" font-family="system-ui, 'Segoe UI', sans-serif" fill="#2d3142" text-anchor="middle" transform="rotate(-90 24,202.0)" data-role="yaxis">Tokens used (average of 2 runs)</text>
+<text x="36" y="448" font-size="10.5" font-family="system-ui, 'Segoe UI', sans-serif" fill="#636c82">20 points</text>
+</svg>

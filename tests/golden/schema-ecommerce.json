@@ -1,0 +1,196 @@
+{
+ "argv": [
+  "schema",
+  "examples/schema_ecommerce.json"
+ ],
+ "exit": 0,
+ "html_sha256": "22db4a61ac27c374cff1138f3e3810dba7d6e6cb64729967eef773c6c0666826",
+ "receipt": {
+  "auto": false,
+  "cmd": "schema",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "edges": [
+    {
+     "from": "users",
+     "from-port": "id",
+     "label": "1:N",
+     "to": "orders",
+     "to-port": "user_id"
+    },
+    {
+     "from": "orders",
+     "from-port": "id",
+     "label": "1:N",
+     "to": "order_items",
+     "to-port": "order_id"
+    }
+   ],
+   "eyebrow": "schema · postgres",
+   "layout": "table",
+   "nodes": [
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "name": "email",
+         "type": "varchar(255)",
+         "unique": true
+        },
+        {
+         "name": "full_name",
+         "type": "varchar(100)"
+        },
+        {
+         "name": "created_at",
+         "type": "timestamptz"
+        }
+       ]
+      }
+     },
+     "id": "users",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "email"
+      },
+      {
+       "id": "full_name"
+      },
+      {
+       "id": "created_at"
+      }
+     ],
+     "shape": "table",
+     "tag": "AUTH"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "user_id",
+         "type": "uuid"
+        },
+        {
+         "name": "status",
+         "type": "varchar(32)"
+        },
+        {
+         "name": "total_cents",
+         "type": "integer"
+        },
+        {
+         "name": "created_at",
+         "type": "timestamptz"
+        }
+       ]
+      }
+     },
+     "focal": true,
+     "id": "orders",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "user_id"
+      },
+      {
+       "id": "status"
+      },
+      {
+       "id": "total_cents"
+      },
+      {
+       "id": "created_at"
+      }
+     ],
+     "shape": "table",
+     "tag": "CORE"
+    },
+    {
+     "content": {
+      "table": {
+       "columns": [
+        {
+         "name": "id",
+         "pk": true,
+         "type": "uuid"
+        },
+        {
+         "fk": true,
+         "name": "order_id",
+         "type": "uuid"
+        },
+        {
+         "name": "sku",
+         "type": "varchar(64)"
+        },
+        {
+         "name": "quantity",
+         "type": "integer"
+        },
+        {
+         "name": "price_cents",
+         "type": "integer"
+        }
+       ]
+      }
+     },
+     "id": "order_items",
+     "ports": [
+      {
+       "id": "id"
+      },
+      {
+       "id": "order_id"
+      },
+      {
+       "id": "sku"
+      },
+      {
+       "id": "quantity"
+      },
+      {
+       "id": "price_cents"
+      }
+     ],
+     "shape": "table",
+     "tag": "CORE"
+    }
+   ],
+   "preset": "schema",
+   "subtitle": "Primary tables, foreign key constraints, and status enums",
+   "title": "E-Commerce Core Schema",
+   "version": 2
+  },
+  "spec": "schema_ecommerce.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 3,
+  "layout": [
+   "tables: users, orders, order_items",
+   "column 1: users",
+   "column 2: orders",
+   "column 3: order_items"
+  ],
+  "ok": true
+ }
+}

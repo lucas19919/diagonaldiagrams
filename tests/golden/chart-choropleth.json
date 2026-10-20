@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "choropleth",
+  "tests/golden/inputs/charts/choropleth.json",
+  "--title",
+  "choropleth"
+ ],
+ "exit": 0,
+ "html_sha256": "d81c2631a1fad7835854672f06f641efbb7f9df3ce43541fc265d4e02ab09994",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "choropleth",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "choropleth.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "choropleth",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

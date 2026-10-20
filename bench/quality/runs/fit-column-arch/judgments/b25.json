@@ -1,0 +1,12 @@
+[
+  {"pair": "p06",
+    "clearer": "B", "clearer_margin": "slight", "clearer_why": "B's bold, larger box text reads easily at column width and most edge labels (execute, draw, events, persist, ingest) sit right at their targets; A's text is small and its 'draw' and 'execute' labels stack on two crossing lines below the Agent, so it's hard to tell which goes to the sandbox and which to the MCP box. B loses some ground because its 'prompt' and 'search' labels sit at the fan-out under the Agent, far from where those lines end.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B has rounded white cards on soft gray group panels, consistent slate lines and one orange accent, so it looks finished; A has thin-outlined boxes, gray-highlighted label chips and pastel group fills, so it looks like a raw Mermaid render.",
+    "weak_A": "small text; draw/execute labels collide on crossing lines",
+    "weak_B": "long parallel bus of four lines from the Agent with prompt/search labels far from their targets; odd 'diagonaldi-agrams' hyphenation; empty 'box = step' legend"},
+  {"pair": "p07",
+    "clearer": "A", "clearer_margin": "slight", "clearer_why": "A's large text is easy to read in the column, and every edge runs short with one label in open space (verify, browse, checkout, charge, write, settled, placed) and no crossings. B is shrunk into one image, so its sub-labels (Envoy:443, Kotlin:8083) are tiny, and its 'settled' and 'placed' dashed lines cross over each other on the way into Event bus.",
+    "looks": "B", "looks_margin": "clear", "looks_why": "B is a polished card design with type tags (SVC, STORE, API), blue and coral color coding, a subtitle and a legend, and it fits in one compact view; A's flat gray boxes and wobbly curved connectors (gateway to verify, Orders to charge) look plain by comparison.",
+    "weak_A": "tall two-screen figure with plain gray styling and wobbly curved edges",
+    "weak_B": "small sub-label text at column width; settled/placed dashed lines cross near Event bus"}
+]

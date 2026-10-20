@@ -1,0 +1,12 @@
+[
+  {"pair": "p04",
+   "clearer": "A", "clearer_margin": "clear", "clearer_why": "A keeps a compact top-to-bottom flow with one short labelled arrow per link, a legend for blue/dashed/coral, and the Agent's links to Memory, Model API and Event bus are direct. B bunches five lines out of Agent and sends them under the Agent runtime box to far-away targets, so the prompt/search/execute/draw/events routes are harder to follow, and Auth is stranded off to the side.",
+   "looks": "A", "looks_margin": "clear", "looks_why": "A has a polished look: icons, a title with subtitle, colour-coded edges, a coral highlight on Agent and Model API, and tidy rounded boxes. B is plain grey with thick black strokes and sprawling curves.",
+   "weak_A": "Long wrap-around svg and execute edges cross the Tools group and the left side, with a few labels sitting away from their lines",
+   "weak_B": "Five lines fan out of Agent and bunch together, long detours, Auth stranded, no legend"},
+  {"pair": "p08",
+   "clearer": "B", "clearer_margin": "slight", "clearer_why": "In B each of Agent's outputs (prompt, search, execute, draw, events) drops to its own target with the label right next to the arrowhead, so every arrow is traceable. In A, five parallel lines run down the right edge to far-away targets, and following one from Agent to its box takes a long trace, even though the labels are readable.",
+   "looks": "A", "looks_margin": "slight", "looks_why": "A has the refined palette, rounded boxes, a coral prompt edge and group labels, which look more finished than B's flat grey boxes and heavy black lines. But A's tall empty column and long parallel wires are awkward.",
+   "weak_A": "Bundle of long parallel edges down the right side and a very tall, narrow layout with large empty gaps",
+   "weak_B": "Plain, dated look with thick black lines; Auth stranded away from the gateway, and the fan out of Agent is crowded"}
+]

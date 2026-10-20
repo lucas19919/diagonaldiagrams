@@ -1,0 +1,218 @@
+{
+ "argv": [
+  "arch",
+  "examples/palantir_stack.json"
+ ],
+ "exit": 0,
+ "html_sha256": "395fdf5a24a75efc362eb143221d0c04caf9e8af9d03b0889b04f34fbf3f4f74",
+ "receipt": {
+  "auto": false,
+  "cmd": "arch",
+  "corners": "editorial",
+  "receipt": 2,
+  "scene": {
+   "budget": false,
+   "constraints": [
+    {
+     "order": [
+      "models",
+      "logic",
+      "evals"
+     ]
+    },
+    {
+     "order": [
+      "workshop",
+      "ontology",
+      "automate"
+     ]
+    },
+    {
+     "order": [
+      "functions",
+      "funnel",
+      "builder"
+     ]
+    },
+    {
+     "order": [
+      "sources",
+      "connect",
+      "datasets"
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "sources",
+     "label": "sync",
+     "to": "connect"
+    },
+    {
+     "from": "connect",
+     "label": "land",
+     "to": "datasets"
+    },
+    {
+     "from": "datasets",
+     "label": "build",
+     "to": "builder"
+    },
+    {
+     "from": "builder",
+     "label": "index",
+     "to": "funnel"
+    },
+    {
+     "from": "funnel",
+     "label": "store",
+     "to": "ontology"
+    },
+    {
+     "from": "functions",
+     "label": "logic",
+     "to": "workshop"
+    },
+    {
+     "from": "ontology",
+     "label": "run",
+     "to": "workshop"
+    },
+    {
+     "from": "ontology",
+     "label": "ground",
+     "to": "logic"
+    },
+    {
+     "from": "ontology",
+     "label": "watch",
+     "to": "automate"
+    },
+    {
+     "from": "logic",
+     "label": "call",
+     "to": "models"
+    },
+    {
+     "from": "logic",
+     "label": "score",
+     "to": "evals"
+    },
+    {
+     "async": true,
+     "from": "logic",
+     "label": "act",
+     "to": "ontology"
+    }
+   ],
+   "layout": {
+    "ranks": "explicit",
+    "type": "layered"
+   },
+   "nodes": [
+    {
+     "id": "models",
+     "name": "Models",
+     "rank": 0,
+     "sub": "registered LLMs",
+     "tag": "LLM"
+    },
+    {
+     "focal": true,
+     "id": "logic",
+     "name": "AIP Logic",
+     "rank": 0,
+     "sub": "LLM and tools",
+     "tag": "AIP"
+    },
+    {
+     "id": "evals",
+     "name": "AIP Evals",
+     "rank": 0,
+     "sub": "tests the agents",
+     "tag": "AIP"
+    },
+    {
+     "id": "workshop",
+     "name": "Workshop",
+     "rank": 1,
+     "sub": "operational apps",
+     "tag": "APP"
+    },
+    {
+     "focal": true,
+     "id": "ontology",
+     "name": "Ontology",
+     "rank": 1,
+     "sub": "data, logic, action",
+     "tag": "ONT"
+    },
+    {
+     "id": "automate",
+     "name": "Automate",
+     "rank": 1,
+     "sub": "conditions",
+     "tag": "APP"
+    },
+    {
+     "id": "functions",
+     "name": "Functions",
+     "rank": 2,
+     "sub": "logic on objects",
+     "tag": "FN"
+    },
+    {
+     "id": "funnel",
+     "name": "Object Funnel",
+     "rank": 2,
+     "sub": "into storage v2",
+     "tag": "IDX"
+    },
+    {
+     "id": "builder",
+     "name": "Pipeline Builder",
+     "rank": 2,
+     "sub": "Spark and Flink",
+     "tag": "PB"
+    },
+    {
+     "id": "sources",
+     "name": "Sources",
+     "rank": 3,
+     "sub": "ERP, files, sensors",
+     "tag": "SRC"
+    },
+    {
+     "id": "connect",
+     "name": "Data Connection",
+     "rank": 3,
+     "sub": "worker or agent",
+     "tag": "DC"
+    },
+    {
+     "id": "datasets",
+     "name": "Datasets",
+     "rank": 3,
+     "sub": "tables and streams",
+     "tag": "DS"
+    }
+   ],
+   "preset": "arch",
+   "subtitle": "Foundry carries data into the ontology. AIP reads and acts. Apollo deploys both on Rubix.",
+   "title": "Palantir, from data to AIP",
+   "version": 2
+  },
+  "spec": "palantir_stack.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 12,
+  "layout": [
+   "row 1: Models | AIP Logic | AIP Evals",
+   "row 2: Workshop | Ontology | Automate",
+   "row 3: Functions | Object Funnel | Pipeline Builder",
+   "row 4: Sources | Data Connection | Datasets"
+  ],
+  "ok": true
+ }
+}

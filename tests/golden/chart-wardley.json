@@ -1,0 +1,40 @@
+{
+ "argv": [
+  "chart",
+  "wardley",
+  "tests/golden/inputs/charts/wardley.json",
+  "--title",
+  "wardley"
+ ],
+ "exit": 0,
+ "html_sha256": "c38bfa0dfbcb114f5eb130b92c72b152904574b5104fcd5b5ab24128965e297a",
+ "receipt": {
+  "a": null,
+  "b": null,
+  "budget": true,
+  "cmd": "chart",
+  "grid": true,
+  "group": null,
+  "hi": null,
+  "highlights": [],
+  "kind": "wardley",
+  "label": null,
+  "lo": null,
+  "markers": true,
+  "parent": null,
+  "receipt": 2,
+  "size": null,
+  "source": "",
+  "src": "wardley.json",
+  "subtitle": "",
+  "theme": "editorial",
+  "title": "wardley",
+  "val": null,
+  "x": null,
+  "y": null
+ },
+ "verdict": {
+  "items": 2,
+  "ok": true
+ }
+}

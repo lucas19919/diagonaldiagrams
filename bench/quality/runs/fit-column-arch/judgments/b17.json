@@ -1,0 +1,12 @@
+[
+  {"pair": "p04",
+    "clearer": "A", "clearer_margin": "clear", "clearer_why": "A puts the gateway, Auth, Agent, Memory and Model API in a compact top-to-bottom flow with short, distinct edges, each labelled next to its own line. The legend explains blue, dashed and coral. B runs five thin parallel wires from Agent down the page, and the long 'prompt' line to Model API at the far left is hard to follow.",
+    "looks": "A", "looks_margin": "clear", "looks_why": "A has a consistent blue/coral palette, node icons, bold titles with muted subtitles, labelled group frames and a subtitle plus legend, so it looks like a finished figure. B is thin grey lines with default-looking fonts and a bundled wire cluster, which looks plainer and more cramped.",
+    "weak_A": "Agent's outgoing wires bundle tightly and the svg/execute edges loop around the Tools frame, making a long detour",
+    "weak_B": "Long parallel wire bundle from Agent, thin low-contrast strokes, and the Model API far from the Agent"},
+  {"pair": "p08",
+    "clearer": "B", "clearer_margin": "clear", "clearer_why": "In B every edge label sits on its own line near the target (prompt, search, execute, draw, events in one row), so each arrow is easy to match. In A the 'prompt' and 'search' labels float near the bundle origin, the orange Model API edge is easy to mistake for 'search', and four long parallel verticals run down the page, so you have to count wires.",
+    "looks": "B", "looks_margin": "slight", "looks_why": "B is compact and balanced, with whole-word node labels and clean curves. A has the nicer palette but a lopsided layout: a big empty right side, a long parallel wire bundle, and the ugly broken label 'diagonaldi-agrams MCP'.",
+    "weak_A": "Long parallel wire bundle with misplaced labels (prompt, search, events), hyphen-broken 'diagonaldi-agrams' label, flattened one-line node text",
+    "weak_B": "Plain grey default styling with five tight parallel wires leaving Agent; Model API sits far from Agent and the persist and svg edges run close together"}
+]

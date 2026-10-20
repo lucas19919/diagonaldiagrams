@@ -1,0 +1,37 @@
+name: Fuzz (new seeds)
+
+# The CI fuzz gate draws the same 400 scenes on every run, so a bug those miss stays hidden. This
+# draws 1,000 scenes on seeds no run has used, and keeps the failing specs and SVGs to reproduce:
+#   python tests/fuzz/run.py --one KIND SEED NODES
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: "first seed (empty: from the run number)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fuzz 1,000 new scenes
+        run: |
+          SEED="${{ github.event.inputs.seed }}"
+          if [ -z "$SEED" ]; then SEED=$(( 100000 + ${{ github.run_number }} * 1000 )); fi
+          echo "first seed: $SEED"
+          python tests/fuzz/run.py --n 1000 --seed "$SEED" --strict --keep fuzz-failures
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: fuzz-failures
+          path: fuzz-failures

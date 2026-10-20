@@ -25,13 +25,28 @@ EOF
 It prints one JSON line:
 
 - `"ok": true`: done. The figure is at `svg`. `layout` lists what was drawn: each row's boxes left to
-  right and each frame's members, or a chart's axes and series. Check the content against it.
+  right and each frame's members (a long flow that wraps says which rows stand in which column), a
+  schema's columns of tables, a sequence's messages in order, or a chart's axes and series. Check the
+  content against it.
 - `"ok": false`: each error has a `fix`. Change the input and run again. Never edit the SVG.
 - `warnings`: the figure is drawn; act on one only if it matters.
 
 `"ok": true` means no text overlaps, nothing spills its box or the canvas, no boxes overlap, and no
 arrow crosses a box or a label. Do not screenshot, open, or grep the SVG to check: answer from the
 verdict. Each extra look costs a full round trip.
+
+## Where it goes
+
+Pick `--fit` for where the figure will be read, so its text stays full size there:
+
+- `--fit column` for a README, docs page, wiki, notes app or chat: a column about 700 px wide, read by
+  scrolling. A long flow stays one tall strip, a wide row splits into rows where that takes less room
+  than shrinking the figure, schema tables stack, and the figure is about 640 px wide.
+- `--fit slide` (the default) for a deck or a full-width screen: a long flow wraps into columns.
+- `--fit page` for a printed or PDF page: a long flow wraps toward portrait.
+
+In Mermaid, a front matter line does the same (`---`, `fit: column`, `---` above `flowchart TD`); in a
+JSON spec, `"size": {"fit": "column"}`. Sequence diagrams draw the same in every fit.
 
 ## Mermaid
 
@@ -66,5 +81,29 @@ All take `--title`, `--subtitle` (state the finding), `--xlabel`, `--ylabel`, an
 `-o PATH/NAME.svg` is the file you get (folders are created), with `NAME.html` and
 `NAME.graph.json` beside it. Input given with `-` or `-s TEXT` is saved as `NAME.spec.mmd` or `NAME.spec.json`.
 `export DIR/NAME --to png|pdf|drawio|excalidraw` redraws from the receipt.
+
+## Stories
+
+To walk someone through a figure, write a story: the figure, then views that `focus`, `dim`, `hide`,
+`highlight` or `reveal` parts of it by selector, each with a `title`, `text` and `notes`.
+`diagonaldiagrams story STORY.json -o out/story.html` draws every view into one page that animates
+between them. `describe story` has the format; a warning means a selector matched nothing.
+
+## Edits as patches
+
+To move, rename or recolor boxes, write a patch: a JSON list like
+`[{"op": "place", "id": "fix", "row": ["review", "fix"]}]` (`place` puts a box in a row, in that order). Write it
+into the spec and draw again at the same `-o` path:
+
+```bash
+diagonaldiagrams apply SPEC.json patch.json
+diagonaldiagrams flow SPEC.json -o out/x.svg
+```
+
+The verdict's `changed` lists what moved, so you can say it in a sentence; the page animates the change.
+Keep edits when you regenerate the spec: `place` writes `rank`, `order` and `same-rank`, which you should
+leave as they are. Keep the patch too: after regenerating, apply it again. Edits that still fit are written in
+(applying twice changes nothing); a `patch-conflict` names an edit the new spec contradicts.
+`diff OLD NEW` compares any two drawings.
 
 Titles state the finding. Blue is HTTP, dashed is async, coral marks at most two focal items.
