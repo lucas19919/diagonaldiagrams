@@ -32,6 +32,7 @@
   ],
   "groups": [
     {"id": "aip", "name": "AIP", "nodes": ["models", "logic", "evals"]},
-    {"id": "foundry", "name": "Foundry", "nodes": ["funnel", "builder", "connect", "datasets"]}
+    {"id": "index", "name": "Index", "nodes": ["funnel", "builder"]},
+    {"id": "ingest", "name": "Ingest", "nodes": ["connect", "datasets"]}
   ]
 }

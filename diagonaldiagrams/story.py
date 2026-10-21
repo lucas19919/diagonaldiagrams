@@ -267,14 +267,36 @@ def _figure_input(story, base, out_base):
     return kind, path
 
 
-def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None):
+def _styles(paths):
+    """--style files as stylesheets, font paths resolved beside each file."""
+    sheets = []
+    for path in paths or []:
+        try:
+            with open(path, encoding="utf-8") as f:
+                sheet = json.load(f)
+        except (OSError, ValueError) as e:
+            raise SpecError(f"--style {path} can't be read: {e}",
+                            'pass a JSON stylesheet: {"tokens": {...}, "rules": {...}}') from None
+        if not isinstance(sheet, dict):
+            raise SpecError(f"--style {path} is not a JSON object",
+                            'write {"rules": {"node": {"stroke-width": 1}}}')
+        here = os.path.dirname(os.path.abspath(path))
+        fonts = {fam: f if os.path.isabs(f) else os.path.join(here, f)
+                 for fam, f in (sheet.get("fonts") or {}).items()}
+        sheets.append(dict(sheet, name=sheet.get("name") or os.path.basename(path), fonts=fonts))
+    return sheets
+
+
+def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None,
+          corners="editorial", theme_file=None, styles=None):
     """Draws the story: its figure (OUT.figure.svg, .html and receipt, through the usual render), then
     every frame, into OUT.html. With anim (an .svg path), gif or video, also exports one view's motion
     (the first view that moves, or `view`): anim as an animated SVG, gif and video through ffmpeg.
+    corners, theme_file and styles are the same flags a render takes, so a filmed figure matches a still.
     Returns the verdict."""
     from . import api
     from ._output import FONT
-    from ._theme import THEME
+    from ._theme import get_theme
     from .mermaid import _mermaid_kind, load_spec
     from .style.styler import Styler
     story, base = read_story(story_path)
@@ -282,7 +304,14 @@ def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None):
     if ext.lower() not in (".html", ".htm", ".svg"):
         out_base = out
     kind, path = _figure_input(story, base, out_base)
-    code, text, err = api.run([kind, path, "-o", out_base + ".figure.svg"])
+    theme = get_theme("editorial", theme_file)
+    sheets = _styles(styles)
+    argv = [kind, path, "-o", out_base + ".figure.svg", "--corners", corners]
+    if theme_file:
+        argv += ["--theme-file", theme_file]
+    for style_path in styles or []:
+        argv += ["--style", style_path]
+    code, text, err = api.run(argv)
     try:
         fig = json.loads(text.strip().splitlines()[-1])
     except (ValueError, IndexError):
@@ -294,11 +323,13 @@ def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None):
         with open(path, encoding="utf-8") as f:
             kind = _mermaid_kind(f.read())
     spec = load_spec(path, kind)
-    sty = Styler(spec, kind, THEME)
+    sty = Styler(spec, kind, theme, corners, sheets)
     plan, warnings = frames(story, spec, kind, sty)
     from .diagrams import render_arch, render_flow, render_schema, render_seq
-    draw = {"flow": lambda s: render_flow(s), "arch": lambda s: render_arch(s), "seq": lambda s: render_seq(s),
-            "schema": lambda s: render_schema(s)}[kind]
+    draw = {"flow": lambda s: render_flow(s, corners=corners, theme=theme, sheets=sheets),
+            "arch": lambda s: render_arch(s, corners=corners, theme=theme, sheets=sheets),
+            "seq": lambda s: render_seq(s, corners=corners, theme=theme, sheets=sheets),
+            "schema": lambda s: render_schema(s, corners=corners, theme=theme, sheets=sheets)}[kind]
     from . import motion
     drawn, size, moves = [], None, {}
     for f in plan:
@@ -324,7 +355,7 @@ def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None):
     with open(os.path.join(here, "web", "motion.js"), encoding="utf-8") as fh:
         motion_js = fh.read()
     from ._text import esc
-    t = THEME
+    t = theme
     page = SHELL.format(title=esc(story.get("title") or "Story"), paper=t["paper"], ink=t["ink"], muted=t["muted"],
                         rule=t["rule"], accent=t["accent"], font=FONT, data=data, js=js, motion=motion_js)
     html = out_base + ".html"
@@ -375,7 +406,9 @@ def _film(story, drawn, moves, view, gif, video, fps, anim=None):
 def do_story(args):
     try:
         out = build(args.story, args.o, gif=getattr(args, "gif", None), video=getattr(args, "video", None),
-                    view=getattr(args, "view", None), fps=getattr(args, "fps", 20), anim=getattr(args, "anim", None))
+                    view=getattr(args, "view", None), fps=getattr(args, "fps", 20), anim=getattr(args, "anim", None),
+                    corners=getattr(args, "corners", "editorial"), theme_file=getattr(args, "theme_file", None),
+                    styles=getattr(args, "style", None))
     except SpecError as e:
         out = {"ok": False, "stage": "story", "errors": [{"msg": e.msg, "fix": e.fix}]}
     print(json.dumps(out))

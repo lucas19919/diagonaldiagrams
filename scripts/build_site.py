@@ -63,10 +63,32 @@ MEASURED = [
 ]
 
 
+# The site's look: warm paper, near-black ink, square boxes, one coral for the path that matters.
+# Charts take the colors. Diagrams also take the stylesheet (hairline strokes, a quieter title).
+SITE_THEME = os.path.join(HERE, "scripts", "site_theme.json")
+SITE_STYLE = os.path.join(HERE, "scripts", "site_style.json")
+SHOWCASE = os.path.join(DOCS, "showcase")
+STORIES = [
+    ("hero", "examples/showcase/agent_platform_story.json"),
+    ("nvidia", "examples/showcase/nvidia_story.json"),
+    ("palantir", "examples/showcase/palantir_story.json"),
+    ("falcon9", "examples/showcase/falcon9_story.json"),
+]
+
+
+def _look(kind):
+    """Flags that draw a figure in the site's look. Charts have no --style."""
+    flags = ["--theme-file", SITE_THEME, "--corners", "sharp"]
+    if kind not in ("line", "bar"):
+        flags += ["--style", SITE_STYLE]
+    return flags
+
+
 def render(name, args):
     """Draw one figure into docs/gallery; stop the build if it fails its audit."""
     target = os.path.join(OUT, name + ".svg")
-    p = subprocess.run([sys.executable, GRAPH] + args + ["-o", target], capture_output=True, text=True, cwd=HERE)
+    p = subprocess.run([sys.executable, GRAPH] + args + _look(args[0]) + ["-o", target],
+                       capture_output=True, text=True, cwd=HERE)
     try:
         rep = json.loads(p.stdout)
     except ValueError:
@@ -80,7 +102,52 @@ def render(name, args):
     print("ok", name)
 
 
-def main():
+def crop_heading(path, top=64):
+    """The showcase page already says the title, in display type. Shift the frame so the print
+    starts at the boxes. Coordinates stay put, so the filmed motion still lines up."""
+    import re
+    with open(path, encoding="utf-8") as f:
+        text = f.read()
+    m = re.search(r'viewBox="([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)"', text)
+    if not m or float(m.group(2)) >= top - 1:
+        return
+    w, h = float(m.group(3)), float(m.group(4))
+    cropped = f'viewBox="0 {top:.0f} {w:.0f} {h - top:.0f}"'
+    text = text.replace(m.group(0), cropped, 1)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+
+
+def render_story(name, rel):
+    """Film one showcase story into docs/showcase, in the same look as the gallery."""
+    work = os.path.join(HERE, "out", "site-stories")
+    os.makedirs(work, exist_ok=True)
+    os.makedirs(SHOWCASE, exist_ok=True)
+    html = os.path.join(work, name + ".html")
+    anim = os.path.join(SHOWCASE, name + ".svg")
+    p = subprocess.run(
+        [sys.executable, GRAPH, "story", rel, "-o", html, "--svg", anim] + _look("story"),
+        capture_output=True, text=True, cwd=HERE)
+    try:
+        rep = json.loads(p.stdout)
+    except ValueError:
+        rep = {"ok": False, "errors": [{"msg": (p.stdout + p.stderr)[-300:]}]}
+    if not rep.get("ok"):
+        sys.exit(f"{name}: {rep.get('errors')}")
+    if name != "hero":
+        crop_heading(anim)
+    print("ok", name)
+
+
+def publish_theme():
+    """The playground fetches these. They are the same files the build draws with."""
+    theme = os.path.join(DOCS, "theme")
+    os.makedirs(theme, exist_ok=True)
+    shutil.copyfile(SITE_THEME, os.path.join(theme, "site.json"))
+    shutil.copyfile(SITE_STYLE, os.path.join(theme, "site-style.json"))
+
+
+def main(wheel=True):
     os.makedirs(OUT, exist_ok=True)
     shown = []
     for name, args, caption in FIGURES:
@@ -88,10 +155,16 @@ def main():
         shown.append({"file": "gallery/" + name + ".svg", "caption": caption, "source": args[1]})
     for name, args in MEASURED:
         render(name, args)
+    for name, rel in STORIES:
+        render_story(name, rel)
     with open(os.path.join(DOCS, "gallery.json"), "w", encoding="utf-8") as f:
         json.dump(shown, f, indent=1)
-    wheel = build_wheel()
-    print(f"{len(shown)} figures; the playground loads wheels/{wheel}")
+    publish_theme()
+    if wheel:
+        built = build_wheel()
+        print(f"{len(shown)} figures; the playground loads wheels/{built}")
+    else:
+        print(f"{len(shown)} figures; wheel left as it was")
 
 
 def build_wheel():
@@ -114,4 +187,4 @@ def build_wheel():
 
 
 if __name__ == "__main__":
-    main()
+    main(wheel="--no-wheel" not in sys.argv)

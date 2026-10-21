@@ -4,7 +4,6 @@
   "views": [
     {"id": "flight", "title": "Launch, separation, and the booster flying home",
      "text": "After separation the booster turns back and lands while the second stage carries the payload to orbit.",
-     "dim": "#scrub",
      "motion": [{"trace": "count -> go -> liftoff -> maxq -> meco -> sep -> boostback -> entry -> landing -> landed"},
                 {"flow": "edge[to=ses], edge[from=ses], edge[from=fairing], edge[from=seco]"}]}
   ]

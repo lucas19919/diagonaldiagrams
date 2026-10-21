@@ -38,7 +38,6 @@
     {"from": "quanta", "to": "oracle", "label": "servers"}
   ],
   "groups": [
-    {"id": "taiwan", "name": "TSMC, Taiwan", "nodes": ["tsmc", "cowos"]},
     {"id": "memory", "name": "HBM memory", "nodes": ["hynix", "micron"]}
   ]
 }

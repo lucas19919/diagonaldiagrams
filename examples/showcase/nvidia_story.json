@@ -4,7 +4,6 @@
   "views": [
     {"id": "journey", "title": "One GPU, from design to a data center",
      "text": "The design goes to TSMC, the dies meet their memory in CoWoS packaging, Foxconn builds the rack, and a cloud buys it.",
-     "dim": "#eda, #arm, #net, #quanta, #meta, #google, #oracle",
      "motion": [{"trace": "nvidia -> tsmc -> cowos -> foxconn -> msft"},
                 {"flow": "edge[to=cowos]"}]}
   ]

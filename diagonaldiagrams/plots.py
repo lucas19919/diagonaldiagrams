@@ -249,6 +249,13 @@ def _axis_title(t, text, x, y, role, anchor="start"):
             f'text-anchor="{anchor}" data-role="{role}">{esc(text)}</text>')
 
 
+def _bar_el(shape, fill, hit, tip):
+    """A bar with its tooltip. Sharp corners are a rect; rounded corners are a path."""
+    end = "rect" if shape.startswith("<rect") else "path"
+    opacity = "1" if hit else "0.85"
+    return f'{shape} fill="{fill}" fill-opacity="{opacity}"><title>{esc(tip)}</title></{end}>'
+
+
 def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
                groupcol=None, orientation="v", sort="none", xlabel="", ylabel="",
                unit="", source="", corners="editorial", chrome=True, width=760, theme=None, notes=None,
@@ -370,7 +377,7 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
                 shape = bar_path(bx, by - grow / 2, bw, bh + grow, rx, cap)
                 if shape:
                     tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {_val(d["val"], unit)}'
-                    parts.append(f'{shape} fill="{color(d)}" fill-opacity="{"1" if hit else "0.85"}"><title>{esc(tip)}</title></path>')
+                    parts.append(_bar_el(shape, color(d), hit, tip))
                 if markers:
                     val_str = _val(d["val"], unit)
                     outside = (bx - 6) if d["val"] < zero else (bx + bw + 6)
@@ -413,7 +420,7 @@ def render_bar(spec_path, catcol, valcol, title, subtitle="", figure="Fig. 1",
                 shape = bar_path(bx - grow / 2, by, bw + grow, bh, rx, cap)
                 if shape:
                     tip = (f'{d["g"]} · ' if d.get("g") else "") + f'{d["cat"]}: {_val(d["val"], unit)}'
-                    parts.append(f'{shape} fill="{color(d)}" fill-opacity="{"1" if hit else "0.85"}"><title>{esc(tip)}</title></path>')
+                    parts.append(_bar_el(shape, color(d), hit, tip))
                 if markers:
                     val_str = _val(d["val"], unit)
                     tip_y = by if d["val"] >= zero else by + bh

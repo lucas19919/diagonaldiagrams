@@ -569,6 +569,10 @@ def _parse():
     p.add_argument("--video", default=None, help="also film it as .mp4 or .webm (needs ffmpeg on the PATH)")
     p.add_argument("--view", default=None, help="the view to export (default: the first view with motion)")
     p.add_argument("--fps", type=int, default=20, help="frames a second in the export (1-50, default 20)")
+    p.add_argument("--corners", default="editorial", choices=["sharp", "rounded", "editorial"])
+    p.add_argument("--theme-file", default=None, help="JSON with theme key overrides, applied to every frame")
+    p.add_argument("--style", action="append", default=[], metavar="FILE",
+                   help="a stylesheet applied to every frame (repeat it, later files win)")
     p = sub.add_parser("diff", help="what changed between two drawings of a figure: JSON and sentences")
     p.add_argument("old", help="the earlier .svg or .html")
     p.add_argument("new", help="the later .svg or .html")
