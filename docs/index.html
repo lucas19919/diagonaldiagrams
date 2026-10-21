@@ -846,6 +846,90 @@ footer.foot {
   color: var(--ink);
 }
 
+.code-wrap {
+  position: relative;
+}
+.code-wrap pre {
+  padding-right: 5.5rem;
+}
+
+/* ——— Copy snippet pill & buttons ——— */
+.hero-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.85rem;
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid var(--line-dark);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  max-width: min(100%, 680px);
+}
+.hero-copy-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgb(226 91 42 / 0.12);
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  flex: none;
+}
+.hero-copy code {
+  color: var(--muted-inv);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.copy-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  color: var(--paper);
+  padding: 0.35rem 0.65rem;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 550;
+  border-radius: 3px;
+  cursor: pointer;
+  flex: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.copy-pill svg { display: block; flex: none; }
+.copy-pill:hover {
+  background: rgb(255 255 255 / 0.15);
+  border-color: rgb(255 255 255 / 0.3);
+}
+.copy-pill.copied {
+  background: rgb(28 122 69 / 0.2) !important;
+  border-color: var(--ok) !important;
+  color: #4ade80 !important;
+}
+.copy-pill.on-card {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0.75rem;
+  background: var(--paper);
+  border-color: var(--line-light);
+  color: var(--ink);
+}
+.copy-pill.on-card:hover {
+  background: var(--paper-hi);
+  border-color: rgb(0 0 0 / 0.3);
+}
+.copy-pill.on-card.copied {
+  background: rgb(28 122 69 / 0.12) !important;
+  border-color: var(--ok) !important;
+  color: var(--ok) !important;
+}
+
 /* ——— Examples: black background pinned scroll showcase ——— */
 .systems {
   background: var(--bg-deep);
@@ -1073,6 +1157,14 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
         Star
       </a>
     </div>
+    <div class="hero-copy">
+      <span class="hero-copy-badge">Skill</span>
+      <code>Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams</code>
+      <button type="button" class="copy-pill" data-copy="Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy install prompt for any agent">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span>Copy</span>
+      </button>
+    </div>
     <figure class="hero-figure">
       <img src="showcase/hero.svg" alt="An animated architecture diagram of an AI agent platform. A chat message is traced in coral from Web chat through the API gateway to the Agent, on to diagonaldiagrams and into the Object store, while dots stream along the dashed background events to Postgres and Traces.">
       <figcaption>A chat request traced through an agent platform. The motion is part of the diagram: one line in a story names the path.</figcaption>
@@ -1096,29 +1188,60 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
     <div class="wrap split">
       <div>
         <h2>Install it once.</h2>
-        <p class="sub">Three ways to add diagonaldiagrams to your workflow. Needs Python 3.9 or newer.</p>
+        <p class="sub">Four ways to add diagonaldiagrams to your workflow. Needs Python 3.9 or newer.</p>
       </div>
       <div class="install-cards">
         <article class="install-card open">
-          <button type="button" aria-expanded="true">Claude Code</button>
+          <button type="button" aria-expanded="true">Any Agent (Skill)</button>
+          <div class="more"><div>
+            <p>Tell your agent to install diagonaldiagrams. It clones the library, verifies the engine, and copies the <code>graph-engine</code> skill into its skills folder.</p>
+            <div class="code-wrap">
+              <pre>Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams</pre>
+              <button type="button" class="copy-pill on-card" data-copy="Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy skill prompt">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
+          </div></div>
+        </article>
+        <article class="install-card">
+          <button type="button" aria-expanded="false">Claude Code (Plugin)</button>
           <div class="more"><div>
             <p>Adds diagonaldiagrams and the instructions Claude uses to draw with it.</p>
-            <pre>/plugin marketplace add lucas19919/diagonaldiagrams
+            <div class="code-wrap">
+              <pre>/plugin marketplace add lucas19919/diagonaldiagrams
 /plugin install diagonaldiagrams@diagonaldiagrams</pre>
+              <button type="button" class="copy-pill on-card" data-copy="/plugin marketplace add lucas19919/diagonaldiagrams&#10;/plugin install diagonaldiagrams@diagonaldiagrams" aria-label="Copy plugin command">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
           </div></div>
         </article>
         <article class="install-card">
-          <button type="button" aria-expanded="false">Any other agent</button>
+          <button type="button" aria-expanded="false">Python CLI (pip)</button>
           <div class="more"><div>
-            <p>Installs the <code>diagonaldiagrams</code> command, which your agent can run like any other.</p>
-            <pre>pip install git+https://github.com/lucas19919/diagonaldiagrams</pre>
+            <p>Installs the <code>diagonaldiagrams</code> command globally, which your agent can run from any terminal.</p>
+            <div class="code-wrap">
+              <pre>pip install git+https://github.com/lucas19919/diagonaldiagrams</pre>
+              <button type="button" class="copy-pill on-card" data-copy="pip install git+https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy pip command">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
           </div></div>
         </article>
         <article class="install-card">
-          <button type="button" aria-expanded="false">Claude Desktop, Cursor, and other MCP apps</button>
+          <button type="button" aria-expanded="false">Claude Desktop, Cursor, and MCP apps</button>
           <div class="more"><div>
-            <p>After the command is installed, add it to the app's MCP servers with this line.</p>
-            <pre>diagonaldiagrams mcp</pre>
+            <p>After the command is installed, register it as a native tool server in your app.</p>
+            <div class="code-wrap">
+              <pre>diagonaldiagrams mcp</pre>
+              <button type="button" class="copy-pill on-card" data-copy="diagonaldiagrams mcp" aria-label="Copy MCP command">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
           </div></div>
         </article>
       </div>
@@ -1354,9 +1477,50 @@ fetch("gallery.json").then((r) => r.json()).then((items) => {
 document.querySelectorAll(".install-card").forEach((card) => {
   const btn = card.querySelector("button");
   card.addEventListener("click", (e) => {
-    if (e.target.closest("pre") || window.getSelection().toString()) return;
+    if (e.target.closest("pre") || e.target.closest(".copy-pill") || window.getSelection().toString()) return;
     const open = card.classList.toggle("open");
     if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+});
+
+// One-click clipboard copy
+const copyText = async (text) => {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) {}
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch (_) {
+    return false;
+  }
+};
+
+document.querySelectorAll("[data-copy]").forEach((btn) => {
+  btn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    const text = btn.getAttribute("data-copy");
+    if (!text) return;
+    copyText(text);
+    const span = btn.querySelector("span");
+    const prev = span ? span.textContent : "";
+    if (span) span.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      if (span) span.textContent = prev;
+      btn.classList.remove("copied");
+    }, 2000);
   });
 });
 
