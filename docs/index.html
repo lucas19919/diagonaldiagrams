@@ -776,12 +776,10 @@ footer.foot {
   transition: border-color 0.35s ease;
   cursor: pointer;
 }
-.install-card:hover,
-.install-card:focus-within,
-.install-card.open {
+.install-card:hover {
   border-color: rgb(0 0 0 / 0.32);
 }
-.install-card button {
+.install-card button.card-toggle {
   display: block;
   width: 100%;
   padding: 0;
@@ -806,9 +804,11 @@ footer.foot {
   line-height: 1;
   opacity: 0.45;
   transition: transform 0.45s var(--ease), opacity 0.3s ease;
+  pointer-events: none;
 }
-.install-card:hover::after,
-.install-card:focus-within::after,
+.install-card:hover::after {
+  opacity: 0.75;
+}
 .install-card.open::after {
   transform: rotate(135deg);
   opacity: 0.85;
@@ -817,7 +817,8 @@ footer.foot {
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  transition: grid-template-rows 0.55s var(--ease), opacity 0.4s ease, margin 0.55s var(--ease);
+  transition: grid-template-rows 0.4s var(--ease), opacity 0.3s ease;
+  cursor: default;
 }
 .install-card .more > div { overflow: hidden; min-height: 0; }
 .install-card .more p {
@@ -827,17 +828,25 @@ footer.foot {
   font-weight: 400;
   line-height: 1.55;
   color: var(--muted);
-  max-width: 48ch;
+  max-width: 52ch;
 }
-.install-card:hover .more,
-.install-card:focus-within .more,
+.install-card .more p a {
+  border-bottom: 1px solid currentColor;
+  color: var(--ink);
+  font-weight: 550;
+}
 .install-card.open .more {
   grid-template-rows: 1fr;
   opacity: 1;
 }
-.install-card pre {
+
+.code-wrap {
+  position: relative;
   margin-top: 0.85rem;
-  padding: 1rem 1.25rem;
+}
+.code-wrap pre {
+  margin-top: 0;
+  padding: 1rem 5.5rem 1rem 1.25rem;
   background: var(--paper-hi);
   border: 1px solid var(--line-light);
   border-radius: 4px;
@@ -846,51 +855,58 @@ footer.foot {
   color: var(--ink);
 }
 
-.code-wrap {
-  position: relative;
-}
-.code-wrap pre {
-  padding-right: 5.5rem;
-}
-
-/* ——— Copy snippet pill & buttons ——— */
-.hero-copy {
+/* ——— Hero Skill Eyebrow Bar ——— */
+.hero-skill-bar {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  padding: 0.4rem 0.5rem 0.4rem 0.85rem;
+  gap: clamp(0.5rem, 1.5vw, 0.85rem);
+  margin-bottom: clamp(1.5rem, 3.5vh, 2.5rem);
+  padding: 0.35rem 0.45rem 0.35rem 0.85rem;
   background: rgb(255 255 255 / 0.04);
   border: 1px solid var(--line-dark);
   border-radius: 4px;
-  font-family: var(--mono);
-  font-size: 0.88rem;
-  max-width: min(100%, 680px);
+  max-width: min(100%, 780px);
+  box-sizing: border-box;
 }
-.hero-copy-badge {
-  font-size: 0.72rem;
-  font-weight: 600;
+.hero-skill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 650;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--accent);
   background: rgb(226 91 42 / 0.12);
-  padding: 0.15rem 0.45rem;
-  border-radius: 2px;
+  border: 1px solid rgb(226 91 42 / 0.25);
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
   flex: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
-.hero-copy code {
+.hero-skill-badge:hover {
+  background: rgb(226 91 42 / 0.2);
+  border-color: var(--accent);
+}
+.hero-skill-badge svg { display: block; flex: none; }
+.hero-skill-code {
   color: var(--muted-inv);
+  font-family: var(--mono);
+  font-size: clamp(0.78rem, 1.4vw, 0.88rem);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: inherit;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
 }
 .copy-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   background: rgb(255 255 255 / 0.08);
-  border: 1px solid rgb(255 255 255 / 0.16);
+  border: 1px solid rgb(255 255 255 / 0.18);
   color: var(--paper);
   padding: 0.35rem 0.65rem;
   font-family: var(--sans);
@@ -903,8 +919,8 @@ footer.foot {
 }
 .copy-pill svg { display: block; flex: none; }
 .copy-pill:hover {
-  background: rgb(255 255 255 / 0.15);
-  border-color: rgb(255 255 255 / 0.3);
+  background: rgb(255 255 255 / 0.16);
+  border-color: rgb(255 255 255 / 0.32);
 }
 .copy-pill.copied {
   background: rgb(28 122 69 / 0.2) !important;
@@ -913,9 +929,8 @@ footer.foot {
 }
 .copy-pill.on-card {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 0.75rem;
+  top: 10px;
+  right: 10px;
   background: var(--paper);
   border-color: var(--line-light);
   color: var(--ink);
@@ -1148,6 +1163,17 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
 </header>
 <main>
   <section class="hero">
+    <div class="hero-skill-bar">
+      <a class="hero-skill-badge" href="https://github.com/lucas19919/diagonaldiagrams/blob/master/.agents/skills/diagonaldiagrams-install/SKILL.md" target="_blank" rel="noopener" title="View install skill on GitHub">
+        <span>Skill</span>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5a.75.75 0 0 0 0 1.5h6.44L2.22 12.22a.75.75 0 1 0 1.06 1.06L11.5 5.06V11.5a.75.75 0 0 0 1.5 0V3a.75.75 0 0 0-.75-.75H4z"/></svg>
+      </a>
+      <span class="hero-skill-code">Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams</span>
+      <button type="button" class="copy-pill" data-copy="Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy install prompt for any agent">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span>Copy</span>
+      </button>
+    </div>
     <h1 class="tagline">Diagrams your agent gets right.</h1>
     <p class="lede">A flowchart, an architecture, a sequence or a chart. Drawn, then checked for overlapping text and tangled arrows. The agent gets the verdict in one line.</p>
     <div class="acts">
@@ -1156,14 +1182,6 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
         <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.2l1.7 3.8 4.2.5-3.1 2.8.9 4.1L8 10.5 4.3 12.4l.9-4.1L2.1 5.5l4.2-.5L8 1.2z"/></svg>
         Star
       </a>
-    </div>
-    <div class="hero-copy">
-      <span class="hero-copy-badge">Skill</span>
-      <code>Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams</code>
-      <button type="button" class="copy-pill" data-copy="Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy install prompt for any agent">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        <span>Copy</span>
-      </button>
     </div>
     <figure class="hero-figure">
       <img src="showcase/hero.svg" alt="An animated architecture diagram of an AI agent platform. A chat message is traced in coral from Web chat through the API gateway to the Agent, on to diagonaldiagrams and into the Object store, while dots stream along the dashed background events to Postgres and Traces.">
@@ -1192,9 +1210,9 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
       </div>
       <div class="install-cards">
         <article class="install-card open">
-          <button type="button" aria-expanded="true">Any Agent (Skill)</button>
+          <button type="button" class="card-toggle" aria-expanded="true">Any Agent (Skill)</button>
           <div class="more"><div>
-            <p>Tell your agent to install diagonaldiagrams. It clones the library, verifies the engine, and copies the <code>graph-engine</code> skill into its skills folder.</p>
+            <p>Tell your agent to install diagonaldiagrams using our <a href="https://github.com/lucas19919/diagonaldiagrams/blob/master/.agents/skills/diagonaldiagrams-install/SKILL.md" target="_blank" rel="noopener">install skill</a>. It clones the library, verifies the engine, and copies the <code>graph-engine</code> skill into its skills folder.</p>
             <div class="code-wrap">
               <pre>Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams</pre>
               <button type="button" class="copy-pill on-card" data-copy="Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy skill prompt">
@@ -1205,7 +1223,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
           </div></div>
         </article>
         <article class="install-card">
-          <button type="button" aria-expanded="false">Claude Code (Plugin)</button>
+          <button type="button" class="card-toggle" aria-expanded="false">Claude Code (Plugin)</button>
           <div class="more"><div>
             <p>Adds diagonaldiagrams and the instructions Claude uses to draw with it.</p>
             <div class="code-wrap">
@@ -1219,7 +1237,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
           </div></div>
         </article>
         <article class="install-card">
-          <button type="button" aria-expanded="false">Python CLI (pip)</button>
+          <button type="button" class="card-toggle" aria-expanded="false">Python CLI (pip)</button>
           <div class="more"><div>
             <p>Installs the <code>diagonaldiagrams</code> command globally, which your agent can run from any terminal.</p>
             <div class="code-wrap">
@@ -1232,7 +1250,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
           </div></div>
         </article>
         <article class="install-card">
-          <button type="button" aria-expanded="false">Claude Desktop, Cursor, and MCP apps</button>
+          <button type="button" class="card-toggle" aria-expanded="false">Claude Desktop, Cursor, and MCP apps</button>
           <div class="more"><div>
             <p>After the command is installed, register it as a native tool server in your app.</p>
             <div class="code-wrap">
@@ -1475,9 +1493,9 @@ fetch("gallery.json").then((r) => r.json()).then((items) => {
 }).catch(() => {});
 
 document.querySelectorAll(".install-card").forEach((card) => {
-  const btn = card.querySelector("button");
+  const btn = card.querySelector(".card-toggle") || card.querySelector("button");
   card.addEventListener("click", (e) => {
-    if (e.target.closest("pre") || e.target.closest(".copy-pill") || window.getSelection().toString()) return;
+    if (e.target.closest(".more") || window.getSelection().toString()) return;
     const open = card.classList.toggle("open");
     if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
   });
