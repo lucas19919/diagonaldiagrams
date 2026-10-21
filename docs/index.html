@@ -972,6 +972,8 @@ footer.foot {
 .pin-sticky {
   position: sticky;
   top: 0;
+  height: 100vh;
+  height: 100dvh;
   height: 100svh;
   display: flex;
   flex-direction: column;
@@ -1088,7 +1090,22 @@ footer.foot {
 }
 
 
-dialog.viewer { border: 0; padding: 0; margin: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; background: rgb(6 5 5 / 0.94); color: var(--paper); }
+dialog.viewer {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  background: rgb(6 5 5 / 0.94);
+  color: var(--paper);
+  z-index: 9999;
+}
 dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
 .viewer .stage { position: absolute; inset: 52px 0 44px; overflow: auto; display: flex; }
 .viewer .stage img { margin: auto; display: block; background: var(--paper); cursor: zoom-in; user-select: none; -webkit-user-drag: none; }
@@ -1111,39 +1128,100 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
   .split > h2, .thesis h2, #install h2 { max-width: 100%; }
   .hero-skill-bar { width: 100%; max-width: 100%; box-sizing: border-box; }
   .thesis-stage { min-height: 0; align-items: start; padding: 4.75rem 0 2.5rem; }
-  .pin-wrap { height: auto !important; }
+  .pin-wrap {
+    height: 320vh;
+  }
   .pin-sticky {
-    position: static !important;
-    height: auto !important;
-    padding: 3.5rem 0 2.5rem !important;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    padding-top: clamp(4.5rem, 9.5vh, 5.5rem);
+    padding-bottom: clamp(0.75rem, 1.8vh, 1.25rem);
+    box-sizing: border-box;
+  }
+  .systems-head {
+    width: calc(100% - 2rem);
+    margin-inline: auto;
+    margin-bottom: clamp(0.4rem, 1.4vh, 0.85rem);
+    flex: none;
+  }
+  .systems-head h2 {
+    font-size: clamp(1.4rem, 4.5vw, 1.85rem);
   }
   .rails {
-    padding-inline: 1.25rem;
+    flex: 1;
+    min-height: 0;
+    padding-inline: 1rem;
     gap: 1rem;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    scrollbar-width: none;
+    touch-action: pan-y;
   }
-  .rails::before, .rails::after { display: none; }
+  .rails::-webkit-scrollbar {
+    display: none;
+  }
+  .rails::before, .rails::after {
+    display: none;
+  }
   .rail-card {
-    flex: 0 0 calc(100vw - 2.5rem);
-    height: auto;
-    min-height: 460px;
-    scroll-snap-align: center;
+    position: relative;
+    flex: 0 0 calc(100vw - 2rem);
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
   }
   .card-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
+    flex: none;
+    padding: 0.65rem 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    border-bottom: 1px solid var(--line-light);
+  }
+  .card-top h3 {
+    font-size: clamp(1rem, 3.8vw, 1.2rem);
+    margin: 0;
   }
   .card-desc {
-    text-align: left;
+    font-size: clamp(0.75rem, 2.8vw, 0.85rem);
+    line-height: 1.3;
+    max-width: 28ch;
+    text-align: right;
   }
   .card-stage {
-    min-height: 300px;
-    padding: 0.85rem;
+    flex: 1;
+    min-height: 0;
+    padding: 0.5rem 0.75rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper);
+    overflow: hidden;
   }
   .card-stage img {
-    max-height: 48vh;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    cursor: zoom-in;
+  }
+  .systems-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: clamp(0.4rem, 1vh, 0.75rem);
+    flex: none;
   }
   .principles, .gallery, .cases { grid-template-columns: 1fr; }
   .case img { height: min(52vh, 460px); }
@@ -1593,7 +1671,6 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
   let started = false;
 
   const render = () => {
-    if (window.innerWidth <= 860) return;
     const total = wrap.offsetHeight - window.innerHeight;
     if (total <= 0) return;
     const raw = Math.min(1, Math.max(0, -wrap.getBoundingClientRect().top / total));
@@ -1607,7 +1684,7 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
       x = track.scrollLeft;
       started = true;
     }
-    x += (target - x) * 0.16;
+    x += (target - x) * 0.2;
     if (Math.abs(target - x) < 0.5) {
       track.scrollLeft = target;
     } else {
@@ -1628,6 +1705,20 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(render);
   };
+
+  dots.forEach((dot, index) => {
+    dot.style.cursor = "pointer";
+    dot.setAttribute("role", "button");
+    dot.setAttribute("aria-label", "Show example " + (index + 1));
+    dot.addEventListener("click", () => {
+      const total = wrap.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      const steps = [0, 0.44, 0.88];
+      const targetProgress = steps[index] ?? (index / (dots.length - 1) * 0.88);
+      const targetScrollTop = window.scrollY + wrap.getBoundingClientRect().top + (targetProgress * total);
+      window.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+    });
+  });
 
   window.addEventListener("scroll", drive, { passive: true });
   window.addEventListener("resize", drive);
@@ -1681,7 +1772,10 @@ document.querySelectorAll(".bench-tab").forEach((tab) => {
   function open(items, k) {
     list = items;
     show(k);
-    if (!dlg.open) dlg.showModal();
+    if (!dlg.open) {
+      dlg.showModal();
+      document.body.style.overflow = "hidden";
+    }
   }
   function zoom(ev) {
     if (stage.classList.contains("zoom")) { fit(); return; }
@@ -1725,6 +1819,7 @@ document.querySelectorAll(".bench-tab").forEach((tab) => {
     if (e.key === "ArrowRight" && list.length > 1) { e.preventDefault(); show(at + 1); }
   });
   dlg.addEventListener("close", () => {
+    document.body.style.overflow = "";
     if (dlg.open) return;  // the close event comes a tick late: reopened since, so keep what it shows
     img.removeAttribute("src");
     fit();
