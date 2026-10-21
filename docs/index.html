@@ -846,13 +846,20 @@ footer.foot {
 }
 .code-wrap pre {
   margin-top: 0;
-  padding: 1rem 5.5rem 1rem 1.25rem;
+  padding: 1rem 5.25rem 1rem 1.25rem;
   background: var(--paper-hi);
   border: 1px solid var(--line-light);
   border-radius: 4px;
-  font: 14px/1.6 var(--mono);
-  overflow-x: auto;
+  font: 13.5px/1.6 var(--mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  overflow-x: hidden;
+  scrollbar-width: none;
   color: var(--ink);
+}
+.code-wrap pre::-webkit-scrollbar {
+  display: none;
 }
 
 /* ——— Hero Skill Eyebrow Bar ——— */
@@ -1185,7 +1192,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
     </div>
     <figure class="hero-figure">
       <img src="showcase/hero.svg" alt="An animated architecture diagram of an AI agent platform. A chat message is traced in coral from Web chat through the API gateway to the Agent, on to diagonaldiagrams and into the Object store, while dots stream along the dashed background events to Postgres and Traces.">
-      <figcaption>A chat request traced through an agent platform. The motion is part of the diagram: one line in a story names the path.</figcaption>
+      <figcaption>A chat request traced through an agent platform.</figcaption>
     </figure>
   </section>
 
