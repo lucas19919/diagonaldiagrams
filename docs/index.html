@@ -1107,8 +1107,9 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
 
 @media (max-width: 860px) {
   .topbar { left: 8px; right: 8px; }
-  .split { grid-template-columns: 1fr; column-gap: 0; row-gap: 1.25rem; }
-  .split > h2, .thesis h2, #install h2 { max-width: 14ch; }
+  .split, .thesis .split, #install .split { grid-template-columns: 1fr; column-gap: 0; row-gap: 1.25rem; }
+  .split > h2, .thesis h2, #install h2 { max-width: 100%; }
+  .hero-skill-bar { width: 100%; max-width: 100%; box-sizing: border-box; }
   .thesis-stage { min-height: 0; align-items: start; padding: 4.75rem 0 2.5rem; }
   .pin-wrap { height: auto !important; }
   .pin-sticky {
@@ -1154,6 +1155,34 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
   .foot-cols { grid-template-columns: 1fr; margin-top: 2.25rem; }
   .foot-big { margin-top: 2.5rem; font-size: 1.55rem; }
   .top-btn { padding: 0.45rem 0.7rem; }
+}
+
+@media (max-width: 600px) {
+  .install-card {
+    padding: 1.35rem 1.15rem;
+    padding-right: 3rem;
+  }
+  .install-card::after {
+    top: 1.35rem;
+    right: 1.15rem;
+  }
+  .code-wrap pre {
+    padding: 0.85rem 4.5rem 0.85rem 0.85rem;
+    font-size: 12.5px;
+  }
+  .copy-pill.on-card {
+    top: 8px;
+    right: 8px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  .hero-skill-bar {
+    padding: 0.35rem 0.45rem;
+    gap: 0.4rem;
+  }
+  .hero-skill-code {
+    font-size: 0.76rem;
+  }
 }
 </style>
 </head>
