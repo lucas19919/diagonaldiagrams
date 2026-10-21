@@ -41,8 +41,19 @@
   --t-box: clamp(1.35rem, 2.2vw, 1.75rem);
   --t-body: 1.1rem;
 }
-* { box-sizing: border-box; }
-* { margin: 0; }
+* { box-sizing: border-box; margin: 0; }
+html, body, * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
 html { scroll-behavior: smooth; background: var(--bg); }
 body {
   font-family: var(--sans);
@@ -1123,7 +1134,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
 .viewer .foot { position: absolute; bottom: 0; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: rgb(245 244 242 / 0.7); }
 
 @media (max-width: 860px) {
-  .topbar { left: 8px; right: 8px; }
+  .topbar { left: 14px; right: 14px; }
   .split, .thesis .split, #install .split { grid-template-columns: 1fr; column-gap: 0; row-gap: 1.25rem; }
   .split > h2, .thesis h2, #install h2 { max-width: 100%; }
   .hero-skill-bar { width: 100%; max-width: 100%; box-sizing: border-box; }
@@ -1145,7 +1156,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
     box-sizing: border-box;
   }
   .systems-head {
-    width: calc(100% - 2rem);
+    width: calc(100% - clamp(3rem, 13vw, 5rem));
     margin-inline: auto;
     margin-bottom: clamp(0.4rem, 1.4vh, 0.85rem);
     flex: none;
@@ -1156,8 +1167,8 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
   .rails {
     flex: 1;
     min-height: 0;
-    padding-inline: 1rem;
-    gap: 1rem;
+    padding-inline: clamp(1.5rem, 6.5vw, 2.5rem);
+    gap: clamp(0.85rem, 3.5vw, 1.5rem);
     overflow-x: auto;
     scrollbar-width: none;
     touch-action: pan-y;
@@ -1170,7 +1181,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
   }
   .rail-card {
     position: relative;
-    flex: 0 0 calc(100vw - 2rem);
+    flex: 0 0 calc(100vw - clamp(3rem, 13vw, 5rem));
     height: 100%;
     max-height: none;
     min-height: 0;
