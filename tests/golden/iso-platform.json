@@ -4,7 +4,7 @@
   "examples/iso_platform.json"
  ],
  "exit": 0,
- "html_sha256": "8a44f1381e5f211881eb37103ba64770befbbf205d47b3731b24a70326dfcdfc",
+ "html_sha256": "b907ebc8295fa4f8bc20f3c26e761e3e25e7f5338e9fa78618c6604191059c4a",
  "receipt": {
   "cmd": "iso",
   "receipt": 2,

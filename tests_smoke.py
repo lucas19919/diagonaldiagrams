@@ -1020,9 +1020,11 @@ def outline_checks():
           v.get("layout", [""])[0] == "layer 1 Clients: Web chat | Mobile app | Email intake"
           and "link Web chat -> Gateway: HTTPS" in v.get("layout", [])
           and [x["id"] for x in v.get("outline", {}).get("layers", [])] == ["clients", "runtime", "models", "data"], out[-300:])
-    rc, out = run("iso", "-s", '{"layers": [{"id": "a", "items": [{"id": "x"}]}, {"id": "b", "items": []}, '
-                  '{"id": "c", "items": [{"id": "y"}]}], "links": [{"from": "x", "to": "y"}]}', "-o", os.path.join(WORK, "iso-skip.svg"))
-    check("an iso link that skips a layer stops at validate", rc == 1 and "skips a layer" in out, out[-200:])
+    rc, out = run("iso", "-s", '{"layers": [{"id": "a", "items": [{"id": "x", "col": 0}]}, {"id": "b", "items": [{"id": "m", "col": 0}]}, '
+                  '{"id": "c", "items": [{"id": "y", "col": 0}]}], "links": [{"from": "x", "to": "y"}]}', "-o", os.path.join(WORK, "iso-skip.svg"))
+    check("an iso link through a block stops at validate", rc == 1 and "runs through 'm'" in out, out[-200:])
+    rc, out = run("iso", "examples/iso_rows.json", "-o", os.path.join(WORK, "iso-rows.svg"), "--fit", "column")
+    check("an iso stack with rows and a skip link draws for a column", rc == 0 and '"ok": true' in out, out[-300:])
     rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "ol-plain.svg"))
     check("without --outline the verdict has no outline", rc == 0 and '"outline"' not in out, out[-200:])
     rc, out = run("seq", "examples/seq_checkout.json", "-o", os.path.join(WORK, "ol-seq.svg"), "--outline")

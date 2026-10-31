@@ -126,8 +126,13 @@ def _brand_check(a, spec, theme, sheets):
     cfg = getattr(a, "_config", None)
     if cfg is None or not (cfg.policies or cfg.palette is not None or cfg.fonts is not None):
         return
-    from .style.styler import Styler
-    issues = Styler(spec, a.cmd, theme, a.corners, sheets).off_brand(cfg.palette, cfg.fonts)
+    if a.cmd == "iso":
+        from .iso import styler
+        sty = styler(spec, theme, sheets)
+    else:
+        from .style.styler import Styler
+        sty = Styler(spec, a.cmd, theme, a.corners, sheets)
+    issues = sty.off_brand(cfg.palette, cfg.fonts)
     if issues:
         _report({"ok": False, "stage": "validate", "errors": issues,
                  "next": "the project's brand policy (diagonaldiagrams.toml) decides these; nothing was drawn"}, 1)
@@ -690,22 +695,30 @@ def main():
         save_receipt(o, _receipt(a, theme, drawn, scene=_drawn_scene(spec, a.cmd), sheets=sheets))
         _finish(a, o, s, item_cnt, "items", pre, changed, info)
     elif a.cmd == "iso":
+        sheets = _cli_sheets(a)
         spec = load_spec(a.spec, "iso")
         for key in ("caption", "figure"):
             if getattr(a, key, None):
                 spec[key] = getattr(a, key)
+        if a.fit:
+            spec["size"] = dict(spec["size"] if isinstance(spec.get("size"), dict) else {}, fit=a.fit)
         theme = _cli_theme(a)
+        _brand_check(a, spec, theme, sheets)
         info = {}
-        svg, _, _ = render_iso(spec, theme, info=info)
-        unread = [f for f, on in (("--style", a.style), ("--font", a.font), ("--fit", a.fit), ("--embed-fonts", a.embed_fonts),
-                                  ("--corners", a.corners != "editorial")) if on]
-        if unread:
-            pre = list(pre or []) + [{"msg": f"iso does not read {', '.join(unread)} yet; drawn without",
-                                      "fix": "leave them out; --theme and --theme-file set the colors"}]
+        svg, _, _ = render_iso(spec, theme, info=info, sheets=sheets, embed=a.embed_fonts)
+        if a.corners != "editorial":
+            pre = list(pre or []) + [{"msg": "--corners has no meaning for iso: blocks are square",
+                                      "fix": "leave it out"}]
+        if info.get("over"):
+            pre = list(pre or []) + [{"msg": f"the stack is {info['over'][0]} px wide, past the {info['over'][1]} px this fit allows",
+                                      "fix": "fewer columns or shorter names, or a wider fit"}]
         o, s = write_out(svg, "iso", spec.get("title", "iso"), spec.get("sub", ""), f"iso · {os.path.basename(a.spec)}", a.o,
                          caption=spec.get("sub", ""), cap_title=spec.get("title", "iso") + ".",
                          source="Self-contained HTML + SVG.", theme=theme)
-        save_receipt(o, _receipt(a, theme, {"cmd": "iso", "spec": a.spec, "theme": theme.get("_name")}))
+        drawn = {"cmd": "iso", "spec": a.spec, "theme": theme.get("_name")}
+        if a.fit:
+            drawn["fit"] = a.fit
+        save_receipt(o, _receipt(a, theme, drawn, sheets=sheets))
         _finish(a, o, s, sum(len(layer.get("items") or []) for layer in spec["layers"]), "items", pre, None, info)
     elif a.cmd == "bar":
         theme = _cli_theme(a)

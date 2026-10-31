@@ -27,7 +27,7 @@ It prints one JSON line.
 | --- | --- |
 | `mermaid` | `flowchart`, `sequenceDiagram`, `erDiagram` |
 | `flow`, `arch`, `seq`, `schema` | JSON. `describe <type>` prints the shape |
-| `iso` | JSON layers (top first), their items, and links between neighbouring layers: an isometric layer stack |
+| `iso` | JSON layers (top first), their items in rows, and links between layers: an isometric layer stack |
 | `bar`, `line`, `scatter` | CSV. `--cat`/`--val`, or `--x`/`--y`, and optional `--group` |
 | `geo` | CSV or GeoJSON, on a built-in coastline |
 | `chart <kind>` | About 60 more. `describe` lists them |

@@ -1,0 +1,20 @@
+{
+  "title": "A data platform, with a shortcut past the warehouse",
+  "sub": "Dashboards read the warehouse; the ML features skip it and read the lake directly.",
+  "columns": 4,
+  "layers": [
+    {"id": "use", "name": "Consumers", "sub": "who reads it",
+     "items": [{"id": "bi", "name": "Dashboards"}, {"id": "ml", "name": "ML features", "focal": true}]},
+    {"id": "wh", "name": "Warehouse", "sub": "modelled tables",
+     "items": [{"id": "marts", "name": "Marts"}, {"id": "dbt", "name": "dbt models"}]},
+    {"id": "lake", "name": "Lake", "sub": "raw, in rows",
+     "items": [{"id": "orders", "name": "Orders"}, {"id": "users", "name": "Users"}, {"id": "events", "name": "Events", "focal": true},
+               {"id": "payments", "name": "Payments"}, {"id": "logs", "name": "App logs"}, {"id": "crm", "name": "CRM"},
+               {"id": "ads", "name": "Ad spend"}, {"id": "support", "name": "Support"}]}
+  ],
+  "links": [
+    {"from": "bi", "to": "marts", "label": "SQL"},
+    {"from": "marts", "to": "orders"},
+    {"from": "ml", "to": "events", "label": "skips", "focal": true}
+  ]
+}

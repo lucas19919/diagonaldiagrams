@@ -240,7 +240,7 @@ def svg_import(root, width, height):
                 dl.add(item)
             return
         marked = ((st.get("marker") or "none").strip() != "none" or (st.get("marker-start") or "none").strip() != "none"
-                  or (st.get("marker-end") or "none").strip() != "none")
+                  or (st.get("marker-end") or "none").strip() != "none" or el.get("data-link") is not None)
         if tag in ("path", "line", "polyline") and marked:
             if tag == "path":
                 raw = path_pts(el.get("d"))
