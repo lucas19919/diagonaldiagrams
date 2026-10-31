@@ -443,7 +443,7 @@ def render(spec, theme=None, info=None, sheets=(), embed=False):
     """Draw a layer stack. Returns (svg, W, H); info, if given, gets the drawing (the audit and the
     outline read it in memory) and, when the figure is wider than where it goes allows, over."""
     from ._theme import THEME
-    from .diagrams import _bottom, _fit, _fonts, _legend, _more_markers, LEGEND_RULE, LEGEND_TEXT
+    from .diagrams import _bottom, _fit, _fonts, _legend, _more_markers, _owned_opacity, LEGEND_RULE, LEGEND_TEXT
     from .style.parse import color
     errors, _ = check(spec)
     if errors:
@@ -615,6 +615,7 @@ def render(spec, theme=None, info=None, sheets=(), embed=False):
     dr.add(*texts)
     _more_markers(dr, sty)
     _legend(dr, t, sty, W, H, extra, LEGEND_RULE, LEGEND_TEXT, sentence, spec)
+    _owned_opacity(dr, sty)
     _fonts(dr, sty, embed)
     svg = dr.svg()
     if info is not None:

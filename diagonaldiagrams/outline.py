@@ -74,8 +74,12 @@ def read_figure(svg):
                                          "cx": _num(get("data-cx"), None), "cy": _num(get("data-cy"), None)}
         if tag == "polygon" and get("data-box3") is not None and get("data-label") is not None:  # an iso solid's top
             box = [_num(v) for v in get("data-box3").split()]
+            v = [float(p) for p in re.findall(r"-?\d*\.?\d+", get("points") or "")]
+            xs, ys = v[0::2] or [0.0], v[1::2] or [0.0]
             fig["solids"].append({"id": get("data-solid"), "label": get("data-label"), "layer": get("data-layer"),
-                                  "rank": _num(get("data-rank"), None), "x": box[0] if box else 0.0})
+                                  "rank": _num(get("data-rank"), None), "x": box[0] if box else 0.0,
+                                  "page": {"id": get("data-solid"), "label": get("data-label"), "shape": "diamond", "x": min(xs),
+                                           "y": min(ys), "w": max(xs) - min(xs), "h": max(ys) - min(ys)}})
         if tag == "path" and get("data-from") is not None and get("data-to") is not None:
             fig["edges"].append({"id": get("data-id"), "from": get("data-from"), "to": get("data-to"), "label": get("data-label") or "",
                                  "dashed": get("stroke-dasharray") is not None, "stroke": get("stroke"),

@@ -1,0 +1,27 @@
+{
+  "title": "The AI stack, from the chat window down to the fab",
+  "figure": {
+    "type": "iso",
+    "spec": "ai_stack.json"
+  },
+  "views": [
+    {
+      "id": "request",
+      "title": "One request, down to silicon",
+      "text": "A chat message reaches a frontier model, runs on rented GPUs, and ends at the foundry that made them.",
+      "motion": [
+        {
+          "trace": "chat -> frontier -> infer -> hyper -> gpu -> foundry"
+        }
+      ]
+    },
+    {
+      "id": "silicon",
+      "title": "Who makes the chips",
+      "focus": "group#silicon, group#fab",
+      "dim": "node:not(group#silicon node):not(group#fab node), edge:not([to=foundry]):not([to=pack])",
+      "highlight": "#foundry",
+      "text": "Everything above depends on these two layers."
+    }
+  ]
+}

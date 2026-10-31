@@ -1,0 +1,22 @@
+{
+  "title": "A request, tier by tier",
+  "figure": {
+    "type": "iso",
+    "spec": "../iso_three_tier.json"
+  },
+  "views": [
+    {
+      "id": "request",
+      "title": "One request, from the edge to the database",
+      "text": "It enters at the load balancer, the API handles it, and Postgres answers.",
+      "motion": [
+        {
+          "trace": "lb -> api -> pg"
+        },
+        {
+          "flow": "edge[async]"
+        }
+      ]
+    }
+  ]
+}

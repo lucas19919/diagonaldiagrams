@@ -30,7 +30,7 @@ HEAVY = 2.6         # a highlighted line's width
 PAD = 36            # around the focused elements
 MIN_FOCUS = 280     # the narrowest the camera goes, so one box doesn't fill the page
 KEYS = ("id", "title", "text", "notes", "focus", "dim", "hide", "highlight", "reveal", "motion")
-KINDS = ("flow", "arch", "seq", "schema")
+KINDS = ("flow", "arch", "seq", "schema", "iso")
 LISTS = {"flow": ("nodes", "edges"), "arch": ("nodes", "edges"), "seq": ("actors", "messages"), "schema": ("tables", "relations")}
 
 
@@ -68,10 +68,18 @@ def _empty(m):
     return not (m["nodes"] or m["edges"] or m["groups"])
 
 
+def _parts(spec, kind):
+    """A spec's (boxes, groups, edges). An iso stack's boxes are its layers' items, its groups the layers."""
+    if kind == "iso":
+        layers = [x for x in spec.get("layers") or [] if isinstance(x, dict)]
+        return [it for x in layers for it in x.get("items") or [] if isinstance(it, dict)], layers, spec.get("links") or []
+    return spec.get(LISTS[kind][0]) or [], spec.get("groups") or [], spec.get(LISTS[kind][1]) or []
+
+
 def _ends(spec, kind):
     """{edge id: (from, to)} as the renderer names the edges."""
     from .scene.ids import edge_ids
-    edges = spec.get(LISTS[kind][1]) or []
+    edges = _parts(spec, kind)[2]
     return {eid: (e.get("from"), e.get("to")) for eid, e in zip(edge_ids(edges), edges)}
 
 
@@ -133,10 +141,9 @@ def looked(spec, kind, looks):
     """The spec with a frame's looks as each element's own style (which no stylesheet rule outranks)."""
     from .scene.ids import edge_ids
     s = copy.deepcopy(spec)
-    nodes_key, edges_key = LISTS[kind]
-    by = {("nodes", str(n.get("id"))): n for n in s.get(nodes_key) or [] if isinstance(n, dict)}
-    by.update({("groups", str(g.get("id"))): g for g in s.get("groups") or [] if isinstance(g, dict)})
-    edges = s.get(edges_key) or []
+    nodes, groups, edges = _parts(s, kind)
+    by = {("nodes", str(n.get("id"))): n for n in nodes if isinstance(n, dict)}
+    by.update({("groups", str(g.get("id"))): g for g in groups if isinstance(g, dict)})
     by.update({("edges", eid): e for eid, e in zip(edge_ids(edges), edges)})
     for key, props in looks.items():
         el = by.get(key)
@@ -152,8 +159,13 @@ def camera(svg, focus):
     from .outline import read_figure
     fig = read_figure(svg)
     boxes = []
+    solids = {s["id"]: s["page"] for s in fig["solids"]}  # an iso stack's blocks and slabs
     for i in focus.get("nodes", []):
-        n = fig["nodes"].get(i)
+        n = fig["nodes"].get(i) or solids.get(i)
+        if n:
+            boxes.append((n["x"], n["y"], n["x"] + n["w"], n["y"] + n["h"]))
+    for i in focus.get("groups", []):
+        n = solids.get(i)
         if n:
             boxes.append((n["x"], n["y"], n["x"] + n["w"], n["y"] + n["h"]))
     for f in fig["frames"]:
@@ -306,7 +318,7 @@ def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None,
     kind, path = _figure_input(story, base, out_base)
     theme = get_theme("editorial", theme_file)
     sheets = _styles(styles)
-    argv = [kind, path, "-o", out_base + ".figure.svg", "--corners", corners]
+    argv = [kind, path, "-o", out_base + ".figure.svg"] + ([] if kind == "iso" else ["--corners", corners])
     if theme_file:
         argv += ["--theme-file", theme_file]
     for style_path in styles or []:
@@ -323,10 +335,15 @@ def build(story_path, out, gif=None, video=None, view=None, fps=20, anim=None,
         with open(path, encoding="utf-8") as f:
             kind = _mermaid_kind(f.read())
     spec = load_spec(path, kind)
-    sty = Styler(spec, kind, theme, corners, sheets)
+    if kind == "iso":
+        from .iso import render as render_iso, styler
+        sty = styler(spec, theme, sheets)
+    else:
+        sty = Styler(spec, kind, theme, corners, sheets)
     plan, warnings = frames(story, spec, kind, sty)
     from .diagrams import render_arch, render_flow, render_schema, render_seq
-    draw = {"flow": lambda s: render_flow(s, corners=corners, theme=theme, sheets=sheets),
+    draw = {"iso": lambda s: render_iso(s, theme, sheets=sheets),
+            "flow": lambda s: render_flow(s, corners=corners, theme=theme, sheets=sheets),
             "arch": lambda s: render_arch(s, corners=corners, theme=theme, sheets=sheets),
             "seq": lambda s: render_seq(s, corners=corners, theme=theme, sheets=sheets),
             "schema": lambda s: render_schema(s, corners=corners, theme=theme, sheets=sheets)}[kind]

@@ -22,7 +22,7 @@ DEFAULTS = {"trace": {"speed": 320.0, "hold": 1.2, "packet": "dot", "color": "ac
             "flow": {"speed": 60.0, "gap": 24.0, "color": "link"}}
 LIMITS = {"speed": (10.0, 5000.0), "hold": (0.0, 30.0), "gap": (6.0, 400.0)}
 PACKETS = ("dot", "dash")
-KINDS = ("flow", "arch", "schema")
+KINDS = ("flow", "arch", "schema", "iso")
 
 LEAD = 0.25       # s: the first box pulses before the packet leaves
 MIN_HOP = 0.45    # s: the shortest hop, so a short arrow still reads
@@ -172,13 +172,23 @@ def _cum(pts):
 def arrows(svg):
     """[{"id", "from", "to", "stroke", "pts"}] for every arrow drawn, in document order."""
     root = ET.fromstring(svg)
-    out = []
+    out, pieces = [], {}
     for el in root.iter():
-        if str(el.tag).split("}")[-1] == "path" and el.get("data-from") is not None and el.get("data-to") is not None:
+        if str(el.tag).split("}")[-1] != "path":
+            continue
+        if el.get("data-link") is not None:  # an iso link's other pieces, one per gap between slabs
+            pieces.setdefault(el.get("data-link"), []).append(flatten(el.get("d")))
+        elif el.get("data-from") is not None and el.get("data-to") is not None:
             pts = flatten(el.get("d"))
             if len(pts) >= 2:
                 out.append({"id": el.get("data-id"), "from": el.get("data-from"), "to": el.get("data-to"),
-                            "stroke": el.get("stroke"), "pts": pts})
+                            "stroke": el.get("stroke"), "pts": pts, "solid": el.get("data-solid")})
+    for a in out:
+        more = pieces.get(a.pop("solid"))
+        if more:  # the packet runs them in order, down the page or up it, as the arrow does
+            down = a["pts"][-1][1] >= a["pts"][0][1]
+            ordered = sorted(more + [a["pts"]], key=lambda p: p[0][1], reverse=not down)
+            a["pts"] = [q for p in ordered for q in p]
     return out
 
 
@@ -211,7 +221,8 @@ def resolve(items, spec, kind, sty, svg, where="view"):
         raise SpecError(f"{where}: motion draws on {', '.join(KINDS)} figures for now, not {kind}",
                         "drop the motion block for this figure", "bad-motion")
     drawn = arrows(svg)
-    boxes = read_figure(svg)["nodes"]
+    fig = read_figure(svg)
+    boxes = fig["nodes"] or {s["id"]: s["page"] for s in fig["solids"]}
     warnings, traces, flows, clock = [], [], [], 0.0
     paper = sty.token("paper") or "#ffffff"
     for k, it in enumerate(items):

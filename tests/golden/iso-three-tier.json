@@ -4,7 +4,7 @@
   "examples/iso_three_tier.json"
  ],
  "exit": 0,
- "html_sha256": "cf5b91d052df2d538e3d7f654ec797618445d4eb9b8388956e4dc1033deb7ba7",
+ "html_sha256": "906b3dcf5b77c48fe558cc86106c6ae6053772116480e40470f1da08ce7efa22",
  "receipt": {
   "cmd": "iso",
   "receipt": 2,
@@ -23,12 +23,6 @@
    "link CDN -> Web app",
    "link Load balancer -> API: HTTPS"
   ],
-  "ok": true,
-  "warnings": [
-   {
-    "fix": "keep focal on one or two items",
-    "msg": "3 items are highlighted; past 2 the accent stops pointing at anything"
-   }
-  ]
+  "ok": true
  }
 }

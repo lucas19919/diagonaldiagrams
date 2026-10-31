@@ -1,6 +1,6 @@
 [
  {
-  "file": "gallery/three-tier.svg",
+  "file": "showcase/three-tier.svg",
   "caption": "A layer stack in isometric 3D. The audit reads depth: what hides what.",
   "source": "examples/iso_three_tier.json",
   "tall": true

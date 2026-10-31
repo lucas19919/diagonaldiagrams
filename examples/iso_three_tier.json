@@ -13,8 +13,7 @@
         },
         {
           "id": "lb",
-          "name": "Load balancer",
-          "focal": true
+          "name": "Load balancer"
         },
         {
           "id": "waf",
