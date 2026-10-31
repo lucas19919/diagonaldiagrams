@@ -236,7 +236,7 @@ def _layers(v):
     for k, it in enumerate(v.items):
         if it.kind == "text":
             at[id(it)] = k
-        elif it.kind == "shape" and it.fill and it.box:
+        elif it.kind in ("shape", "face") and it.fill and it.box:
             paint = str(it.fill[0]).strip().lower()
             if paint in ("none", "transparent") or paint.startswith("url("):
                 continue
@@ -245,7 +245,7 @@ def _layers(v):
                     seen[paint] = color(paint)
                 except Exception:
                     seen[paint] = None
-            layers.append((k, it.box, seen[paint], it.fill[1]))
+            layers.append((k, it.box, seen[paint], it.fill[1], it.pts if it.kind == "face" else None))
     return layers, at
 
 
@@ -257,10 +257,11 @@ def _under(t, layers, at):
     cx, cy = (t.box[0] + t.box[2]) / 2, (t.box[1] + t.box[3]) / 2
     bg, words = Color(255, 255, 255), "#ffffff"
     mine = at[id(t)]
-    for k, b, c, opacity in layers:
+    from ..geom import in_convex
+    for k, b, c, opacity, outline in layers:
         if k > mine:
             break
-        if b[0] <= cx <= b[2] and b[1] <= cy <= b[3]:
+        if b[0] <= cx <= b[2] and b[1] <= cy <= b[3] and (outline is None or in_convex((cx, cy), outline)):
             if c is None:
                 return None
             a = c.a * opacity
@@ -396,6 +397,90 @@ def spill(v, issues):
                                "fix": "2-4 words for a name; put detail in sub", "at": center(b)})
 
 
+def _holders(tops):
+    """The solids others stand on (a slab under its blocks): ground, not an obstacle to an arrow."""
+    out = set()
+    for s, a in tops.items():
+        for r, b in tops.items():
+            if r != s and abs(b[2] - a[5]) < .5 and b[0] >= a[0] - .5 and b[3] <= a[3] + .5 and b[1] >= a[1] - .5 \
+                    and b[4] <= a[4] + .5:
+                out.add(s)
+                break
+    return out
+
+
+@check("depth", "hidden", "spill", "through", "overlap")
+def depth(v, issues):
+    """A projected 3D figure (iso.py): faces are their own outlines, painted in depth order, so what
+    is painted later hides what is under it. Reads data-solid, data-box3 and data-face back."""
+    faces = v.faces
+    if not faces:
+        return
+    from ..geom import in_convex, length_in_convex
+    at = {id(it): k for k, it in enumerate(v.items)}
+    last, tops = {}, {}  # solid -> where its last face is painted; solid -> its box, from its top face
+    for f in faces:
+        last[f.solid] = at[id(f)]
+        if f.box3:
+            tops[f.solid] = f.box3
+    top_face = {f.solid: f for f in faces if f.box3}
+    for ar in v.arrows:
+        if ar.solid:
+            last[ar.solid] = at[id(ar)]
+    for t in v.texts:
+        mine = last.get(t.on, at[id(t)]) if t.on else at[id(t)]
+        c = center(t.box)
+        cover = next((f for f in faces if f.solid != t.on and at[id(f)] > mine and in_convex(c, f.pts)), None)
+        if cover is not None:
+            issues.append({"code": "hidden", "msg": f"'{t.text[:24]}' is hidden behind '{cover.solid}'",
+                           "fix": ("stand the linked items in one column (col), so the link and its label drop straight down"
+                                   if str(t.on).startswith("link:") else
+                                   "give the layers more room, or move the item to a column nothing stands in front of"),
+                           "at": c})
+            continue
+        top = top_face.get(t.on)
+        if top is not None:
+            x0, y0, x1, y1 = t.box
+            if not all(in_convex(p, top.pts, tol=1) for p in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))):
+                issues.append({"code": "spill", "msg": f"label '{t.text[:30]}' runs off the top of '{t.on}'",
+                               "fix": "2-4 words for a name; put detail in sub", "at": c})
+    ground = _holders(tops)
+    for ar in v.arrows:
+        segs = [(ar.pts[k], ar.pts[k + 1]) for k in range(len(ar.pts) - 1)
+                if ar.pts[k] is not None and ar.pts[k + 1] is not None]
+        if not segs:
+            continue
+        mine = at[id(ar)]
+        touch = {f.solid for f in faces if any(in_convex(e, f.pts, tol=3) for e in ar.ends)}
+        behind, over = {}, {}
+        for f in faces:
+            if f.solid == ar.solid:
+                continue
+            run = sum(length_in_convex(p, q, f.pts) for p, q in segs)
+            if run <= 0:
+                continue
+            if at[id(f)] > mine:
+                behind[f.solid] = behind.get(f.solid, 0) + run
+            elif f.solid not in touch and f.solid not in ground:
+                over[f.solid] = over.get(f.solid, 0) + run
+        name = f"the arrow {ar.attach['from']['node']} -> {ar.attach['to']['node']}" if ar.attach else "an arrow"
+        for s, run in behind.items():
+            if run > 4:
+                issues.append({"code": "hidden", "msg": f"{name} runs behind '{s}' for {run:.0f} px",
+                               "fix": "link items in neighbouring layers only", "at": center(ar.box or segs[0][0] + segs[-1][1])})
+        for s, run in over.items():
+            if run > 4:
+                issues.append({"code": "through", "msg": f"{name} crosses '{s}'",
+                               "fix": "stand the two linked items in one column (col), so the link drops straight down",
+                               "at": [round(c) for c in segs[0][0]]})
+    solids = sorted(tops.items())
+    for i, (s, a) in enumerate(solids):
+        for r, b in solids[i + 1:]:
+            if all(min(a[k + 3], b[k + 3]) - max(a[k], b[k]) > .5 for k in range(3)):
+                issues.append({"code": "overlap", "msg": f"'{s}' and '{r}' run into each other",
+                               "fix": "give them different columns or layers", "at": [0, 0]})
+
+
 def run_checks(dl, stats=None):
     """Every check over a display list, as issues without duplicates. stats, if given, gets
     the arrows' crossings and total run length (the layout repair loops' cost)."""
@@ -408,7 +493,7 @@ def run_checks(dl, stats=None):
     if len(shapes) > 4000:
         shapes = []
     arrows = dl.arrows
-    v = SimpleNamespace(W=dl.width, H=dl.height, texts=texts, shapes=shapes, arrows=arrows, items=dl.items,
+    v = SimpleNamespace(W=dl.width, H=dl.height, texts=texts, shapes=shapes, arrows=arrows, items=dl.items, faces=dl.faces,
                         every=dl.legibility == "all",
                         frames=dl.frames, named=dl.named, diamonds=dl.diamonds, ellipses=dl.ellipses,
                         tb=[t.box for t in texts], sb=[s.box for s in shapes], runs=arrow_runs(arrows),

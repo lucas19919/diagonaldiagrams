@@ -170,7 +170,7 @@ def text_items(el, st, m, z):
         out.append(Item("text", z=z[0], box=xbox(m, x0, y0, x0 + w, y1), text=s, size=fs, newline="\n" in s,
                         color=st.get("fill") or "#000000", bold=bold, color_from=el.get("data-color-from"),
                         size_from=el.get("data-size-from"), font_fallback=el.get("data-font-fallback"),
-                        shaping=el.get("data-shaping")))
+                        shaping=el.get("data-shaping"), on=el.get("data-face")))
     return out
 
 
@@ -257,7 +257,22 @@ def svg_import(root, width, height):
                 if el.get("data-from") is not None and el.get("data-to") is not None:
                     arrow.attach = {end: {"node": el.get(f"data-{end}"), "port": el.get(f"data-{end}-port")}
                                     for end in ("from", "to")}
+                arrow.solid = el.get("data-solid")
                 _read_a11y(arrow, el)
+        if tag == "polygon" and el.get("data-solid") is not None:  # a projected 3D face: its own outline, not a box
+            v = [float(p) for p in re.findall(r"-?\d*\.?\d+(?:[eE][-+]?\d+)?", el.get("points", ""))]
+            pts = [apply(m, q) for q in zip(v[0::2], v[1::2])]
+            if len(pts) >= 3:
+                box3 = [num(p) for p in (el.get("data-box3") or "").split()]
+                z[0] += 1
+                face = dl.add(Item("face", z=z[0], pts=pts, box=(min(p[0] for p in pts), min(p[1] for p in pts),
+                                                               max(p[0] for p in pts), max(p[1] for p in pts)),
+                                   solid=el.get("data-solid"), box3=tuple(box3) if len(box3) == 6 else None,
+                                   depth=num(el.get("data-depth"), 0.0),
+                                   fill=(st.get("fill") or "#000000",
+                                         num(st.get("fill-opacity", 1), 1.0) * num(st.get("opacity", 1), 1.0))))
+                _read_a11y(face, el)
+            return
         box, item = None, None
         if tag == "path" and not marked and el.get("data-node") is not None:  # a box with a radius per corner
             real = [apply(m, q) for q in path_pts(el.get("d")) if q is not None]

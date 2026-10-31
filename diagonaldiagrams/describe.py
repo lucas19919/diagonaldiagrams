@@ -92,6 +92,26 @@ DESCRIBE = {
         "budgets": {"tables": 6, "columns_per_table": 12, "over": "a warning, not an error; split by bounded context, or budget false hides it"},
         "example": '{"title":"Users & Teams","tables":[{"id":"u","name":"users","columns":[{"name":"id","type":"uuid","pk":true}]}],"relations":[]}',
     },
+    "iso": {
+        "input": "JSON spec {title, sub, layers[], links[]}: a layer stack drawn in isometric 3D",
+        "writes": "diagonaldiagrams iso SPEC.json -o OUT.svg",
+        "layer": {"id": "unique", "name": "drawn left of its slab", "sub": "one short line under the name",
+                  "items": "blocks standing on the slab in one row, up to 6"},
+        "item": {"id": "unique across layers and items", "name": "drawn on the block's top, wraps to 2 lines",
+                 "sub": "tech/mono sub", "focal": "bool, max 2", "col": "0-7: the column it stands in (optional)"},
+        "link": {"from": "item id", "to": "item id in the layer just above or below", "label": "short",
+                 "async": "dashed bool", "focal": "bool"},
+        "rules": ["layers top first; the top layer is drawn highest", "every slab shares one grid of columns",
+                  "an item without col stands under the item it links to in the layer above, so links drop straight down",
+                  "links join neighbouring layers; a link that skips one would be hidden behind it",
+                  "the audit reads depth: a label hidden behind a nearer face, a name running off its block's top, "
+                  "a link crossing a block, and solids that run into each other are errors",
+                  "validate with: diagonaldiagrams validate SPEC.json --type iso"],
+        "budgets": {"layers": 8, "items_per_layer": 6, "focal": 2,
+                    "over": "items past 6 warn (budget false hides it); past 8 items or 8 layers is an error"},
+        "example": '{"title":"Platform","layers":[{"id":"apps","name":"Apps","items":[{"id":"web","name":"Web app"}]},'
+                   '{"id":"data","name":"Data","items":[{"id":"db","name":"Postgres"}]}],"links":[{"from":"web","to":"db","label":"SQL"}]}',
+    },
     "bar": {
         "input": "CSV with header row. One categorical column and one numeric column.",
         "writes": "diagonaldiagrams bar DATA.csv --cat CAT --val VAL -o OUT.svg",

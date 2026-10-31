@@ -241,6 +241,42 @@
   ]
  },
  {
+  "name": "iso-platform",
+  "argv": [
+   "iso",
+   "examples/iso_platform.json"
+  ],
+  "tags": [
+   "example",
+   "iso"
+  ]
+ },
+ {
+  "name": "iso-platform-ink",
+  "argv": [
+   "iso",
+   "examples/iso_platform.json",
+   "--theme",
+   "ink"
+  ],
+  "tags": [
+   "example",
+   "theme",
+   "iso"
+  ]
+ },
+ {
+  "name": "iso-ai-stack",
+  "argv": [
+   "iso",
+   "examples/showcase/ai_stack.json"
+  ],
+  "tags": [
+   "example",
+   "iso"
+  ]
+ },
+ {
   "name": "bar-latency",
   "argv": [
    "bar",

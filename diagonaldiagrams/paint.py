@@ -12,7 +12,7 @@ order given, numbers with at most two decimals (trailing zeros dropped), text es
 Before writing, a drawing passes through the projection stage, which is the identity
 in 2D. An element may carry 3D corner points (pts3d); with a projection set, those faces get their
 2D outline and depth from it and are painted back to front. The core never sets one: the 3D toolkit
- does, without core edits.
+(iso.py) does, and may order the faces itself.
 
 Accessibility: the parts a reader navigates (nodes, arrows, messages, tables, groups)
 carry a11y = {"name", "kind"}. A drawing with a `kind` ("flow diagram") is written as a WAI-ARIA
@@ -227,9 +227,11 @@ def el(tag, text=None, owner="", role="", children=None, a11y=None, attach=None,
 
 def project(items, projection=None):
     """The projection stage: the identity when projection is None. A projection is a callable
-    (x, y, z) -> (x, y, depth), larger depth farther away. Each element with pts3d (a polygon face)
-    gets its points and a data-depth from it; the faces are then reordered back to front among the
-    places they hold in the paint order, so everything 2D (paper, labels) stays where it was."""
+    (x, y, z) -> (x, y, depth), larger depth farther away. Each element with pts3d (a polygon face,
+    or a path through 3D points) gets its points and a data-depth from it; the faces are then
+    reordered back to front among the places they hold in the paint order, so everything 2D (paper,
+    labels) stays where it was. A projection with an order(faces) method sorts them itself (iso.Iso
+    sorts whole solids, which a face's mean depth gets wrong); otherwise by mean depth."""
     if projection is None:
         return items
     slots = [k for k, e in enumerate(items) if e.pts3d]
@@ -237,10 +239,15 @@ def project(items, projection=None):
         e = items[k]
         flat = [projection(*p) for p in e.pts3d]
         e.depth = sum(d for _, _, d in flat) / len(flat)
-        e.attrs["points"] = " ".join(f"{fmt(x)},{fmt(y)}" for x, y, _ in flat)
-        e.attrs["data-depth"] = e.depth
+        if e.tag == "path":
+            e.attrs["d"] = "M" + " L".join(f"{fmt(x)},{fmt(y)}" for x, y, _ in flat)
+        else:
+            e.attrs["points"] = " ".join(f"{fmt(x)},{fmt(y)}" for x, y, _ in flat)
+        e.attrs["data-depth"] = round(e.depth, 2)
+    faces = [items[k] for k in slots]
+    order = getattr(projection, "order", None)
     out = list(items)
-    for k, e in zip(slots, sorted((items[k] for k in slots), key=lambda e: -e.depth)):  # stable for ties
+    for k, e in zip(slots, order(faces) if order else sorted(faces, key=lambda e: -e.depth)):  # stable for ties
         out[k] = e
     return out
 

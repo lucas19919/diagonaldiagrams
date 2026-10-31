@@ -1,0 +1,29 @@
+{
+ "argv": [
+  "iso",
+  "examples/iso_platform.json"
+ ],
+ "exit": 0,
+ "html_sha256": "8a44f1381e5f211881eb37103ba64770befbbf205d47b3731b24a70326dfcdfc",
+ "receipt": {
+  "cmd": "iso",
+  "receipt": 2,
+  "spec": "iso_platform.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 12,
+  "layout": [
+   "layer 1 Clients: Web chat | Mobile app | Email intake",
+   "layer 2 Agent runtime: Gateway | Agent loop | Memory",
+   "layer 3 Models and tools: Web search | Claude | Code runner",
+   "layer 4 Storage: Postgres | Vector index | Object store",
+   "link Code runner -> Object store",
+   "link Agent loop -> Claude: prompt",
+   "link Memory -> Code runner",
+   "link Web chat -> Gateway: HTTPS",
+   "link Mobile app -> Agent loop"
+  ],
+  "ok": true
+ }
+}

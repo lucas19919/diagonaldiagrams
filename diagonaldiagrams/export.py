@@ -287,6 +287,15 @@ def do_export(args):
         key = {"flow": "nodes", "arch": "nodes", "seq": "actors", "schema": "tables"}[cmd]
         n = len(spec.get(key, []))
         unit, dest, note = "items", args.o or f"{base}.{args.to}", " (diagram: single layout)"
+    elif cmd == "iso":
+        from .iso import render as render_iso
+        spec = load_spec(r["spec"], "iso")
+        for key in ("caption", "figure"):
+            if r.get(key):
+                spec[key] = r[key]
+        svg, _, _ = render_iso(spec, theme)
+        n = sum(len(layer.get("items") or []) for layer in spec["layers"])
+        unit, dest, note = "items", args.o or f"{base}.{args.to}", " (diagram: single layout)"
     elif cmd == "geo":
         svg, _, _, n = render_geo(r["src"], r.get("lat"), r.get("lon"), r.get("label"), r.get("val"),
                                   r.get("title", "Map"), r.get("subtitle", ""), r.get("figure", "Fig. 1"),

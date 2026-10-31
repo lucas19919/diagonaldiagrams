@@ -141,6 +141,49 @@ def length_inside(p, q, b):
     return (t1 - t0) * math.hypot(dx, dy)
 
 
+def clip_convex(p, q, poly):
+    """The part of segment p-q inside a convex polygon, as (t0, t1) along it, or None."""
+    t0, t1 = 0.0, 1.0
+    cx = sum(v[0] for v in poly) / len(poly)
+    cy = sum(v[1] for v in poly) / len(poly)
+    for a, b in zip(poly, poly[1:] + poly[:1]):
+        def side(x, y):
+            return (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0])
+        s = 1 if side(cx, cy) >= 0 else -1
+        f0, f1 = s * side(*p), s * side(*q)
+        if f0 < 0 and f1 < 0:
+            return None
+        if f0 < 0 or f1 < 0:
+            t = f0 / (f0 - f1)
+            if f0 < 0:
+                t0 = max(t0, t)
+            else:
+                t1 = min(t1, t)
+    return (t0, t1) if t0 < t1 else None
+
+
+def length_in_convex(p, q, poly):
+    """How much of segment p-q lies inside a convex polygon."""
+    cut = clip_convex(p, q, poly)
+    return (cut[1] - cut[0]) * math.hypot(q[0] - p[0], q[1] - p[1]) if cut else 0.0
+
+
+def in_convex(pt, poly, tol=0.0):
+    """Is the point inside a convex polygon, or within tol of it?"""
+    cx = sum(v[0] for v in poly) / len(poly)
+    cy = sum(v[1] for v in poly) / len(poly)
+    for a, b in zip(poly, poly[1:] + poly[:1]):
+        ex, ey = b[0] - a[0], b[1] - a[1]
+        n = math.hypot(ex, ey)
+        if n == 0:
+            continue
+        side = (ex * (pt[1] - a[1]) - ey * (pt[0] - a[0])) / n  # signed distance from the edge's line
+        inner = ex * (cy - a[1]) - ey * (cx - a[0])
+        if (side if inner >= 0 else -side) < -tol:
+            return False
+    return True
+
+
 def crosses(p, q, b):
     """Does segment p-q run more than 2 px inside box b?"""
     return length_inside(p, q, b) > 2

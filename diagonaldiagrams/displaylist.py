@@ -35,11 +35,14 @@ class Item:
         ("font_fallback", None),    # text: a named font that wasn't found, so it was measured by estimate
         ("shaping", None),          # text: scripts whose widths need a shaper this engine lacks
         ("fill", None),             # shape: (color, opacity), what text over it is read against
+        ("solid", None),            # face, arrow: the 3D solid it belongs to (data-solid)
+        ("box3", None),             # face: its solid's box (x0, y0, z0, x1, y1, z1), on the top face (data-box3)
+        ("on", None),               # text: the solid it stands on, or the link it names (data-face)
     )
     NAMES = frozenset(name for name, _ in FIELDS)
 
     def __init__(self, kind, **fields):
-        self.kind = kind  # "text", "shape" or "arrow"
+        self.kind = kind  # "text", "shape", "arrow" or "face" (a projected 3D face: pts is its outline)
         if fields:
             if not fields.keys() <= self.NAMES:
                 raise TypeError(f"Item has no field {sorted(fields.keys() - self.NAMES)[0]!r}")
@@ -78,6 +81,10 @@ class DisplayList:
     @property
     def arrows(self):
         return [i for i in self.items if i.kind == "arrow"]
+
+    @property
+    def faces(self):
+        return [i for i in self.items if i.kind == "face"]
 
     @property
     def frames(self):

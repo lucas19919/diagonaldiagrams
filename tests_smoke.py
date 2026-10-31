@@ -48,7 +48,7 @@ def main():
     print("== cli ==")
     rc, _ = run("--help")
     check("help exits 0", rc == 0)
-    for t in ("scatter", "flow", "arch", "seq", "schema", "bar", "line", "geo", "export"):
+    for t in ("scatter", "flow", "arch", "seq", "schema", "iso", "bar", "line", "geo", "export"):
         rc, _ = run("describe", t)
         check(f"describe {t}", rc == 0)
 
@@ -61,6 +61,8 @@ def main():
     check("validate good seq", rc == 0)
     rc, _ = run("validate", "examples/schema_ecommerce.json")
     check("validate good schema", rc == 0)
+    rc, _ = run("validate", "examples/iso_platform.json", "--type", "iso")
+    check("validate good iso", rc == 0)
     rc, _ = run("validate", "examples/line_throughput.csv", "--type", "line", "--x", "timestamp", "--y", "rps")
     check("validate line csv", rc == 0)
     rc, _ = run("validate", "examples/bar_latency.csv", "--type", "bar", "--x", "service", "--y", "p99_latency_ms")
@@ -77,6 +79,7 @@ def main():
         ("arch", ["examples/arch.json", "-o", f"{WORK}/a.html"]),
         ("seq", ["examples/seq_checkout.json", "-o", f"{WORK}/q.html"]),
         ("schema", ["examples/schema_ecommerce.json", "-o", f"{WORK}/d.html"]),
+        ("iso", ["examples/iso_platform.json", "-o", f"{WORK}/i.html"]),
         ("bar", ["examples/bar_latency.csv", "--cat", "service", "--val", "p99_latency_ms",
                  "--unit", "ms", "--sort", "desc", "-o", f"{WORK}/b.html"]),
         ("line", ["examples/line_throughput.csv", "--x", "timestamp", "--y", "rps",
@@ -1011,6 +1014,15 @@ def outline_checks():
     check("flow --outline lists nodes with rows and edges with labels",
           any(n.get("id") == "risk?" and n.get("shape") == "diamond" and n.get("row") == 3 for n in o.get("nodes", []))
           and {"id": "tests->fix:fail", "from": "tests", "to": "fix", "label": "fail"} in o.get("edges", []), out[-300:])
+    rc, out = run("iso", "examples/iso_platform.json", "-o", os.path.join(WORK, "ol-iso.svg"), "--outline")
+    v = json.loads(out) if rc == 0 else {}
+    check("iso's verdict lists its layers top first and its links",
+          v.get("layout", [""])[0] == "layer 1 Clients: Web chat | Mobile app | Email intake"
+          and "link Web chat -> Gateway: HTTPS" in v.get("layout", [])
+          and [x["id"] for x in v.get("outline", {}).get("layers", [])] == ["clients", "runtime", "models", "data"], out[-300:])
+    rc, out = run("iso", "-s", '{"layers": [{"id": "a", "items": [{"id": "x"}]}, {"id": "b", "items": []}, '
+                  '{"id": "c", "items": [{"id": "y"}]}], "links": [{"from": "x", "to": "y"}]}', "-o", os.path.join(WORK, "iso-skip.svg"))
+    check("an iso link that skips a layer stops at validate", rc == 1 and "skips a layer" in out, out[-200:])
     rc, out = run("flow", "examples/flow_decision.json", "-o", os.path.join(WORK, "ol-plain.svg"))
     check("without --outline the verdict has no outline", rc == 0 and '"outline"' not in out, out[-200:])
     rc, out = run("seq", "examples/seq_checkout.json", "-o", os.path.join(WORK, "ol-seq.svg"), "--outline")

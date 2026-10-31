@@ -125,6 +125,9 @@ def main():
     add("flow-decision-ink", ["flow", ex("flow_decision.json"), "--theme", "ink"], ["example", "theme"])
     add("flow-decision-sharp", ["flow", ex("flow_decision.json"), "--corners", "sharp"], ["example", "flag"])
     add("arch-print", ["arch", ex("arch.json"), "--theme", "print"], ["example", "theme"])
+    add("iso-platform", ["iso", ex("iso_platform.json")], ["example", "iso"])
+    add("iso-platform-ink", ["iso", ex("iso_platform.json"), "--theme", "ink"], ["example", "theme", "iso"])
+    add("iso-ai-stack", ["iso", ex("showcase/ai_stack.json")], ["example", "iso"])
     # examples/: data
     add("bar-latency", ["bar", ex("bar_latency.csv"), "--cat", "service", "--val", "p99_latency_ms"], ["example"])
     add("bar-latency-styled", ["bar", ex("bar_latency.csv"), "--cat", "service", "--val", "p99_latency_ms",

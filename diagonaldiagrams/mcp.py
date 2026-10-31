@@ -30,7 +30,7 @@ def do_mcp(args):
         {"name": "render", "description": "Validate, draw, and audit one figure. Writes OUT.svg, OUT.html, and a receipt. "
                                           "ok false: read errors, change the spec or options, call again.",
          "inputSchema": {"type": "object", "required": ["type"],
-                         "properties": dict(type={"type": "string", "description": "mermaid (data = Mermaid text), flow, arch, seq, schema, bar, line, scatter, geo, or any describe type"},
+                         "properties": dict(type={"type": "string", "description": "mermaid (data = Mermaid text), flow, arch, seq, schema, iso (layer stack), bar, line, scatter, geo, or any describe type"},
                                             out={"type": "string", "description": "output path ending .html (default diagonaldiagrams-out.html)"},
                                             options=opts, **src)}},
         {"name": "validate", "description": "Check a spec or CSV without drawing.",

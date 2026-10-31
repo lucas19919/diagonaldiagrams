@@ -16,6 +16,7 @@ render_arch = lazy("diagonaldiagrams.diagrams", "render_arch")
 render_flow = lazy("diagonaldiagrams.diagrams", "render_flow")
 render_schema = lazy("diagonaldiagrams.diagrams", "render_schema")
 render_seq = lazy("diagonaldiagrams.diagrams", "render_seq")
+render_iso = lazy("diagonaldiagrams.iso", "render")
 do_doc = lazy("diagonaldiagrams.doc", "do_doc")
 do_monitor = lazy("diagonaldiagrams.drift", "do_monitor")
 do_sync = lazy("diagonaldiagrams.drift", "do_sync")
@@ -186,6 +187,8 @@ def _prevalidate(a):
     """Render runs validate first. A bad spec stops here with the same JSON validate prints."""
     if a.cmd in _SPEC_KEYS:
         errors, warnings = _validate_target(a.spec, "spec", kind=a.cmd)
+    elif a.cmd == "iso":
+        errors, warnings = _validate_target(a.spec, "iso")
     elif a.cmd == "bar":
         errors, warnings = _validate_target(a.csv, "bar", a.cat, a.val)
     elif a.cmd == "line":
@@ -315,7 +318,7 @@ def _spec_to_file(a):
     a.spec = path
 
 
-COMMANDS = ("flow", "arch", "seq", "schema", "mermaid", "bar", "line", "geo", "doc", "monitor", "sync", "extract",
+COMMANDS = ("flow", "arch", "seq", "schema", "iso", "mermaid", "bar", "line", "geo", "doc", "monitor", "sync", "extract",
             "scatter", "chart", "export", "describe", "validate", "infer", "audit", "mcp", "apply", "diff", "story")
 
 
@@ -337,7 +340,7 @@ class _OnlyOne:
         return self.sub.add_parser(name, **kw) if name == self.want else _Skipped()
 
 
-RENDER = ("flow", "arch", "seq", "schema", "mermaid")
+RENDER = ("flow", "arch", "seq", "schema", "iso", "mermaid")
 # The render commands' options as _parse() declares them: {flag: (dest, choices or None)} for one that
 # takes a value, and {flag: dest} for a switch (store_true). tests/unit/test_cli_args.py holds the two
 # to the same answers.
@@ -351,7 +354,7 @@ _SWITCHES = {"--no-audit": "no_audit", "--outline": "outline", "--embed-fonts": 
 
 def _quick(argv):
     """A render command's arguments read without argparse, which with the modules it loads costs a
-    call more than drawing a small figure: flow, arch, seq, schema or mermaid, an optional spec, and
+    call more than drawing a small figure: flow, arch, seq, schema, iso or mermaid, an optional spec, and
     the options above written out in full (--opt VALUE or --opt=VALUE). Anything else (help, --version,
     an abbreviation, a mistake, a value that starts with "-") returns None, and _parse() reads it, so
     argparse's answers and errors stay the only ones."""
@@ -406,7 +409,7 @@ def _parse():
     if len(sys.argv) > 1 and sys.argv[1] in COMMANDS:
         sub = _OnlyOne(sub, sys.argv[1])
     _render_parsers = {}
-    for name in ("flow", "arch", "seq", "schema", "mermaid"):
+    for name in ("flow", "arch", "seq", "schema", "iso", "mermaid"):
         p = sub.add_parser(name)
         p.add_argument("spec", nargs="?", default=None, help="spec file path, or '-' for stdin (inline text: -s)")
         p.add_argument("-s", "--string", "--spec-text", dest="spec_text", default=None, help="inline spec or Mermaid string")
@@ -548,7 +551,7 @@ def _parse():
     p.add_argument("--group", default=None); p.add_argument("--facet", default=None)
     for flag in ("--size", "--label", "--parent", "--val", "--a", "--b", "--lo", "--hi"):
         p.add_argument(flag, default=None, help="a chart type's column, as in chart KIND")
-    _vtypes = sorted(set(["scatter", "bar", "line", "geo", "flow", "arch", "seq", "schema", "mermaid"]) | set(_CHART_BLURB))
+    _vtypes = sorted(set(["scatter", "bar", "line", "geo", "flow", "arch", "seq", "schema", "iso", "mermaid"]) | set(_CHART_BLURB))
     p.add_argument("--type", default="scatter", choices=_vtypes,
                    help="shape to check. A chart type uses the same name as chart KIND")
     p = sub.add_parser("infer", help="propose a scatter spec from a CSV (agent starting point)")
@@ -622,7 +625,7 @@ def main():
     if a.cmd == "extract":
         _exit_with(do_extract(a))
         return
-    if a.cmd in ("flow", "arch", "seq", "schema", "mermaid"):
+    if a.cmd in ("flow", "arch", "seq", "schema", "iso", "mermaid"):
         _spec_to_file(a)
     if a.cmd == "mermaid":
         try:
@@ -686,6 +689,24 @@ def main():
             drawn["fit"] = a.fit
         save_receipt(o, _receipt(a, theme, drawn, scene=_drawn_scene(spec, a.cmd), sheets=sheets))
         _finish(a, o, s, item_cnt, "items", pre, changed, info)
+    elif a.cmd == "iso":
+        spec = load_spec(a.spec, "iso")
+        for key in ("caption", "figure"):
+            if getattr(a, key, None):
+                spec[key] = getattr(a, key)
+        theme = _cli_theme(a)
+        info = {}
+        svg, _, _ = render_iso(spec, theme, info=info)
+        unread = [f for f, on in (("--style", a.style), ("--font", a.font), ("--fit", a.fit), ("--embed-fonts", a.embed_fonts),
+                                  ("--corners", a.corners != "editorial")) if on]
+        if unread:
+            pre = list(pre or []) + [{"msg": f"iso does not read {', '.join(unread)} yet; drawn without",
+                                      "fix": "leave them out; --theme and --theme-file set the colors"}]
+        o, s = write_out(svg, "iso", spec.get("title", "iso"), spec.get("sub", ""), f"iso · {os.path.basename(a.spec)}", a.o,
+                         caption=spec.get("sub", ""), cap_title=spec.get("title", "iso") + ".",
+                         source="Self-contained HTML + SVG.", theme=theme)
+        save_receipt(o, _receipt(a, theme, {"cmd": "iso", "spec": a.spec, "theme": theme.get("_name")}))
+        _finish(a, o, s, sum(len(layer.get("items") or []) for layer in spec["layers"]), "items", pre, None, info)
     elif a.cmd == "bar":
         theme = _cli_theme(a)
         notes = _cli_notes(a, "bar")

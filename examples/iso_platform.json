@@ -1,0 +1,21 @@
+{
+  "title": "An AI agent platform, layer by layer",
+  "sub": "Requests enter at the top and settle into storage at the bottom.",
+  "layers": [
+    {"id": "clients", "name": "Clients", "sub": "where people ask",
+     "items": [{"id": "web", "name": "Web chat"}, {"id": "mobile", "name": "Mobile app"}, {"id": "mail", "name": "Email intake"}]},
+    {"id": "runtime", "name": "Agent runtime", "sub": "plans and calls",
+     "items": [{"id": "gateway", "name": "Gateway", "sub": "Go:8080"}, {"id": "agent", "name": "Agent loop", "sub": "Python", "focal": true}, {"id": "memory", "name": "Memory"}]},
+    {"id": "models", "name": "Models and tools",
+     "items": [{"id": "llm", "name": "Claude"}, {"id": "search", "name": "Web search"}, {"id": "code", "name": "Code runner"}]},
+    {"id": "data", "name": "Storage", "sub": "what stays",
+     "items": [{"id": "pg", "name": "Postgres"}, {"id": "vec", "name": "Vector index"}, {"id": "s3", "name": "Object store"}]}
+  ],
+  "links": [
+    {"from": "web", "to": "gateway", "label": "HTTPS"},
+    {"from": "mobile", "to": "agent", "focal": true},
+    {"from": "agent", "to": "llm", "label": "prompt"},
+    {"from": "memory", "to": "code"},
+    {"from": "code", "to": "s3", "async": true}
+  ]
+}
