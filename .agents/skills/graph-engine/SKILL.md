@@ -62,12 +62,13 @@ blocks. A parse error names the line.
 `flow`, `arch`, `seq`, and `schema` also take a JSON spec: `diagonaldiagrams arch spec.json -o arch.svg`.
 `describe <type>` prints the shape. Use `arch` for services in rows (`layer`), with blue HTTP arrows.
 
-`iso` draws a layer stack in isometric 3D: `{"layers": [{"id", "name", "sub", "items": [{"id", "name", "sub",
-"focal", "col"}]}], "links": [{"from", "to", "label", "async", "focal"}]}`, top layer first. Links join items in
-neighbouring layers; an item stands under the item it links to above, or in its `col`. The verdict's `layout`
-lists each layer's items left to right. Errors read depth: `hidden` (behind a nearer layer), `spill` (off its
-block), `through` (a link crossing a block): line the linked items up in one `col`. Validate with
-`validate SPEC.json --type iso`.
+`iso` draws a layer stack in isometric 3D: `{"columns", "layers": [{"id", "name", "sub", "items": [{"id", "name",
+"sub", "focal", "col", "row"}]}], "links": [{"from", "to", "label", "async", "focal"}]}`, top layer first. A long
+layer wraps into rows. A link may join any two layers, passing those between through a port; an item stands under
+what it links to above, or in its `col` and `row` (0 at the front). `--style`, `--font` and `--fit` work as on other
+diagrams: a layer is `group`, an item `node`, a link `edge`. The verdict's `layout` lists each layer's items left to
+right. Errors read depth: `hidden` (behind a nearer layer), `spill` (off its block), `through` (a link crossing a
+block): line the linked items up in one `col`. Validate with `validate SPEC.json --type iso`.
 
 CSV with a header row:
 

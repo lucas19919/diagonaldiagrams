@@ -1,0 +1,35 @@
+{
+ "argv": [
+  "iso",
+  "examples/iso_rows.json",
+  "--fit",
+  "column"
+ ],
+ "exit": 0,
+ "html_sha256": "4b88946d7539f85911c92682410f73460c8ad760769faf61d1cdd4ce63483341",
+ "receipt": {
+  "cmd": "iso",
+  "fit": "column",
+  "receipt": 2,
+  "spec": "iso_rows.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 12,
+  "layout": [
+   "layer 1 Consumers: Dashboards | ML features",
+   "layer 2 Warehouse: Marts | dbt models",
+   "layer 3 Lake: Orders | App logs | Events | CRM | Users | Ad spend | Payments | Support",
+   "link Marts -> Orders",
+   "link ML features -> Events: skips",
+   "link Dashboards -> Marts: SQL"
+  ],
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "fewer columns or shorter names, or a wider fit",
+    "msg": "the stack is 698 px wide, past the 640 px this fit allows"
+   }
+  ]
+ }
+}

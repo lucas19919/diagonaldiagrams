@@ -4,7 +4,7 @@
   "examples/showcase/ai_stack.json"
  ],
  "exit": 0,
- "html_sha256": "6f2b80e8581fb794cc0dc416cf7e0c9989e5908fe6afa5bf0b2a9af9366b39dd",
+ "html_sha256": "20639956d72988875c1f8ff017bec54a730a9e8ac10c8fea86fa55a6c56f447d",
  "receipt": {
   "cmd": "iso",
   "receipt": 2,

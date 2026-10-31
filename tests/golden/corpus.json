@@ -288,6 +288,31 @@
   ]
  },
  {
+  "name": "iso-rows",
+  "argv": [
+   "iso",
+   "examples/iso_rows.json"
+  ],
+  "tags": [
+   "example",
+   "iso"
+  ]
+ },
+ {
+  "name": "iso-rows-column",
+  "argv": [
+   "iso",
+   "examples/iso_rows.json",
+   "--fit",
+   "column"
+  ],
+  "tags": [
+   "example",
+   "iso",
+   "flag"
+  ]
+ },
+ {
   "name": "bar-latency",
   "argv": [
    "bar",

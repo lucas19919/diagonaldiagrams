@@ -80,9 +80,9 @@ STORIES = [
 
 
 def _look(kind):
-    """Flags that draw a figure in the site's look. Charts have no --style; iso takes only the colors."""
+    """Flags that draw a figure in the site's look. Charts have no --style; a block has no corners."""
     if kind == "iso":
-        return ["--theme-file", SITE_THEME]
+        return ["--theme-file", SITE_THEME, "--style", SITE_STYLE]
     flags = ["--theme-file", SITE_THEME, "--corners", "sharp"]
     if kind not in ("line", "bar"):
         flags += ["--style", SITE_STYLE]

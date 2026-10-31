@@ -293,7 +293,9 @@ def do_export(args):
         for key in ("caption", "figure"):
             if r.get(key):
                 spec[key] = r[key]
-        svg, _, _ = render_iso(spec, theme)
+        if r.get("fit"):
+            spec["size"] = dict(spec["size"] if isinstance(spec.get("size"), dict) else {}, fit=r["fit"])
+        svg, _, _ = render_iso(spec, theme, sheets=r.get("styles") or ())
         n = sum(len(layer.get("items") or []) for layer in spec["layers"])
         unit, dest, note = "items", args.o or f"{base}.{args.to}", " (diagram: single layout)"
     elif cmd == "geo":
