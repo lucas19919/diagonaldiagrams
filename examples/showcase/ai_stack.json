@@ -1,0 +1,31 @@
+{
+  "title": "The AI stack, from the chat window down to the fab",
+  "sub": "Each layer runs on the one under it. The arrows follow one request's dependencies down to silicon.",
+  "caption": "Drawn with diagonaldiagrams iso: the audit checked that no name is hidden behind a nearer layer and no arrow crosses a block.",
+  "layers": [
+    {"id": "apps", "name": "Applications", "sub": "what people use",
+     "items": [{"id": "chat", "name": "Chat assistants"}, {"id": "agents", "name": "Coding agents"}, {"id": "search", "name": "AI search"}]},
+    {"id": "models", "name": "Models", "sub": "weights and APIs",
+     "items": [{"id": "frontier", "name": "Frontier LLMs", "sub": "via API", "focal": true}, {"id": "open", "name": "Open weights"}, {"id": "embed", "name": "Embeddings"}]},
+    {"id": "serving", "name": "Serving and training", "sub": "the software",
+     "items": [{"id": "infer", "name": "Inference servers", "sub": "vLLM, TensorRT"}, {"id": "train", "name": "Training runs", "sub": "JAX, Megatron"}, {"id": "orch", "name": "Orchestration", "sub": "Kubernetes"}]},
+    {"id": "cloud", "name": "Cloud", "sub": "who rents it out",
+     "items": [{"id": "hyper", "name": "Hyperscalers", "sub": "AWS, Azure, GCP"}, {"id": "gpucloud", "name": "GPU clouds"}, {"id": "onprem", "name": "On-prem"}]},
+    {"id": "silicon", "name": "Silicon", "sub": "the chips",
+     "items": [{"id": "gpu", "name": "GPUs", "sub": "H100, B200", "focal": true}, {"id": "asic", "name": "Custom ASICs", "sub": "TPU, Trainium"}, {"id": "hbm", "name": "HBM memory"}]},
+    {"id": "fab", "name": "Manufacturing", "sub": "where chips are made",
+     "items": [{"id": "foundry", "name": "Foundry", "sub": "TSMC 4N"}, {"id": "pack", "name": "Packaging", "sub": "CoWoS"}, {"id": "litho", "name": "Lithography", "sub": "EUV"}]}
+  ],
+  "links": [
+    {"from": "chat", "to": "frontier", "label": "API", "focal": true},
+    {"from": "agents", "to": "open"},
+    {"from": "frontier", "to": "infer", "label": "serve", "focal": true},
+    {"from": "open", "to": "train"},
+    {"from": "infer", "to": "hyper", "focal": true},
+    {"from": "train", "to": "gpucloud"},
+    {"from": "hyper", "to": "gpu", "label": "rents", "focal": true},
+    {"from": "gpucloud", "to": "asic"},
+    {"from": "gpu", "to": "foundry", "label": "made at", "focal": true},
+    {"from": "asic", "to": "pack"}
+  ]
+}

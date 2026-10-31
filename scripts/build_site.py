@@ -25,6 +25,7 @@ FIGURES = [
     ("how-it-works", ["mermaid", "examples/how_it_works.mmd"], "How a diagram gets made. Loops are drawn up the outside."),
     ("checkout", ["arch", "examples/checkout_platform.json"], "Fourteen services, and every arrow gets its own path."),
     ("checkout-grouped", ["arch", "examples/checkout_groups.json"], "The same system, grouped."),
+    ("ai-stack", ["iso", "examples/showcase/ai_stack.json"], "A layer stack in isometric 3D. The audit reads depth: what hides what."),
     ("deploy", ["flow", "examples/flow_decision.json"], "A decision with a retry loop."),
     ("sequence", ["mermaid", "examples/checkout_sequence.mmd"], "A checkout request, step by step."),
     ("data-model", ["mermaid", "examples/shop_er.mmd"], "A shop's data model."),
@@ -77,7 +78,9 @@ STORIES = [
 
 
 def _look(kind):
-    """Flags that draw a figure in the site's look. Charts have no --style."""
+    """Flags that draw a figure in the site's look. Charts have no --style; iso takes only the colors."""
+    if kind == "iso":
+        return ["--theme-file", SITE_THEME]
     flags = ["--theme-file", SITE_THEME, "--corners", "sharp"]
     if kind not in ("line", "bar"):
         flags += ["--style", SITE_STYLE]

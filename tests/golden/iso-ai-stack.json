@@ -1,0 +1,36 @@
+{
+ "argv": [
+  "iso",
+  "examples/showcase/ai_stack.json"
+ ],
+ "exit": 0,
+ "html_sha256": "6f2b80e8581fb794cc0dc416cf7e0c9989e5908fe6afa5bf0b2a9af9366b39dd",
+ "receipt": {
+  "cmd": "iso",
+  "receipt": 2,
+  "spec": "ai_stack.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 18,
+  "layout": [
+   "layer 1 Applications: Chat assistants | Coding agents | AI search",
+   "layer 2 Models: Frontier LLMs | Open weights | Embeddings",
+   "layer 3 Serving and training: Inference servers | Training runs | Orchestration",
+   "layer 4 Cloud: Hyperscalers | GPU clouds | On-prem",
+   "layer 5 Silicon: GPUs | Custom ASICs | HBM memory",
+   "layer 6 Manufacturing: Foundry | Packaging | Lithography",
+   "link GPUs -> Foundry: made at",
+   "link Custom ASICs -> Packaging",
+   "link Hyperscalers -> GPUs: rents",
+   "link GPU clouds -> Custom ASICs",
+   "link Inference servers -> Hyperscalers",
+   "link Training runs -> GPU clouds",
+   "link Frontier LLMs -> Inference servers: serve",
+   "link Open weights -> Training runs",
+   "link Chat assistants -> Frontier LLMs: API",
+   "link Coding agents -> Open weights"
+  ],
+  "ok": true
+ }
+}

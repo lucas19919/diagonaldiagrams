@@ -100,9 +100,14 @@ The column numbers are after `--fit column`, which keeps a README column near fu
 | --- | --- | --- |
 | `mermaid` | `flowchart`, `sequenceDiagram`, or `erDiagram` | A flow, a sequence, or a schema |
 | `flow`, `arch`, `seq`, `schema` | JSON | The same four, from a spec |
+| `iso` | JSON | A layer stack in isometric 3D: slabs, the blocks on them, links between layers |
 | `bar`, `line`, `scatter` | CSV | A comparison, a trend, a relationship |
 | `geo` | CSV or GeoJSON | Places on a built-in coastline |
 | `chart <type>` | CSV or JSON | About 60 more |
+
+![A layer stack in isometric 3D: the AI stack from applications down to manufacturing, with a coral path from a chat assistant to the foundry](docs/gallery/ai-stack.svg)
+
+`iso` draws a stack in true isometric. The audit reads its depth back from the SVG, and flags a name hidden behind a nearer layer, a name running off its block, a link crossing a block, and solids that run into each other. The spec is in [`examples/showcase/ai_stack.json`](examples/showcase/ai_stack.json).
 
 `describe <type>` prints the contract. `diagonaldiagrams story SPEC.json -o out/story.html` walks through one figure. `--gif OUT.gif` films a view when ffmpeg is on the PATH. An edit is a JSON patch (`apply`), and `export OUT --to png|pdf|drawio|excalidraw` writes other formats.
 

@@ -42,7 +42,7 @@ def read_figure(svg):
         root = svg
     vb = (root.get("viewBox") or "").split()
     fig = {"size": [_num(vb[2]), _num(vb[3])] if len(vb) == 4 else None, "nodes": {}, "edges": [], "frames": [],
-           "actors": [], "messages": [], "roles": {}}
+           "actors": [], "messages": [], "roles": {}, "solids": []}
     for el in root.iter():
         tag = str(el.tag).split("}")[-1]
         get = el.get
@@ -72,6 +72,10 @@ def read_figure(svg):
                     fig["nodes"][nid] = {"id": nid, "label": label, "x": min(xs), "y": min(ys), "w": max(xs) - min(xs),
                                          "h": max(ys) - min(ys), "shape": "diamond", "stroke": get("stroke"),
                                          "cx": _num(get("data-cx"), None), "cy": _num(get("data-cy"), None)}
+        if tag == "polygon" and get("data-box3") is not None and get("data-label") is not None:  # an iso solid's top
+            box = [_num(v) for v in get("data-box3").split()]
+            fig["solids"].append({"id": get("data-solid"), "label": get("data-label"), "layer": get("data-layer"),
+                                  "rank": _num(get("data-rank"), None), "x": box[0] if box else 0.0})
         if tag == "path" and get("data-from") is not None and get("data-to") is not None:
             fig["edges"].append({"id": get("data-id"), "from": get("data-from"), "to": get("data-to"), "label": get("data-label") or "",
                                  "dashed": get("stroke-dasharray") is not None, "stroke": get("stroke"),
@@ -129,6 +133,8 @@ def layout_rows(fig, layers=None, across=False, columns=None):
             rows, word, lines = _layer_rows(fig, layers, across, columns)
             out += [f"{word} {k + 1}: " + " | ".join(named(fig["nodes"][i]) for i in r) for k, r in enumerate(rows)] + lines
         return out or None
+    if fig["solids"]:
+        return _stack_rows(fig)
     if fig["messages"]:
         return (["actors: " + " | ".join(fig["actors"])] +
                 [f"{k}. {m['from']} -> {m['to']}" + (f": {m['label']}" if m["label"] else "")
@@ -161,11 +167,30 @@ def layout_rows(fig, layers=None, across=False, columns=None):
     return out
 
 
+def _stacked(fig):
+    """An iso stack's layers top first, each with its blocks left to right: [(layer, [blocks])]."""
+    plates = sorted((s for s in fig["solids"] if s["layer"] is None), key=lambda s: s["rank"] if s["rank"] is not None else 0)
+    return [(p, sorted((s for s in fig["solids"] if s["layer"] == p["id"]), key=lambda s: s["x"])) for p in plates]
+
+
+def _stack_rows(fig):
+    """The verdict's layout for an iso stack: a line per layer, top first, then its links."""
+    name = {s["id"]: s["label"] for s in fig["solids"]}
+    out = [f"layer {k + 1} {p['label']}: " + (" | ".join(b["label"] for b in blocks) or "(empty)")
+           for k, (p, blocks) in enumerate(_stacked(fig))]
+    out += [f"link {name.get(e['from'], e['from'])} -> {name.get(e['to'], e['to'])}" + (f": {e['label']}" if e["label"] else "")
+            for e in fig["edges"]]
+    return out
+
+
 def outline(fig, layers=None, across=False):
     """The structured outline (--outline): nodes with their row and position, edges with labels,
     groups with members, sequence messages, chart axes and series. Long lists are capped. layers:
     as layout_rows takes them; a node's row is then its layer (its "column", across)."""
     out = {"size": fig["size"]}
+    if fig["solids"]:
+        out["layers"] = [{"id": p["id"], "name": p["label"], "items": [{"id": b["id"], "name": b["label"]} for b in blocks]}
+                         for p, blocks in _stacked(fig)]
     nodes = list(fig["nodes"].values())
     if nodes and not fig["messages"]:
         word = "row"

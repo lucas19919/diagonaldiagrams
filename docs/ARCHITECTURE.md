@@ -35,10 +35,14 @@ is correct by construction, and the audit is a safety net, not a repair loop.
    `layout/sequence.py` places actors and messages.
 4. **Routes and labels.** `route/labels.py` places each arrow label beside the segment it names.
 5. **Paint.** `paint.py` turns the layout into a **display list** (`displaylist.py`): flat,
-   z-ordered items, each tagged with its owner and role. One place writes SVG text.
+   z-ordered items, each tagged with its owner and role. One place writes SVG text. A 3D figure
+   (`iso.py`) gives its faces 3D corners; the projection stage flattens them and paints them back to
+   front, ordering whole solids by the axis that keeps them apart.
 6. **Audit.** `audit/` checks the finished drawing for what an agent can't see in its own
    output: text on text, arrows through boxes, text that spills, low contrast, tiny text. It reads
-   the display list in memory, or any SVG from disk (`audit/svg_import.py`).
+   the display list in memory, or any SVG from disk (`audit/svg_import.py`). A 3D figure's faces
+   carry their solid (`data-solid`, `data-box3`), so it also reads depth: text hidden behind a nearer
+   face, text off the face it stands on, arrows behind or across solids, solids that run into each other.
 7. **Verdict.** `cli.py` prints one JSON line: `ok`, errors with a `fix` each, warnings, and the
    layout outline (`outline.py`): rows of boxes, frames and their members, a sequence's messages.
    An agent checks the structure from that instead of a screenshot.
@@ -62,6 +66,7 @@ is correct by construction, and the audit is a safety net, not a repair loop.
 | --- | --- |
 | `cli.py`, `api.py`, `mcp.py` | the command line, the Python API, the MCP server |
 | `diagrams.py` | flow, arch, seq and schema over the layout kernels |
+| `iso.py` | the 3D toolkit (an isometric projection that orders whole solids) and the `iso` layer stack |
 | `plots.py`, `charts/`, `geo.py` | bar, line, scatter, the `chart <kind>` figures, maps |
 | `scene/`, `inputs/`, `mermaid.py` | the scene model and the formats that compile to it |
 | `style/`, `text/`, `deco.py` | styles, text layout and fonts, borders and decorations |

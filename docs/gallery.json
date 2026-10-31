@@ -20,6 +20,11 @@
   "source": "examples/checkout_groups.json"
  },
  {
+  "file": "gallery/ai-stack.svg",
+  "caption": "A layer stack in isometric 3D. The audit reads depth: what hides what.",
+  "source": "examples/showcase/ai_stack.json"
+ },
+ {
   "file": "gallery/deploy.svg",
   "caption": "A decision with a retry loop.",
   "source": "examples/flow_decision.json"

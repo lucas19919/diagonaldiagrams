@@ -39,6 +39,12 @@ def _validate_target(target, vtype="scatter", x=None, y=None, group=None, facet=
         return errors, warnings
     if not os.path.isfile(target):
         return [{"msg": f"no file {target}", "fix": "check the path; write the spec or CSV first"}], []
+    if vtype == "iso":
+        from .iso import check
+        try:
+            return check(load_spec(target, "iso"))
+        except ValueError as e:  # JSON's errors are ValueErrors
+            return [{"msg": f"bad JSON: {e}", "fix": "strict JSON: double quotes, no trailing commas, no comments"}], []
     if vtype != "spec" and vtype in _chart_kinds():  # a diagram spec never loads the chart catalog
         _validate_chart(vtype, args.target, args, errors, warnings)
         return errors, warnings

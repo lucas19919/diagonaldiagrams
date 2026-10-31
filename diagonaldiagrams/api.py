@@ -21,7 +21,7 @@ from ._lazy import lazy
 
 _mermaid_kind = lazy("diagonaldiagrams.mermaid", "_mermaid_kind")
 
-DIAGRAMS = set(_SPEC_KEYS)
+DIAGRAMS = set(_SPEC_KEYS) | {"iso"}
 OWN = {"bar", "line", "scatter", "geo"}  # data figures with their own command
 ROLE_FLAGS = ("x", "y", "group", "facet", "size", "label", "parent", "val", "a", "b", "lo", "hi")
 
@@ -130,7 +130,7 @@ def tool_argv(name, a):
                 o.setdefault("y", o.pop("val", None) or o.get("y"))
             o = {k: v for k, v in o.items() if k in ROLE_FLAGS and v}
             return ["validate", target, "--type", kind] + flags(o)
-        return ["validate", target]
+        return ["validate", target] + (["--type", "iso"] if kind == "iso" else [])
     if name == "render":
         if not kind:
             raise ValueError("render needs type")
@@ -168,7 +168,7 @@ def render(kind, spec=None, data=None, path=None, out="diagonaldiagrams-out.html
     """Validate, draw and audit one figure. Returns the verdict the command line prints, as a dict:
     ok, svg, html, receipt, layout, errors, warnings.
 
-    kind: flow, arch, seq, schema, mermaid, bar, line, scatter, geo, or any `chart` kind.
+    kind: flow, arch, seq, schema, iso, mermaid, bar, line, scatter, geo, or any `chart` kind.
     spec: a JSON-like dict; scene: a v2 scene dict whose preset is kind; data: CSV,
     GeoJSON or Mermaid text; path: a file. Pass one.
     options: the command's flags without dashes, e.g. x="month", group="product", grid=False."""
