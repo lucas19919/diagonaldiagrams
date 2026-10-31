@@ -53,7 +53,7 @@ jobs:
         run: python tests_smoke.py
 
   pyodide:
-    # The browser playground's path: the wheel unpacked into the Pyodide that docs/index.html loads.
+    # The engine in a browser's Python: the wheel unpacked into Pyodide.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

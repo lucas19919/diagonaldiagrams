@@ -1,5 +1,11 @@
 [
  {
+  "file": "gallery/three-tier.svg",
+  "caption": "A layer stack in isometric 3D. The audit reads depth: what hides what.",
+  "source": "examples/iso_three_tier.json",
+  "tall": true
+ },
+ {
   "file": "gallery/agent-platform.svg",
   "caption": "An AI agent platform, with groups and icons.",
   "source": "examples/agent_platform.json"
@@ -18,11 +24,6 @@
   "file": "gallery/checkout-grouped.svg",
   "caption": "The same system, grouped.",
   "source": "examples/checkout_groups.json"
- },
- {
-  "file": "gallery/ai-stack.svg",
-  "caption": "A layer stack in isometric 3D. The audit reads depth: what hides what.",
-  "source": "examples/showcase/ai_stack.json"
  },
  {
   "file": "gallery/deploy.svg",

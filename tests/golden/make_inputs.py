@@ -128,6 +128,7 @@ def main():
     add("iso-platform", ["iso", ex("iso_platform.json")], ["example", "iso"])
     add("iso-platform-ink", ["iso", ex("iso_platform.json"), "--theme", "ink"], ["example", "theme", "iso"])
     add("iso-ai-stack", ["iso", ex("showcase/ai_stack.json")], ["example", "iso"])
+    add("iso-three-tier", ["iso", ex("iso_three_tier.json")], ["example", "iso"])
     # examples/: data
     add("bar-latency", ["bar", ex("bar_latency.csv"), "--cat", "service", "--val", "p99_latency_ms"], ["example"])
     add("bar-latency-styled", ["bar", ex("bar_latency.csv"), "--cat", "service", "--val", "p99_latency_ms",

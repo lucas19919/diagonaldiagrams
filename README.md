@@ -2,7 +2,7 @@
 
 Diagrams and charts an agent can draw, and check, before it shows you. One command takes Mermaid, a short JSON spec, or a CSV, lays it out, draws an SVG, and audits the drawing for labels on labels, arrows through boxes, and text that spills.
 
-**[Try it in the browser](https://lucas19919.github.io/diagonaldiagrams/)**. The real engine, running in the page.
+**[See the site](https://lucas19919.github.io/diagonaldiagrams/)**: filmed figures, the benchmarks, and a gallery.
 
 ## Three figures
 

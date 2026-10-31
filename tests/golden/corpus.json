@@ -277,6 +277,17 @@
   ]
  },
  {
+  "name": "iso-three-tier",
+  "argv": [
+   "iso",
+   "examples/iso_three_tier.json"
+  ],
+  "tags": [
+   "example",
+   "iso"
+  ]
+ },
+ {
   "name": "bar-latency",
   "argv": [
    "bar",

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Build the GitHub Pages site in docs/: render the gallery from examples/ with the engine itself,
-and build the engine's wheel into docs/wheels/ so the in-browser playground runs the same code.
+"""Build the GitHub Pages site in docs/: render the gallery from examples/ with the engine itself.
 
     py -3 scripts/build_site.py
 
@@ -9,7 +8,6 @@ would reject.
 """
 import json
 import os
-import shutil
 import subprocess
 import sys
 
@@ -17,15 +15,14 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GRAPH = os.path.join(HERE, "graph.py")
 DOCS = os.path.join(HERE, "docs")
 OUT = os.path.join(DOCS, "gallery")
-WHEELS = os.path.join(DOCS, "wheels")
 
 # (file name, command line after graph.py, caption)
 FIGURES = [
+    ("three-tier", ["iso", "examples/iso_three_tier.json"], "A layer stack in isometric 3D. The audit reads depth: what hides what."),
     ("agent-platform", ["arch", "examples/agent_platform.json"], "An AI agent platform, with groups and icons."),
     ("how-it-works", ["mermaid", "examples/how_it_works.mmd"], "How a diagram gets made. Loops are drawn up the outside."),
     ("checkout", ["arch", "examples/checkout_platform.json"], "Fourteen services, and every arrow gets its own path."),
     ("checkout-grouped", ["arch", "examples/checkout_groups.json"], "The same system, grouped."),
-    ("ai-stack", ["iso", "examples/showcase/ai_stack.json"], "A layer stack in isometric 3D. The audit reads depth: what hides what."),
     ("deploy", ["flow", "examples/flow_decision.json"], "A decision with a retry loop."),
     ("sequence", ["mermaid", "examples/checkout_sequence.mmd"], "A checkout request, step by step."),
     ("data-model", ["mermaid", "examples/shop_er.mmd"], "A shop's data model."),
@@ -35,6 +32,11 @@ FIGURES = [
                  "--subtitle", "Monthly signups per product, January to June 2026",
                  "--xlabel", "Month", "--ylabel", "Signups per month"], "Each line is named at its end, so there is no legend to look up."),
 ]
+
+TALL = {"three-tier"}  # takes a whole row of the gallery
+
+# Drawn for the README, too tall for the gallery.
+README_ONLY = [("ai-stack", ["iso", "examples/showcase/ai_stack.json"])]
 
 # The benchmark charts on the page, drawn from docs/data/ by the same engine. Not in the gallery.
 SOURCE = "Claude Sonnet agents, two runs per point. Counts the tokens spent on the task, not the agent's fixed instructions."
@@ -142,52 +144,21 @@ def render_story(name, rel):
     print("ok", name)
 
 
-def publish_theme():
-    """The playground fetches these. They are the same files the build draws with."""
-    theme = os.path.join(DOCS, "theme")
-    os.makedirs(theme, exist_ok=True)
-    shutil.copyfile(SITE_THEME, os.path.join(theme, "site.json"))
-    shutil.copyfile(SITE_STYLE, os.path.join(theme, "site-style.json"))
-
-
-def main(wheel=True):
+def main():
     os.makedirs(OUT, exist_ok=True)
     shown = []
     for name, args, caption in FIGURES:
         render(name, args)
-        shown.append({"file": "gallery/" + name + ".svg", "caption": caption, "source": args[1]})
-    for name, args in MEASURED:
+        shown.append({"file": "gallery/" + name + ".svg", "caption": caption, "source": args[1],
+                      **({"tall": True} if name in TALL else {})})
+    for name, args in README_ONLY + MEASURED:
         render(name, args)
     for name, rel in STORIES:
         render_story(name, rel)
     with open(os.path.join(DOCS, "gallery.json"), "w", encoding="utf-8") as f:
         json.dump(shown, f, indent=1)
-    publish_theme()
-    if wheel:
-        built = build_wheel()
-        print(f"{len(shown)} figures; the playground loads wheels/{built}")
-    else:
-        print(f"{len(shown)} figures; wheel left as it was")
-
-
-def build_wheel():
-    """Build the pure-Python wheel the playground unpacks into Pyodide, and name it in latest.json."""
-    shutil.rmtree(WHEELS, ignore_errors=True)
-    os.makedirs(WHEELS)
-    cmd = [sys.executable, "-m", "pip", "wheel", HERE, "--no-deps", "-q", "-w", WHEELS]
-    try:
-        import setuptools  # noqa: F401  (a local setuptools builds offline)
-        cmd.insert(5, "--no-build-isolation")
-    except ImportError:
-        pass
-    subprocess.run(cmd, check=True, cwd=HERE)
-    for leftover in ("build", "diagonaldiagrams.egg-info"):
-        shutil.rmtree(os.path.join(HERE, leftover), ignore_errors=True)
-    wheel = next(n for n in os.listdir(WHEELS) if n.endswith(".whl"))
-    with open(os.path.join(WHEELS, "latest.json"), "w", encoding="utf-8") as f:
-        json.dump({"wheel": wheel}, f)
-    return wheel
+    print(f"{len(shown)} figures")
 
 
 if __name__ == "__main__":
-    main(wheel="--no-wheel" not in sys.argv)
+    main()

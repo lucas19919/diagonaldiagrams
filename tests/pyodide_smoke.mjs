@@ -1,6 +1,6 @@
-// The browser playground's path, in Node: unpack the wheel into Pyodide and draw one flowchart.
+// The engine in a browser's Python, run in Node: unpack the wheel into Pyodide and draw one flowchart.
 //
-//   npm install --no-save pyodide@0.27.2      (the version docs/index.html loads)
+//   npm install --no-save pyodide@0.27.2      (the version CI pins)
 //   python -m pip wheel . --no-deps -w dist
 //   node tests/pyodide_smoke.mjs dist/diagonaldiagrams-*.whl
 //

@@ -1,0 +1,34 @@
+{
+ "argv": [
+  "iso",
+  "examples/iso_three_tier.json"
+ ],
+ "exit": 0,
+ "html_sha256": "0c69893f1f8329a8f990b8ffd9e7a108e9ec6471541ebb4ee68fba57153c1113",
+ "receipt": {
+  "cmd": "iso",
+  "receipt": 2,
+  "spec": "iso_three_tier.json",
+  "theme": "editorial"
+ },
+ "verdict": {
+  "items": 9,
+  "layout": [
+   "layer 1 Edge: CDN | Load balancer | Firewall",
+   "layer 2 Application: Web app | API | Worker",
+   "layer 3 Data: Object store | Postgres | Queue",
+   "link Web app -> Object store",
+   "link API -> Postgres: SQL",
+   "link Worker -> Queue",
+   "link CDN -> Web app",
+   "link Load balancer -> API: HTTPS"
+  ],
+  "ok": true,
+  "warnings": [
+   {
+    "fix": "keep focal on one or two items",
+    "msg": "3 items are highlighted; past 2 the accent stops pointing at anything"
+   }
+  ]
+ }
+}
