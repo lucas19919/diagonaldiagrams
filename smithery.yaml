@@ -1,0 +1,9 @@
+# Runs inside the image the Dockerfile builds.
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+  commandFunction: |-
+    () => ({ command: "diagonaldiagrams", args: ["mcp"] })
+  exampleConfig: {}

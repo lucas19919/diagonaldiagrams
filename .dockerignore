@@ -1,0 +1,15 @@
+.git
+.github
+.claude
+.agents
+__pycache__
+*.pyc
+.pytest_cache
+build
+dist
+out
+bench
+tests
+docs
+gallery
+*.egg-info

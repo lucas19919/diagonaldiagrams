@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "diagonaldiagrams": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/lucas19919/diagonaldiagrams", "diagonaldiagrams", "mcp"]
+    }
+  }
+}

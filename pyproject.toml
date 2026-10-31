@@ -11,11 +11,17 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 authors = [{ name = "Lucas Reimers" }]
-keywords = ["charts", "diagrams", "svg", "flowchart", "mcp", "agents"]
+maintainers = [{ name = "Lucas Reimers" }]
+keywords = ["charts", "diagrams", "svg", "flowchart", "sequence-diagram", "mcp", "agents", "visualization"]
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +32,9 @@ diagonaldiagrams = "diagonaldiagrams.cli:cli"
 
 [project.urls]
 Homepage = "https://github.com/lucas19919/diagonaldiagrams"
+Documentation = "https://lucas19919.github.io/diagonaldiagrams/"
+Repository = "https://github.com/lucas19919/diagonaldiagrams"
+Issues = "https://github.com/lucas19919/diagonaldiagrams/issues"
 
 [tool.setuptools]
 packages = ["diagonaldiagrams", "diagonaldiagrams.audit", "diagonaldiagrams.charts", "diagonaldiagrams.inputs",
