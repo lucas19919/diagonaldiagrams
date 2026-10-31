@@ -233,6 +233,35 @@ class ArchInAColumn(unittest.TestCase):
         verdict, _ = self.draw("ref-arch-agent-platform.mmd")  # on a slide 'run' crossed AGENT RUNTIME
         self.assertNotIn("strike", [e["code"] for e in verdict.get("errors", [])])
 
+    def test_a_packed_try_that_breaks_a_frame_does_not_stand(self):
+        from types import SimpleNamespace
+        from diagonaldiagrams.layout.layered import _sound
+        nodes = [{"id": "a", "w": 40, "h": 40}, {"id": "b", "w": 40, "h": 40}]
+        groups = [{"id": "g", "members": ["a"]}]
+        whole = SimpleNamespace(pos={"a": (50, 50), "b": (200, 50)}, frames={"g": (20, 20, 80, 80)})
+        wrapped = SimpleNamespace(pos={"a": (50, 50), "b": (200, 50)}, frames={"g": (20, 20, 250, 80)})
+        on_top = SimpleNamespace(pos={"a": (50, 50), "b": (60, 50)}, frames={})
+        self.assertTrue(_sound(whole, nodes, groups))
+        self.assertFalse(_sound(wrapped, nodes, groups))
+        self.assertFalse(_sound(on_top, nodes, []))
+
+    def test_a_fork_at_a_dot_gives_labelled_arrows_lines_of_their_own(self):
+        spec = {"nodes": [{"id": "d", "shape": "dot"}, {"id": "a", "name": "A"}, {"id": "b", "name": "B"}],
+                "edges": [{"from": "d", "to": "a", "label": "writes"}, {"from": "d", "to": "b", "label": "reads"}]}
+        verdict = api.render("flow", spec=spec, out=os.path.join(tempfile.mkdtemp(), "f.html"))
+        self.assertTrue(verdict["ok"], verdict)
+
+    def test_arrows_arriving_together_are_a_trunk_even_with_labels(self):
+        from diagonaldiagrams.audit import _audit_file
+        arrow = '<path d="M{x},40 L{x},80 L100,80 L100,140" fill="none" stroke="#333" marker-end="url(#a)" data-label="{t}"/>'
+        svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">'
+               + arrow.format(x=300, t="a") + arrow.format(x=250, t="b") + "</svg>")
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "t.svg")
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(svg)
+            self.assertNotIn("shared", [e.get("code") for e in _audit_file(path)["errors"]])
+
     def test_the_audit_flags_a_labelled_trunk(self):
         from diagonaldiagrams.audit import _audit_file
         arrow = '<path d="M100,40 L100,80 L{x},80 L{x},140" fill="none" stroke="#333" marker-end="url(#a)" data-label="{t}"/>'

@@ -94,6 +94,8 @@ def layout(nodes, edges, groups=(), options=None):
     best, tried = res, set()
     for more in range(-1, 5):  # -1: units packed side by side in as few rows as fit (rows._pack)
         res = _layout(nodes, edges, groups, dict(o, more_rows=more))
+        if more < 0 and not _sound(res, nodes, groups):  # a frame dealt over rows wraps boxes not its own
+            continue
         seen = tuple(sorted((str(i), r) for i, r in res.rank.items()))
         if seen in tried:  # the same rows as a try before
             continue
@@ -103,6 +105,39 @@ def layout(nodes, edges, groups=(), options=None):
         if res.size[0] <= most:
             break
     return best
+
+
+def _sound(res, nodes, groups):
+    """Whether packed rows kept the figure whole: no box in a frame it isn't a member of, and no two
+    boxes or frames, other than a frame and what it holds, on top of each other."""
+    def hit(a, b):
+        return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+    box = {n["id"]: (res.pos[n["id"]][0] - n["w"] / 2.0, res.pos[n["id"]][1] - n["h"] / 2.0,
+                     res.pos[n["id"]][0] + n["w"] / 2.0, res.pos[n["id"]][1] + n["h"] / 2.0) for n in nodes if n["id"] in res.pos}
+    parent = {g["id"]: g.get("parent") for g in groups}
+    held = {g["id"]: set() for g in groups}
+    for g in groups:
+        at = g["id"]
+        while at is not None:
+            held[at].update(g.get("members") or ())
+            at = parent.get(at)
+    within = {g: {g} for g in parent}
+    for g in parent:
+        at = parent[g]
+        while at is not None:
+            within[at].add(g)
+            at = parent.get(at)
+    ids = list(box)
+    for k, i in enumerate(ids):
+        if any(hit(box[i], box[j]) for j in ids[k + 1:]):
+            return False
+    for g, frame in res.frames.items():
+        if any(i not in held.get(g, ()) and hit(b, frame) for i, b in box.items()):
+            return False
+        if any(h != g and h not in within.get(g, ()) and g not in within.get(h, ()) and hit(frame, other)
+               for h, other in res.frames.items()):
+            return False
+    return True
 
 
 def room(size, o):
@@ -681,7 +716,9 @@ class _Plan:
             inf = self.info[nid]
             along = inf["w"] if side in ("n", "s") else inf["h"]
             if inf["shape"] == "dot":
-                lim = 4.0 if side in ("w", "e") and len(items) > 1 else 0.0  # its side arrows apart, just
+                # its side arrows apart, just, and labelled ones anywhere: on one line their labels would share it
+                many = sum(1 for t in items if t[0] in (o.get("labels") or {})) >= 2
+                lim = 4.0 if (side in ("w", "e") or many) and len(items) > 1 else 0.0
             elif inf["shape"] == "diamond":
                 lim = 10.0
             else:
@@ -833,7 +870,7 @@ class _Plan:
         if inf["shape"] == "dot":
             if side in ("w", "e"):
                 return x + (hw if side == "e" else -hw), off
-            return x, {"n": -hh, "s": hh}.get(side, 0.0)
+            return x + off, {"n": -hh, "s": hh}.get(side, 0.0)
         if inf["shape"] == "diamond":
             if side in ("n", "s"):
                 dy = hh - abs(off) * hh / hw
