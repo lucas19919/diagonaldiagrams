@@ -598,63 +598,6 @@ h2 {
 .fold li { margin-top: 0.45rem; }
 .fold code, .def code { font-family: var(--mono); font-size: 0.86em; }
 
-.play {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 2.5rem;
-  border: 1px solid var(--line-light);
-}
-.panel { display: flex; flex-direction: column; min-height: 460px; min-width: 0; }
-.panel + .panel { border-left: 1px solid var(--line-light); }
-.bar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line-light);
-}
-.bar strong { font-weight: 600; font-size: 0.95rem; }
-.bar select, .bar button {
-  font-family: var(--sans);
-  font-size: 0.95rem;
-  padding: 6px 10px;
-  border-radius: 0;
-  border: 1px solid var(--line-light);
-  background: transparent;
-  color: var(--ink);
-}
-.bar button.go {
-  background: var(--ink);
-  color: var(--paper);
-  border: 0;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0.55rem 1rem;
-}
-.bar button.go:disabled { opacity: 0.5; cursor: progress; }
-.bar button.expand { margin-left: auto; cursor: pointer; }
-textarea {
-  flex: 1;
-  border: 0;
-  resize: vertical;
-  min-height: 320px;
-  padding: 14px;
-  font: 13px/1.55 var(--mono);
-  color: var(--ink);
-  background: transparent;
-  outline: none;
-}
-.out { flex: 1; padding: 12px; overflow: auto; display: flex; align-items: flex-start; justify-content: center; background: var(--paper); }
-.out svg { max-width: 100%; height: auto; cursor: zoom-in; }
-.check { border-top: 1px solid var(--line-light); padding: 12px 14px; font-size: 0.95rem; color: rgb(17 17 17 / 0.78); }
-.check .ok { color: var(--ok); font-weight: 600; }
-.check .bad { color: var(--bad); font-weight: 600; }
-.check ul { margin: 8px 0 0; padding-left: 1.1rem; }
-.check li { margin-top: 4px; }
-.status { margin-left: auto; font-size: 0.8rem; color: rgb(17 17 17 / 0.5); }
-.hint { font-size: 0.9rem; color: rgb(17 17 17 / 0.55); padding: 8px 14px; border-top: 1px solid var(--line-light); }
-
 .gallery {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -669,6 +612,9 @@ textarea {
 }
 .gallery img { height: 220px; object-fit: contain; object-position: center; }
 .gallery figcaption { padding: 0 0.15rem; }
+/* a tall figure takes the whole row, big enough to read: a stack drawn in 220px is a sliver */
+.gallery figure.tall { grid-column: 1 / -1; }
+.gallery figure.tall img { height: min(680px, 110vw); }
 
 .defs { margin-top: 2.5rem; }
 .def {
@@ -1613,7 +1559,7 @@ const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&": "&amp;", "<": "&lt;
 
 fetch("gallery.json").then((r) => r.json()).then((items) => {
   $("grid").innerHTML = items.map((g) =>
-    `<figure><a href="${g.file}"><img src="${g.file}" alt="${esc(g.caption)}" loading="lazy"></a>` +
+    `<figure${g.tall ? ' class="tall"' : ""}><a href="${g.file}"><img src="${g.file}" alt="${esc(g.caption)}" loading="lazy"></a>` +
     `<figcaption>${esc(g.caption)}</figcaption></figure>`).join("");
 }).catch(() => {});
 

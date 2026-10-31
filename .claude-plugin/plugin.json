@@ -10,5 +10,5 @@
   "repository": "https://github.com/lucas19919/diagonaldiagrams",
   "license": "MIT",
   "keywords": ["charts", "diagrams", "svg", "flowchart", "sequence-diagram", "visualization"],
-  "skills": ["./.agents/skills/graph-engine"]
+  "skills": ["./.agents/skills/graph-engine", "./.agents/skills/diagonaldiagrams-install"]
 }

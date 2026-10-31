@@ -8,12 +8,11 @@ the MCP registry checks PyPI, and PyPI needs the version on GitHub first.
 ```bash
 py -3 tests_smoke.py              # exit 0
 py -3 scripts/golden.py           # every golden figure matches, or each change is intended
-py -3 scripts/build_site.py       # every gallery figure passes its audit; builds docs/wheels/ for the playground
+py -3 scripts/build_site.py       # every gallery figure passes its audit
 ```
 
 Keep the version the same in `diagonaldiagrams/__init__.py` (`__version__`), `.claude-plugin/plugin.json`, and
-`server.json` (twice). The tests check the first two. Commit `docs/wheels/` with the release: the playground
-loads the wheel named in `docs/wheels/latest.json`.
+`server.json` (twice) and `.mcpb/manifest.json`. The tests check the first two.
 
 ## 1. GitHub: push, and turn on Pages
 
@@ -35,7 +34,10 @@ py -3 -m build
 py -3 -m twine upload dist/*
 ```
 
-Then `pip install diagonaldiagrams` and `uvx diagonaldiagrams mcp` work.
+Then `pip install diagonaldiagrams` and `uvx diagonaldiagrams mcp` work. Until this step `.mcp.json` runs the
+server from GitHub (`uvx --from git+https://...`); once it is done, point it at the PyPI package.
+
+`py -3 scripts/build_mcpb.py` writes the one-click desktop bundle to `dist/`; attach it to the GitHub release.
 
 ## 3. Official MCP registry
 

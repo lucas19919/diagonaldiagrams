@@ -2,8 +2,7 @@
 """graph.py: run diagonaldiagrams from a checkout.
 
 The engine is the diagonaldiagrams/ package next to this file. This shim keeps
-`py graph.py <command> ...` working, and `import graph` (the browser playground calls
-graph.cli()).
+`py graph.py <command> ...` working, and `import graph` (Pyodide calls graph.cli()).
 """
 import os
 import sys

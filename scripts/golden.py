@@ -11,7 +11,7 @@ The corpus is tests/golden/corpus.json (written by tests/golden/make_inputs.py).
 tests/golden/ holds NAME.svg and NAME.json: the argv, exit code, verdict JSON (output paths
 removed), a hash of the HTML page, and the receipt (input paths reduced to file names).
 
-Rendering runs in this process through graph.cli(), the same entry point the browser playground
+Rendering runs in this process through graph.cli(), the same entry point Pyodide
 uses, so it keeps working when graph.py becomes a shim over the package. PYTHONHASHSEED is pinned
 to 0 so a set's iteration order can't change the output between runs.
 """

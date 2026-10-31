@@ -17,7 +17,6 @@ venv.bak/
 build/
 dist/
 wheels/
-!docs/wheels/
 *.egg-info/
 .eggs/
 *.egg
@@ -63,17 +62,6 @@ bench/metrics/latest.*
 !bench/speed/
 bench/speed/latest.*
 !bench/tokens/
-
-# Context System: Transient scratchpads, session notes & logs
-# (Tier 3: Ignored transient state; Tier 2 specs/ADRs in context/ remain tracked)
-context/scratch/*
-!context/scratch/.gitkeep
-context/private/
-context/bench/
-context/logs/
-context/*.local.*
-.context/
-/scratch/
 
 # OS metadata
 .DS_Store

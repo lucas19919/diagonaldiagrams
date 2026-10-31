@@ -85,14 +85,14 @@ PNG and PDF, ffmpeg on the PATH for GIF and video.
 python -m unittest discover tests/unit      # unit tests
 python -m unittest discover tests/style     # seven style demos, a stylesheet each
 python tests_smoke.py                        # the command-line contract (DD_ENTRY=module or installed too)
-python scripts/golden.py                     # 115 reference figures, byte for byte
+python scripts/golden.py                     # the reference figures, byte for byte
 python scripts/golden.py --determinism       # the same bytes across hash seeds
 python scripts/scene_roundtrip.py            # v1 spec -> scene -> v1 spec draws the same bytes
 python tests/fuzz/run.py --n 200 --seed 5000 --strict   # random scenes must pass the audit
 ```
 
 CI runs all of these on Linux and Windows, Python 3.11 to 3.13, plus the installed wheel and the
-browser playground (Pyodide). `golden.py --update --only NAME` records an intended change; review
+engine under Pyodide. `golden.py --update --only NAME` records an intended change; review
 the picture first.
 
 ## Benchmarks

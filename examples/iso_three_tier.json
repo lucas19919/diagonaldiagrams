@@ -1,0 +1,96 @@
+{
+  "title": "A web app, tier by tier",
+  "sub": "A request follows the coral path from the edge down to the database.",
+  "layers": [
+    {
+      "id": "edge",
+      "name": "Edge",
+      "sub": "what the internet sees",
+      "items": [
+        {
+          "id": "cdn",
+          "name": "CDN"
+        },
+        {
+          "id": "lb",
+          "name": "Load balancer",
+          "focal": true
+        },
+        {
+          "id": "waf",
+          "name": "Firewall"
+        }
+      ]
+    },
+    {
+      "id": "app",
+      "name": "Application",
+      "sub": "where the logic runs",
+      "items": [
+        {
+          "id": "web",
+          "name": "Web app"
+        },
+        {
+          "id": "api",
+          "name": "API",
+          "sub": "Go:8080",
+          "focal": true
+        },
+        {
+          "id": "worker",
+          "name": "Worker",
+          "sub": "Python"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "name": "Data",
+      "sub": "what stays",
+      "items": [
+        {
+          "id": "s3",
+          "name": "Object store"
+        },
+        {
+          "id": "pg",
+          "name": "Postgres",
+          "focal": true
+        },
+        {
+          "id": "redis",
+          "name": "Queue",
+          "sub": "Redis"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "cdn",
+      "to": "web"
+    },
+    {
+      "from": "lb",
+      "to": "api",
+      "label": "HTTPS",
+      "focal": true
+    },
+    {
+      "from": "api",
+      "to": "pg",
+      "label": "SQL",
+      "focal": true
+    },
+    {
+      "from": "web",
+      "to": "s3"
+    },
+    {
+      "from": "worker",
+      "to": "redis",
+      "async": true
+    }
+  ]
+}
