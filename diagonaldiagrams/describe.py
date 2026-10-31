@@ -200,7 +200,7 @@ DESCRIBE["story"] = {  # the command; `chart story`, a user story map, keeps its
     "input": "Story JSON: one figure and its views.",
     "writes": "diagonaldiagrams story STORY.json -o OUT.html [--svg OUT.svg] [--gif OUT.gif] [--video OUT.mp4] [--view ID] [--fps 20] "
               "(the figure itself is drawn as OUT.figure.svg)",
-    "shape": {"title": "...", "figure": {"type": "flow|arch|seq|schema|mermaid",
+    "shape": {"title": "...", "figure": {"type": "flow|arch|seq|schema|iso|mermaid",
                                          "spec": "a path relative to the story file, or the spec itself"},
               "views": [{"id": "...", "title": "...", "text": "shown under the figure", "notes": "speaker notes (N)",
                          "focus": "selector: the camera frames it", "dim": "selector", "hide": "selector",
@@ -212,7 +212,7 @@ DESCRIBE["story"] = {  # the command; `chart story`, a user story map, keeps its
               "highlight undoes a dim; hide beats both; reveal shows each step at full strength, and an arrow once both its ends show",
               "a selector that matches nothing is a warning; every view has the same layout, so the page animates looks and camera",
               "keys: arrows, Space, Home, End; N shows the notes; a link to #view or #view/step opens it; printing gives a page per step",
-              "motion (flow, arch, schema): trace runs a packet along the arrows' routes and lights them; a hop may run against "
+              "motion (flow, arch, schema, iso): trace runs a packet along the arrows' routes and lights them; a hop may run against "
               "an arrow; flow runs dots along arrows; traces play in order and their total is the loop; P pauses",
               "--svg writes the first view with motion (or --view) as a seamless animated SVG, in pure Python; "
               "--gif and --video film it through ffmpeg"],

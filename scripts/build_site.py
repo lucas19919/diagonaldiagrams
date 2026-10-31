@@ -34,9 +34,7 @@ FIGURES = [
 ]
 
 TALL = {"three-tier"}  # takes a whole row of the gallery
-
-# Drawn for the README, too tall for the gallery.
-README_ONLY = [("ai-stack", ["iso", "examples/showcase/ai_stack.json"])]
+FILMED = {"three-tier"}  # the gallery shows its film (STORIES), which keeps its heading
 
 # The benchmark charts on the page, drawn from docs/data/ by the same engine. Not in the gallery.
 SOURCE = "Claude Sonnet agents, two runs per point. Counts the tokens spent on the task, not the agent's fixed instructions."
@@ -76,6 +74,7 @@ STORIES = [
     ("nvidia", "examples/showcase/nvidia_story.json"),
     ("palantir", "examples/showcase/palantir_story.json"),
     ("falcon9", "examples/showcase/falcon9_story.json"),
+    ("three-tier", "examples/showcase/three_tier_story.json"),
 ]
 
 
@@ -139,7 +138,7 @@ def render_story(name, rel):
         rep = {"ok": False, "errors": [{"msg": (p.stdout + p.stderr)[-300:]}]}
     if not rep.get("ok"):
         sys.exit(f"{name}: {rep.get('errors')}")
-    if name != "hero":
+    if name != "hero" and name not in FILMED:
         crop_heading(anim)
     print("ok", name)
 
@@ -149,9 +148,9 @@ def main():
     shown = []
     for name, args, caption in FIGURES:
         render(name, args)
-        shown.append({"file": "gallery/" + name + ".svg", "caption": caption, "source": args[1],
+        shown.append({"file": ("showcase/" if name in FILMED else "gallery/") + name + ".svg", "caption": caption, "source": args[1],
                       **({"tall": True} if name in TALL else {})})
-    for name, args in README_ONLY + MEASURED:
+    for name, args in MEASURED:
         render(name, args)
     for name, rel in STORIES:
         render_story(name, rel)

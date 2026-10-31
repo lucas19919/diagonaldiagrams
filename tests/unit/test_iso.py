@@ -255,6 +255,55 @@ class Styled(unittest.TestCase):
         self.assertTrue(_audit_drawn(d, d.tree())["ok"])
 
 
+class Stories(unittest.TestCase):
+    def build(self, views, spec=None):
+        import tempfile
+        from diagonaldiagrams import story
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "s.json")
+            with open(p, "w", encoding="utf-8") as f:
+                json.dump({"title": "t", "figure": {"type": "iso", "spec": spec or stack()}, "views": views}, f)
+            anim = os.path.join(d, "a.svg")
+            rep = story.build(p, os.path.join(d, "s.html"), anim=anim)
+            with open(anim, encoding="utf-8") as f:
+                return rep, f.read()
+
+    def test_a_trace_runs_down_the_links(self):
+        spec = stack(links=[{"from": "p", "to": "r"}])
+        rep, svg = self.build([{"id": "v", "motion": [{"trace": "p -> r"}]}], spec)
+        self.assertTrue(rep["ok"], rep)
+        self.assertEqual(rep["views"][0]["motion"]["traces"], 1)
+        self.assertIn("data-frame", svg)
+        self.assertIn("polygon", svg)  # the pulse takes the shape of the block's top
+
+    def test_a_trace_runs_across_a_layer_it_passes(self):
+        from diagonaldiagrams import motion
+        spec = {"title": "t", "layers": [{"id": "a", "items": [{"id": "p"}]}, {"id": "m", "items": [{"id": "v"}]},
+                                         {"id": "c", "items": [{"id": "r"}]}], "links": [{"from": "p", "to": "r"}]}
+        arrows = motion.arrows(iso.render(spec)[0])
+        self.assertEqual(len(arrows), 1)
+        ys = [q[1] for q in arrows[0]["pts"]]
+        self.assertEqual(ys, sorted(ys))
+        self.assertEqual(len(arrows[0]["pts"]), 4)  # two pieces, one each side of the slab
+
+    def test_dim_and_highlight_reach_every_part_of_a_block(self):
+        spec = stack()
+        info = {}
+        from diagonaldiagrams import story
+        looks = {("nodes", "p"): {"opacity": 0.18}, ("nodes", "q"): {"stroke": "accent", "stroke-width": 2.6}}
+        svg = iso.render(story.looked(spec, "iso", looks), info=info)[0]
+        import re
+        self.assertEqual(len(re.findall(r'<polygon[^>]*data-solid="p"[^>]*opacity="0.18"', svg)), 3)
+        self.assertRegex(svg, r'<text[^>]*opacity="0.18"[^>]*>P<')
+        self.assertRegex(svg, r'<polygon[^>]*stroke-width="2.6"[^>]*data-solid="q"')
+
+    def test_the_camera_frames_slabs_and_blocks(self):
+        from diagonaldiagrams import story
+        svg = iso.render(stack())[0]
+        self.assertIsNotNone(story.camera(svg, {"nodes": ["p"]}))
+        self.assertIsNotNone(story.camera(svg, {"groups": ["b"]}))
+
+
 class Deterministic(unittest.TestCase):
     def test_same_bytes_twice(self):
         self.assertEqual(iso.render(stack())[0], iso.render(stack())[0])
