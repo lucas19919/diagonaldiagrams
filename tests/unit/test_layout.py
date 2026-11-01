@@ -193,6 +193,43 @@ class Layered(unittest.TestCase):
             self.check(nodes, edges, trunk=True, straight=True, prev={n: x for n, (x, _) in res.pos.items() if n != "n1"})
 
 
+class LabelRoom(unittest.TestCase):
+    """A label too wide for the frame around its arrow, in a figure too dense for a strip to open."""
+
+    def test_the_label_asks_the_frame_for_room_on_its_clear_side(self):
+        from diagonaldiagrams.layout.room import _ask, _strips
+        frames = {"g": (0.0, 0.0, 144.0, 264.0)}
+        crowded = {}
+        _ask(58.0, 162.0, True, 128.0, _strips(frames), [], frames, crowded)
+        self.assertEqual(list(crowded), [("g", 1)])  # no arrows either side: the less room
+        self.assertAlmostEqual(crowded[("g", 1)], 49.5)
+        crowded = {}
+        arrow = (80.0, 150.0, 82.0, 170.0)  # on the right: the left costs more room but crosses nothing
+        _ask(58.0, 162.0, True, 128.0, _strips(frames), [arrow], frames, crowded)
+        self.assertEqual(list(crowded), [("g", 0)])
+
+    def test_a_frame_given_room_is_wider_on_that_side_only(self):
+        nodes = [{"id": "a", "w": 112, "h": 40}, {"id": "b", "w": 112, "h": 40}]
+        edges = [{"id": "e", "from": "a", "to": "b"}]
+        groups = [{"id": "g", "members": ["a", "b"]}]
+        plain = layered.layout(nodes, edges, groups, {"direction": "TB"})
+        wide = layered.layout(nodes, edges, groups, {"direction": "TB", "frame_room": {("g", 0): 50.0}})
+        x0, _, x1, _ = plain.frames["g"]
+        wx0, _, wx1, _ = wide.frames["g"]
+        self.assertAlmostEqual((wx1 - wx0) - (x1 - x0), 50.0)
+        self.assertAlmostEqual(wide.pos["a"][0] - wx0, plain.pos["a"][0] - x0 + 50.0)
+
+    def test_the_fuzz_scene_that_found_it_passes(self):
+        import json
+        import tempfile
+        from diagonaldiagrams import api
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "fuzz"))
+        import gen
+        with tempfile.TemporaryDirectory() as d:
+            verdict = api.render("arch", spec=gen.make("arch", 111679, 42), out=os.path.join(d, "f.html"))
+        self.assertTrue(verdict["ok"], json.dumps(verdict.get("errors")))
+
+
 class Sequence(unittest.TestCase):
     def test_lifelines_make_room_for_the_widest_label_and_messages_step_down(self):
         from diagonaldiagrams.layout import sequence

@@ -68,11 +68,12 @@ class Route:
 
 
 class Result:
-    __slots__ = ("pos", "size", "routes", "frames", "layers", "crossings", "issues", "rank", "wrapped")
+    __slots__ = ("pos", "size", "routes", "frames", "layers", "crossings", "issues", "rank", "wrapped", "crowded")
 
     def __init__(self):
         self.pos, self.size, self.routes, self.frames = {}, (0.0, 0.0), {}, {}
         self.layers, self.crossings, self.issues, self.rank = [], 0, [], {}
+        self.crowded = {}
         self.wrapped = False
 
 
@@ -83,7 +84,7 @@ def _shape(n):
 
 def layout(nodes, edges, groups=(), options=None):
     o = dict(DEFAULTS, **(options or {}))
-    res = _layout(nodes, edges, groups, o)
+    res = _roomy(nodes, edges, groups, o)
     most = o.get("max_width")
     if not most or str(o["direction"]).upper() not in ("TB", "BT") or res.size[0] <= most:
         return res
@@ -93,7 +94,7 @@ def layout(nodes, edges, groups=(), options=None):
     # stacked like a comb can cost more height, and longer arrows, than the width they save
     best, tried = res, set()
     for more in range(-1, 5):  # -1: units packed side by side in as few rows as fit (rows._pack)
-        res = _layout(nodes, edges, groups, dict(o, more_rows=more))
+        res = _roomy(nodes, edges, groups, dict(o, more_rows=more))
         if more < 0 and not _sound(res, nodes, groups):  # a frame dealt over rows wraps boxes not its own
             continue
         seen = tuple(sorted((str(i), r) for i, r in res.rank.items()))
@@ -105,6 +106,20 @@ def layout(nodes, edges, groups=(), options=None):
         if res.size[0] <= most:
             break
     return best
+
+
+def _roomy(nodes, edges, groups, o):
+    """A layout, and again with its frames wider where a label asked for room that opening a strip
+    after the fact could not give (room.make_room). Two more tries: more room moves what is beside it."""
+    res = _layout(nodes, edges, groups, o)
+    room_in = {}
+    for _ in range(2):
+        if not res.crowded:
+            break
+        for key, d in res.crowded.items():
+            room_in[key] = room_in.get(key, 0.0) + d
+        res = _layout(nodes, edges, groups, dict(o, frame_room=room_in))
+    return res
 
 
 def _sound(res, nodes, groups):
@@ -311,13 +326,18 @@ def _layout(nodes, edges, groups, o):
         else:
             width[it] = 0.0
 
+    wider = o.get("frame_room") or {}  # a label's room in a frame, on each side (_roomy)
+
     def gap(a, b):
         ka, kb = L.kind[a], L.kind[b]
         # layers are sorted as a tree: after a frame's left border comes its contents or its right border
         if ka == "left":
-            return 2 * o["group_pad"] if kb == "right" and L.owner[b] == L.owner[a] else o["group_pad"]
+            more = wider.get((L.owner[a], 0), 0.0)
+            if kb == "right" and L.owner[b] == L.owner[a]:
+                return 2 * o["group_pad"] + more + wider.get((L.owner[a], 1), 0.0)
+            return o["group_pad"] + more
         if kb == "right":
-            return o["group_pad"]
+            return o["group_pad"] + wider.get((L.owner[b], 1), 0.0)
         if ka == "right" or kb == "left":
             return o["group_gap"]  # outside a frame
         if ka == "port" and kb == "node" and L.attach[a] == b or kb == "port" and ka == "node" and L.attach[b] == a:
@@ -490,7 +510,7 @@ def _layout(nodes, edges, groups, o):
         from .room import make_room
         reach = {i: info[i]["w"] / 2.0 + o["loop"] + flat_room[(i, i)] for i in loop_nodes if (i, i) in flat_room}
         room_x = make_room(res.pos, info, res.frames, res.routes, o["labels"], reach, o.get("min_width", 0.0),
-                           o.get("margin", 0.0))
+                           o.get("margin", 0.0), res.crowded)
 
     # 7. into the canvas's frame of reference, and turned for LR, BT, RL
     pts = [p for r in res.routes.values() for p in r.points]

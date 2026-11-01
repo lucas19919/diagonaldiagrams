@@ -12,6 +12,10 @@ crosses widens. When only the canvas edge blocks it, the figure reaches further 
 cuts a box or a label, and it only widens what it crosses, so arrows stay off boxes and off each other's
 lines. A figure whose labels all fit draws exactly as before.
 
+A strip runs the figure's whole height, so in a dense figure every x may cut a box somewhere and no
+strip exists. A label stuck on the border of the frame around its arrow then asks the layout for the
+room instead (crowded): layered.py lays the figure out again with that frame wider on that side.
+
 Everything here is in the layered layout's top-to-bottom frame, after wrap and before any turn.
 """
 from ..route.labels import GAP, first_spot, label_box, place_label
@@ -54,10 +58,11 @@ def _canvas(pos, info, frames, routes, reach, extra, min_width, margin):
     return [(left - 40, -FAR, left, FAR), (left + W, -FAR, left + W + 40, FAR)]
 
 
-def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, margin=0.0):
+def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, margin=0.0, crowded=None):
     """Opens room for labels, in place: pos {node: (x, y)}, frames {group: box}, routes (their points).
     widths: {edge id: pill width}. reach: {node: how far past its center the figure reaches} (a self-loop
-    and its label). Returns the x of points the figure's extent must take in."""
+    and its label). crowded, if given, gets {(group, 0 left or 1 right): px} for the room no strip could
+    open. Returns the x of points the figure's extent must take in."""
     reach = reach or {}
     extra, placed = [], []
     fixed = soft = canvas = None
@@ -77,6 +82,8 @@ def make_room(pos, info, frames, routes, widths, reach=None, min_width=0.0, marg
             if attempt == 2 or not _hits(box, avoid):
                 break
             if not _open(mx, my, vert, w, fixed + placed, canvas, soft, pos, info, frames, routes, placed, extra, margin):
+                if crowded is not None:
+                    _ask(mx, my, vert, w, fixed + placed, soft, frames, crowded)
                 break
             fixed = None
         placed.append(box)
@@ -122,6 +129,24 @@ def _open(mx, my, vert, w, solid, canvas, soft, pos, info, frames, routes, place
     else:
         extra.append(b[0] - 2.5 + margin)
     return True
+
+
+def _ask(mx, my, vert, w, solid, soft, frames, crowded):
+    """The room a label at (mx, my) needs from the frame around it, when only that frame's border is in
+    its way: on the side where it crosses fewer arrows, else the less of it."""
+    best = None
+    for g, (x0, y0, x1, y1) in frames.items():
+        if not (x0 < mx < x1 and y0 < my < y1):
+            continue
+        for flip in (False, True):
+            b = label_box(mx, my, None, vert, flip, w, GAP)
+            block = _hits(b, solid)
+            side, d = (0, x0 + 3.5 - b[0]) if block == [(x0 - 1, y0, x0 + 1, y1)] else (1, b[2] + 3.5 - x1) if block == [(x1 - 1, y0, x1 + 1, y1)] else (None, 0)
+            if side is not None and (best is None or (len(_hits(b, soft)), d) < best[0]):
+                best = ((len(_hits(b, soft)), d), g, side)
+    if best is not None:
+        key = (best[1], best[2])
+        crowded[key] = max(crowded.get(key, 0.0), best[0][1])
 
 
 def _free(lo, hi, pos, info, placed):
