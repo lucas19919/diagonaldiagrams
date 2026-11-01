@@ -213,7 +213,7 @@ img { max-width: 100%; }
 }
 .hero .lede {
   margin-top: 1.5rem;
-  max-width: 36ch;
+  max-width: 42ch;
   font-size: var(--t-lede);
   line-height: 1.35;
   letter-spacing: -0.015em;
@@ -261,6 +261,11 @@ img { max-width: 100%; }
 }
 .thesis .block + .block { margin-top: 1.5rem; }
 .thesis .block a { border-bottom: 1px solid currentColor; }
+.thesis .block strong { font-weight: 650; }
+.thesis .demo { margin-top: 2.25rem; max-width: 52ch; }
+.thesis .demo pre { padding-right: 1.25rem; font-size: 13px; }
+.thesis .demo-note { margin-top: 0.85rem; max-width: 52ch; font-size: 0.95rem; line-height: 1.5; }
+.thesis .demo-note code { font-family: var(--mono); font-size: 0.9em; }
 #install { padding: clamp(5.5rem, 12vh, 8.5rem) 0; }
 #install .sub {
   margin-top: 1.25rem;
@@ -1279,7 +1284,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
       </button>
     </div>
     <h1 class="tagline">Diagrams your agent gets right.</h1>
-    <p class="lede">A flowchart, an architecture, a sequence or a chart. Drawn, then checked for overlapping text and tangled arrows. The agent gets the verdict in one line.</p>
+    <p class="lede">An AI agent describes a diagram in text. diagonaldiagrams draws it as an SVG and checks it for mistakes.</p>
     <div class="acts">
       <a class="top-btn filled" href="#install">Install</a>
       <a class="top-btn ghost star" href="https://github.com/lucas19919/diagonaldiagrams" target="_blank" rel="noopener">
@@ -1296,11 +1301,17 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
   <section class="paper thesis" id="how">
     <div class="thesis-stage">
       <div class="wrap split">
-        <h2>Nothing reaches you unchecked.</h2>
+        <h2>How it works.</h2>
         <div>
-          <p class="block">Your agent describes what it needs in Mermaid. diagonaldiagrams lays it out, renders it as clean SVG, and audits every collision before you ever see it.</p>
-          <p class="block">Text overlapping text, arrows cutting through boxes, and words spilling out of shapes are caught automatically. Problems are repaired on the first pass; what remains returns to your agent with exact coordinates and a one-line verdict.</p>
-          <p class="block">Starts from Mermaid syntax, so agents need no new training, and human engineers can export directly to Excalidraw or draw.io.</p>
+          <p class="block"><strong>1. Describe.</strong> The agent writes a short description of the diagram, in Mermaid, JSON or CSV.</p>
+          <p class="block"><strong>2. Draw.</strong> diagonaldiagrams lays it out and saves an SVG file.</p>
+          <p class="block"><strong>3. Check.</strong> It looks for text on top of text, arrows through boxes, and words that don't fit their shape. It prints one line of JSON: all clear, or what's wrong and how to fix it. The agent reads that line instead of a screenshot.</p>
+          <div class="code-wrap demo">
+            <pre>$ diagonaldiagrams mermaid flow.mmd -o flow.svg
+{"ok": true, "svg": "flow.svg", ..., "items": 3,
+ "layout": ["row 1: Start", "row 2: Ready? (decision)", "row 3: Done"]}</pre>
+          </div>
+          <p class="note demo-note">Real output for a three-box flowchart, with the file paths shortened. If something is wrong, <code>ok</code> is <code>false</code> and each problem has a <code>fix</code>.</p>
         </div>
       </div>
     </div>
@@ -1309,14 +1320,14 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
   <section class="paper band" id="install">
     <div class="wrap split">
       <div>
-        <h2>Install it once.</h2>
-        <p class="sub">Four ways to add diagonaldiagrams to your workflow. Needs Python 3.9 or newer.</p>
+        <h2>Install it.</h2>
+        <p class="sub">Pick the way that matches how you use your agent. Needs Python 3.11 or newer.</p>
       </div>
       <div class="install-cards">
         <article class="install-card open">
           <button type="button" class="card-toggle" aria-expanded="true">Any Agent (Skill)</button>
           <div class="more"><div>
-            <p>Tell your agent to install diagonaldiagrams using our <a href="https://github.com/lucas19919/diagonaldiagrams/blob/master/.agents/skills/diagonaldiagrams-install/SKILL.md" target="_blank" rel="noopener">install skill</a>. It clones the library, verifies the engine, and copies the <code>graph-engine</code> skill into its skills folder.</p>
+            <p>Paste this to your agent. It follows the <a href="https://github.com/lucas19919/diagonaldiagrams/blob/master/.agents/skills/diagonaldiagrams-install/SKILL.md" target="_blank" rel="noopener">install skill</a>: it downloads the repo, checks that it works, and copies the drawing skill into its skills folder.</p>
             <div class="code-wrap">
               <pre>Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams</pre>
               <button type="button" class="copy-pill on-card" data-copy="Install diagonaldiagrams from https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy skill prompt">
@@ -1329,7 +1340,7 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
         <article class="install-card">
           <button type="button" class="card-toggle" aria-expanded="false">Claude Code (Plugin)</button>
           <div class="more"><div>
-            <p>Adds diagonaldiagrams and the instructions Claude uses to draw with it.</p>
+            <p>Adds the tool, and the instructions Claude uses to draw with it.</p>
             <div class="code-wrap">
               <pre>/plugin marketplace add lucas19919/diagonaldiagrams
 /plugin install diagonaldiagrams@diagonaldiagrams</pre>
@@ -1341,12 +1352,12 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
           </div></div>
         </article>
         <article class="install-card">
-          <button type="button" class="card-toggle" aria-expanded="false">Python CLI (pip)</button>
+          <button type="button" class="card-toggle" aria-expanded="false">Python (pip)</button>
           <div class="more"><div>
-            <p>Installs the <code>diagonaldiagrams</code> command globally, which your agent can run from any terminal.</p>
+            <p>Installs the <code>diagonaldiagrams</code> command from <a href="https://pypi.org/project/diagonaldiagrams/" target="_blank" rel="noopener">PyPI</a>. Your agent can run it from any terminal.</p>
             <div class="code-wrap">
-              <pre>pip install git+https://github.com/lucas19919/diagonaldiagrams</pre>
-              <button type="button" class="copy-pill on-card" data-copy="pip install git+https://github.com/lucas19919/diagonaldiagrams" aria-label="Copy pip command">
+              <pre>pip install diagonaldiagrams</pre>
+              <button type="button" class="copy-pill on-card" data-copy="pip install diagonaldiagrams" aria-label="Copy pip command">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 <span>Copy</span>
               </button>
@@ -1354,16 +1365,29 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
           </div></div>
         </article>
         <article class="install-card">
-          <button type="button" class="card-toggle" aria-expanded="false">Claude Desktop, Cursor, and MCP apps</button>
+          <button type="button" class="card-toggle" aria-expanded="false">MCP (Cursor, Claude Desktop)</button>
           <div class="more"><div>
-            <p>After the command is installed, register it as a native tool server in your app.</p>
+            <p>Any app that supports MCP can call diagonaldiagrams as a tool. Add this to the app's MCP settings. It needs <a href="https://docs.astral.sh/uv/" target="_blank" rel="noopener">uv</a>, which runs the package from PyPI. The server is listed in the <a href="https://registry.modelcontextprotocol.io" target="_blank" rel="noopener">official MCP registry</a> as <code>io.github.lucas19919/diagonaldiagrams</code>.</p>
             <div class="code-wrap">
-              <pre>diagonaldiagrams mcp</pre>
-              <button type="button" class="copy-pill on-card" data-copy="diagonaldiagrams mcp" aria-label="Copy MCP command">
+              <pre>{
+  "mcpServers": {
+    "diagonaldiagrams": {
+      "command": "uvx",
+      "args": ["diagonaldiagrams", "mcp"]
+    }
+  }
+}</pre>
+              <button type="button" class="copy-pill on-card" data-copy="{&#10;  &quot;mcpServers&quot;: {&#10;    &quot;diagonaldiagrams&quot;: {&#10;      &quot;command&quot;: &quot;uvx&quot;,&#10;      &quot;args&quot;: [&quot;diagonaldiagrams&quot;, &quot;mcp&quot;]&#10;    }&#10;  }&#10;}" aria-label="Copy MCP settings">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 <span>Copy</span>
               </button>
             </div>
+          </div></div>
+        </article>
+        <article class="install-card">
+          <button type="button" class="card-toggle" aria-expanded="false">Claude Desktop (one file)</button>
+          <div class="more"><div>
+            <p>Download the <code>.mcpb</code> file from the <a href="https://github.com/lucas19919/diagonaldiagrams/releases/latest" target="_blank" rel="noopener">latest release</a> and open it with Claude Desktop. No settings to edit, but Python 3.11 or newer must already be installed.</p>
           </div></div>
         </article>
       </div>
@@ -1565,6 +1589,9 @@ dialog.viewer::backdrop { background: rgb(6 5 5 / 0.94); }
       <nav aria-label="Repository">
         <a href="https://github.com/lucas19919/diagonaldiagrams" target="_blank" rel="noopener">GitHub</a>
         <a href="https://github.com/lucas19919/diagonaldiagrams" target="_blank" rel="noopener">Star</a>
+        <a href="https://pypi.org/project/diagonaldiagrams/" target="_blank" rel="noopener">PyPI</a>
+        <a href="https://registry.modelcontextprotocol.io" target="_blank" rel="noopener">MCP registry</a>
+        <a href="https://github.com/lucas19919/diagonaldiagrams/releases" target="_blank" rel="noopener">Releases</a>
       </nav>
     </div>
     <div class="foot-line">
