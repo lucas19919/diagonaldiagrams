@@ -55,6 +55,7 @@ node_modules/
 # Saved scoreboard metrics (bench/metrics/NAME.json/.md) are tracked; latest.* is a scratch run.
 # The quality benchmark (bench/quality/: blind judging against Pele and Mermaid) is tracked whole.
 bench/*
+!bench/README.md
 !bench/metrics/
 !bench/quality/
 bench/metrics/latest.*
