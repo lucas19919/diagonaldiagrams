@@ -26,7 +26,7 @@ Claude Code, as a plugin:
 Any agent, as a command:
 
 ```bash
-pip install git+https://github.com/lucas19919/diagonaldiagrams
+pip install diagonaldiagrams
 diagonaldiagrams mermaid flow.mmd -o out/flow.svg
 ```
 

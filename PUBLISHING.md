@@ -26,18 +26,18 @@ Pages is free for public repositories. After that, the Claude Code plugin and `p
 
 ## 2. PyPI
 
-The name `diagonaldiagrams` was free on 2026-10-03. You need a PyPI account and an API token.
+No token: `.github/workflows/publish.yml` uploads through PyPI trusted publishing (a publisher registered on
+PyPI for this repo, that workflow and the `pypi` environment). It runs when a GitHub release is published, or by
+hand from the Actions tab. Make the release with the wheel, the sdist and the desktop bundle attached:
 
 ```bash
-py -3 -m pip install build twine
-py -3 -m build
-py -3 -m twine upload dist/*
+py -3 -m build --outdir <somewhere-outside-the-repo>
+py -3 scripts/build_mcpb.py       # writes dist/diagonaldiagrams-X.Y.Z.mcpb
+gh release create vX.Y.Z --target master --title X.Y.Z --notes-file notes.md <wheel> <sdist> dist/*.mcpb
 ```
 
-Then `pip install diagonaldiagrams` and `uvx diagonaldiagrams mcp` work. Until this step `.mcp.json` runs the
-server from GitHub (`uvx --from git+https://...`); once it is done, point it at the PyPI package.
-
-`py -3 scripts/build_mcpb.py` writes the one-click desktop bundle to `dist/`; attach it to the GitHub release.
+Then `pip install diagonaldiagrams` and `uvx diagonaldiagrams mcp` work. Releases go through a pull request
+(version bump, CI green, squash-merge) before the tag.
 
 ## 3. Official MCP registry
 
@@ -49,8 +49,10 @@ mcp-publisher validate            # checks server.json against the current schem
 mcp-publisher publish
 ```
 
-Install `mcp-publisher` from https://github.com/modelcontextprotocol/registry/releases. If `validate` complains
-about a field, `mcp-publisher init` writes a fresh server.json in the current schema; copy the fields over.
+Install `mcp-publisher` from https://github.com/modelcontextprotocol/registry/releases (check the SHA-256
+against the release's `checksums.txt`). `login github` prints a code to enter at https://github.com/login/device.
+If `validate` complains about a field, `mcp-publisher init` writes a fresh server.json in the current schema; copy
+the fields over. Each release needs its own `publish`, with the new version in `server.json`.
 
 ## 4. Directories that read the registry or the repo
 
