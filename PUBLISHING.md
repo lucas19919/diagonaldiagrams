@@ -41,18 +41,22 @@ Then `pip install diagonaldiagrams` and `uvx diagonaldiagrams mcp` work. Release
 
 ## 3. Official MCP registry
 
-Needs step 2: the registry reads the README on PyPI and looks for the `mcp-name:` line at the bottom of README.md.
+Automatic: the `registry` job in `.github/workflows/publish.yml` runs after PyPI, signs in with GitHub's OIDC
+identity (no code to enter) and publishes `server.json`. The registry needs step 2 first: it reads the README on
+PyPI and looks for the `mcp-name:` line at the bottom of README.md. The version comes from `server.json`, so the
+release bump must change it (it is one of the five version places above).
+
+To publish by hand instead, from the folder with `server.json`:
 
 ```bash
-mcp-publisher login github
+mcp-publisher login github        # prints a code to enter at https://github.com/login/device
 mcp-publisher validate            # checks server.json against the current schema
 mcp-publisher publish
 ```
 
 Install `mcp-publisher` from https://github.com/modelcontextprotocol/registry/releases (check the SHA-256
-against the release's `checksums.txt`). `login github` prints a code to enter at https://github.com/login/device.
-If `validate` complains about a field, `mcp-publisher init` writes a fresh server.json in the current schema; copy
-the fields over. Each release needs its own `publish`, with the new version in `server.json`.
+against the release's `checksums.txt`). If `validate` complains about a field, `mcp-publisher init` writes a fresh
+server.json in the current schema; copy the fields over.
 
 ## 4. Directories that read the registry or the repo
 

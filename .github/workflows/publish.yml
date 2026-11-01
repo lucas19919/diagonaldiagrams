@@ -1,8 +1,12 @@
-name: Publish to PyPI
+name: Publish (PyPI and MCP registry)
 
-# Uses PyPI trusted publishing, so there is no token to store. The publisher is registered on PyPI
-# for this repo, this workflow file and the `pypi` environment. Runs when a GitHub release is
-# published, or by hand from the Actions tab.
+# One release publishes everywhere, with no token or login to store:
+#   - PyPI, by trusted publishing. The publisher is registered on PyPI for this repo, this workflow
+#     file and the `pypi` environment.
+#   - The official MCP registry, by GitHub's OIDC identity. The registry accepts it for names under
+#     io.github.<owner>/, and it reads the version from server.json.
+# Runs when a GitHub release is published, or by hand from the Actions tab. By hand on a version
+# that is already out, PyPI is skipped and the registry step fails with "already exists".
 
 on:
   release:
@@ -39,3 +43,27 @@ jobs:
           name: dist
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+
+  registry:
+    # After PyPI: the registry checks that the package and version exist there.
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mcp-publisher (pinned, checksum-checked)
+        env:
+          VERSION: "1.8.7"
+        run: |
+          base="https://github.com/modelcontextprotocol/registry/releases/download/v${VERSION}"
+          curl -fsSL -O "$base/mcp-publisher_linux_amd64.tar.gz"
+          curl -fsSL -O "$base/registry_${VERSION}_checksums.txt"
+          grep " mcp-publisher_linux_amd64.tar.gz\$" "registry_${VERSION}_checksums.txt" | sha256sum --check -
+          tar xzf mcp-publisher_linux_amd64.tar.gz mcp-publisher
+      - run: ./mcp-publisher validate
+      - run: ./mcp-publisher login github-oidc
+      - run: ./mcp-publisher publish
