@@ -1,6 +1,6 @@
 # diagonaldiagrams
 
-> Charts and diagrams for agents. One command checks a spec, draws an SVG, and audits the drawing. Do not hand-edit the SVG, and do not screenshot it to check it: the JSON line is the check.
+> diagonaldiagrams is a Python library and MCP server that lets an AI agent draw diagrams and charts as SVG, and check them for overlapping text, arrows through boxes and text that spills, before showing them. One command checks a spec, draws the SVG, and audits the drawing. Do not hand-edit the SVG, and do not screenshot it to check it: the JSON line is the check.
 
 ## Draw
 
@@ -42,7 +42,7 @@ Titles state the finding. Blue is HTTP. Dashed is async. Coral marks at most two
 - [Install skill](.agents/skills/diagonaldiagrams-install/SKILL.md): clone, check `describe`, copy the drawing skill.
 - [Drawing skill](.agents/skills/graph-engine/SKILL.md): the full contract. This file is the short version of it.
 - Plugin: `/plugin marketplace add lucas19919/diagonaldiagrams` then `/plugin install diagonaldiagrams@diagonaldiagrams`.
-- Command only: `pip install git+https://github.com/lucas19919/diagonaldiagrams`.
+- Command only: `pip install diagonaldiagrams`.
 - MCP: `diagonaldiagrams mcp`.
 
 ## Read next

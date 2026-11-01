@@ -1,6 +1,6 @@
 # diagonaldiagrams
 
-Diagrams and charts an agent can draw, and check, before it shows you. One command takes Mermaid, a short JSON spec, or a CSV, lays it out, draws an SVG, and audits the drawing for labels on labels, arrows through boxes, and text that spills.
+diagonaldiagrams is a Python library and MCP server that lets an AI agent draw diagrams and charts as SVG, and check them for overlapping text, arrows through boxes and text that spills, before showing them. One command takes Mermaid, a short JSON spec, or a CSV, lays it out, draws the SVG, and audits it.
 
 **[See the site](https://lucas19919.github.io/diagonaldiagrams/)**: filmed figures, the benchmarks, and a gallery.
 

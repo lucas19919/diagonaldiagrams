@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lucas19919.github.io/diagonaldiagrams/sitemap.xml

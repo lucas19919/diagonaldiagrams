@@ -157,6 +157,19 @@ def main():
     with open(os.path.join(DOCS, "gallery.json"), "w", encoding="utf-8") as f:
         json.dump(shown, f, indent=1)
     print(f"{len(shown)} figures")
+    publish_llms_txt()
+
+
+def publish_llms_txt():
+    """Serve llms.txt from the site root too. Pages only serves docs/, and the repo's relative links
+    would break there, so they become absolute GitHub links."""
+    import re
+    base = "https://github.com/lucas19919/diagonaldiagrams/blob/master/"
+    with open(os.path.join(HERE, "llms.txt"), encoding="utf-8") as f:
+        text = f.read()
+    text = re.sub(r"\]\((?!https?://)([^)]+)\)", lambda m: "](" + base + m.group(1) + ")", text)
+    with open(os.path.join(DOCS, "llms.txt"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
 
 
 if __name__ == "__main__":
