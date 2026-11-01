@@ -14,7 +14,7 @@ metadata:
 
 # Install diagonaldiagrams
 
-diagonaldiagrams is a graphing library for agents. This skill installs it as a clone plus a check, because the clone also carries the drawing skill. `pip install git+https://github.com/lucas19919/diagonaldiagrams` is the other route: it puts a `diagonaldiagrams` command on PATH, but no skill.
+diagonaldiagrams is a graphing library for agents. This skill installs it as a clone plus a check, because the clone also carries the drawing skill. `pip install diagonaldiagrams` is the other route: it puts a `diagonaldiagrams` command on PATH, but no skill.
 
 The drawing contract is the `graph-engine` skill in the clone. This skill only puts that library on the machine.
 
