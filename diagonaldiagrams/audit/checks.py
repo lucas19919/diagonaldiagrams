@@ -194,6 +194,16 @@ def shared_runs(v, issues):
                            "fix": "reorder the row or move one node so the arrows take separate paths", "at": where})
 
 
+def _pill(t, shapes):
+    """The background a label is drawn on: the smallest rect holding its middle and sized to its text,
+    or None. A box the text merely stands in is wider or taller than that (spill reads hosts the same way)."""
+    b = t.box
+    mx, my = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+    fit = [s.box for s in shapes if s.tag == "rect" and s.box[0] <= mx <= s.box[2] and s.box[1] <= my <= s.box[3]
+           and s.box[3] - s.box[1] <= 1.8 * (b[3] - b[1]) and s.box[2] - s.box[0] <= b[2] - b[0] + 2 * t.size]
+    return min(fit, key=lambda r: (r[2] - r[0]) * (r[3] - r[1])) if fit else None
+
+
 @check("labels on decision outlines", "collide")
 def diamond_labels(v, issues):
     for t in v.texts:
@@ -204,8 +214,10 @@ def diamond_labels(v, issues):
                 continue  # the pill (7 px beside the text, 2 above and below) is over a pixel clear of it
             if abs(mx - cx) / hw + abs(my - cy) / hh <= 1:
                 continue  # the decision's own question
-            # measured with the label's background pill, which is what covers the outline
-            corners = [(b[0] - 7, b[1] - 2), (b[2] + 7, b[1] - 2), (b[0] - 7, b[3] + 2), (b[2] + 7, b[3] + 2)]
+            # measured with the label's background pill, which is what covers the outline: the one
+            # drawn, or where a figure from elsewhere has none, about what one would take
+            p = _pill(t, v.shapes) or (b[0] - 7, b[1] - 2, b[2] + 7, b[3] + 2)
+            corners = [(p[0], p[1]), (p[2], p[1]), (p[0], p[3]), (p[2], p[3])]
             if any(abs(x - cx) / hw + abs(y - cy) / hh < 1.0 for x, y in corners):
                 issues.append({"code": "collide", "msg": f"label '{t.text[:24]}' sits on the edge of a decision",
                                "fix": "move the label or the node so the decision shows whole", "at": [round(mx), round(my)]})
