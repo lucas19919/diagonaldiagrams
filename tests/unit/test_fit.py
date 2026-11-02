@@ -262,6 +262,28 @@ class ArchInAColumn(unittest.TestCase):
                 f.write(svg)
             self.assertNotIn("shared", [e.get("code") for e in _audit_file(path)["errors"]])
 
+    def diamond_codes(self, pill_x, text_x):
+        """The audit's codes for 'yes' beside a decision whose left tip is at x = 200."""
+        from diagonaldiagrams.audit import _audit_file
+        pill = f'<rect x="{pill_x}" y="84" width="26" height="16" fill="#fff"/>' if pill_x is not None else ""
+        svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 200" width="500" height="200">'
+               '<polygon points="300,60 400,100 300,140 200,100" fill="#fff" stroke="#333"/>' + pill +
+               f'<text x="{text_x}" y="96" font-size="11" text-anchor="middle">yes</text></svg>')
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "t.svg")
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(svg)
+            return [e.get("code") for e in _audit_file(path)["errors"]]
+
+    def test_a_label_beside_a_decision_is_judged_by_the_pill_drawn(self):
+        self.assertNotIn("collide", self.diamond_codes(172, 185))  # its pill ends 2 px short of the tip, level with it
+
+    def test_a_pill_on_a_decision_is_still_caught(self):
+        self.assertIn("collide", self.diamond_codes(185, 198))
+
+    def test_a_label_with_no_pill_is_judged_by_the_room_one_would_take(self):
+        self.assertIn("collide", self.diamond_codes(None, 185))
+
     def test_the_audit_flags_a_labelled_trunk(self):
         from diagonaldiagrams.audit import _audit_file
         arrow = '<path d="M100,40 L100,80 L{x},80 L{x},140" fill="none" stroke="#333" marker-end="url(#a)" data-label="{t}"/>'
